@@ -12,11 +12,41 @@
 'use strict';
 
 const path = require('path');
+const crypto = require('crypto');
 require('dotenv').config({ path: path.join(__dirname, '../../.env') });
 require('dotenv').config({ path: path.join(__dirname, '../../../.env') });
 
-const GOOGLE_WEBHOOK_SECRET   = process.env.GOOGLE_WEBHOOK_SECRET || 'kcm_google_webhook_secret';
-const INTERNAL_SERVICE_TOKEN  = process.env.INTERNAL_SERVICE_TOKEN || 'kcm_internal_service_token';
+function getGoogleWebhookSecret() {
+  const secret = process.env.GOOGLE_WEBHOOK_SECRET;
+  if (!secret) {
+    if (process.env.NODE_ENV === 'production') {
+      console.error('[WEBHOOK_VERIFY] CRITICAL: GOOGLE_WEBHOOK_SECRET not set in production.');
+      return null;
+    }
+    return 'kcm_google_webhook_secret';
+  }
+  return secret;
+}
+
+function getInternalServiceToken() {
+  const token = process.env.INTERNAL_SERVICE_TOKEN;
+  if (!token) {
+    if (process.env.NODE_ENV === 'production') {
+      console.error('[WEBHOOK_VERIFY] CRITICAL: INTERNAL_SERVICE_TOKEN not set in production.');
+      return null;
+    }
+    return 'kcm_internal_service_token';
+  }
+  return token;
+}
+
+function safeCompare(a, b) {
+  if (typeof a !== 'string' || typeof b !== 'string') return false;
+  const bufA = Buffer.from(a);
+  const bufB = Buffer.from(b);
+  if (bufA.length !== bufB.length) return false;
+  return crypto.timingSafeEqual(bufA, bufB);
+}
 
 /**
  * Middleware: Verify Google Apps Script webhook secret.
@@ -26,8 +56,9 @@ function verifyGoogleWebhook(req, res, next) {
   const headerSecret = req.headers['x-kcm-webhook-secret'];
   const bodySecret   = req.body && req.body.secret;
   const secret       = headerSecret || bodySecret;
+  const expectedSecret = getGoogleWebhookSecret();
 
-  if (!secret || secret !== GOOGLE_WEBHOOK_SECRET) {
+  if (!expectedSecret || !secret || !safeCompare(secret, expectedSecret)) {
     console.warn(`[WEBHOOK_VERIFY] Unauthorized Google webhook attempt from ${req.ip}`);
     return res.status(401).json({
       error:   'Unauthorized',
@@ -46,8 +77,9 @@ function verifyGoogleWebhook(req, res, next) {
 function verifyInternalToken(req, res, next) {
   const authHeader = req.headers['authorization'] || '';
   const token      = authHeader.replace(/^Bearer\s+/i, '').trim();
+  const expectedToken = getInternalServiceToken();
 
-  if (!token || token !== INTERNAL_SERVICE_TOKEN) {
+  if (!expectedToken || !token || !safeCompare(token, expectedToken)) {
     console.warn(`[WEBHOOK_VERIFY] Unauthorized internal call from ${req.ip}`);
     return res.status(401).json({
       error:   'Unauthorized',

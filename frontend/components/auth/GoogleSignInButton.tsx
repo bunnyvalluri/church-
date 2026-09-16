@@ -262,16 +262,22 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
       const result = await signInWithPopup(auth, provider);
       const u = result.user;
 
+      const idToken = typeof u.getIdToken === 'function' ? await u.getIdToken() : null;
+
       // Sync Firebase Google user with backend database to establish server session and HttpOnly cookie
       const syncRes = await fetch("/api/auth/sync", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(idToken ? { "Authorization": `Bearer ${idToken}` } : {})
+        },
         body: JSON.stringify({
           uid: u.uid,
           email: u.email,
           name: u.displayName,
           photoURL: u.photoURL,
           phoneNumber: u.phoneNumber,
+          idToken,
         }),
       });
 

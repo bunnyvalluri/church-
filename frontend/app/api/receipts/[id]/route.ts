@@ -44,7 +44,8 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
       return NextResponse.json({ error: 'Receipt record not found.' }, { status: 404 });
     }
 
-    // Security check: Must be the recipient of the receipt or an administrator/staff
+    // Security check: Must be the recipient of the receipt, administrator/staff, or possess verification code
+    const verifyCode = searchParams.get('verify');
     const authUser = await getAuthenticatedUser(req);
     const devRole = process.env.NODE_ENV !== 'production'
       ? (process.env.NEXT_PUBLIC_DEV_AUTO_LOGIN?.toLowerCase() ?? '')
@@ -52,13 +53,18 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     const isDevBypass = ['admin', 'super_admin', 'pastor'].includes(devRole);
 
     if (!isDevBypass) {
-      if (!authUser) {
-        return NextResponse.json({ error: 'Authentication required.' }, { status: 401 });
-      }
+      const isStaff = authUser && ['ADMIN', 'SUPER_ADMIN', 'PASTOR', 'BRANCH_MANAGER', 'MEDIA_TEAM'].includes(authUser.role);
+      const isOwner = authUser && (
+        (receipt.memberId && authUser.uid === receipt.memberId) ||
+        (receipt.donation?.userId && authUser.uid === receipt.donation.userId)
+      );
+      const isValidCode = verifyCode && receipt.verificationCode && verifyCode.trim() === receipt.verificationCode.trim();
 
-      const isAdmin = ['ADMIN', 'SUPER_ADMIN', 'PASTOR', 'BRANCH_MANAGER', 'MEDIA_TEAM'].includes(authUser.role);
-      if (!isAdmin && receipt.memberId && authUser.uid !== receipt.memberId) {
-        return NextResponse.json({ error: 'Forbidden: You do not have permission to view this receipt.' }, { status: 403 });
+      if (!isStaff && !isOwner && !isValidCode) {
+        return NextResponse.json(
+          { error: 'Forbidden: Valid verification code or account authorization required to view this receipt.' },
+          { status: 403 }
+        );
       }
     }
 

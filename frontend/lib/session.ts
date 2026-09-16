@@ -26,8 +26,14 @@ export function getSessionSecret(): string {
   const secret =
     process.env.SESSION_SECRET ||
     process.env.NEXTAUTH_SECRET ||
-    process.env.JWT_SECRET ||
-    'kcm-church-portal-secure-session-auth-key-2026';
+    process.env.JWT_SECRET;
+  if (!secret) {
+    if (process.env.NODE_ENV === 'production') {
+      console.error('[SESSION] CRITICAL: No SESSION_SECRET or NEXTAUTH_SECRET configured in production.');
+      return '';
+    }
+    return 'kcm-church-portal-secure-session-auth-key-2026';
+  }
   return secret;
 }
 
@@ -317,3 +323,21 @@ export function removeSessionCookie(
   response.cookies.set('__kcm_session_uid', '', { path: '/', maxAge: 0 });
   response.cookies.set('__kcm_session_role', '', { path: '/', maxAge: 0 });
 }
+
+/**
+ * Extracts session token from a standard Web API Request.
+ */
+export function extractTokenFromRequest(req: Request): string | null {
+  const cookieHeader = req.headers.get('cookie') || '';
+  const match = cookieHeader.match(new RegExp(`(?:^|;\\s*)${SESSION_COOKIE_NAME}=([^;]+)`));
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
+/**
+ * Extracts and verifies server session from a standard Web API Request.
+ */
+export async function getSessionFromRequest(req: Request): Promise<SessionUser | null> {
+  const token = extractTokenFromRequest(req);
+  return verifyServerSession(token);
+}
+

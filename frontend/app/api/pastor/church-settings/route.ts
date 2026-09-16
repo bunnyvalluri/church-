@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireStaffOrDev } from '@/lib/authMiddleware';
 
 // Default values if database is empty
 const defaultSettings = {
@@ -40,6 +41,9 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
+  const auth = await requireStaffOrDev(req);
+  if (auth instanceof NextResponse) return auth;
+
   try {
     const body = await req.json();
     const { churchName, tagline, primaryEmail, contactPhone, address, worshipServices, bilingualSupport, visitorRegistrationEnabled } = body;

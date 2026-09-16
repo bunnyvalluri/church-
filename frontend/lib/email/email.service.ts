@@ -5,14 +5,16 @@
  * 
  * Features:
  *   • Single source of truth for all transactional email operations
- *   • Memory + DB sliding-window idempotency cache to eliminate duplicate sends
- *   • Multi-transport provider abstraction (Resend -> SMTP -> Mock)
- *   • Robust database audit logging via Neon PostgreSQL (NotificationLog)
- *   • Zero leakage of passwords, tokens, or sensitive financial data
- *   • Bounded timeout promise execution to avoid serverless function freezes
+ *   • Deterministic DB + memory sliding-window idempotency cache
+ *   • Multi-transport provider abstraction (Resend -> SMTP -> Dev Mock)
+ *   • Dual-write audit logging via Neon PostgreSQL (EmailEvent + NotificationLog)
+ *   • Controlled exponential backoff & jitter retry loop for transient failures
+ *   • Zero leakage of passwords, tokens, or sensitive credentials
+ *   • Bounded timeout execution to prevent Vercel Serverless Function freezes
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
+import crypto from 'crypto';
 import { prisma } from '@/lib/prisma';
 import { logger } from '@/lib/logger';
 import { emailConfig } from './email.config';
@@ -21,7 +23,9 @@ import {
   SendTemplateOptions,
   EmailSendResult,
   TemplateDataMap,
+  EmailDeliveryStatus,
 } from './email.types';
+import { classifyEmailError, calculateBackoffMs } from './email.errors';
 import { renderEmailTemplate } from './email.templates';
 import { getEmailProvider } from './providers';
 
@@ -29,6 +33,7 @@ import { getEmailProvider } from './providers';
 interface IdempotencyEntry {
   timestamp: number;
   messageId?: string;
+  emailEventId?: string;
 }
 
 const sentCache = new Map<string, IdempotencyEntry>();
@@ -43,7 +48,7 @@ function cleanupCache(): void {
   }
 }
 
-function checkAndRegisterIdempotency(key: string): boolean {
+function checkAndRegisterMemoryIdempotency(key: string): boolean {
   cleanupCache();
   const normalized = key.toLowerCase().trim();
   const now = Date.now();
@@ -57,16 +62,37 @@ function checkAndRegisterIdempotency(key: string): boolean {
   return true;
 }
 
+// ── Privacy & Masking Helpers ────────────────────────────────────────────────
+export function hashRecipient(email: string): string {
+  return crypto.createHash('sha256').update(email.toLowerCase().trim()).digest('hex');
+}
+
+export function maskEmail(email: string): string {
+  const [local, domain] = (email || '').split('@');
+  if (!domain) return email || 'unknown';
+  if (local.length <= 2) return `${local[0] || '*'}*@${domain}`;
+  return `${local[0]}${'*'.repeat(Math.max(1, local.length - 2))}${local[local.length - 1]}@${domain}`;
+}
+
+export function generateDeterministicIdempotencyKey(
+  email: string,
+  template: string,
+  scope?: string
+): string {
+  const raw = `${email.toLowerCase().trim()}:${template}:${scope || ''}`;
+  return crypto.createHash('sha256').update(raw).digest('hex');
+}
+
 // ── Central Email Service Class ──────────────────────────────────────────────
 export class EmailService {
   /**
    * Dispatches a templated email with automatic idempotency check, template
-   * rendering, multi-transport delivery, and PostgreSQL notification log creation.
+   * rendering, multi-transport delivery, exponential retries, and PostgreSQL audit logging.
    */
   public async send<T extends EmailTemplateType>(
-    options: SendTemplateOptions<T>
-  ): Promise<EmailSendResult & { logId?: string; deduplicated?: boolean }> {
-    const { template, to, data, userId, eventId, donationId, receiptId, forceSend } = options;
+    options: SendTemplateOptions<T> & { securityEventId?: string }
+  ): Promise<EmailSendResult & { logId?: string; emailEventId?: string; deduplicated?: boolean }> {
+    const { template, to, data, userId, eventId, donationId, receiptId, forceSend, securityEventId } = options;
     const sanitizedEmail = (to || '').toLowerCase().trim();
 
     if (!sanitizedEmail || !sanitizedEmail.includes('@')) {
@@ -77,24 +103,54 @@ export class EmailService {
       return {
         success: false,
         provider: 'mock',
+        errorCode: 'INVALID_RECIPIENT',
         error: 'Invalid recipient email address.',
       };
     }
 
-    // 1. Idempotency Deduplication Guard
-    const uniqueScope = eventId || donationId || receiptId || '';
-    const deduplicationKey = `${sanitizedEmail}:${template}:${uniqueScope}`;
+    // 1. Deterministic Idempotency Key
+    const uniqueScope = eventId || donationId || receiptId || securityEventId || '';
+    const deduplicationKey = generateDeterministicIdempotencyKey(sanitizedEmail, template, uniqueScope);
 
-    if (!forceSend && !checkAndRegisterIdempotency(deduplicationKey)) {
+    // In-memory guard
+    if (!forceSend && !checkAndRegisterMemoryIdempotency(deduplicationKey)) {
       logger.info(
-        `[EMAIL/SERVICE] Skipped duplicate send for ${sanitizedEmail} (${template}) within deduplication window.`,
-        { template, recipient: sanitizedEmail }
+        `[EMAIL/SERVICE] Skipped duplicate send for ${maskEmail(sanitizedEmail)} (${template}) within memory deduplication window.`,
+        { template, recipientHash: hashRecipient(sanitizedEmail) }
       );
       return {
         success: true,
         provider: 'mock',
         deduplicated: true,
       };
+    }
+
+    // Database-level idempotency guard
+    if (!forceSend) {
+      try {
+        const existingEvent = await prisma.emailEvent.findUnique({
+          where: { idempotencyKey: deduplicationKey },
+        });
+
+        if (existingEvent) {
+          logger.info(
+            `[EMAIL/SERVICE] Skipped duplicate send for ${maskEmail(sanitizedEmail)} (${template}) found in database idempotency records.`,
+            { template, emailEventId: existingEvent.id, status: existingEvent.status }
+          );
+          return {
+            success: existingEvent.status === 'SENT' || existingEvent.status === 'DELIVERED',
+            provider: (existingEvent.provider as any) || 'mock',
+            messageId: existingEvent.providerMessageId || undefined,
+            emailEventId: existingEvent.id,
+            deduplicated: true,
+          };
+        }
+      } catch (dbCheckErr: any) {
+        // Non-blocking if query fails; continue to send
+        logger.warn('[EMAIL/SERVICE] Database idempotency check non-fatal note:', {
+          error: dbCheckErr.message,
+        });
+      }
     }
 
     // 2. Render Template
@@ -108,57 +164,186 @@ export class EmailService {
       return {
         success: false,
         provider: 'mock',
+        errorCode: 'UNKNOWN_ERROR',
         error: `Template render error: ${renderErr.message}`,
       };
     }
 
-    // 3. Dispatch via Multi-Transport Provider (with bounded timeout)
-    const provider = getEmailProvider();
-    const timeoutMs = emailConfig.reliability.sendTimeoutMs;
-
-    let dispatchResult: EmailSendResult;
+    // 3. Create initial EmailEvent record in Neon PostgreSQL
+    let emailEventRecord: any = null;
     try {
-      const sendPromise = provider.send({
-        to: sanitizedEmail,
-        subject: rendered.subject,
-        html: rendered.html,
-        text: rendered.text,
-        replyTo: emailConfig.church.supportEmail,
-        from: emailConfig.sender.formattedFrom,
-        tags: [
-          { name: 'template', value: template },
-          { name: 'system', value: 'kcm-email-system' },
-        ],
+      emailEventRecord = await prisma.emailEvent.create({
+        data: {
+          securityEventId: securityEventId || null,
+          userId: userId || null,
+          recipientHash: hashRecipient(sanitizedEmail),
+          recipientMasked: maskEmail(sanitizedEmail),
+          eventType: template,
+          template: template,
+          subject: rendered.subject,
+          status: 'SENDING',
+          idempotencyKey: deduplicationKey,
+          provider: emailConfig.providers.active,
+          maxAttempts: emailConfig.reliability.maxRetries,
+          metadata: JSON.stringify({
+            template,
+            eventId: eventId || undefined,
+            donationId: donationId || undefined,
+            receiptId: receiptId || undefined,
+          }),
+        },
       });
+    } catch (createErr: any) {
+      if (createErr.code === 'P2002') {
+        // Concurrent race condition: another concurrent request created this event first
+        const existing = await prisma.emailEvent.findUnique({
+          where: { idempotencyKey: deduplicationKey },
+        }).catch(() => null);
 
-      const timeoutPromise = new Promise<EmailSendResult>((resolve) =>
-        setTimeout(
-          () =>
-            resolve({
-              success: false,
-              provider: provider.getActiveProviderName(),
-              error: `Dispatch timed out after ${timeoutMs}ms`,
-            }),
-          timeoutMs
-        )
-      );
-
-      dispatchResult = await Promise.race([sendPromise, timeoutPromise]);
-    } catch (dispatchErr: any) {
-      logger.error('[EMAIL/SERVICE] Unexpected exception during provider dispatch:', {
-        error: dispatchErr.message,
+        if (existing) {
+          logger.info(
+            `[EMAIL/SERVICE] Concurrent duplicate intercepted for ${maskEmail(sanitizedEmail)} (${template}).`,
+            { emailEventId: existing.id }
+          );
+          return {
+            success: existing.status === 'SENT' || existing.status === 'DELIVERED',
+            provider: (existing.provider as any) || 'mock',
+            messageId: existing.providerMessageId || undefined,
+            emailEventId: existing.id,
+            deduplicated: true,
+          };
+        }
+      }
+      logger.warn('[EMAIL/SERVICE] Failed to initialize EmailEvent record in DB:', {
+        error: createErr ? new Error(createErr.message) : undefined,
       });
-      dispatchResult = {
-        success: false,
-        provider: provider.getActiveProviderName(),
-        error: dispatchErr.message || 'Dispatch exception',
-      };
     }
 
-    // 4. Safe Database Audit Logging in Neon PostgreSQL
+    // 4. Dispatch via Multi-Transport Provider with Exponential Backoff & Jitter
+    const provider = getEmailProvider();
+    const timeoutMs = emailConfig.reliability.sendTimeoutMs;
+    const maxRetries = emailConfig.reliability.maxRetries;
+
+    let dispatchResult: EmailSendResult = {
+      success: false,
+      provider: provider.getActiveProviderName(),
+      error: 'Dispatch not attempted',
+    };
+
+    let attemptCount = 0;
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      attemptCount = attempt;
+      const attemptStart = Date.now();
+
+      try {
+        const sendPromise = provider.send({
+          to: sanitizedEmail,
+          subject: rendered.subject,
+          html: rendered.html,
+          text: rendered.text,
+          replyTo: emailConfig.church.supportEmail,
+          from: emailConfig.sender.formattedFrom,
+          tags: [
+            { name: 'template', value: template },
+            { name: 'system', value: 'kcm-email-system' },
+          ],
+        });
+
+        const timeoutPromise = new Promise<EmailSendResult>((resolve) =>
+          setTimeout(
+            () =>
+              resolve({
+                success: false,
+                provider: provider.getActiveProviderName(),
+                errorCode: 'NETWORK_TIMEOUT',
+                error: `Dispatch timed out after ${timeoutMs}ms`,
+                durationMs: timeoutMs,
+              }),
+            timeoutMs
+          )
+        );
+
+        dispatchResult = await Promise.race([sendPromise, timeoutPromise]);
+      } catch (dispatchErr: any) {
+        dispatchResult = {
+          success: false,
+          provider: provider.getActiveProviderName(),
+          errorCode: 'UNKNOWN_ERROR',
+          error: dispatchErr.message || 'Dispatch exception',
+          durationMs: Date.now() - attemptStart,
+        };
+      }
+
+      // Record EmailDeliveryAttempt in PostgreSQL
+      if (emailEventRecord?.id) {
+        try {
+          await prisma.emailDeliveryAttempt.create({
+            data: {
+              emailEventId: emailEventRecord.id,
+              attemptNumber: attempt,
+              provider: dispatchResult.provider,
+              status: dispatchResult.success ? 'SUCCESS' : 'FAILED',
+              httpStatus: dispatchResult.httpStatus || null,
+              errorCode: dispatchResult.errorCode || null,
+              errorMessage: dispatchResult.error || null,
+              durationMs: dispatchResult.durationMs || Date.now() - attemptStart,
+            },
+          });
+        } catch {
+          /* non-blocking audit write */
+        }
+      }
+
+      // If successful, stop retry loop
+      if (dispatchResult.success) {
+        break;
+      }
+
+      // If permanent error (e.g. 403 unverified domain, 401 invalid key, bad email), do not retry
+      const classified = classifyEmailError(dispatchResult.error, dispatchResult.httpStatus);
+      if (classified.isPermanent) {
+        logger.warn(
+          `[EMAIL/SERVICE] Permanent failure encountered (${classified.errorCode}). Skipping further retries.`,
+          { error: dispatchResult.error ? new Error(dispatchResult.error) : undefined, recipient: maskEmail(sanitizedEmail) }
+        );
+        break;
+      }
+
+      // If transient error and attempts remain, wait with exponential backoff & jitter
+      if (attempt < maxRetries) {
+        const delayMs = calculateBackoffMs(attempt);
+        logger.info(
+          `[EMAIL/SERVICE] Transient error (${classified.errorCode}). Retrying in ${delayMs}ms (attempt ${attempt}/${maxRetries})...`
+        );
+        await new Promise((r) => setTimeout(r, delayMs));
+      }
+    }
+
+    // 5. Update EmailEvent status in PostgreSQL
+    const finalStatus: EmailDeliveryStatus = dispatchResult.success ? 'SENT' : 'FAILED';
+    if (emailEventRecord?.id) {
+      try {
+        await prisma.emailEvent.update({
+          where: { id: emailEventRecord.id },
+          data: {
+            status: finalStatus,
+            providerMessageId: dispatchResult.messageId || null,
+            attemptCount,
+            lastErrorCode: dispatchResult.errorCode || null,
+            lastErrorMessage: dispatchResult.error || null,
+            sentAt: dispatchResult.success ? new Date() : null,
+            failedAt: !dispatchResult.success ? new Date() : null,
+          },
+        });
+      } catch (updateErr: any) {
+        logger.warn('[EMAIL/SERVICE] Failed to update EmailEvent status:', { error: updateErr.message });
+      }
+    }
+
+    // 6. Dual-write to NotificationLog for backwards compatibility with existing UI
     let logId: string | undefined;
     try {
-      // Ensure we NEVER serialize passwords, auth tokens, or card numbers
       const sanitizedMetadata = {
         template,
         eventId: eventId || undefined,
@@ -166,6 +351,8 @@ export class EmailService {
         receiptId: receiptId || undefined,
         sandboxRedirected: dispatchResult.sandboxRedirected || undefined,
         provider: dispatchResult.provider,
+        emailEventId: emailEventRecord?.id || undefined,
+        errorCode: dispatchResult.errorCode || undefined,
       };
 
       const logRecord = await prisma.notificationLog.create({
@@ -182,12 +369,12 @@ export class EmailService {
           errorMessage: dispatchResult.error || null,
           metadata: JSON.stringify(sanitizedMetadata),
           deliveredAt: dispatchResult.success ? new Date() : null,
+          retryCount: attemptCount - 1,
         },
       });
 
       logId = logRecord.id;
     } catch (dbErr: any) {
-      // Non-fatal if DB logging encounters an issue; log to structured console logger
       logger.warn('[EMAIL/SERVICE] Failed to write notification log to database:', {
         error: dbErr.message,
       });
@@ -198,30 +385,40 @@ export class EmailService {
       const entry = sentCache.get(deduplicationKey.toLowerCase());
       if (entry) {
         entry.messageId = dispatchResult.messageId;
+        entry.emailEventId = emailEventRecord?.id;
       }
     }
 
-    logger.info(`[EMAIL/SERVICE] ${dispatchResult.success ? '✓ Sent' : '✗ Failed'}: [${template}] to ${sanitizedEmail}`, {
+    logger.info(`[EMAIL/SERVICE] ${dispatchResult.success ? '✓ Sent' : '✗ Failed'}: [${template}] to ${maskEmail(sanitizedEmail)}`, {
       template,
-      recipient: sanitizedEmail,
+      recipientHash: hashRecipient(sanitizedEmail),
       provider: dispatchResult.provider,
       messageId: dispatchResult.messageId,
       success: dispatchResult.success,
+      errorCode: dispatchResult.errorCode,
     });
 
     return {
       ...dispatchResult,
       logId,
+      emailEventId: emailEventRecord?.id,
     };
   }
 
   // ── Convenience Wrappers for Standard Flows ────────────────────────────────
 
-  public async sendWelcomeEmail(email: string, firstName?: string, visitUrl?: string, userId?: string) {
+  public async sendWelcomeEmail(
+    email: string,
+    firstName?: string,
+    visitUrl?: string,
+    userId?: string,
+    securityEventId?: string
+  ) {
     return this.send({
       template: 'WELCOME',
       to: email,
       userId,
+      securityEventId,
       data: {
         email,
         firstName,
@@ -241,12 +438,14 @@ export class EmailService {
       ipAddress?: string;
       approxLocation?: string;
     },
-    userId?: string
+    userId?: string,
+    securityEventId?: string
   ) {
     return this.send({
       template: 'LOGIN_ALERT',
       to: email,
       userId,
+      securityEventId,
       data: {
         email,
         fullName: name || undefined,
@@ -255,10 +454,17 @@ export class EmailService {
     });
   }
 
-  public async sendEmailVerification(email: string, verificationUrl: string, firstName?: string, expirationTime?: string) {
+  public async sendEmailVerification(
+    email: string,
+    verificationUrl: string,
+    firstName?: string,
+    expirationTime?: string,
+    securityEventId?: string
+  ) {
     return this.send({
       template: 'EMAIL_VERIFICATION',
       to: email,
+      securityEventId,
       data: {
         email,
         firstName,
@@ -268,15 +474,47 @@ export class EmailService {
     });
   }
 
-  public async sendPasswordReset(email: string, resetUrl: string, firstName?: string, expirationTime?: string) {
+  public async sendPasswordReset(
+    email: string,
+    resetUrl: string,
+    firstName?: string,
+    expirationTime?: string,
+    securityEventId?: string
+  ) {
     return this.send({
       template: 'PASSWORD_RESET',
       to: email,
+      securityEventId,
       data: {
         email,
         firstName,
         resetUrl,
         expirationTime,
+      },
+    });
+  }
+
+  public async sendSecurityAlert(
+    email: string,
+    action: string,
+    details?: {
+      dateTime?: string;
+      device?: string;
+      ipAddress?: string;
+      approxLocation?: string;
+    },
+    userId?: string,
+    securityEventId?: string
+  ) {
+    return this.send({
+      template: 'SECURITY_ALERT',
+      to: email,
+      userId,
+      securityEventId,
+      data: {
+        email,
+        securityAction: action,
+        ...details,
       },
     });
   }
@@ -343,52 +581,64 @@ export class EmailService {
   }
 
   /**
-   * Retries a previously failed email log by ID.
+   * Retries a previously failed email event by ID.
    */
-  public async retryFailedEmail(logId: string): Promise<EmailSendResult> {
-    const log = await prisma.notificationLog.findUnique({ where: { id: logId } });
-    if (!log || !log.recipient_addr) {
+  public async retryFailedEmail(emailEventId: string): Promise<EmailSendResult> {
+    const event = await prisma.emailEvent.findUnique({ where: { id: emailEventId } });
+    if (!event) {
       return {
         success: false,
         provider: 'mock',
-        error: 'Notification log not found or recipient missing.',
+        error: 'Email event not found.',
       };
     }
 
-    const templateType = (log.template as EmailTemplateType) || 'WELCOME';
+    // Check if max attempts reached
+    if (event.attemptCount >= event.maxAttempts) {
+      return {
+        success: false,
+        provider: event.provider as any,
+        error: `Maximum retry attempts (${event.maxAttempts}) reached for this event.`,
+      };
+    }
+
     let metadata: any = {};
     try {
-      if (log.metadata) metadata = JSON.parse(log.metadata);
+      if (event.metadata) metadata = JSON.parse(event.metadata);
     } catch {
       /* ignore */
     }
 
-    // Reconstruct minimal payload
-    const data: any = {
-      email: log.recipient_addr,
-      ...(metadata.data || {}),
-    };
+    const templateType = (event.template as EmailTemplateType) || 'LOGIN_ALERT';
 
-    const result = await this.send({
-      template: templateType,
-      to: log.recipient_addr,
-      data,
-      userId: log.recipientId || undefined,
-      forceSend: true,
-    });
-
-    // Update retry count and status in DB
-    await prisma.notificationLog.update({
-      where: { id: logId },
-      data: {
-        retryCount: { increment: 1 },
-        status: result.success ? 'SENT' : 'FAILED',
-        errorMessage: result.error || null,
-        deliveredAt: result.success ? new Date() : null,
-      },
+    // Update status to RETRYING
+    await prisma.emailEvent.update({
+      where: { id: emailEventId },
+      data: { status: 'RETRYING' },
     }).catch(() => {});
 
-    return result;
+    // Need raw recipient address; look up from notificationLog or pass in
+    const notifLog = await prisma.notificationLog.findFirst({
+      where: { providerMessageId: event.providerMessageId || undefined },
+    });
+
+    const recipient = notifLog?.recipient_addr || '';
+    if (!recipient) {
+      return {
+        success: false,
+        provider: event.provider as any,
+        error: 'Cannot retry: original recipient address cannot be resolved from audit record.',
+      };
+    }
+
+    return this.send({
+      template: templateType,
+      to: recipient,
+      data: { email: recipient, ...(metadata.data || {}) },
+      userId: event.userId || undefined,
+      forceSend: true,
+      securityEventId: event.securityEventId || undefined,
+    });
   }
 }
 

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireEventManagerOrDev } from "@/lib/authMiddleware";
 import { uploadBufferToCloudinary, deleteCloudinaryAsset } from "@/lib/cloudinary";
+import { validateFileSecurity } from "@/lib/uploadSecurity";
 
 export const dynamic = "force-dynamic";
 
@@ -23,27 +24,18 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No file provided." }, { status: 400 });
     }
 
-    // Validate file type
-    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/svg+xml", "image/gif"];
-    if (!allowedTypes.includes(file.type)) {
-      return NextResponse.json(
-        { error: "Invalid file type. Allowed: JPEG, PNG, WebP, SVG, GIF" },
-        { status: 400 }
-      );
-    }
-
-    // Validate file size — max 5MB
-    const maxSizeBytes = 5 * 1024 * 1024;
-    if (file.size > maxSizeBytes) {
-      return NextResponse.json(
-        { error: "File too large. Maximum size is 5MB." },
-        { status: 400 }
-      );
-    }
-
     // Convert to Buffer
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
+
+    // Cryptographic Magic Bytes & MIME Security Validation
+    const securityCheck = validateFileSecurity(buffer, file.name, file.type);
+    if (!securityCheck.isValid) {
+      return NextResponse.json(
+        { error: securityCheck.error || "File security validation failed." },
+        { status: 400 }
+      );
+    }
 
     // Delete old Cloudinary asset if replacing
     if (oldPublicId) {

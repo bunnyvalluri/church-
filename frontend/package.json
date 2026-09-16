@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit",
     "i18n:check": "node scripts/check-i18n.js",
     "test": "playwright test",
-    "test:email": "playwright test tests/email-system.spec.ts",
+    "test:email": "playwright test tests/email-system.spec.ts tests/email-delivery-agent.spec.ts",
     "test:e2e": "playwright test tests/e2e",
     "test:health": "playwright test tests/e2e/route-health.spec.ts",
     "test:rbac": "playwright test tests/e2e/rbac-matrix.spec.ts",

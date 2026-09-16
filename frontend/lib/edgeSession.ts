@@ -18,8 +18,14 @@ function getSessionSecret(): string {
   const secret =
     process.env.SESSION_SECRET ||
     process.env.NEXTAUTH_SECRET ||
-    process.env.JWT_SECRET ||
-    'kcm-church-portal-secure-session-auth-key-2026';
+    process.env.JWT_SECRET;
+  if (!secret) {
+    if (process.env.NODE_ENV === 'production') {
+      console.error('[EDGE_SESSION] CRITICAL: No SESSION_SECRET or NEXTAUTH_SECRET configured in production.');
+      return '';
+    }
+    return 'kcm-church-portal-secure-session-auth-key-2026';
+  }
   return secret;
 }
 

@@ -7,11 +7,22 @@ import { emailService } from '@/lib/email';
 
 export async function GET(req: Request) {
   try {
+    const auth = await requireAuth(req);
+    if (auth instanceof NextResponse) return auth;
+
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get('userId');
 
-    const isAll = !userId || userId === 'all' || userId === 'all_admin_peek' || userId === 'admin';
-    const where = isAll ? {} : { userId };
+    const isStaff = ['ADMIN', 'SUPER_ADMIN', 'PASTOR'].includes(auth.role);
+
+    // IDOR Protection: Members can ONLY query their own prayer requests.
+    let where: Record<string, any>;
+    if (isStaff) {
+      const isAll = !userId || userId === 'all' || userId === 'all_admin_peek' || userId === 'admin';
+      where = isAll ? {} : { userId };
+    } else {
+      where = { userId: auth.uid };
+    }
 
     const prayers = await prisma.prayerRequest.findMany({
       where,

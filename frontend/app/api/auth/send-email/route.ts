@@ -77,7 +77,10 @@ export async function POST(req: Request) {
         dispatchResult,
       });
 
-      return NextResponse.json({ success: true, dispatchResult });
+      return NextResponse.json(
+        { success: dispatchResult.success, dispatchResult },
+        { status: dispatchResult.success ? 200 : 502 }
+      );
     }
 
     return NextResponse.json({ error: 'Unknown email type' }, { status: 400 });

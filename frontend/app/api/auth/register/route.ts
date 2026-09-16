@@ -7,6 +7,7 @@ import bcrypt from 'bcryptjs';
 import sanitizeHtml from 'sanitize-html';
 import { getClientIp } from '@/lib/apiResponse';
 import { rateLimitHeaders, isRateLimited } from '@/lib/rateLimit';
+import crypto from 'crypto';
 import { emailService } from '@/lib/email';
 import { logger } from '@/lib/logger';
 
@@ -154,20 +155,47 @@ export async function POST(req: Request) {
       role: newUser.role,
     });
 
-    // 7. Non-blocking Welcome Email Dispatch
-    emailService
-      .sendWelcomeEmail(
+    // 7. Security Event Persistence & Bounded Welcome Email Dispatch
+    const deterministicRegKey = crypto
+      .createHash('sha256')
+      .update(`${newUser.id}:REGISTER:${Date.now() - (Date.now() % 60000)}`)
+      .digest('hex');
+
+    let secEvent: any = null;
+    try {
+      secEvent = await prisma.securityEvent.create({
+        data: {
+          userId: newUser.id,
+          eventType: 'USER_REGISTERED',
+          idempotencyKey: deterministicRegKey,
+          ipAddress: ip,
+          ipHash: crypto.createHash('sha256').update(ip).digest('hex'),
+          userAgent: req.headers.get('user-agent')?.slice(0, 200) || null,
+          deviceInfo: 'Registration Flow',
+          metadata: JSON.stringify({ email: sanitizedEmail }),
+        },
+      });
+    } catch (secErr: any) {
+      logger.warn('[AUTH/REGISTER] Non-fatal security event recording note:', { error: secErr.message });
+    }
+
+    try {
+      const emailPromise = emailService.sendWelcomeEmail(
         sanitizedEmail,
         sanitizedFirstName || 'Member',
         undefined,
-        newUser.id
-      )
-      .catch((err) => {
-        logger.warn('[AUTH/REGISTER] Welcome email dispatch notice:', {
-          userId: newUser.id,
-          error: err?.message,
-        });
+        newUser.id,
+        secEvent?.id
+      );
+
+      const boundedTimeout = new Promise((resolve) => setTimeout(resolve, 3500));
+      await Promise.race([emailPromise, boundedTimeout]);
+    } catch (err: any) {
+      logger.warn('[AUTH/REGISTER] Welcome email dispatch notice:', {
+        userId: newUser.id,
+        error: err?.message,
       });
+    }
 
     // 8. Non-blocking In-App Notification Recording for Administrators
     try {

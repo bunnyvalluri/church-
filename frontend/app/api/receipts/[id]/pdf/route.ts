@@ -12,6 +12,7 @@
 
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getAuthenticatedUser } from '@/lib/authMiddleware';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,6 +20,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
   const { id } = params;
   const { searchParams } = new URL(req.url);
   const isPreview = searchParams.get('preview') === 'true';
+  const verifyCode = searchParams.get('verify');
 
   try {
     // Resolve by receipt ID, donation ID, or receipt number
@@ -41,6 +43,29 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
 
     if (!receipt) {
       return NextResponse.json({ error: 'Receipt not found.' }, { status: 404 });
+    }
+
+    // Security check: Must be staff, owner, or possess valid verification code
+    const authUser = await getAuthenticatedUser(req);
+    const devRole = process.env.NODE_ENV !== 'production'
+      ? (process.env.NEXT_PUBLIC_DEV_AUTO_LOGIN?.toLowerCase() ?? '')
+      : '';
+    const isDevBypass = ['admin', 'super_admin', 'pastor'].includes(devRole);
+
+    if (!isDevBypass) {
+      const isStaff = authUser && ['ADMIN', 'SUPER_ADMIN', 'PASTOR', 'BRANCH_MANAGER'].includes(authUser.role);
+      const isOwner = authUser && (
+        (receipt.memberId && authUser.uid === receipt.memberId) ||
+        (receipt.donation?.userId && authUser.uid === receipt.donation.userId)
+      );
+      const isValidCode = verifyCode && receipt.verificationCode && verifyCode.trim() === receipt.verificationCode.trim();
+
+      if (!isStaff && !isOwner && !isValidCode) {
+        return NextResponse.json(
+          { error: 'Forbidden: Valid verification code or account authorization required to view this receipt.' },
+          { status: 403 }
+        );
+      }
     }
 
     const donation = receipt.donation;

@@ -5,25 +5,26 @@
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
+const resolvedMode = (
+  process.env.EMAIL_MODE ||
+  (process.env.NODE_ENV === 'production' || process.env.VERCEL_ENV === 'production' || process.env.APP_ENV === 'production'
+    ? 'production'
+    : 'development')
+).toLowerCase().trim() as 'production' | 'staging' | 'development';
+
 export const emailConfig = {
   environment: {
+    mode: resolvedMode,
     nodeEnv: process.env.NODE_ENV || 'development',
     appEnv: process.env.APP_ENV || process.env.VERCEL_ENV || process.env.NODE_ENV || 'development',
     get isProduction(): boolean {
-      return (
-        process.env.NODE_ENV === 'production' ||
-        process.env.VERCEL_ENV === 'production' ||
-        process.env.APP_ENV === 'production'
-      );
+      return this.mode === 'production';
     },
     get isStaging(): boolean {
-      return (
-        process.env.VERCEL_ENV === 'preview' ||
-        process.env.APP_ENV === 'staging'
-      );
+      return this.mode === 'staging';
     },
     get isDevelopment(): boolean {
-      return !this.isProduction && !this.isStaging;
+      return this.mode === 'development';
     },
   },
 
@@ -63,7 +64,7 @@ export const emailConfig = {
       process.env.EMAIL_FROM_ADDRESS ||
       process.env.EMAIL_FROM ||
       process.env.RESEND_FROM_EMAIL ||
-      'onboarding@resend.dev',
+      (resolvedMode === 'production' ? 'notifications@kcmchurch.com' : 'onboarding@resend.dev'),
     replyTo: process.env.EMAIL_REPLY_TO || 'kingofchristministries23@gmail.com',
     get formattedFrom(): string {
       const name = process.env.EMAIL_FROM_NAME || 'Kingdom of Christ Ministries';
@@ -71,8 +72,7 @@ export const emailConfig = {
         process.env.EMAIL_FROM_ADDRESS ||
         process.env.EMAIL_FROM ||
         process.env.RESEND_FROM_EMAIL ||
-        'onboarding@resend.dev';
-      // If address already contains <...>, return directly
+        (resolvedMode === 'production' ? 'notifications@kcmchurch.com' : 'onboarding@resend.dev');
       if (rawAddr.includes('<') && rawAddr.includes('>')) {
         return rawAddr;
       }
@@ -87,6 +87,7 @@ export const emailConfig = {
       | 'mock',
     resend: {
       apiKey: process.env.RESEND_API_KEY || '',
+      webhookSecret: process.env.RESEND_WEBHOOK_SECRET || '',
       fallbackOwner: process.env.RESEND_OWNER_EMAIL || 'rahulgamer.7123@gmail.com',
     },
     smtp: {
@@ -110,7 +111,8 @@ export const emailConfig = {
 
   reliability: {
     deduplicationTtlMs: 3 * 60 * 1000, // 3 minutes sliding window
-    sendTimeoutMs: 5000,               // 5 seconds bounded dispatch timeout for serverless
+    sendTimeoutMs: 4000,               // 4 seconds bounded dispatch timeout for serverless functions
     maxRetries: 3,
+    alertRecipient: process.env.EMAIL_ALERT_RECIPIENT || 'Vallurirahul3@gmail.com',
   },
 };

@@ -45,6 +45,8 @@ model User {
   smsAuditLogs       SmsAuditLog[]
   sessions           Session[]
   issueReports       IssueReport[]
+  securityEvents     SecurityEvent[]
+  emailEvents        EmailEvent[]
 
   @@map("members")
 }
@@ -1805,6 +1807,134 @@ model IssueReport {
   @@index([correlationId])
   @@map("issue_reports")
 }
+
+// ── Email Delivery & Security Audit Architecture ──────────────────────────────
+
+enum EmailDeliveryStatus {
+  PENDING
+  QUEUED
+  SENDING
+  SENT
+  DELIVERED
+  BOUNCED
+  FAILED
+  RETRYING
+  CANCELLED
+}
+
+enum SecurityEventType {
+  USER_REGISTERED
+  USER_LOGIN_SUCCESS
+  USER_LOGIN_FAILED_THRESHOLD
+  PASSWORD_RESET_REQUESTED
+  PASSWORD_CHANGED
+  EMAIL_VERIFIED
+  ACCOUNT_LOCKED
+  NEW_DEVICE_LOGIN
+  SECURITY_ALERT
+}
+
+model SecurityEvent {
+  id             String            @id @default(cuid())
+  userId         String?           @map("user_id")
+  user           User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
+  eventType      SecurityEventType @map("event_type")
+  idempotencyKey String            @unique @map("idempotency_key")
+  ipAddress      String?           @map("ip_address")
+  ipHash         String?           @map("ip_hash")
+  userAgent      String?           @map("user_agent")
+  deviceInfo     String?           @map("device_info")
+  metadata       String?           @db.Text
+  createdAt      DateTime          @default(now()) @map("created_at")
+  emailEvents    EmailEvent[]
+
+  @@index([userId])
+  @@index([eventType])
+  @@index([createdAt])
+  @@map("security_events")
+}
+
+model EmailEvent {
+  id                String                @id @default(cuid())
+  securityEventId   String?               @map("security_event_id")
+  securityEvent     SecurityEvent?        @relation(fields: [securityEventId], references: [id], onDelete: SetNull)
+  userId            String?               @map("user_id")
+  user              User?                 @relation(fields: [userId], references: [id], onDelete: SetNull)
+  recipientHash     String                @map("recipient_hash")
+  recipientMasked   String                @map("recipient_masked")
+  eventType         String                @map("event_type")
+  template          String
+  subject           String
+  status            EmailDeliveryStatus   @default(PENDING)
+  idempotencyKey    String                @unique @map("idempotency_key")
+  provider          String
+  providerMessageId String?               @map("provider_message_id")
+  attemptCount      Int                   @default(0) @map("attempt_count")
+  maxAttempts       Int                   @default(3) @map("max_attempts")
+  lastErrorCode     String?               @map("last_error_code")
+  lastErrorMessage  String?               @map("last_error_message") @db.Text
+  nextRetryAt       DateTime?             @map("next_retry_at")
+  sentAt            DateTime?             @map("sent_at")
+  deliveredAt       DateTime?             @map("delivered_at")
+  failedAt          DateTime?             @map("failed_at")
+  metadata          String?               @db.Text
+  createdAt         DateTime              @default(now()) @map("created_at")
+  updatedAt         DateTime              @updatedAt @map("updated_at")
+
+  attempts          EmailDeliveryAttempt[]
+  webhookEvents     EmailWebhookEvent[]
+
+  @@index([userId])
+  @@index([securityEventId])
+  @@index([recipientHash])
+  @@index([status])
+  @@index([providerMessageId])
+  @@index([createdAt])
+  @@index([nextRetryAt])
+  @@map("email_events")
+}
+
+model EmailDeliveryAttempt {
+  id            String      @id @default(cuid())
+  emailEventId  String      @map("email_event_id")
+  emailEvent    EmailEvent  @relation(fields: [emailEventId], references: [id], onDelete: Cascade)
+  attemptNumber Int         @map("attempt_number")
+  provider      String
+  status        String      // SUCCESS | FAILED
+  httpStatus    Int?        @map("http_status")
+  errorCode     String?     @map("error_code")
+  errorMessage  String?     @map("error_message") @db.Text
+  durationMs    Int         @map("duration_ms")
+  createdAt     DateTime    @default(now()) @map("created_at")
+
+  @@index([emailEventId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("email_delivery_attempts")
+}
+
+model EmailWebhookEvent {
+  id                String      @id @default(cuid())
+  emailEventId      String?     @map("email_event_id")
+  emailEvent        EmailEvent? @relation(fields: [emailEventId], references: [id], onDelete: SetNull)
+  provider          String      @default("resend")
+  providerEventId   String      @unique @map("provider_event_id")
+  eventType         String      @map("event_type")
+  providerMessageId String?     @map("provider_message_id")
+  payload           Json
+  signatureVerified Boolean     @default(false) @map("signature_verified")
+  status            String      @default("PENDING") // PROCESSED | FAILED | IGNORED | DUPLICATE
+  errorMessage      String?     @map("error_message")
+  processedAt       DateTime?   @map("processed_at")
+  createdAt         DateTime    @default(now()) @map("created_at")
+
+  @@index([emailEventId])
+  @@index([providerMessageId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("email_webhook_events")
+}
+
 
 
 

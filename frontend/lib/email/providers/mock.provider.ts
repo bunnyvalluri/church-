@@ -5,15 +5,28 @@
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
-import { IEmailProvider } from './email.provider.interface';
+import { IEmailProvider, ProviderHealthReport } from './email.provider.interface';
 import { EmailSendOptions, EmailSendResult } from '../email.types';
 import { logger } from '@/lib/logger';
 
 export class MockProvider implements IEmailProvider {
-  public readonly name = 'mock';
+  public readonly name = 'mock' as const;
 
   public isConfigured(): boolean {
     return true; // Always available
+  }
+
+  public async verifyConfiguration(): Promise<{ valid: boolean; reason?: string }> {
+    return { valid: true };
+  }
+
+  public async healthCheck(): Promise<ProviderHealthReport> {
+    return {
+      healthy: true,
+      latencyMs: 1,
+      provider: this.name,
+      message: 'Mock provider active (simulated in-memory delivery).',
+    };
   }
 
   public async send(options: EmailSendOptions): Promise<EmailSendResult> {
@@ -31,6 +44,7 @@ export class MockProvider implements IEmailProvider {
       success: true,
       messageId,
       provider: this.name,
+      durationMs: 2,
     };
   }
 }

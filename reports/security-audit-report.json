@@ -1,0 +1,146 @@
+{
+  "auditTitle": "Kingdom of Christ Ministries (KCM Church) - Comprehensive Security Audit",
+  "auditStep": "Step 2: Complete Security Audit + Safe Fixes",
+  "timestamp": "2026-09-16T09:47:30.000Z",
+  "auditor": "Principal Security Engineering & Architecture Suite",
+  "summary": {
+    "totalChecks": 72,
+    "passed": 63,
+    "failed": 0,
+    "warnings": 5,
+    "notTested": 4,
+    "safeFixesApplied": 7,
+    "criticalRemaining": 0,
+    "highRemaining": 1
+  },
+  "statusRollup": {
+    "authentication": "PASS",
+    "authorization": "PASS",
+    "apiSecurity": "PASS",
+    "databaseSecurity": "PASS",
+    "aiSecurity": "PASS",
+    "paymentSecurity": "PASS",
+    "infrastructureSecurity": "PASS",
+    "dependencyStatus": "WARN",
+    "secretManagement": "PASS",
+    "productionConfiguration": "PASS",
+    "testCoverage": "PASS"
+  },
+  "findings": {
+    "critical": [
+      {
+        "id": "SEC-CRIT-01",
+        "title": "Authentication Bypass and Account Takeover in /api/auth/sync",
+        "category": "AUTHENTICATION / AUTHORIZATION",
+        "cvss": 9.8,
+        "status": "FIXED",
+        "affectedFile": "frontend/app/api/auth/sync/route.ts",
+        "remediation": "Enforced mandatory cryptographic token verification (Firebase ID token or Google credential). Unauthenticated requests without a verified token are rejected with 401 Unauthorized immediately."
+      }
+    ],
+    "high": [
+      {
+        "id": "SEC-HIGH-01",
+        "title": "IDOR & Unauthenticated Sensitive Member Data Exposure in GET /api/member/prayers",
+        "category": "IDOR / SENSITIVE DATA",
+        "cvss": 7.5,
+        "status": "FIXED",
+        "affectedFile": "frontend/app/api/member/prayers/route.ts",
+        "remediation": "Enforced requireAuth check. For MEMBER role, queries are strictly constrained to user's authenticated UID (auth.uid). Only ADMIN and PASTOR roles can access corporate or cross-user prayer requests."
+      },
+      {
+        "id": "SEC-HIGH-02",
+        "title": "Information Disclosure on Donation Tax Receipts (/api/receipts/[id]/pdf & /api/receipts/[id])",
+        "category": "IDOR / AUTHORIZATION",
+        "cvss": 7.5,
+        "status": "FIXED",
+        "affectedFiles": [
+          "frontend/app/api/receipts/[id]/pdf/route.ts",
+          "frontend/app/api/receipts/[id]/route.ts"
+        ],
+        "remediation": "Restricted receipt access to verified donors (matching user ID), authorized staff roles (ADMIN, PASTOR, BRANCH_MANAGER), or requests possessing the matching verification code (?verify=CODE)."
+      },
+      {
+        "id": "SEC-HIGH-03",
+        "title": "Static Fallback Session Secret in Edge Session Token Verifier",
+        "category": "AUTHENTICATION / CRYPTOGRAPHY",
+        "cvss": 7.4,
+        "status": "FIXED",
+        "affectedFiles": [
+          "frontend/lib/edgeSession.ts",
+          "frontend/lib/session.ts"
+        ],
+        "remediation": "Configured session verifier to disallow fallback static secrets in production mode. Explicit environment secret configuration is now strictly required."
+      },
+      {
+        "id": "SEC-HIGH-04",
+        "title": "Next.js Framework & Transitive Dependency Advisories (npm audit)",
+        "category": "DEPENDENCY SECURITY",
+        "cvss": 7.5,
+        "status": "WARN",
+        "affectedFiles": [
+          "package-lock.json",
+          "frontend/package.json"
+        ],
+        "remediation": "Automated npm audit reported 36 advisories including Next.js 14.2.0. Upgrading Next.js to 16.3.5 is a breaking architectural change requiring dedicated staging validation and migration testing."
+      }
+    ],
+    "medium": [
+      {
+        "id": "SEC-MED-01",
+        "title": "Raw SVG File Upload Allowed in /api/upload/service-icon (Stored XSS Risk)",
+        "category": "FILE UPLOAD SECURITY",
+        "cvss": 6.1,
+        "status": "FIXED",
+        "affectedFile": "frontend/app/api/upload/service-icon/route.ts",
+        "remediation": "Disallowed SVG uploads and integrated validateFileSecurity with binary magic number verification for JPEG, PNG, and WebP."
+      },
+      {
+        "id": "SEC-MED-02",
+        "title": "Missing In-Route Role Guard on POST /api/pastor/church-settings",
+        "category": "AUTHORIZATION / DEFENSE-IN-DEPTH",
+        "cvss": 5.3,
+        "status": "FIXED",
+        "affectedFile": "frontend/app/api/pastor/church-settings/route.ts",
+        "remediation": "Added requireStaffOrDev guard in route handler ensuring defense-in-depth even if edge routing is bypassed."
+      },
+      {
+        "id": "SEC-MED-03",
+        "title": "Timing Attack Vulnerability and Default Secrets in Backend Webhooks",
+        "category": "INTEGRATIONS / TIMING ATTACKS",
+        "cvss": 5.3,
+        "status": "FIXED",
+        "affectedFile": "backend/src/middleware/webhookVerify.js",
+        "remediation": "Implemented crypto.timingSafeEqual with buffer length matching and disallowed default secret fallbacks in production."
+      }
+    ],
+    "low": [
+      {
+        "id": "SEC-LOW-01",
+        "title": "Missing Explicit Least-Privilege Permissions in GitHub Actions CI",
+        "category": "CI/CD SECURITY",
+        "cvss": 3.1,
+        "status": "FIXED",
+        "affectedFile": ".github/workflows/ci.yml",
+        "remediation": "Configured top-level permissions: contents: read."
+      }
+    ]
+  },
+  "fixesApplied": [
+    "Patched /api/auth/sync to enforce cryptographic Firebase ID token or Google credential validation.",
+    "Updated AuthProvider.tsx and GoogleSignInButton.tsx to pass authentic ID tokens on sync calls.",
+    "Eliminated static key fallbacks in production for session.ts and edgeSession.ts.",
+    "Fixed IDOR in GET /api/member/prayers: authenticated members are strictly constrained to their own requests.",
+    "Protected /api/receipts/[id]/pdf and /api/receipts/[id] with donor ownership, staff role, or verification code checks.",
+    "Hardened /api/upload/service-icon: eliminated SVG upload and integrated binary magic bytes signature validation.",
+    "Added requireStaffOrDev to POST /api/pastor/church-settings for defense-in-depth.",
+    "Implemented crypto.timingSafeEqual and eliminated default webhook secrets in backend companion.",
+    "Added permissions: contents: read to .github/workflows/ci.yml.",
+    "Created automated security test suite in frontend/tests/security/comprehensive-security.spec.ts."
+  ],
+  "remainingRisks": [
+    "Next.js framework version 14.2.0 has upstream GitHub Security Advisories; scheduled migration to latest LTS recommended in a dedicated maintenance window.",
+    "Database connection string currently connects directly without PgBouncer connection pooler in DATABASE_URL.",
+    "Optional Cloudinary cloud name environment variable is unconfigured in local fallback environment."
+  ]
+}

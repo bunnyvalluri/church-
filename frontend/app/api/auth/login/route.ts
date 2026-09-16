@@ -8,6 +8,7 @@ import sanitizeHtml from 'sanitize-html';
 import { createServerSession, attachSessionCookie } from '@/lib/session';
 import { getClientIp } from '@/lib/apiResponse';
 import { rateLimitHeaders, isRateLimited } from '@/lib/rateLimit';
+import crypto from 'crypto';
 import { emailService } from '@/lib/email';
 import { logger } from '@/lib/logger';
 
@@ -192,7 +193,7 @@ export async function POST(req: Request) {
         break;
     }
 
-    // 7. Non-blocking Security Login Email Notification
+    // 7. Security Event Persistence & Bounded Email Notification
     const loginDateTime =
       new Date().toLocaleString('en-IN', {
         timeZone: 'Asia/Kolkata',
@@ -205,8 +206,33 @@ export async function POST(req: Request) {
         hour12: true,
       }) + ' IST';
 
-    emailService
-      .sendLoginNotification(
+    // Persist immutable security event with deterministic idempotency key
+    const deterministicEventKey = crypto
+      .createHash('sha256')
+      .update(`${user.id}:LOGIN_SUCCESS:${Date.now() - (Date.now() % 60000)}`)
+      .digest('hex');
+
+    let secEvent: any = null;
+    try {
+      secEvent = await prisma.securityEvent.create({
+        data: {
+          userId: user.id,
+          eventType: 'USER_LOGIN_SUCCESS',
+          idempotencyKey: deterministicEventKey,
+          ipAddress: ip,
+          ipHash: crypto.createHash('sha256').update(ip).digest('hex'),
+          userAgent: userAgent.slice(0, 200),
+          deviceInfo: userAgent.includes('Mobile') ? 'Mobile Device' : 'Desktop Browser',
+          metadata: JSON.stringify({ method: 'Email & Password' }),
+        },
+      });
+    } catch (secErr: any) {
+      logger.warn('[AUTH/LOGIN] Non-fatal security event recording note:', { error: secErr.message });
+    }
+
+    // Bounded execution so Vercel Serverless Lambdas never terminate before dispatch
+    try {
+      const emailPromise = emailService.sendLoginNotification(
         user.email,
         user.name,
         {
@@ -216,14 +242,18 @@ export async function POST(req: Request) {
           browser: userAgent.slice(0, 60),
           ipAddress: ip,
         },
-        user.id
-      )
-      .catch((err) => {
-        logger.warn('[AUTH/LOGIN] Login notification dispatch note:', {
-          userId: user.id,
-          error: err?.message,
-        });
+        user.id,
+        secEvent?.id
+      );
+
+      const boundedTimeout = new Promise((resolve) => setTimeout(resolve, 3500));
+      await Promise.race([emailPromise, boundedTimeout]);
+    } catch (err: any) {
+      logger.warn('[AUTH/LOGIN] Login notification dispatch note:', {
+        userId: user.id,
+        error: err?.message,
       });
+    }
 
     // 8. Assemble Authenticated Response with HttpOnly Cookie
     const res = NextResponse.json({

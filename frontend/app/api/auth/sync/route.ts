@@ -44,15 +44,34 @@ export async function POST(req: Request) {
 
     const { uid, email, name, photoURL, phoneNumber, idToken } = parsed.data;
 
-    // 2. Cryptographic Token Verification Check
-    // If an Authorization Bearer header or idToken is present and Firebase Admin is ready, verify token
+    // 2. Cryptographic Token Verification Check (Mandatory)
+    // Every sync request must provide a cryptographically verifiable token (Firebase ID token or Google credential)
     const authHeader = req.headers.get('Authorization') ?? '';
     const bearerToken = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : (idToken || null);
 
-    if (bearerToken && isAdminReady()) {
-      const decoded = await verifyFirebaseToken(bearerToken);
-      if (!decoded || (decoded.uid !== uid && decoded.email?.toLowerCase() !== email.toLowerCase())) {
-        return NextResponse.json({ error: 'Invalid authentication token provided' }, { status: 401 });
+    const devRole = process.env.NODE_ENV !== 'production'
+      ? (process.env.NEXT_PUBLIC_DEV_AUTO_LOGIN?.toLowerCase() ?? '')
+      : '';
+    const isDevBypass = ['admin', 'super_admin', 'pastor', 'member'].includes(devRole);
+
+    if (!isDevBypass) {
+      if (!bearerToken) {
+        return NextResponse.json(
+          { error: 'Authentication token is required for account synchronization.' },
+          { status: 401 }
+        );
+      }
+
+      if (isAdminReady()) {
+        const decoded = await verifyFirebaseToken(bearerToken);
+        if (!decoded || (decoded.uid !== uid && decoded.email?.toLowerCase() !== email.toLowerCase())) {
+          return NextResponse.json({ error: 'Invalid or forged authentication token provided' }, { status: 401 });
+        }
+      } else if (process.env.NODE_ENV === 'production') {
+        return NextResponse.json(
+          { error: 'Authentication service unavailable for verification.' },
+          { status: 503 }
+        );
       }
     }
 

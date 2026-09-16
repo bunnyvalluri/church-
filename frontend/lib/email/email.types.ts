@@ -32,10 +32,25 @@ export type EmailTemplateType =
 
 export type EmailDeliveryStatus =
   | 'PENDING'
+  | 'QUEUED'
+  | 'SENDING'
   | 'SENT'
+  | 'DELIVERED'
+  | 'BOUNCED'
   | 'FAILED'
   | 'RETRYING'
-  | 'SKIPPED';
+  | 'CANCELLED';
+
+export type SecurityEventType =
+  | 'USER_REGISTERED'
+  | 'USER_LOGIN_SUCCESS'
+  | 'USER_LOGIN_FAILED_THRESHOLD'
+  | 'PASSWORD_RESET_REQUESTED'
+  | 'PASSWORD_CHANGED'
+  | 'EMAIL_VERIFIED'
+  | 'ACCOUNT_LOCKED'
+  | 'NEW_DEVICE_LOGIN'
+  | 'SECURITY_ALERT';
 
 export type EmailProviderName = 'resend' | 'smtp' | 'mock';
 
@@ -258,6 +273,9 @@ export interface EmailSendResult {
   messageId?: string;
   provider: EmailProviderName;
   error?: string;
+  errorCode?: string;
+  httpStatus?: number;
+  durationMs?: number;
   sandboxRedirected?: boolean;
   originalRecipient?: string;
   fallbackRecipient?: string;

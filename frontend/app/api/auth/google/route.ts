@@ -7,6 +7,7 @@ import sanitizeHtml from 'sanitize-html';
 import { sendGoogleLoginConfirmationEmail } from '@/lib/authEmailService';
 import { emailService } from '@/lib/email';
 import { logger } from '@/lib/logger';
+import crypto from 'crypto';
 import { createServerSession, attachSessionCookie } from '@/lib/session';
 import { getClientIp } from '@/lib/apiResponse';
 
@@ -382,6 +383,30 @@ export async function POST(req: Request) {
     }) + ' IST';
 
     try {
+      // 5a. Persist SecurityEvent for Google Sign-In
+      const deterministicGoogleKey = crypto
+        .createHash('sha256')
+        .update(`${user.id}:GOOGLE_LOGIN:${Date.now() - (Date.now() % 60000)}`)
+        .digest('hex');
+
+      let secEvent: any = null;
+      try {
+        secEvent = await prisma.securityEvent.create({
+          data: {
+            userId: user.id,
+            eventType: isNewUser ? 'USER_REGISTERED' : 'USER_LOGIN_SUCCESS',
+            idempotencyKey: deterministicGoogleKey,
+            ipAddress: ip,
+            ipHash: crypto.createHash('sha256').update(ip).digest('hex'),
+            userAgent: userAgent.slice(0, 200),
+            deviceInfo: userAgent.includes('Mobile') ? 'Mobile Device' : 'Desktop Browser',
+            metadata: JSON.stringify({ method: 'Google Sign-In', isNewUser }),
+          },
+        });
+      } catch (secErr: any) {
+        logger.warn('[AUTH/GOOGLE] Non-fatal security event recording note:', { error: secErr.message });
+      }
+
       const emailPromises: Promise<any>[] = [];
 
       // If new member, dispatch official Welcome Email (Template A)
@@ -391,7 +416,8 @@ export async function POST(req: Request) {
             user.email,
             user.name ? user.name.split(' ')[0] : 'Member',
             undefined,
-            user.id
+            user.id,
+            secEvent?.id
           )
         );
       }
@@ -408,7 +434,8 @@ export async function POST(req: Request) {
             browser: userAgent.slice(0, 60),
             ipAddress: ip,
           },
-          user.id
+          user.id,
+          secEvent?.id
         )
       );
 

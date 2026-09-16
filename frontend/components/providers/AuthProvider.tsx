@@ -50,15 +50,20 @@ function clearSessionCookies() {
 
 async function syncUserToDatabase(firebaseUser: any): Promise<any | null> {
   try {
+    const idToken = typeof firebaseUser.getIdToken === 'function' ? await firebaseUser.getIdToken() : null;
     const response = await fetch("/api/auth/sync", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        ...(idToken ? { "Authorization": `Bearer ${idToken}` } : {})
+      },
       body: JSON.stringify({
         uid: firebaseUser.uid,
         email: firebaseUser.email,
         name: firebaseUser.displayName,
         photoURL: firebaseUser.photoURL,
         phoneNumber: firebaseUser.phoneNumber,
+        idToken,
       }),
     });
     const result = await response.json();
