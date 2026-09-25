@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useMemo, memo } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo, memo } from "react";
 import { usePathname } from "next/navigation";
 import {
   Home, Info, HeartHandshake, Church, Calendar, Mic, Image as ImageIcon, Phone, Menu, X,
@@ -19,8 +19,9 @@ import { NavItem } from "./types";
  * NavigationBar — Root navigation shell
  *
  * Responsibilities:
- *   • Sticky positioning: position:sticky top:0 z-50
+ *   • Sticky positioning: position:sticky top:0 z-[1000]
  *   • Scroll-aware state → backdrop-blur, shadow, hairline border
+ *   • Dynamic --kcm-header-height CSS variable measurement via ResizeObserver
  *   • Active section detection via IntersectionObserver / rAF scroll
  *   • Mobile drawer open/close + Escape key
  *   • Orchestrates all child components
@@ -33,10 +34,41 @@ const NavigationBar = memo(function NavigationBar() {
   const { t } = useLanguage();
   const pathname = usePathname() ?? "/";
   const isHomePage = pathname === "/";
+  const headerRef = useRef<HTMLElement>(null);
 
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileOpen, setMobileOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
+
+  // ── Dynamic header height measurement for sticky secondary navigation stacking ──
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el) return;
+
+    const updateHeaderHeight = () => {
+      const height = el.getBoundingClientRect().height || el.offsetHeight;
+      if (height > 0) {
+        document.documentElement.style.setProperty("--kcm-header-height", `${Math.round(height)}px`);
+      }
+    };
+
+    updateHeaderHeight();
+
+    let ro: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== "undefined") {
+      ro = new ResizeObserver(() => {
+        updateHeaderHeight();
+      });
+      ro.observe(el);
+    }
+
+    window.addEventListener("resize", updateHeaderHeight, { passive: true });
+
+    return () => {
+      if (ro) ro.disconnect();
+      window.removeEventListener("resize", updateHeaderHeight);
+    };
+  }, [isScrolled]);
 
   // ── Nav items — memoized, only rebuilds when translations change ────────────
   const navItems: NavItem[] = useMemo(
@@ -140,8 +172,9 @@ const NavigationBar = memo(function NavigationBar() {
   return (
     <>
       <header
+        ref={headerRef}
         className={cn(
-          "fixed top-0 left-0 right-0 z-50 w-full",
+          "sticky top-0 z-[1000] w-full",
           "flex flex-col",
           // Safe area for iOS notch and screen edge insets
           "pt-[env(safe-area-inset-top)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]",

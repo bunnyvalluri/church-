@@ -1139,7 +1139,7 @@ export default function OurStoryPage() {
               </Link>
               
               <Link
-                href="/give"
+                href="/login"
                 className="px-8 py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-2xl font-bold hover:shadow-2xl hover:shadow-purple-600/30 transition-all duration-300 hover:scale-105 shadow-lg flex items-center justify-center gap-2"
               >
                 <ShieldCheck className="h-5 w-5 text-amber-300" />

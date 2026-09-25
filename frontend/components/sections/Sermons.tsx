@@ -1,19 +1,23 @@
 "use client";
 
 import { Play, Calendar, User, Eye, X } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { getSharedSocket } from "@/lib/socketClient";
 import { getLatestSermons } from "@/app/actions/sermons";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { motion } from "framer-motion";
 import SermonCard from "@/components/SermonCard";
-import { useCallback } from "react";
 
 const DEFAULT_THUMBNAIL = "https://images.unsplash.com/photo-1438232992991-995b7058bbb3?w=800&q=80";
 
 export default function Sermons({ initialSermons = [] }: { initialSermons?: any[] }) {
   const { t } = useLanguage();
+  const pathname = usePathname();
+  const isSermonsPage = pathname === "/sermons";
+
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
   const [selectedSermonId, setSelectedSermonId] = useState<string | null>(null);
 
@@ -205,13 +209,13 @@ export default function Sermons({ initialSermons = [] }: { initialSermons?: any[
           transition={{ duration: 0.6, delay: 0.3 }}
           className="mt-20 text-center"
         >
-          <a
-            href="/pastor"
+          <Link
+            href={isSermonsPage ? "/login" : "/sermons"}
             className="inline-flex items-center gap-2 px-10 py-4 min-h-[44px] bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary-gradient-end))] text-white rounded-2xl font-bold tracking-wide shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-shadow duration-300 hover:scale-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           >
-            {t.sermons.viewAll}
+            {t.sermons.viewAll || "View All Sermons"}
             <span className="text-white/70">→</span>
-          </a>
+          </Link>
         </motion.div>
       </div>
 

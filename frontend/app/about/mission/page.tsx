@@ -793,13 +793,13 @@ export default function MissionPage() {
             {/* Search Input Box */}
             <div className="max-w-xl mx-auto relative">
               <div className="relative flex items-center">
-                <Search className="absolute left-4 h-5 w-5 text-slate-400" />
+                <Search className="absolute left-3.5 sm:left-4 h-4.5 w-4.5 sm:h-5 sm:w-5 text-slate-400" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder={language === "te" ? "విలువలు, వాక్యాలు లేదా కీలక పదాలను శోధించండి..." : language === "hi" ? "मूल्य, वचन या कीवर्ड खोजें..." : "Search values, scripture, or keywords..."}
-                  className="w-full pl-12 pr-10 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white placeholder-slate-400 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-purple-500 shadow-lg transition-all font-semibold"
+                  placeholder={language === "te" ? "విలువలు లేదా వాక్యాలను శోధించండి..." : language === "hi" ? "मूल्य या वचन खोजें..." : "Search values or scripture..."}
+                  className="w-full pl-10 sm:pl-12 pr-10 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white placeholder-slate-400 text-xs sm:text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-purple-500 shadow-lg transition-all font-medium placeholder:font-normal"
                 />
                 {searchQuery && (
                   <button
@@ -1028,7 +1028,14 @@ export default function MissionPage() {
             {/* Modal Body */}
             <div className="p-6 sm:p-8 overflow-y-auto space-y-6 text-slate-700 dark:text-slate-300 text-left">
               <div>
-                <h4 className={`text-xs font-extrabold uppercase tracking-widest ${selectedModalItem.color} mb-2`}>
+                <h4 className={`text-xs font-extrabold uppercase tracking-widest ${
+                  selectedModalItem.accent?.includes("purple") ? "text-purple-600 dark:text-purple-400" :
+                  selectedModalItem.accent?.includes("indigo") ? "text-indigo-600 dark:text-indigo-400" :
+                  selectedModalItem.accent?.includes("pink") ? "text-pink-600 dark:text-pink-400" :
+                  selectedModalItem.accent?.includes("emerald") ? "text-emerald-600 dark:text-emerald-400" :
+                  selectedModalItem.accent?.includes("amber") ? "text-amber-600 dark:text-amber-400" :
+                  "text-purple-600 dark:text-purple-400"
+                } mb-2`}>
                   {language === "te" ? "పరిచర్య లక్ష్యం & ప్రాముఖ్యత" : language === "hi" ? "अवलोकन और उद्देश्य" : "Overview & Purpose"}
                 </h4>
                 <p className="text-base sm:text-lg leading-relaxed font-medium">
@@ -1045,16 +1052,23 @@ export default function MissionPage() {
               )}
 
               <div>
-                <h4 className={`text-xs font-extrabold uppercase tracking-widest ${selectedModalItem.color} mb-3`}>
+                <h4 className={`text-xs font-extrabold uppercase tracking-widest ${
+                  selectedModalItem.accent?.includes("purple") ? "text-purple-600 dark:text-purple-400" :
+                  selectedModalItem.accent?.includes("indigo") ? "text-indigo-600 dark:text-indigo-400" :
+                  selectedModalItem.accent?.includes("pink") ? "text-pink-600 dark:text-pink-400" :
+                  selectedModalItem.accent?.includes("emerald") ? "text-emerald-600 dark:text-emerald-400" :
+                  selectedModalItem.accent?.includes("amber") ? "text-amber-600 dark:text-amber-400" :
+                  "text-purple-600 dark:text-purple-400"
+                } mb-3`}>
                   {language === "te" ? "ఆచరణాత్మక జీవితం & పరిచర్య ప్రణాళిక" : language === "hi" ? "व्यावहारिक जीवन और सेवा कार्य" : "Practical Living & Ministry Action"}
                 </h4>
                 <div className="space-y-2.5">
                   {selectedModalItem.details.map((item: string, i: number) => (
                     <div
                       key={i}
-                      className="flex items-center gap-3 p-3.5 bg-slate-100 dark:bg-slate-800/60 rounded-xl text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200"
+                      className="flex items-center gap-3 p-3.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 rounded-xl text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200 shadow-xs"
                     >
-                      <CheckCircle2 className={`h-4 w-4 ${selectedModalItem.color} flex-shrink-0`} />
+                      <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
                       <span>{item}</span>
                     </div>
                   ))}

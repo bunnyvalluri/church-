@@ -1,6 +1,6 @@
 "use client";
 
-import React, { memo } from "react";
+import React, { memo, useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -15,11 +15,11 @@ import { cn } from "@/lib/utils";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
 interface NgoNavItem {
-  id: string;
+  id: "overview" | "projects" | "gallery" | "videos" | "volunteers" | "donations";
   nameKey: "overview" | "projects" | "gallery" | "videos" | "volunteers" | "donations";
   defaultLabel: string;
   href: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: React.ComponentType<{ className?: string; "aria-hidden"?: boolean | "true" | "false" }>;
   iconColor: string;
   activeBgColor: string;
   activeTextColor: string;
@@ -34,7 +34,7 @@ const NGO_NAV_ITEMS: NgoNavItem[] = [
     href: "/ngo",
     icon: Info,
     iconColor: "text-purple-600 dark:text-purple-400",
-    activeBgColor: "bg-purple-100/80 dark:bg-purple-900/60",
+    activeBgColor: "bg-purple-100/90 dark:bg-purple-900/60",
     activeTextColor: "text-purple-700 dark:text-purple-300",
     activeBorderColor: "border-purple-300 dark:border-purple-600",
   },
@@ -45,7 +45,7 @@ const NGO_NAV_ITEMS: NgoNavItem[] = [
     href: "/ngo/projects",
     icon: Heart,
     iconColor: "text-rose-500 dark:text-rose-400",
-    activeBgColor: "bg-rose-100/80 dark:bg-rose-900/60",
+    activeBgColor: "bg-rose-100/90 dark:bg-rose-900/60",
     activeTextColor: "text-rose-700 dark:text-rose-300",
     activeBorderColor: "border-rose-300 dark:border-rose-600",
   },
@@ -56,7 +56,7 @@ const NGO_NAV_ITEMS: NgoNavItem[] = [
     href: "/ngo/gallery",
     icon: ImageIcon,
     iconColor: "text-emerald-500 dark:text-emerald-400",
-    activeBgColor: "bg-emerald-100/80 dark:bg-emerald-900/60",
+    activeBgColor: "bg-emerald-100/90 dark:bg-emerald-900/60",
     activeTextColor: "text-emerald-700 dark:text-emerald-300",
     activeBorderColor: "border-emerald-300 dark:border-emerald-600",
   },
@@ -67,7 +67,7 @@ const NGO_NAV_ITEMS: NgoNavItem[] = [
     href: "/ngo/videos",
     icon: Video,
     iconColor: "text-indigo-500 dark:text-indigo-400",
-    activeBgColor: "bg-indigo-100/80 dark:bg-indigo-900/60",
+    activeBgColor: "bg-indigo-100/90 dark:bg-indigo-900/60",
     activeTextColor: "text-indigo-700 dark:text-indigo-300",
     activeBorderColor: "border-indigo-300 dark:border-indigo-600",
   },
@@ -78,7 +78,7 @@ const NGO_NAV_ITEMS: NgoNavItem[] = [
     href: "/ngo/volunteers",
     icon: Users,
     iconColor: "text-amber-500 dark:text-amber-400",
-    activeBgColor: "bg-amber-100/80 dark:bg-amber-900/60",
+    activeBgColor: "bg-amber-100/90 dark:bg-amber-900/60",
     activeTextColor: "text-amber-700 dark:text-amber-300",
     activeBorderColor: "border-amber-300 dark:border-amber-600",
   },
@@ -89,49 +89,146 @@ const NGO_NAV_ITEMS: NgoNavItem[] = [
     href: "/ngo/donations",
     icon: Gift,
     iconColor: "text-pink-500 dark:text-pink-400",
-    activeBgColor: "bg-pink-100/80 dark:bg-pink-900/60",
+    activeBgColor: "bg-pink-100/90 dark:bg-pink-900/60",
     activeTextColor: "text-pink-700 dark:text-pink-300",
     activeBorderColor: "border-pink-300 dark:border-pink-600",
   },
 ];
 
+const SECTION_IDS = ["overview", "projects", "donations", "gallery", "videos", "volunteers"] as const;
+
 const NgoSubNav = memo(function NgoSubNav() {
   const pathname = usePathname() ?? "/ngo";
+  const isMainNgoPage = pathname === "/ngo";
   const { t } = useLanguage();
   const ngoNavT = t?.ngo?.nav || {};
 
+  const [activeSection, setActiveSection] = useState<string>("overview");
+  const navRef = useRef<HTMLElement>(null);
+  const mobileScrollRef = useRef<HTMLDivElement>(null);
+
+  // ── High-Performance IntersectionObserver for In-Page Active Tab Tracking ──
+  useEffect(() => {
+    if (!isMainNgoPage) {
+      // For subpages (e.g. /ngo/projects), the path drives active state
+      return;
+    }
+
+    const elements = SECTION_IDS.map((id) => document.getElementById(id)).filter(
+      (el): el is HTMLElement => el !== null
+    );
+
+    if (elements.length === 0) return;
+
+    // Use IntersectionObserver with rootMargin tuned to the sticky header offset
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // Collect visible elements
+        const visibleEntries = entries.filter((entry) => entry.isIntersecting);
+        if (visibleEntries.length > 0) {
+          // Sort by highest visibility ratio or position closest to header
+          visibleEntries.sort((a, b) => {
+            const rectA = a.target.getBoundingClientRect();
+            const rectB = b.target.getBoundingClientRect();
+            return Math.abs(rectA.top - 120) - Math.abs(rectB.top - 120);
+          });
+          const bestMatch = visibleEntries[0].target.id;
+          setActiveSection(bestMatch);
+        }
+      },
+      {
+        root: null,
+        // Top margin accommodates sticky header (~120px) so section marks active as it enters
+        rootMargin: "-20% 0px -60% 0px",
+        threshold: [0, 0.2, 0.4, 0.6, 0.8, 1],
+      }
+    );
+
+    elements.forEach((el) => observer.observe(el));
+
+    // Handle edge case: at top of page, overview is active
+    const handleScrollTop = () => {
+      if (window.scrollY < 80) {
+        setActiveSection("overview");
+      }
+    };
+    window.addEventListener("scroll", handleScrollTop, { passive: true });
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("scroll", handleScrollTop);
+    };
+  }, [isMainNgoPage]);
+
+  // ── Auto-scroll mobile nav track to keep active tab in view ──
+  useEffect(() => {
+    if (!mobileScrollRef.current) return;
+    const activeEl = mobileScrollRef.current.querySelector<HTMLElement>("[data-active='true']");
+    if (activeEl) {
+      const container = mobileScrollRef.current;
+      const scrollLeft = activeEl.offsetLeft - container.offsetWidth / 2 + activeEl.offsetWidth / 2;
+      container.scrollTo({ left: scrollLeft, behavior: "smooth" });
+    }
+  }, [activeSection, pathname]);
+
+  // ── Smooth Click Handler ──
+  const handleNavClick = useCallback(
+    (e: React.MouseEvent<HTMLAnchorElement>, item: NgoNavItem) => {
+      if (isMainNgoPage) {
+        const targetElement = document.getElementById(item.id);
+        if (targetElement) {
+          e.preventDefault();
+          targetElement.scrollIntoView({ behavior: "smooth", block: "start" });
+          setActiveSection(item.id);
+          if (typeof window !== "undefined" && window.history.replaceState) {
+            window.history.replaceState(null, "", `#${item.id}`);
+          }
+        }
+      }
+    },
+    [isMainNgoPage]
+  );
+
   return (
     <nav
+      ref={navRef}
       aria-label="NGO Section Navigation"
       className={cn(
-        "w-full sticky top-[52px] min-[360px]:top-[56px] sm:top-[60px] md:top-[64px] lg:top-[72px] z-30",
-        "bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl",
+        // Sticky position directly below the main KCM header using the measured CSS variable
+        "w-full sticky top-[var(--kcm-header-height,56px)] z-[900]",
+        // Premium glassmorphism matching KCM design system
+        "bg-white/95 dark:bg-slate-950/95 backdrop-blur-2xl",
         "border-b border-slate-200/80 dark:border-slate-800/80",
         "shadow-[0_2px_12px_rgba(0,0,0,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)]",
-        "transition-all duration-200"
+        "transition-[top,background-color,border-color,box-shadow] duration-200"
       )}
     >
       <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-1.5 sm:py-2">
-        {/* Mobile View: 6-column balanced dock where all items fit perfectly (< md) */}
+        {/* ── Mobile View (< md): 6-column balanced dock showing ALL complete names simultaneously ── */}
         <div className="md:hidden">
-          <div className="grid grid-cols-6 gap-0.5 p-1 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm w-full">
+          <div className="grid grid-cols-6 gap-0.5 min-[360px]:gap-1 p-1 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 shadow-sm w-full">
             {NGO_NAV_ITEMS.map((item) => {
-              const isActive =
-                item.href === "/ngo"
-                  ? pathname === "/ngo"
-                  : pathname.startsWith(item.href);
+              const isActive = isMainNgoPage
+                ? activeSection === item.id
+                : item.href === "/ngo"
+                ? pathname === "/ngo"
+                : pathname.startsWith(item.href);
 
               const Icon = item.icon;
               const label = ngoNavT[item.nameKey] || item.defaultLabel;
+              const targetHref = isMainNgoPage ? `#${item.id}` : item.href;
 
               return (
                 <Link
                   key={item.id}
-                  href={item.href}
+                  href={targetHref}
+                  onClick={(e) => handleNavClick(e, item)}
+                  data-active={isActive ? "true" : "false"}
+                  aria-current={isActive ? "page" : undefined}
                   className={cn(
-                    "flex flex-col items-center justify-center py-1.5 px-0.5 rounded-xl transition-all duration-150 text-center select-none w-full",
+                    "flex flex-col items-center justify-center py-1.5 px-0.5 rounded-xl transition-all duration-150 text-center select-none w-full min-w-0",
                     isActive
-                      ? "bg-purple-50/80 dark:bg-slate-800 text-purple-700 dark:text-purple-300 shadow-sm border border-purple-300 dark:border-purple-600 font-bold"
+                      ? "bg-purple-50/90 dark:bg-slate-800 text-purple-700 dark:text-purple-300 shadow-sm border border-purple-300 dark:border-purple-600 font-extrabold"
                       : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                   )}
                 >
@@ -141,11 +238,11 @@ const NgoSubNav = memo(function NgoSubNav() {
                       isActive ? "text-purple-600 dark:text-purple-400" : item.iconColor
                     )}
                   >
-                    <Icon className={cn("w-4 h-4", isActive && "stroke-[2.5]")} />
+                    <Icon className={cn("w-3.5 h-3.5 min-[360px]:w-4 min-[360px]:h-4", isActive && "stroke-[2.5]")} aria-hidden="true" />
                   </span>
                   <span
                     className={cn(
-                      "text-[9px] min-[360px]:text-[9.5px] min-[390px]:text-[10px] leading-tight font-bold tracking-tight text-center",
+                      "text-[9px] min-[360px]:text-[9.5px] min-[390px]:text-[10px] leading-tight font-bold tracking-tight text-center w-full",
                       isActive ? "text-purple-700 dark:text-purple-300" : "text-slate-700 dark:text-slate-300"
                     )}
                   >
@@ -157,15 +254,16 @@ const NgoSubNav = memo(function NgoSubNav() {
           </div>
         </div>
 
-        {/* Desktop View (≥ md): Brand logo on left + horizontal pills dock on right */}
+        {/* ── Desktop View (≥ md): Brand logo badge on left + Horizontal pills dock on right ── */}
         <div className="hidden md:flex items-center justify-between gap-4 h-12 lg:h-14">
           {/* Brand badge */}
           <Link
             href="/ngo"
-            className="flex items-center gap-2.5 flex-shrink-0 group py-1"
+            className="flex items-center gap-2.5 flex-shrink-0 group py-1 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600"
+            aria-label="KCM Social Service NGO Home"
           >
             <div className="w-8 h-8 lg:w-9 lg:h-9 rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200/90 dark:border-rose-900/60 flex items-center justify-center text-rose-500 shadow-sm group-hover:scale-105 transition-transform">
-              <Heart className="w-4 h-4 lg:w-4.5 lg:h-4.5 fill-rose-500/20" />
+              <Heart className="w-4 h-4 lg:w-4.5 lg:h-4.5 fill-rose-500/20" aria-hidden="true" />
             </div>
             <span className="text-xs lg:text-sm font-black tracking-widest uppercase bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 dark:from-purple-400 dark:via-pink-400 dark:to-indigo-400 bg-clip-text text-transparent select-none whitespace-nowrap">
               {ngoNavT.socialService || "KCM SOCIAL SERVICE"}
@@ -173,24 +271,34 @@ const NgoSubNav = memo(function NgoSubNav() {
           </Link>
 
           {/* Navigation tabs pill container */}
-          <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-slate-100/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200/60 dark:border-slate-800/60 flex-shrink-0">
+          <div
+            role="menubar"
+            aria-label="NGO Navigation Sections"
+            className="flex items-center gap-1.5 p-1 rounded-2xl bg-slate-100/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200/60 dark:border-slate-800/60 flex-shrink-0"
+          >
             {NGO_NAV_ITEMS.map((item) => {
-              const isActive =
-                item.href === "/ngo"
-                  ? pathname === "/ngo"
-                  : pathname.startsWith(item.href);
+              const isActive = isMainNgoPage
+                ? activeSection === item.id
+                : item.href === "/ngo"
+                ? pathname === "/ngo"
+                : pathname.startsWith(item.href);
 
               const Icon = item.icon;
               const label = ngoNavT[item.nameKey] || item.defaultLabel;
+              const targetHref = isMainNgoPage ? `#${item.id}` : item.href;
 
               return (
                 <Link
                   key={item.id}
-                  href={item.href}
+                  href={targetHref}
+                  onClick={(e) => handleNavClick(e, item)}
+                  role="menuitem"
+                  aria-current={isActive ? "page" : undefined}
                   className={cn(
                     "flex items-center gap-2 px-3.5 lg:px-4 py-1.5 lg:py-2 rounded-xl text-xs lg:text-sm font-semibold transition-all duration-200 whitespace-nowrap select-none",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 focus-visible:ring-offset-1",
                     isActive
-                      ? "bg-white dark:bg-slate-800 text-purple-700 dark:text-purple-300 shadow-sm border border-purple-200/80 dark:border-purple-700/60 font-bold"
+                      ? "bg-white dark:bg-slate-800 text-purple-700 dark:text-purple-300 shadow-sm border border-purple-200/80 dark:border-purple-700/60 font-bold scale-[1.01]"
                       : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-slate-800/60"
                   )}
                 >
@@ -200,7 +308,7 @@ const NgoSubNav = memo(function NgoSubNav() {
                       isActive ? "text-purple-600 dark:text-purple-400" : item.iconColor
                     )}
                   >
-                    <Icon className="w-4 h-4" />
+                    <Icon className="w-4 h-4" aria-hidden="true" />
                   </span>
                   <span>{label}</span>
                 </Link>

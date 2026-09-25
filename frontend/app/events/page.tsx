@@ -882,48 +882,48 @@ export default function EventsPage() {
         </div>
       </div>
 
-      {/* ── SPECIAL EVENTS SPOTLIGHT BANNER (100% Multilingual) ───────────────── */}
+      {/* ── SPECIAL EVENTS SPOTLIGHT BANNER (100% Multilingual & Light/Dark Theme Adaptive) ───────────────── */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 -mt-8 relative z-20">
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-purple-900/90 via-indigo-950/95 to-slate-900/95 border border-purple-500/30 shadow-2xl backdrop-blur-xl p-6 sm:p-8 text-white">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500/15 blur-[90px] pointer-events-none" />
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-white via-purple-50/70 to-indigo-50/80 dark:from-purple-950/90 dark:via-indigo-950/95 dark:to-slate-900/95 border border-purple-200/90 dark:border-purple-500/30 shadow-2xl shadow-purple-950/5 dark:shadow-black/60 backdrop-blur-xl p-6 sm:p-8 text-slate-900 dark:text-white transition-colors duration-300">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500/10 dark:bg-purple-500/20 blur-[90px] pointer-events-none" />
           
           <div className="flex flex-col lg:flex-row items-center justify-between gap-8 relative z-10">
             {/* Left Info Column */}
             <div className="space-y-4 max-w-2xl">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-xs font-black tracking-wider uppercase">
-                  <Flame className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 dark:bg-amber-500/20 border border-amber-400/50 dark:border-amber-400/40 text-amber-800 dark:text-amber-300 text-xs font-black tracking-wider uppercase shadow-xs">
+                  <Flame className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 fill-amber-500/30 dark:fill-amber-400" />
                   {spot.tag}
                 </span>
-                <span className="text-xs font-bold text-purple-300 px-3 py-1 rounded-full bg-purple-500/20 border border-purple-400/30">
+                <span className="text-xs font-bold text-purple-700 dark:text-purple-300 px-3 py-1 rounded-full bg-purple-100/90 dark:bg-purple-500/20 border border-purple-200 dark:border-purple-400/30 shadow-xs">
                   {spot.branch}
                 </span>
               </div>
 
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-white leading-tight font-outfit">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-slate-900 dark:text-white leading-tight font-outfit">
                 {spot.title}
               </h2>
 
-              <p className="text-sm sm:text-base text-slate-200 leading-relaxed font-medium">
+              <p className="text-sm sm:text-base text-slate-600 dark:text-slate-200 leading-relaxed font-medium">
                 {spot.desc}
               </p>
 
               {/* Event Metadata Chips */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 text-xs">
-                <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white/10 border border-white/10">
-                  <Calendar className="w-4 h-4 text-amber-400 shrink-0" />
+                <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white/90 dark:bg-white/10 border border-slate-200/90 dark:border-white/10 text-slate-800 dark:text-white shadow-xs backdrop-blur-md">
+                  <Calendar className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
                   <span className="font-bold">{spot.time}</span>
                 </div>
-                <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white/10 border border-white/10">
-                  <MapPin className="w-4 h-4 text-rose-400 shrink-0" />
+                <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white/90 dark:bg-white/10 border border-slate-200/90 dark:border-white/10 text-slate-800 dark:text-white shadow-xs backdrop-blur-md">
+                  <MapPin className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />
                   <span className="font-bold">{spot.venue}</span>
                 </div>
-                <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white/10 border border-white/10">
-                  <Phone className="w-4 h-4 text-emerald-400 shrink-0" />
+                <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white/90 dark:bg-white/10 border border-slate-200/90 dark:border-white/10 text-slate-800 dark:text-white shadow-xs backdrop-blur-md">
+                  <Phone className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                   <span className="font-bold">{spot.phone}</span>
                 </div>
-                <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white/10 border border-white/10">
-                  <User className="w-4 h-4 text-sky-400 shrink-0" />
+                <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white/90 dark:bg-white/10 border border-slate-200/90 dark:border-white/10 text-slate-800 dark:text-white shadow-xs backdrop-blur-md">
+                  <User className="w-4 h-4 text-indigo-600 dark:text-sky-400 shrink-0" />
                   <span className="font-bold">{spot.host}</span>
                 </div>
               </div>
@@ -936,16 +936,16 @@ export default function EventsPage() {
                     const el = document.getElementById("events-grid-section");
                     if (el) el.scrollIntoView({ behavior: "smooth" });
                   }}
-                  className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs sm:text-sm shadow-lg shadow-purple-600/30 transition-all hover:scale-105 active:scale-95 flex items-center gap-2 cursor-pointer"
+                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs sm:text-sm shadow-lg shadow-purple-600/25 transition-all hover:scale-105 active:scale-95 flex items-center gap-2 cursor-pointer"
                 >
                   <Sparkles className="w-4 h-4" />
                   <span>{spot.viewSpecial} ({specialCount || 2})</span>
                 </button>
                 <Link
                   href="/gallery"
-                  className="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm border border-white/15 transition-all hover:scale-105 active:scale-95 flex items-center gap-2"
+                  className="px-5 py-2.5 rounded-xl bg-white/90 hover:bg-white dark:bg-white/10 dark:hover:bg-white/20 text-slate-800 dark:text-white font-bold text-xs sm:text-sm border border-slate-200 dark:border-white/15 shadow-sm hover:shadow transition-all hover:scale-105 active:scale-95 flex items-center gap-2"
                 >
-                  <Calendar className="w-4 h-4 text-purple-300" />
+                  <Calendar className="w-4 h-4 text-purple-600 dark:text-purple-300" />
                   <span>{spot.viewGallery}</span>
                 </Link>
               </div>
@@ -956,7 +956,7 @@ export default function EventsPage() {
               {/* Poster 1 */}
               <div
                 onClick={() => setPreviewPoster("/images/events/family-blessing-poster-1.jpg")}
-                className="group relative h-56 rounded-2xl overflow-hidden border border-purple-400/30 shadow-xl cursor-pointer hover:border-amber-400 transition-all duration-300 hover:scale-[1.03] bg-slate-950 flex items-center justify-center"
+                className="group relative h-56 rounded-2xl overflow-hidden border border-purple-200 dark:border-purple-400/30 shadow-xl cursor-pointer hover:border-purple-500 dark:hover:border-amber-400 transition-all duration-300 hover:scale-[1.03] bg-slate-100 dark:bg-slate-950 flex items-center justify-center"
               >
                 <img
                   src="/images/events/family-blessing-poster-1.jpg"
@@ -984,7 +984,7 @@ export default function EventsPage() {
               {/* Poster 2 */}
               <div
                 onClick={() => setPreviewPoster("/images/events/family-blessing-poster-2.jpg")}
-                className="group relative h-56 rounded-2xl overflow-hidden border border-purple-400/30 shadow-xl cursor-pointer hover:border-amber-400 transition-all duration-300 hover:scale-[1.03] bg-slate-950 flex items-center justify-center"
+                className="group relative h-56 rounded-2xl overflow-hidden border border-purple-200 dark:border-purple-400/30 shadow-xl cursor-pointer hover:border-purple-500 dark:hover:border-amber-400 transition-all duration-300 hover:scale-[1.03] bg-slate-100 dark:bg-slate-950 flex items-center justify-center"
               >
                 <img
                   src="/images/events/family-blessing-poster-2.jpg"

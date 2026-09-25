@@ -153,11 +153,11 @@ export default function VolunteerClientPage() {
       {/* 🧭 Global Navigation Bar */}
       <Navbar />
 
-      {/* 🌌 Hero Section - Deep Slate with Subtle Purple Ambient Glow */}
-      <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 bg-slate-950 text-white overflow-hidden shadow-xl">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-15 pointer-events-none" />
-        <div className="absolute -top-32 -right-32 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
+      {/* 🌌 Hero Section - Adaptive Light/Dark Header */}
+      <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 bg-gradient-to-b from-purple-50/80 via-indigo-50/40 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-white border-b border-purple-100/80 dark:border-slate-800/80 overflow-hidden shadow-xs transition-colors duration-300">
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-25 dark:opacity-15 pointer-events-none" />
+        <div className="absolute -top-32 -right-32 w-96 h-96 bg-purple-400/20 dark:bg-purple-600/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-indigo-400/20 dark:bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
 
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
@@ -165,24 +165,24 @@ export default function VolunteerClientPage() {
               <BackToHome label={t?.nav?.home || "Home"} />
             </div>
 
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white font-semibold text-xs sm:text-sm mb-6 shadow-md">
-              <HeartHandshake className="h-4 w-4 text-pink-400" />
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-100/90 dark:bg-purple-900/60 border border-purple-200/90 dark:border-purple-400/40 rounded-full text-purple-900 dark:text-white font-semibold text-xs sm:text-sm mb-6 shadow-xs backdrop-blur-md">
+              <HeartHandshake className="h-4 w-4 text-pink-500 dark:text-pink-400" />
               <span>
                 {!mounted
                   ? "Make a Difference"
                   : language === "te"
                   ? "మార్పు తీసుకురండి"
                   : language === "hi"
-                  ? "బదలావ లాఏం"
+                  ? "बदलाव लाएं"
                   : "Make a Difference"}
               </span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-6 font-serif text-white">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-6 font-serif text-slate-900 dark:text-white">
               {!mounted ? "Volunteer" : t.pages.volunteer.title}
             </h1>
 
-            <p className="text-base sm:text-lg md:text-xl text-slate-300 font-light max-w-2xl mx-auto leading-relaxed">
+            <p className="text-base sm:text-lg md:text-xl text-slate-600 dark:text-slate-300 font-normal max-w-2xl mx-auto leading-relaxed">
               {!mounted ? "Serve God by serving others in a vibrant community" : t.pages.volunteer.subtitle}
             </p>
           </div>
@@ -451,13 +451,13 @@ export default function VolunteerClientPage() {
       </section>
 
       {/* 🚀 CTA Questions */}
-      <section className="py-20 bg-slate-950 text-white border-t border-slate-800 relative z-10">
+      <section className="py-20 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white border-t border-slate-200/80 dark:border-slate-800 relative z-10 transition-colors duration-300">
         <div className="container mx-auto px-4 max-w-4xl">
-          <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-8 sm:p-12 text-center shadow-2xl">
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-4 font-serif">
+          <div className="bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 sm:p-12 text-center shadow-xl shadow-purple-500/5">
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-4 font-serif">
               {!mounted ? "Questions?" : t.pages.volunteer.questions}
             </h2>
-            <p className="text-slate-300 text-base sm:text-lg mb-8 font-light max-w-xl mx-auto">
+            <p className="text-slate-600 dark:text-slate-300 text-base sm:text-lg mb-8 font-normal max-w-xl mx-auto">
               {!mounted ? "We're here to help you find the perfect place to serve" : t.pages.volunteer.questionsDesc}
             </p>
             <Link

@@ -54,6 +54,22 @@
     --purple-800-hsl: 258 94% 30%;
     --purple-900-hsl: 258 94% 20%;
     --purple-950-hsl: 258 94% 12%;
+
+    /* KCM Dynamic Header Height Tokens (auto-updated by ResizeObserver on NavigationBar) */
+    --kcm-header-height: 56px;
+  }
+
+  @media (min-width: 640px) {
+    :root { --kcm-header-height: 60px; }
+  }
+  @media (min-width: 768px) {
+    :root { --kcm-header-height: 64px; }
+  }
+  @media (min-width: 1024px) {
+    :root { --kcm-header-height: 72px; }
+  }
+  @media (min-width: 1280px) {
+    :root { --kcm-header-height: 108px; }
   }
 
   .dark {
@@ -99,7 +115,8 @@
 
   html, body {
     max-width: 100%;
-    overflow-x: hidden;
+    overflow-x: clip;
+    overflow-y: visible;
   }
 
   body {

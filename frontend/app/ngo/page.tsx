@@ -151,7 +151,7 @@ export default function NgoOverviewPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 sm:space-y-24">
 
         {/* ═══ 1. HERO ═══ */}
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+        <div id="overview" className="scroll-mt-[120px] sm:scroll-mt-[135px] md:scroll-mt-[145px] lg:scroll-mt-[165px] grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
           <div className="space-y-6 sm:space-y-7 text-left">
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-rose-100 text-rose-800 border border-rose-300 dark:bg-rose-600 dark:border-rose-500 dark:text-white text-[11px] font-extrabold uppercase tracking-wider shadow-sm">
@@ -308,7 +308,7 @@ export default function NgoOverviewPage() {
         </div>
 
         {/* ═══ 4. CORE INITIATIVES ═══ */}
-        <div className="space-y-8 sm:space-y-10">
+        <div id="projects" className="scroll-mt-[120px] sm:scroll-mt-[135px] md:scroll-mt-[145px] lg:scroll-mt-[165px] space-y-8 sm:space-y-10">
           <div className="text-center space-y-2 sm:space-y-3 max-w-2xl mx-auto">
             <div className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-purple-800 border border-purple-300 bg-purple-100 dark:bg-purple-600 dark:border-purple-500 dark:text-white px-3.5 py-1.5 rounded-full shadow-sm">
               <Sparkles className="w-4 h-4 text-purple-600 dark:text-white" />
@@ -349,7 +349,7 @@ export default function NgoOverviewPage() {
         </div>
 
         {/* ═══ 5. GIVING IMPACT TIERS ═══ */}
-        <div className="rounded-3xl bg-slate-50 dark:bg-slate-800/60 border-2 border-slate-200 dark:border-slate-700 shadow-xl p-5 sm:p-10 space-y-6 sm:space-y-8">
+        <div id="donations" className="scroll-mt-[120px] sm:scroll-mt-[135px] md:scroll-mt-[145px] lg:scroll-mt-[165px] rounded-3xl bg-slate-50 dark:bg-slate-800/60 border-2 border-slate-200 dark:border-slate-700 shadow-xl p-5 sm:p-10 space-y-6 sm:space-y-8">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 sm:gap-5 text-left">
             <div className="space-y-2">
               <div className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-purple-800 border border-purple-300 bg-purple-100 dark:bg-purple-600 dark:border-purple-500 dark:text-white px-3.5 py-1.5 rounded-full shadow-sm">
@@ -409,7 +409,7 @@ export default function NgoOverviewPage() {
         </div>
 
         {/* ═══ 6. MEDIA SHOWCASE ═══ */}
-        <div className="relative rounded-3xl bg-gradient-to-r from-purple-50 via-white to-rose-50 dark:from-slate-900 dark:via-slate-900 dark:to-slate-900 border-2 border-purple-200 dark:border-slate-700 shadow-xl overflow-hidden">
+        <div id="gallery" className="scroll-mt-[120px] sm:scroll-mt-[135px] md:scroll-mt-[145px] lg:scroll-mt-[165px] relative rounded-3xl bg-gradient-to-r from-purple-50 via-white to-rose-50 dark:from-slate-900 dark:via-slate-900 dark:to-slate-900 border-2 border-purple-200 dark:border-slate-700 shadow-xl overflow-hidden">
           <div className="relative z-10 grid lg:grid-cols-2 gap-6 sm:gap-8 items-center p-6 sm:p-12">
             <div className="space-y-4 sm:space-y-5 text-left">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-rose-100 text-rose-800 border border-rose-300 dark:bg-rose-600 dark:border-rose-500 dark:text-white text-xs font-extrabold uppercase tracking-wider shadow-sm">
@@ -433,7 +433,7 @@ export default function NgoOverviewPage() {
                 </Link>
               </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+            <div id="videos" className="scroll-mt-[120px] sm:scroll-mt-[135px] md:scroll-mt-[145px] lg:scroll-mt-[165px] grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               {[
                 { label: language === "te" ? "ఆసుపత్రి వైద్య సహాయం" : language === "hi" ? "अस्पताल चिकित्सा सहायता" : "Hospital Medical Aid", sub: "Gandhi & NIMS Hospitals", image: "/ngo_outreach_drive_thumbnail.png", Ico: ImageIcon },
                 { label: language === "te" ? "ఆశ్రమ దుప్పట్ల పంపిణీ" : language === "hi" ? "आश्रम कंबल वितरण" : "Ashramam Blanket Drive", sub: "Bethany Shelter Support", image: "/bethany_ashramam_thumbnail.png", Ico: Video },
@@ -461,7 +461,7 @@ export default function NgoOverviewPage() {
         </div>
 
         {/* ═══ 7. CTA BOTTOM ═══ */}
-        <div className="relative overflow-hidden rounded-3xl border-2 border-purple-300 dark:border-purple-800 bg-gradient-to-r from-purple-100/70 via-white to-rose-100/70 dark:from-slate-800 dark:via-slate-800 dark:to-slate-800 p-6 sm:p-12 flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-8 shadow-xl">
+        <div id="volunteers" className="scroll-mt-[120px] sm:scroll-mt-[135px] md:scroll-mt-[145px] lg:scroll-mt-[165px] relative overflow-hidden rounded-3xl border-2 border-purple-300 dark:border-purple-800 bg-gradient-to-r from-purple-100/70 via-white to-rose-100/70 dark:from-slate-800 dark:via-slate-800 dark:to-slate-800 p-6 sm:p-12 flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-8 shadow-xl">
           <div className="relative z-10 space-y-3 max-w-xl text-left">
             <div className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-rose-800 border border-rose-300 bg-rose-100 dark:bg-rose-600 dark:border-rose-500 dark:text-white px-3.5 py-1.5 rounded-full shadow-sm">
               <Heart className="w-4 h-4 fill-current text-rose-500 dark:text-white" />

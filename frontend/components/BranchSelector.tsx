@@ -132,7 +132,7 @@ export default function BranchSelector() {
       </button>
 
       {isOpen && mounted && (
-        <div className="absolute right-0 mt-2 min-w-[190px] bg-white/95 dark:bg-[#0d091e]/95 backdrop-blur-3xl rounded-2xl border border-white/60 dark:border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.2)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.7)] p-2 z-[99] animate-scale-in space-y-1">
+        <div className="absolute right-0 mt-2 min-w-[190px] bg-white/95 dark:bg-[#0d091e]/95 backdrop-blur-3xl rounded-2xl border border-white/60 dark:border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.2)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.7)] p-2 z-[1100] animate-scale-in space-y-1">
           <button
             onClick={() => {
               setSelectedBranchId("all");

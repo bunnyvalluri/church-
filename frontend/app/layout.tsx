@@ -142,7 +142,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className="overflow-x-hidden">
+    <html lang="en" suppressHydrationWarning className="overflow-x-clip">
       <head>
         {/* Standard PWA mobile capability meta tag (supersedes deprecated apple-mobile-web-app-capable in modern Chromium) */}
         <meta name="mobile-web-app-capable" content="yes" />
@@ -163,7 +163,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://apis.google.com" />
         <link rel="dns-prefetch" href="https://checkout.razorpay.com" />
       </head>
-      <body suppressHydrationWarning className={`${inter.variable} ${outfit.variable} ${notoTelugu.variable} ${notoDevanagari.variable} font-sans relative min-h-screen bg-background overflow-x-hidden selection:bg-primary/30 selection:text-primary pt-safe pb-safe pl-safe pr-safe`}>
+      <body suppressHydrationWarning className={`${inter.variable} ${outfit.variable} ${notoTelugu.variable} ${notoDevanagari.variable} font-sans relative min-h-screen bg-background overflow-x-clip selection:bg-primary/30 selection:text-primary pt-safe pb-safe pl-safe pr-safe`}>
         {/* Dynamic Premium Ambient Mesh Background (GPU hardware-accelerated, zero scrolling paint overhead) */}
         <div className="premium-glow-bg" />
         <div className="fixed inset-0 z-[-2] bg-white/70 dark:bg-[#05050A]/85 pointer-events-none" />
