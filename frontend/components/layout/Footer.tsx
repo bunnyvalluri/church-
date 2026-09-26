@@ -85,9 +85,9 @@ function NavLink({
         href={targetHref}
         target={item.openInNew ? "_blank" : undefined}
         rel={item.openInNew ? "noopener noreferrer" : undefined}
-        className="group inline-flex items-center gap-1.5 text-xs sm:text-sm text-slate-600 hover:text-purple-600 dark:text-slate-400 dark:hover:text-white transition-all duration-200"
+        className="group inline-flex items-center gap-1.5 text-xs sm:text-sm text-slate-400 hover:text-white transition-all duration-200"
       >
-        <ChevronRight className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400 opacity-0 -translate-x-1.5 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 shrink-0" />
+        <ChevronRight className="w-3.5 h-3.5 text-purple-400 opacity-0 -translate-x-1.5 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 shrink-0" />
         <span className="group-hover:translate-x-0.5 transition-transform duration-200">{label}</span>
       </Link>
     </li>
@@ -154,10 +154,10 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="relative bg-slate-50 dark:bg-[#060813] text-slate-600 dark:text-slate-300 border-t border-purple-200/60 dark:border-purple-500/20 overflow-hidden font-sans transition-colors duration-300">
+    <footer className="relative bg-[#060813] text-slate-300 border-t border-purple-500/20 overflow-hidden font-sans">
       {/* 🌌 Ambient Luxury Glows */}
-      <div className="absolute top-0 left-1/4 -translate-y-1/2 w-[600px] h-[350px] bg-purple-500/5 dark:bg-purple-600/12 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 translate-y-1/2 w-[550px] h-[350px] bg-indigo-500/5 dark:bg-indigo-600/10 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-0 left-1/4 -translate-y-1/2 w-[600px] h-[350px] bg-purple-600/12 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 translate-y-1/2 w-[550px] h-[350px] bg-indigo-600/10 rounded-full blur-[140px] pointer-events-none" />
       <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03] pointer-events-none" />
 
       {/* Top Gradient Accent Line with subtle glow */}
@@ -168,13 +168,13 @@ export default function Footer() {
       <div className="container max-w-7xl mx-auto px-4 sm:px-6 pt-16 pb-12 relative z-10">
         
         {/* 🌟 Pre-Footer: Connect & Ministry Quick Action Banner */}
-        <div className="mb-16 p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-purple-100/90 via-indigo-50/80 to-purple-50/90 dark:from-purple-950/60 dark:via-indigo-950/40 dark:to-slate-900/60 border border-purple-200/80 dark:border-purple-500/25 backdrop-blur-xl relative overflow-hidden shadow-xl shadow-purple-500/5 dark:shadow-2xl dark:shadow-purple-950/30">
+        <div className="mb-16 p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-purple-950/60 via-indigo-950/40 to-slate-900/60 border border-purple-500/25 backdrop-blur-xl relative overflow-hidden shadow-2xl shadow-purple-950/30">
           <div className="absolute -top-12 -right-12 w-64 h-64 bg-purple-500/15 rounded-full blur-3xl pointer-events-none" />
           
           <div className="flex flex-col lg:flex-row items-center justify-between gap-6 relative z-10">
             <div className="text-center lg:text-left space-y-2">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 dark:bg-purple-500/20 border border-purple-400/30 text-purple-700 dark:text-purple-300 text-xs font-black uppercase tracking-wider shadow-xs">
-                <Sparkles className="w-3.5 h-3.5 text-amber-500 dark:text-amber-300 animate-pulse" />
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/20 border border-purple-400/30 text-purple-300 text-xs font-black uppercase tracking-wider shadow-xs">
+                <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
                 <span>
                   {mounted && language === "te"
                     ? "దేవుని దైవిక సంకల్పం"
@@ -183,14 +183,14 @@ export default function Footer() {
                     : "Step Into Divine Purpose"}
                 </span>
               </div>
-              <h3 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight font-outfit">
+              <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight font-outfit">
                 {mounted && language === "te"
                   ? "మాతో కలిసి పరిచర్యలో పాలుపంచుకోండి"
                   : mounted && language === "hi"
-                  ? "ప్రార్థన లేదా సహభాగిత కొరకు మాతో కలవండి"
+                  ? "प्रार्थना या सहभागिता के लिए हमसे जुड़ें"
                   : "Partner with Us in Prayer & Ministry"}
               </h3>
-              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-xl font-normal leading-relaxed">
+              <p className="text-xs sm:text-sm text-slate-300 max-w-xl font-normal leading-relaxed">
                 {mounted && language === "te"
                   ? "హైదరాబాద్ మరియు పరిసర ప్రాంతాలలో క్రీస్తు ప్రేమను ప్రకటించడానికి, ఆరాధనలు మరియు సేవా కార్యక్రమాల్లో చేరండి."
                   : mounted && language === "hi"
@@ -205,21 +205,21 @@ export default function Footer() {
                 className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs sm:text-sm shadow-lg shadow-purple-600/30 transition-all hover:scale-105 active:scale-95 flex items-center gap-2"
               >
                 <span>🙏</span>
-                <span>{mounted && language === "te" ? "ప్రార్థన విజ్ఞాపన" : mounted && language === "hi" ? "ప్రార్థన అనురోధ్" : "Prayer Request"}</span>
+                <span>{mounted && language === "te" ? "ప్రార్థన విజ్ఞాపన" : mounted && language === "hi" ? "प्रार्थना अनुरोध" : "Prayer Request"}</span>
               </Link>
               <Link
                 href="/ngo/donations"
-                className="px-5 py-2.5 rounded-xl bg-white/80 hover:bg-white text-slate-800 dark:bg-white/10 dark:hover:bg-white/20 dark:text-white font-bold text-xs sm:text-sm border border-slate-200 dark:border-white/20 shadow-xs transition-all hover:scale-105 active:scale-95 flex items-center gap-2"
+                className="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm border border-white/20 transition-all hover:scale-105 active:scale-95 flex items-center gap-2"
               >
-                <Heart className="w-4 h-4 text-pink-500 dark:text-pink-400" />
-                <span>{mounted && language === "te" ? "కానుకలు (80G)" : mounted && language === "hi" ? "దాన్ దే (80G)" : "Donate (80G)"}</span>
+                <Heart className="w-4 h-4 text-pink-400" />
+                <span>{mounted && language === "te" ? "కానుకలు (80G)" : mounted && language === "hi" ? "दान दें (80G)" : "Donate (80G)"}</span>
               </Link>
               <Link
                 href="/locations"
-                className="px-5 py-2.5 rounded-xl bg-white/60 hover:bg-white/90 text-slate-700 dark:bg-white/5 dark:hover:bg-white/15 dark:text-slate-300 dark:hover:text-white font-semibold text-xs sm:text-sm border border-slate-200/80 dark:border-white/10 shadow-xs transition-all hover:scale-105 active:scale-95 flex items-center gap-1.5"
+                className="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/15 text-slate-300 hover:text-white font-semibold text-xs sm:text-sm border border-white/10 transition-all hover:scale-105 active:scale-95 flex items-center gap-1.5"
               >
-                <Building2 className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
-                <span>{mounted && language === "te" ? "శాఖలు" : mounted && language === "hi" ? "శాఖాయే" : "Campuses"}</span>
+                <Building2 className="w-3.5 h-3.5 text-purple-400" />
+                <span>{mounted && language === "te" ? "శాఖలు" : mounted && language === "hi" ? "शाखाएं" : "Campuses"}</span>
               </Link>
             </div>
           </div>
@@ -231,7 +231,7 @@ export default function Footer() {
           {/* 1. Brand & Mission Column (Span 4) */}
           <div className="lg:col-span-4 space-y-5">
             <Link href="/" className="inline-flex items-center gap-3.5 group">
-              <div className="relative w-14 h-14 rounded-2xl overflow-hidden border border-purple-200 dark:border-purple-500/40 bg-white dark:bg-gradient-to-br dark:from-white/10 dark:to-white/5 shadow-md shadow-purple-500/10 dark:shadow-purple-600/20 group-hover:border-purple-400 group-hover:scale-105 transition-all duration-300">
+              <div className="relative w-14 h-14 rounded-2xl overflow-hidden border border-purple-500/40 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-md p-1 shadow-lg shadow-purple-600/20 group-hover:border-purple-400 group-hover:scale-105 transition-all duration-300">
                 <Image
                   src="/logo.png"
                   alt="Kingdom of Christ Ministries Logo"
@@ -241,19 +241,19 @@ export default function Footer() {
                 />
               </div>
               <div className="flex flex-col">
-                <span className="font-black text-lg sm:text-xl leading-tight text-slate-900 dark:text-white tracking-tight group-hover:text-purple-600 dark:group-hover:text-purple-300 transition-colors font-outfit">
+                <span className="font-black text-lg sm:text-xl leading-tight text-white tracking-tight group-hover:text-purple-300 transition-colors font-outfit">
                   Kingdom of Christ
                 </span>
-                <span className="text-[11px] font-extrabold uppercase tracking-widest bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-400 dark:to-indigo-400 bg-clip-text text-transparent">
+                <span className="text-[11px] font-extrabold uppercase tracking-widest bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text text-transparent">
                   MINISTRIES • OFFICIAL
                 </span>
               </div>
             </Link>
 
             {/* Scripture Quote Glass Card */}
-            <div className="p-4 rounded-2xl bg-white/80 dark:bg-white/[0.03] border border-slate-200/80 dark:border-white/[0.08] backdrop-blur-md relative hover:border-purple-400/50 dark:hover:border-purple-500/30 transition-colors shadow-xs">
-              <Quote className="w-4 h-4 text-purple-600 dark:text-purple-400 mb-1.5 opacity-70" />
-              <p className="text-xs text-slate-600 dark:text-slate-300 italic leading-relaxed font-serif">
+            <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-md relative hover:border-purple-500/30 transition-colors shadow-xs">
+              <Quote className="w-4 h-4 text-purple-400 mb-1.5 opacity-70" />
+              <p className="text-xs text-slate-300 italic leading-relaxed font-serif">
                 {tagline}
               </p>
             </div>
@@ -264,14 +264,14 @@ export default function Footer() {
                 href={footer.mapsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group flex items-start gap-3 p-3.5 rounded-2xl bg-white/80 dark:bg-white/[0.02] hover:bg-white dark:hover:bg-white/[0.06] border border-slate-200/80 dark:border-white/[0.06] hover:border-purple-400/50 dark:hover:border-purple-500/40 shadow-xs transition-all text-xs text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
+                className="group flex items-start gap-3 p-3.5 rounded-2xl bg-white/[0.02] hover:bg-white/[0.06] border border-white/[0.06] hover:border-purple-500/40 transition-all text-xs text-slate-300 hover:text-white"
               >
                 <div className="w-8 h-8 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center shrink-0 mt-0.5 group-hover:scale-110 group-hover:bg-purple-500/20 transition-all">
-                  <MapPin className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                  <MapPin className="h-4 w-4 text-purple-400" />
                 </div>
                 <div className="flex-1">
                   <span className="block leading-relaxed font-medium">{footer.address}</span>
-                  <span className="inline-flex items-center gap-1 text-[11px] text-purple-600 dark:text-purple-400 group-hover:text-purple-700 dark:group-hover:text-purple-300 font-bold mt-1.5">
+                  <span className="inline-flex items-center gap-1 text-[11px] text-purple-400 group-hover:text-purple-300 font-bold mt-1.5">
                     <span>
                       {mounted && language === "te"
                         ? "గూగుల్ మ్యాప్‌లో చూడండి"
@@ -287,7 +287,7 @@ export default function Footer() {
 
             {/* Social Links Row */}
             <div className="pt-1">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 block mb-2.5">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500 block mb-2.5">
                 {mounted && language === "te" ? "సోషల్ మీడియా" : mounted && language === "hi" ? "सोशल मीडिया" : "Official Socials"}
               </span>
               <div className="flex items-center gap-2.5 flex-wrap">
@@ -300,7 +300,7 @@ export default function Footer() {
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={social.name}
-                      className={`w-10 h-10 rounded-xl bg-white dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:text-white flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg group shadow-xs ${social.hoverClass}`}
+                      className={`w-10 h-10 rounded-xl bg-white/[0.04] border border-white/10 text-slate-300 hover:text-white flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg group ${social.hoverClass}`}
                     >
                       <Icon className="h-4.5 w-4.5 transition-transform duration-300 group-hover:scale-110" />
                     </a>
@@ -314,7 +314,7 @@ export default function Footer() {
           <div className="lg:col-span-5 grid grid-cols-2 sm:grid-cols-3 gap-6 sm:gap-8">
             {/* About Group */}
             <div>
-              <h4 className="text-slate-900 dark:text-white font-extrabold text-xs tracking-[0.2em] uppercase flex items-center gap-2 mb-4 font-outfit">
+              <h4 className="text-white font-extrabold text-xs tracking-[0.2em] uppercase flex items-center gap-2 mb-4 font-outfit">
                 <span className="w-1.5 h-1.5 rounded-full bg-purple-500 shadow-xs shadow-purple-500" />
                 <span>{sectionLabels.about}</span>
               </h4>
@@ -332,7 +332,7 @@ export default function Footer() {
 
             {/* Resources Group */}
             <div>
-              <h4 className="text-slate-900 dark:text-white font-extrabold text-xs tracking-[0.2em] uppercase flex items-center gap-2 mb-4 font-outfit">
+              <h4 className="text-white font-extrabold text-xs tracking-[0.2em] uppercase flex items-center gap-2 mb-4 font-outfit">
                 <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 shadow-xs shadow-indigo-500" />
                 <span>{sectionLabels.resources}</span>
               </h4>
@@ -350,7 +350,7 @@ export default function Footer() {
 
             {/* Get Involved Group */}
             <div className="col-span-2 sm:col-span-1">
-              <h4 className="text-slate-900 dark:text-white font-extrabold text-xs tracking-[0.2em] uppercase flex items-center gap-2 mb-4 font-outfit">
+              <h4 className="text-white font-extrabold text-xs tracking-[0.2em] uppercase flex items-center gap-2 mb-4 font-outfit">
                 <span className="w-1.5 h-1.5 rounded-full bg-pink-500 shadow-xs shadow-pink-500" />
                 <span>{sectionLabels.involved}</span>
               </h4>
@@ -370,8 +370,8 @@ export default function Footer() {
           {/* 3. Connect & Helpline Support Column (Span 3) */}
           <div className="lg:col-span-3 space-y-4">
             <div>
-              <h4 className="text-slate-900 dark:text-white font-extrabold text-xs tracking-[0.2em] uppercase flex items-center gap-2 mb-4 font-outfit">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shadow-xs shadow-amber-500" />
+              <h4 className="text-white font-extrabold text-xs tracking-[0.2em] uppercase flex items-center gap-2 mb-4 font-outfit">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shadow-xs shadow-amber-400" />
                 <span>{sectionLabels.connect}</span>
               </h4>
               
@@ -389,8 +389,8 @@ export default function Footer() {
             </div>
 
             {/* Helpline & Office Phone Cards */}
-            <div className="pt-2 border-t border-slate-200/80 dark:border-white/[0.08] space-y-2.5">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-purple-600 dark:text-purple-400 block mb-1">
+            <div className="pt-2 border-t border-white/[0.08] space-y-2.5">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-purple-400 block mb-1">
                 {mounted && language === "te" ? "హెల్ప్‌లైన్ & ఆఫీస్" : mounted && language === "hi" ? "हेल्पलाइन और कार्यालय" : "Helpline & Office"}
               </span>
 
@@ -399,11 +399,11 @@ export default function Footer() {
                   <a
                     key={i}
                     href={`tel:${phone.number.replace(/\s/g, "")}`}
-                    className="group flex items-center justify-between gap-2 p-2.5 rounded-xl bg-white/80 dark:bg-white/[0.03] hover:bg-white dark:hover:bg-white/[0.08] border border-slate-200/80 dark:border-white/[0.06] hover:border-purple-400/50 dark:hover:border-purple-500/40 shadow-xs transition-all text-xs text-slate-800 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white"
+                    className="group flex items-center justify-between gap-2 p-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.06] hover:border-purple-500/40 transition-all text-xs text-slate-200 hover:text-white"
                   >
                     <div className="flex items-center gap-2 min-w-0">
                       <div className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 ${
-                        i === 0 ? "bg-amber-500/20 text-amber-600 dark:text-amber-400" : "bg-purple-500/20 text-purple-600 dark:text-purple-400"
+                        i === 0 ? "bg-amber-500/20 text-amber-400" : "bg-purple-500/20 text-purple-400"
                       }`}>
                         <Phone className="h-3 w-3" />
                       </div>
@@ -412,8 +412,8 @@ export default function Footer() {
                     {phone.label && (
                       <span className={`text-[10px] px-2 py-0.5 rounded-md font-semibold shrink-0 ${
                         i === 0 
-                          ? "bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30" 
-                          : "bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-white/10"
+                          ? "bg-amber-500/15 text-amber-300 border border-amber-500/25" 
+                          : "bg-white/5 text-slate-400 border border-white/10"
                       }`}>
                         {phone.label}
                       </span>
@@ -426,12 +426,12 @@ export default function Footer() {
               {footer?.email && (
                 <a
                   href={`mailto:${footer.email}`}
-                  className="group flex items-center gap-2.5 p-2.5 rounded-xl bg-white/80 dark:bg-white/[0.03] hover:bg-white dark:hover:bg-white/[0.08] border border-slate-200/80 dark:border-white/[0.06] hover:border-purple-400/50 dark:hover:border-purple-500/40 shadow-xs transition-all text-xs text-slate-800 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white"
+                  className="group flex items-center gap-2.5 p-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.06] hover:border-purple-500/40 transition-all text-xs text-slate-200 hover:text-white"
                 >
-                  <div className="w-6 h-6 rounded-lg bg-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+                  <div className="w-6 h-6 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center shrink-0">
                     <Mail className="h-3 w-3" />
                   </div>
-                  <span className="text-[11px] font-medium break-all leading-tight text-slate-600 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white">
+                  <span className="text-[11px] font-medium break-all leading-tight text-slate-300 group-hover:text-white">
                     {footer.email}
                   </span>
                 </a>
@@ -439,8 +439,8 @@ export default function Footer() {
 
               {/* Statutory Trust Badge */}
               <div className="pt-1">
-                <div className="flex items-center gap-2 p-2.5 rounded-xl bg-purple-500/10 border border-purple-500/20 text-[11px] text-purple-800 dark:text-purple-200">
-                  <ShieldCheck className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+                <div className="flex items-center gap-2 p-2.5 rounded-xl bg-purple-500/10 border border-purple-500/20 text-[11px] text-purple-200">
+                  <ShieldCheck className="w-4 h-4 text-amber-400 shrink-0" />
                   <span className="font-semibold leading-tight">
                     Regd. Society 206/2012 • 80G Certified
                   </span>
@@ -453,7 +453,7 @@ export default function Footer() {
       </div>
 
       {/* ── Bottom Legal, Developer Credit & Compliance Bar ── */}
-      <div className="border-t border-slate-200 dark:border-white/[0.08] bg-slate-100/90 dark:bg-black/40 transition-colors">
+      <div className="border-t border-white/[0.08] bg-black/40">
         <div
           className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-6 pb-28 sm:pb-8"
         >
@@ -461,7 +461,7 @@ export default function Footer() {
             
             {/* Left group — Copyright + Credits */}
             <div className="flex flex-col items-center lg:items-start gap-2 text-center lg:text-left">
-              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+              <p className="text-xs text-slate-400 leading-relaxed">
                 {mounted ? copyright : `© ${currentYear} Kingdom of Christ Ministries. All rights reserved.`}
               </p>
 
@@ -470,29 +470,29 @@ export default function Footer() {
                   href="https://valluri-rahul-portfolio.vercel.app/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/10 dark:bg-purple-500/15 hover:bg-purple-500/20 dark:hover:bg-purple-500/25 border border-purple-500/25 dark:border-purple-500/30 text-purple-700 dark:text-purple-300 hover:text-purple-800 dark:hover:text-purple-200 font-bold text-xs tracking-wide transition-all shadow-xs hover:scale-105"
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/30 text-purple-300 hover:text-purple-200 font-bold text-xs tracking-wide transition-all shadow-xs hover:scale-105"
                 >
                   <span>✦ Developed by VALLURI RAHUL ✦</span>
                 </a>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs font-medium text-slate-700 dark:text-slate-300 select-none shadow-2xs">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-slate-300 select-none">
                   <IndiaFlag className="w-3.5 h-3.5 flex-shrink-0" />
                   <span>India</span>
                 </span>
                 <Link
                   href="/ngo/donations"
-                  className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs font-medium transition-colors"
+                  className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-400 text-xs font-medium transition-colors"
                 >
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                   <span>80G Tax-Exempt Certified</span>
                 </Link>
               </div>
             </div>
 
             {/* Right group — Legal links */}
-            <div className="flex flex-wrap items-center justify-center lg:justify-end gap-x-5 gap-y-2 text-xs font-semibold text-slate-500 dark:text-slate-400">
+            <div className="flex flex-wrap items-center justify-center lg:justify-end gap-x-5 gap-y-2 text-xs font-semibold text-slate-400">
               <Link
                 href="/privacy"
-                className="hover:text-purple-600 dark:hover:text-white transition-colors"
+                className="hover:text-white transition-colors"
               >
                 {mounted && language === "te"
                   ? "గోప్యతా విధానం"
@@ -500,10 +500,10 @@ export default function Footer() {
                   ? "गोपनीयता नीति"
                   : "Privacy Policy"}
               </Link>
-              <span className="text-slate-300 dark:text-slate-700 select-none">•</span>
+              <span className="text-slate-700 select-none">•</span>
               <Link
                 href="/terms"
-                className="hover:text-purple-600 dark:hover:text-white transition-colors"
+                className="hover:text-white transition-colors"
               >
                 {mounted && language === "te"
                   ? "సేవా నిబంధనలు"
@@ -511,10 +511,10 @@ export default function Footer() {
                   ? "सेवा की शर्तें"
                   : "Terms of Service"}
               </Link>
-              <span className="text-slate-300 dark:text-slate-700 select-none">•</span>
+              <span className="text-slate-700 select-none">•</span>
               <Link
                 href="/about/story"
-                className="hover:text-purple-600 dark:hover:text-white transition-colors"
+                className="hover:text-white transition-colors"
               >
                 {mounted && language === "te"
                   ? "చరిత్ర & చట్టబద్ధత"
