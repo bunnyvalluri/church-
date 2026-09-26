@@ -1,26 +1,33 @@
-# KCM Platform — Security Architecture & Hardening Guide
+# KCM Security Blueprint & Controls
+
+## 1. Authentication & Session Defense
+- **Session Tokens**: Created and verified using `HMAC-SHA256` signatures via Web Crypto API in Edge Middleware.
+- **Cookies**: `HttpOnly`, `Secure`, `SameSite=Lax`, with short-lived expiration and instant revocation upon logout.
+- **Brute Force Protection**: In-memory rate limiting and Edge IP throttling on all authentication routes (`/api/auth/*`).
 
 ---
 
-## 1. Security Baseline & Threat Modeling
-
-- **OWASP Top 10 Protections**:
-  - **SQL Injection**: Prevented using Prisma ORM parameterized queries exclusively.
-  - **Cross-Site Scripting (XSS)**: Strict Content Security Policy (`CSP`), HTML sanitization (`sanitize-html`), and React automatic escaping.
-  - **CSRF Defense**: Enforced across state-changing API requests via origin/referer headers and Next.js SameSite cookies.
-  - **Broken Object-Level Authorization (BOLA/IDOR)**: In-handler assertions ensure users can only modify their own resources or have administrative privileges.
+## 2. API Authorization & RBAC
+- **Server Enforcement**: All mutation and data access routes perform direct role checks against the cryptographically verified session token.
+- **Role Hierarchy**:
+  - `SUPER_ADMIN` > `ADMIN` > `PASTOR` > `EVENT_MANAGER` > `FIELD_VOLUNTEER` > `MEMBER`
+- **Zero Client Trust**: Browser localStorage states are treated solely as UI display hints and are never trusted for data access.
 
 ---
 
-## 2. Cryptographic Session Architecture
-
-- **Algorithm**: HMAC-SHA256 authenticated sessions.
-- **Verification**: Executed at edge in `middleware.ts` before reaching serverless handlers.
-- **Cookies**: `HttpOnly`, `SameSite=Lax`, `Secure` (production), path restricted to `/`.
+## 3. Webhook & Payment Security
+- **HMAC Verification**: Razorpay (`x-razorpay-signature`) and Stripe webhooks require cryptographic HMAC verification before processing.
+- **Deduplication**: Webhook payloads are hashed with SHA-256 and matched against processed event IDs to prevent replay attacks.
+- **No Client Manipulation**: Donation amounts, receipts, and 80G tax status are calculated and verified exclusively on the server.
 
 ---
 
-## 3. Secret Management & Scanner Policies
-
-- Credentials in `.env.local` and `backend/.env` are strictly excluded by `.gitignore` (`*.local`, `.env*`).
-- Automated health diagnostic scanner runs on every PR to prevent any accidental leakage of private keys or connection strings.
+## 4. Security Headers & CSP
+- **Content Security Policy**:
+  - Strict script-src with authorized CDNs (Razorpay, Google, Firebase, YouTube, Vercel).
+  - Explicit frame-ancestors `'self'`.
+  - Object-src `'none'`.
+- **HSTS**: `max-age=63072000; includeSubDomains; preload`
+- **X-Content-Type-Options**: `nosniff`
+- **Referrer-Policy**: `strict-origin-when-cross-origin`
+- **Permissions-Policy**: Restricted camera/mic/geolocation with explicit payment gateway delegations.

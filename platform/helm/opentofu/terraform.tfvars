@@ -1,2 +1,2 @@
-ghcr_username = "bunnyvalluri"
-ghcr_pat      = "ghp_KCMChurchSecurePAT2026TokenValue"
+ghcr_username = "your-github-username"
+ghcr_pat      = "YOUR_GHCR_PAT_HERE"

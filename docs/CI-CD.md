@@ -1,23 +1,54 @@
-# KCM Platform — CI/CD Pipeline & Quality Gates
+# Continuous Integration & Delivery Specification
+
+## Overview
+This document outlines the automated CI/CD pipeline running via GitHub Actions for the KCM Church platform monorepo.
 
 ---
 
-## 1. Quality Gate Architecture (`.github/workflows/ci.yml`)
+## 1. Pipeline Stages
 
-Every pull request and push to `main` must pass 11 automated verification checks before deployment:
-
-1. **Dependency Installation**: `npm ci --prefer-offline`
-2. **Dependency Audit**: `npm audit --audit-level=critical`
-3. **Prisma Generation**: Regenerates ORM clients for frontend and backend.
-4. **Static Typecheck**: `npm run typecheck -w frontend` (Strict zero error policy).
-5. **Code Style & Lint**: `npm run lint -w frontend`.
-6. **Security & Secret Scan**: `npx tsx health/cli/health.ts --category=security --severity=CRITICAL`.
-7. **Unit & Contract Verification**: Runs verification on centralized modules.
-8. **Production Build**: `npm run build` compiles full Next.js application bundle.
-9. **Bundle Budget Inspection**: `node scripts/scan_production_bundle.js`.
+```
+GitHub Push / Pull Request
+            │
+            ▼
+┌───────────────────────────────────────┐
+│ 1. Checkout (permissions: read-only)  │
+└──────────────────┬────────────────────┘
+                   │
+                   ▼
+┌───────────────────────────────────────┐
+│ 2. Install Monorepo Dependencies (npm ci)
+└──────────────────┬────────────────────┘
+                   │
+                   ▼
+┌───────────────────────────────────────┐
+│ 3. Multilingual Key Parity (i18n:check)│
+└──────────────────┬────────────────────┘
+                   │
+                   ▼
+┌───────────────────────────────────────┐
+│ 4. Prisma Client Compilation          │
+└──────────────────┬────────────────────┘
+                   │
+                   ▼
+┌───────────────────────────────────────┐
+│ 5. Strict ESLint Code Quality Gate    │
+└──────────────────┬────────────────────┘
+                   │
+                   ▼
+┌───────────────────────────────────────┐
+│ 6. Next.js Production Build           │
+└──────────────────┬────────────────────┘
+                   │
+                   ▼
+┌───────────────────────────────────────┐
+│ 7. Deploy Preview / Production (Vercel)│
+└───────────────────────────────────────┘
+```
 
 ---
 
-## 2. Failure Policy
-
-If any step fails: **DEPLOYMENT IS BLOCKED IMMEDIATELY**.
+## 2. Enforcement Gates
+- **Zero Permissive Overrides**: `continue-on-error: true` is prohibited on mandatory lint, typecheck, translation, or test gates.
+- **Least Privilege Tokens**: Workflows declare explicit `permissions: contents: read`.
+- **Pre-deployment Verification**: Next.js builds must complete successfully without unhandled errors.

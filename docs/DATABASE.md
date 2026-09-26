@@ -1,34 +1,26 @@
-# KCM Platform — Database & Polyglot Persistence Architecture
+# Database Architecture & Security Model
+
+## Overview
+The KCM Platform database layer is powered by **PostgreSQL 16** managed via **Prisma ORM 5.11.0**, hosted on **Neon Serverless PostgreSQL** with optional **CloudNativePG** clustering for Kubernetes deployments.
 
 ---
 
-## 1. System of Record: Neon PostgreSQL
+## Key Models & Boundaries
 
-- **ORM**: Prisma Client (Optimized singleton across frontend & backend).
-- **Core Models**:
-  - `User`: Members, staff, administrators with role definitions.
-  - `Session`: Cryptographically tracked active edge sessions.
-  - `Event`: Church conferences, worship services, registrations, seats.
-  - `Sermon`: Audio/video media metadata, tags, pastor attribution.
-  - `Donation`: Tithes, offerings, campaigns, receipts, payment transactions.
-  - `IssueReport`: Member bug reports with browser diagnostics and lifecycle states.
-
----
-
-## 2. Transaction Integrity & Concurrency
-
-All financial and multi-entity operations use atomic transactions:
-```typescript
-await prisma.$transaction(async (tx) => {
-  await tx.paymentTransaction.create({ ... });
-  await tx.donation.update({ ... });
-  await tx.receipt.create({ ... });
-});
-```
+1. **Member & User Management (`members`)**:
+   - Stores authenticated user records, roles (`SUPER_ADMIN`, `ADMIN`, `PASTOR`, `MEMBER`, `EVENT_MANAGER`, `FIELD_VOLUNTEER`), profile references, and hashed credentials (`bcryptjs`).
+2. **Sermons & Media (`sermons`, `sermon_media`, `sermon_views`)**:
+   - Stores sermon metadata, scripture references, audio/video links, timestamps, view counts, and engagement metrics.
+3. **Donations & 80G Receipts (`donations`, `donation_sessions`, `receipts`)**:
+   - Handles donor transactions, UPI UTR numbers, Razorpay order bindings, audit verification flags (`amount_verified`, `signature_verified`), and auto-generated PDF receipts with unique verification codes.
+4. **Events & Attendance (`events`, `event_registrations`, `event_attendance`, `event_reports`)**:
+   - Manages worship services, conferences, registration capacities, QR codes, and volunteer field reports.
+5. **Security & Audit Logs (`audit_logs`, `payment_webhooks`, `notification_logs`)**:
+   - Records administrative mutations, payment webhook history, delivery attempts, and security-relevant actions.
 
 ---
 
-## 3. Secondary Store: MongoDB Atlas
-
-- **Purpose**: Telemetry, diagnostic logs, and unstructured audit trails.
-- **Resilience**: If MongoDB is offline, the primary platform continues operating normally with graceful fallback logging.
+## Security Policies
+- **Strict Parameterization**: All DB interactions run through Prisma ORM prepared statements.
+- **SSL/TLS Mandate**: All remote database connections require `sslmode=require`.
+- **Sensitive Field Isolation**: Password hashes, tokens, and payment secrets are omitted from API projections.

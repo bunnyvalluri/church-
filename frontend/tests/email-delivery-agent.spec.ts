@@ -17,6 +17,7 @@ import { classifyEmailError, calculateBackoffMs } from '../lib/email/email.error
 import { verifyResendWebhookSignature } from '../lib/email/webhookVerifier';
 import { EmailReliabilityAgent } from '../lib/email/agent/email-health.agent';
 import { CompositeEmailProvider } from '../lib/email/providers';
+import { hashRecipient, generateDeterministicIdempotencyKey, maskEmail } from '../lib/email/email.service';
 
 test.describe('KCM Production Email Delivery & Health Agent Test Suite', () => {
 

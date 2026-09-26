@@ -157,6 +157,7 @@ const nextConfig = {
       { source: '/health', destination: '/api/health' },
       { source: '/health/live', destination: '/api/health/live' },
       { source: '/health/ready', destination: '/api/health/ready' },
+      { source: '/health/version', destination: '/api/health/version' },
       { source: '/health/dependencies', destination: '/api/health/dependencies' },
     ];
   },

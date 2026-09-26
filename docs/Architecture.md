@@ -1,60 +1,56 @@
-# Kingdom of Christ Ministries (KCM) — Architecture Specification
+# KCM Platform System Architecture
 
-> **Platform Version**: 1.0.0 Enterprise  
-> **Topology**: Polyglot Monorepo (Next.js 14 App Router + Companion Node.js/Express Realtime Worker)  
-> **Last Verified**: 2026-09-16  
-
----
-
-## 1. System Overview
-
-The Kingdom of Christ Ministries platform is an enterprise-grade church management, media streaming, community engagement, and digital giving system.
-
-```
-                                  ┌────────────────────────┐
-                                  │      Client (Browser)  │
-                                  │   (PWA / Desktop / iOS)│
-                                  └───────────┬────────────┘
-                                              │
-                                              ▼
-                             ┌──────────────────────────────────┐
-                             │       Next.js 14 App Router      │
-                             │  (Edge Middleware + Server Action│
-                             │  + SSR + Client Component Shell) │
-                             └────────┬─────────────────┬───────┘
-                                      │                 │
-             ┌────────────────────────┘                 └─────────────────────────┐
-             ▼                                                                    ▼
-┌─────────────────────────┐                                          ┌─────────────────────────┐
-│     PostgreSQL (Neon)   │                                          │  Companion Worker/Socket│
-│  Primary Relational DB  │                                          │  (Express 5 + Socket.io │
-│   (Users, Offerings,    │                                          │  + BullMQ + Redis +     │
-│   Events, Sermons)      │                                          │   Background AI Agents) │
-└────────────┬────────────┘                                          └────────────┬────────────┘
-             │                                                                    │
-             ▼                                                                    ▼
-┌─────────────────────────┐                                          ┌─────────────────────────┐
-│    Cloudflare / CDN     │                                          │  External Services Gate │
-│  & Cloudinary Media     │                                          │  (Firebase, Razorpay,   │
-│   (Video, Audio, Img)   │                                          │   Stripe, Resend, httpSMS)│
-└─────────────────────────┘                                          └─────────────────────────┘
-```
+## Overview
+Kingdom of Christ Ministries (KCM) is built as a modern, high-performance monorepo serving congregational web interactions, administrative governance, pastoral research workflows, event management, and 80G tax-exempt donation processing.
 
 ---
 
-## 2. Core Architecture Tenets
+## Architecture Blueprint
 
-1. **Defense-in-Depth Authorization**:
-   - Edge level cryptographic HMAC cookie validation (`middleware.ts`).
-   - Route handler level explicit role checks (`requireAdminOrDev`, `requireEventManagerOrDev`, `requireStaffOrDev`).
-2. **Zero-Crash Resilience**:
-   - Granular React Error Boundaries at root (`app/error.tsx`, `app/global-error.tsx`).
-   - Centralized `apiClient.ts` with exponential backoff, jitter, request cancellation, and idempotency protection.
-3. **Polyglot Persistence**:
-   - **Neon PostgreSQL**: Primary transactional system of record (users, sessions, payments, receipts, events, sermons).
-   - **MongoDB Atlas**: Secondary append-only log store for system audit logs, device telemetry, and unstructured analytics.
-4. **Realtime Decoupling**:
-   - Socket.IO connection client handles companion availability gracefully without blocking browser rendering or causing white screens.
-5. **No Secret Exposure**:
-   - Diagnostic endpoints redact credentials with `[REDACTED_*]`.
-   - Client bundle strictly separates `NEXT_PUBLIC_` from private server secrets.
+```
+                     ┌─────────────────────────────────────────┐
+                     │          Clients / Edge Network         │
+                     │  (Vercel Edge Network / DNS / SSL)      │
+                     └────────────────────┬────────────────────┘
+                                          │
+                     ┌────────────────────▼────────────────────┐
+                     │          Next.js Edge Middleware        │
+                     │  • Web Crypto HMAC-SHA256 Session Verify│
+                     │  • Path Routing & Portals Multiplexing  │
+                     │  • Anti-CSRF Origin Validation          │
+                     │  • Security Response Headers (CSP/HSTS) │
+                     └────────────────────┬────────────────────┘
+                                          │
+        ┌─────────────────────────────────┼─────────────────────────────────┐
+        │                                 │                                 │
+┌───────▼──────────────┐       ┌──────────▼───────────┐          ┌──────────▼───────────┐
+│ Public Pages & App   │       │ Protected Portals    │          │ Route Handlers (API) │
+│ • Landing / Services │       │ • Admin Dashboard    │          │ • /api/donations/*   │
+│ • Video Theater      │       │ • Pastor Portal      │          │ • /api/sermons/*     │
+│ • Events / Gallery   │       │ • Event Manager      │          │ • /api/admin/*       │
+│ • Giving / 80G Form  │       │ • Member Area        │          │ • /api/health/*      │
+└──────────────────────┘       └──────────────────────┘          └──────────┬───────────┘
+                                                                            │
+                                                                 ┌──────────▼───────────┐
+                                                                 │   Prisma ORM Layer   │
+                                                                 │  (Parameterized SQL) │
+                                                                 └──────────┬───────────┘
+                                                                            │
+                                                                 ┌──────────▼───────────┐
+                                                                 │ Neon Postgres Server │
+                                                                 │ (SSL/TLS Encrypted)  │
+                                                                 └──────────────────────┘
+```
+
+---
+
+## Core Pillars
+
+1. **Edge-Driven Multi-Tenant Portals**:
+   - Single Next.js codebase seamlessly providing role-tailored dashboards for Administrators, Senior Pastors, Event Coordinators, Field Volunteers, and Church Members.
+2. **Deterministic Internationalization**:
+   - High-speed, zero-bundle overhead context engine with identical key matrices for English, Telugu, and Hindi.
+3. **Resilient Realtime Fallback**:
+   - Socket.IO client configured to operate cleanly without console warnings or errors across production serverless HTTPS environments.
+4. **Hardened Offline-First PWA**:
+   - Service Worker (v6) with explicit scheme validation (`http:`, `https:` only) protecting against browser extension cache exceptions.

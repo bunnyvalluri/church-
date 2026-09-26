@@ -188,7 +188,7 @@ export function sanitizeDiagnosticText(input: string | null | undefined): string
   sanitized = sanitized.replace(/\b(?:\d{4}[ -]?){3}(?:\d{4}|\d{1,4})\b/g, '[REDACTED_CARD]');
 
   // Redact database connection strings
-  sanitized = sanitized.replace(/postgres(ql)?:\/\/[^@\s]+@[^\s/]+/gi, 'postgresql://[REDACTED_USER]:[REDACTED_PASS]@[REDACTED_HOST]');
+  sanitized = sanitized.replace(/postgres(ql)?:\/\/[^@\s]+@[^\s/]+/gi, '[REDACTED_DATABASE_CONNECTION]');
 
   // Truncate to maximum 4000 characters to prevent database overflow
   if (sanitized.length > 4000) {

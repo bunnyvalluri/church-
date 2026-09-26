@@ -149,7 +149,7 @@ export default function Footer() {
       name: "YouTube",
       href: footer?.youtubeUrl || "https://youtube.com/@kcmchurchshapur7107?si=NbnoJjdl5lqt7fkO",
       icon: Youtube,
-      hoverClass: "hover:bg-[#FF0000] hover:border-[#FF0000] hover:shadow-red-600/30",
+      className: "bg-red-600/15 border-red-500/30 text-[#FF0000] hover:bg-[#FF0000] hover:text-white hover:border-[#FF0000] hover:shadow-red-600/40 shadow-xs",
     },
   ];
 
@@ -300,9 +300,9 @@ export default function Footer() {
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={social.name}
-                      className={`w-10 h-10 rounded-xl bg-white/[0.04] border border-white/10 text-slate-300 hover:text-white flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg group ${social.hoverClass}`}
+                      className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg group border ${social.className}`}
                     >
-                      <Icon className="h-4.5 w-4.5 transition-transform duration-300 group-hover:scale-110" />
+                      <Icon className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
                     </a>
                   );
                 })}

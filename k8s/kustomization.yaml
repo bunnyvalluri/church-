@@ -15,6 +15,8 @@ resources:
   - backend-cron.yaml
   - ingress.yaml
   - hpa.yaml
+  - pdb.yaml
+  - network-policy.yaml
 
 commonLabels:
   app.kubernetes.io/part-of: kcm-portal

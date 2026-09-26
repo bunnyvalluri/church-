@@ -81,8 +81,8 @@ const TopInfoBar = memo(function TopInfoBar({ isScrolled }: TopInfoBarProps) {
           </div>
 
           {/* Social */}
-          <div className="flex items-center gap-1">
-            <span className="mr-1.5 text-purple-300/70 text-[10px] uppercase tracking-wider">
+          <div className="flex items-center gap-1.5">
+            <span className="mr-1 text-purple-200/90 text-[10px] uppercase tracking-wider font-semibold">
               Follow
             </span>
             <a
@@ -90,9 +90,9 @@ const TopInfoBar = memo(function TopInfoBar({ isScrolled }: TopInfoBarProps) {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="YouTube"
-              className="w-6 h-6 flex items-center justify-center rounded-md hover:bg-white/15 transition-colors duration-150 hover:text-[#FF0000] focus-visible:ring-2 focus-visible:ring-white"
+              className="w-6 h-6 flex items-center justify-center rounded-md bg-white/10 border border-white/20 text-[#FF0000] hover:bg-[#FF0000] hover:text-white hover:border-[#FF0000] transition-all duration-150 focus-visible:ring-2 focus-visible:ring-white shadow-xs"
             >
-              <Youtube className="w-3 h-3" aria-hidden="true" />
+              <Youtube className="w-3.5 h-3.5" aria-hidden="true" />
             </a>
           </div>
 

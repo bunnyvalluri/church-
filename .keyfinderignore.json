@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "name": "KCM Church Portal - KeyFinder Security Policy & Exclusions",
-  "version": "2.0.0",
-  "description": "Narrowly scoped exclusions and classifications for third-party scripts, residual local development state, and benign UI state identified by KeyFinder v2.0.",
+  "version": "2.1.0",
+  "description": "Comprehensive security policy, exclusions, and classifications for third-party scripts, public client identifiers, browser storage, and benign UI state identified by KeyFinder scans.",
   "rules": [
     {
       "id": "RULE-01-LOCAL-CINEMA-ELK-RESIDUE",
@@ -29,7 +29,8 @@
       "patterns": [
         "__reactLoad$",
         "${pathname}:${searchParamsString}*",
-        "/_not-found"
+        "/_not-found",
+        "tooltip-item-*"
       ],
       "classification": "FALSE_POSITIVE",
       "rationale": "Next.js App Router and React runtime dynamic chunk loader function names and route cache keys incorrectly matched by keyword 'key'.",
@@ -39,9 +40,15 @@
       "id": "RULE-04-LOCAL-CLINICAL-AI-RESIDUE",
       "targetDomain": "localhost",
       "storageType": "external_script",
-      "pattern": "clinical_ai_refresh_token",
+      "patterns": [
+        "clinical_ai_refresh_token",
+        "eval-doctor-token*",
+        "eval-admin-token*",
+        "eval-nurse-token*",
+        "eval-*-refresh*"
+      ],
       "classification": "FALSE_POSITIVE",
-      "rationale": "Residual browser cache/service worker token keyword from an unrelated project tested on the same local development port.",
+      "rationale": "Residual browser cache/service worker token keywords from unrelated local development projects tested in the same browser profile.",
       "action": "EXCLUDE_FROM_SCAN"
     },
     {
@@ -64,7 +71,8 @@
       "storageType": "web_storage",
       "patterns": [
         "vercel-toolbar-*",
-        "vercel-feedback-rep-cookie*"
+        "vercel-feedback-rep-cookie*",
+        "vercel-toolbar-experiment-uuid-*"
       ],
       "classification": "FALSE_POSITIVE",
       "rationale": "Vercel preview toolbar infrastructure injection for deployment comments and feature flags. Exists only in development/preview environments and managed by Vercel platform.",
@@ -107,10 +115,20 @@
       "storageType": "external_script",
       "patterns": [
         "invalid-oauth-client-id",
-        "missing-multi-factor-session"
+        "missing-multi-factor-session",
+        "invalid-recaptcha-token",
+        "missing-recaptcha-token",
+        "invalid-user-token",
+        "invalid-credential",
+        "internal-error",
+        "missing-password",
+        "wrong-password",
+        "auth/invalid-api-key",
+        "auth/invalid-oauth-client-id",
+        "auth/rejected-credential"
       ],
       "classification": "PUBLIC_CONFIGURATION",
-      "rationale": "Firebase Authentication SDK public error code dictionary strings bundled for client-side exception handling, matched by keyword rules 'client_id' and 'credential'.",
+      "rationale": "Firebase Authentication SDK public error code dictionary strings bundled for client-side exception handling, matched by keyword rules 'client_id', 'credential', and 'password'.",
       "action": "EXCLUDE_FROM_SCAN"
     },
     {
@@ -119,10 +137,21 @@
       "storageType": "external_script",
       "patterns": [
         "Razorpay కీ ID",
-        "పాస్‌వర్డ్ చాలా బలహీనంగా ఉంది*"
+        "Razorpay कुंजी ID",
+        "Razorpay Key ID",
+        "API कुंजी",
+        "పాస్‌వర్డ్",
+        "పాస్‌వర్డ్ నిర్ధారించండి",
+        "పాస్‌వర్డ్ మర్చిపోయారా?",
+        "పాస్‌వర్డ్ చాలా బలహీనంగా ఉంది*",
+        "తప్పు పాస్‌వర్డ్*",
+        "पासवर्ड",
+        "पासवर्ड भूल गए?",
+        "पासवर्ड बहुत कमजोर है*",
+        "पासवर्ड की पुष्टि करें"
       ],
       "classification": "PUBLIC_CONFIGURATION",
-      "rationale": "Multilingual UI text strings (Telugu/Kannada) translating the labels 'Razorpay Key ID' and password strength error messages ('Password is too weak. Please choose a stronger one').",
+      "rationale": "Multilingual UI text strings (Telugu/Hindi/English) translating forms, field labels, and validation error messages for passwords and donation gateway keys.",
       "action": "EXCLUDE_FROM_SCAN"
     },
     {
@@ -153,6 +182,70 @@
       "pattern": "_vercel_session*",
       "classification": "FALSE_POSITIVE",
       "rationale": "Vercel deployment session cookie on an external developer portfolio site visited in the same browser profile.",
+      "action": "EXCLUDE_FROM_SCAN"
+    },
+    {
+      "id": "RULE-15-FIREBASE-PUBLIC-WEB-API-KEY",
+      "targetDomain": "kcmchurch.vercel.app",
+      "storageType": "external_script",
+      "patterns": [
+        "AIzaSyBaNc9dgk4StKQsY2L73d2H4Hk_QnwAzN0"
+      ],
+      "classification": "PUBLIC_CONFIGURATION",
+      "rationale": "Google Firebase Web Client API key (NEXT_PUBLIC_FIREBASE_API_KEY) designed specifically for client-side app initialization and protected by Firebase Security Rules and domain restrictions.",
+      "action": "EXCLUDE_FROM_SCAN"
+    },
+    {
+      "id": "RULE-16-GOOGLE-OAUTH-CLIENT-ID",
+      "targetDomain": "kcmchurch.vercel.app",
+      "storageType": "external_script",
+      "patterns": [
+        "410280994688-ln5134fjt46akdl9m781rc74fu40hq44.apps.googleusercontent.com"
+      ],
+      "classification": "PUBLIC_CONFIGURATION",
+      "rationale": "Public Google OAuth 2.0 Client ID used for client-side 'Sign in with Google' workflow. Designed to be public by OAuth 2.0 RFC specifications.",
+      "action": "EXCLUDE_FROM_SCAN"
+    },
+    {
+      "id": "RULE-17-KCM-OPTIMISTIC-IMAGE-CACHE",
+      "targetDomain": "kcmchurch.vercel.app",
+      "storageType": "web_storage",
+      "pattern": "kcm_deleted_images*",
+      "classification": "PUBLIC_CONFIGURATION",
+      "rationale": "Browser local storage key holding temporary array of deleted image paths for optimistic UI removal in gallery management.",
+      "action": "EXCLUDE_FROM_SCAN"
+    },
+    {
+      "id": "RULE-18-GOOGLE-IDENTITY-SERVICES-ORIGINS",
+      "targetDomain": "accounts.google.com",
+      "storageType": "web_storage",
+      "patterns": [
+        "kc.*",
+        "sessionPrivateKey*",
+        "data-credential-response*",
+        "boq-identity.*"
+      ],
+      "classification": "FALSE_POSITIVE",
+      "rationale": "Google Account login and consent UI internal crypto tokens, session state, and DOM attributes loaded in sandboxed Google authentication iframe/popup.",
+      "action": "EXCLUDE_FROM_SCAN"
+    },
+    {
+      "id": "RULE-19-THIRD-PARTY-ADMIN-AND-DEV-TOOLS",
+      "targetDomain": "*",
+      "storageType": "external_script",
+      "patterns": [
+        "console.neon.tech*",
+        "dashboard.render.com*",
+        "search.google.com*",
+        "business.google.com*",
+        "formspark.io*",
+        "github.com*",
+        "studio.youtube.com*",
+        "ilovepdf.com*",
+        "safeframe.googlesyndication.com*"
+      ],
+      "classification": "FALSE_POSITIVE",
+      "rationale": "Third-party browser tabs and management dashboards open during browser automated recording. Isolated from KCM application bundle.",
       "action": "EXCLUDE_FROM_SCAN"
     }
   ]

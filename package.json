@@ -23,6 +23,8 @@
     "test:smoke": "npm run test:smoke -w frontend",
     "agent:audit": "node scripts/quality-agent/index.js --audit-only",
     "agent:heal": "node scripts/quality-agent/index.js --auto-heal",
+    "health:monitor": "node scripts/deployment/auto-healing-monitor.js",
+    "build:recover": "node scripts/deployment/build-failure-recovery.js",
     "postinstall": "cd frontend && npx prisma generate",
     "db:seed": "npm run db:seed -w backend",
     "db:check": "npm run db:check -w backend",

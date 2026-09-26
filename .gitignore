@@ -20,7 +20,14 @@ frontend/playwright-report/
 frontend/.next/
 frontend/out/
 
-# production
+# OS & IDE files
+.DS_Store
+Thumbs.db
+.idea/
+
+# Distribution & build outputs
+/dist
+dist/
 /build
 frontend/build/
 
@@ -34,8 +41,13 @@ service-account*.json
 credentials*.json
 firebase-service-account*.json
 *serviceAccount*.json
+*.tfvars
+*.tfvars.json
+!*.tfvars.example
 
-# Debug logs
+# Debug and runtime logs
+logs/
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
