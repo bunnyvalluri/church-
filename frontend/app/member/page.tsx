@@ -101,11 +101,12 @@ const dashboardTranslations = {
     noAnnouncements: "No announcements currently.",
     live: "Live",
     quickActionsTitle: "Quick Actions",
+    quickActionsSub: "Instant access to key fellowship tools",
     quickActions: [
-      { label: "Submit a Prayer", href: "/member/prayers", icon: Heart },
-      { label: "Register for Event", href: "/member/events", icon: Calendar },
-      { label: "Give Online", href: "/member/give", icon: Gift },
-      { label: "Report Issue", href: "/member/report", icon: AlertTriangle },
+      { label: "Submit a Prayer", desc: "Pastoral care & prayer wall", href: "/member/prayers", icon: Heart, gradient: "from-rose-500 to-pink-600", text: "text-rose-500 dark:text-rose-400", bg: "bg-rose-50 dark:bg-rose-950/40", border: "border-rose-200/80 dark:border-rose-900/40" },
+      { label: "Register for Event", desc: "RSVP to services & meets", href: "/member/events", icon: Calendar, gradient: "from-indigo-500 to-blue-600", text: "text-indigo-500 dark:text-indigo-400", bg: "bg-indigo-50 dark:bg-indigo-950/40", border: "border-indigo-200/80 dark:border-indigo-900/40" },
+      { label: "Give Online", desc: "Offerings, tithe & receipts", href: "/member/give", icon: Gift, gradient: "from-emerald-500 to-green-600", text: "text-emerald-500 dark:text-emerald-400", bg: "bg-emerald-50 dark:bg-emerald-950/40", border: "border-emerald-200/80 dark:border-emerald-900/40" },
+      { label: "Report Issue", desc: "Get help & tech diagnostics", href: "/member/report", icon: AlertTriangle, gradient: "from-amber-500 to-rose-600", text: "text-amber-500 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-950/40", border: "border-amber-200/80 dark:border-amber-900/40" },
     ],
     activityTitle: "Your Activity",
     activityLabels: {
@@ -162,11 +163,12 @@ const dashboardTranslations = {
     noAnnouncements: "ప్రస్తుతం ప్రకటనలు లేవు.",
     live: "లైవ్",
     quickActionsTitle: "త్వరిత చర్యలు",
+    quickActionsSub: "ప్రధాన సేవల ప్రత్యక్ష ప్రవేశం",
     quickActions: [
-      { label: "ప్రార్థన విన్నపం సమర్పించండి", href: "/member/prayers", icon: Heart },
-      { label: "కార్యక్రమంలో నమోదు అవ్వండి", href: "/member/events", icon: Calendar },
-      { label: "ఆన్‌లైన్‌లో కానుక ఇవ్వండి", href: "/member/give", icon: Gift },
-      { label: "సమస్యను నివేదించండి", href: "/member/report", icon: AlertTriangle },
+      { label: "ప్రార్థన విన్నపం సమర్పించండి", desc: "పాస్టరల్ ప్రార్థన & గోడ", href: "/member/prayers", icon: Heart, gradient: "from-rose-500 to-pink-600", text: "text-rose-500 dark:text-rose-400", bg: "bg-rose-50 dark:bg-rose-950/40", border: "border-rose-200/80 dark:border-rose-900/40" },
+      { label: "కార్యక్రమంలో నమోదు అవ్వండి", desc: "కూడికలు & ఆరాధనలు", href: "/member/events", icon: Calendar, gradient: "from-indigo-500 to-blue-600", text: "text-indigo-500 dark:text-indigo-400", bg: "bg-indigo-50 dark:bg-indigo-950/40", border: "border-indigo-200/80 dark:border-indigo-900/40" },
+      { label: "ఆన్‌లైన్‌లో కానుక ఇవ్వండి", desc: "దశమభాగం & రశీదులు", href: "/member/give", icon: Gift, gradient: "from-emerald-500 to-green-600", text: "text-emerald-500 dark:text-emerald-400", bg: "bg-emerald-50 dark:bg-emerald-950/40", border: "border-emerald-200/80 dark:border-emerald-900/40" },
+      { label: "సమస్యను నివేదించండి", desc: "సాంకేతిక సహాయం & లోపాలు", href: "/member/report", icon: AlertTriangle, gradient: "from-amber-500 to-rose-600", text: "text-amber-500 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-950/40", border: "border-amber-200/80 dark:border-amber-900/40" },
     ],
     activityTitle: "మీ కార్యాచరణ",
     activityLabels: {
@@ -223,11 +225,12 @@ const dashboardTranslations = {
     noAnnouncements: "वर्तमान में कोई घोषणा नहीं है।",
     live: "लाइव",
     quickActionsTitle: "त्वरित कार्रवाई",
+    quickActionsSub: "प्रमुख सेवाओं की त्वरित पहुंच",
     quickActions: [
-      { label: "प्रार्थना निवेदन भेजें", href: "/member/prayers", icon: Heart },
-      { label: "कार्यक्रम में भाग लें", href: "/member/events", icon: Calendar },
-      { label: "ऑनलाइन दान दें", href: "/member/give", icon: Gift },
-      { label: "समस्या रिपोर्ट करें", href: "/member/report", icon: AlertTriangle },
+      { label: "प्रार्थना निवेदन भेजें", desc: "प्रार्थना सहायता और प्रार्थना वॉल", href: "/member/prayers", icon: Heart, gradient: "from-rose-500 to-pink-600", text: "text-rose-500 dark:text-rose-400", bg: "bg-rose-50 dark:bg-rose-950/40", border: "border-rose-200/80 dark:border-rose-900/40" },
+      { label: "कार्यक्रम में भाग लें", desc: "आगामी सभाएं और सेवाएं", href: "/member/events", icon: Calendar, gradient: "from-indigo-500 to-blue-600", text: "text-indigo-500 dark:text-indigo-400", bg: "bg-indigo-50 dark:bg-indigo-950/40", border: "border-indigo-200/80 dark:border-indigo-900/40" },
+      { label: "ऑनलाइन दान दें", desc: "दशांश, भेंट और रसीदें", href: "/member/give", icon: Gift, gradient: "from-emerald-500 to-green-600", text: "text-emerald-500 dark:text-emerald-400", bg: "bg-emerald-50 dark:bg-emerald-950/40", border: "border-emerald-200/80 dark:border-emerald-900/40" },
+      { label: "समस्या रिपोर्ट करें", desc: "तकनीकी सहायता और सुझाव", href: "/member/report", icon: AlertTriangle, gradient: "from-amber-500 to-rose-600", text: "text-amber-500 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-950/40", border: "border-amber-200/80 dark:border-amber-900/40" },
     ],
     activityTitle: "आपकी गतिविधि",
     activityLabels: {
@@ -392,7 +395,7 @@ export default function MemberDashboard() {
      RENDER
   ═════════════════════════════════════════════════════════ */
   return (
-    <div className="w-full space-y-6 sm:space-y-8 pb-12">
+    <div className="w-full max-w-7xl mx-auto space-y-4 sm:space-y-6 lg:space-y-8 pb-12 px-1 sm:px-2 md:px-4">
       {/* ── Toast ─────────────────────────────────────────── */}
       <AnimatePresence>
         {toast && (
@@ -413,15 +416,15 @@ export default function MemberDashboard() {
       </AnimatePresence>
 
       {/* ── Refresh & Header Utility Bar ─────────────────── */}
-      <div className="flex items-center justify-between gap-4 bg-white dark:bg-gray-900/60 p-3 sm:px-5 rounded-2xl border border-gray-200/80 dark:border-white/5 shadow-xs">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 bg-purple-600 dark:bg-purple-700 text-white text-xs font-black px-3.5 py-1.5 rounded-xl border border-purple-500 shadow-xs">
+      <div className="flex flex-wrap items-center justify-between gap-3 bg-white dark:bg-gray-900/60 p-3 sm:px-5 rounded-2xl border border-gray-200/80 dark:border-white/5 shadow-xs">
+        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 bg-purple-600 dark:bg-purple-700 text-white text-xs font-black px-3 py-1.5 rounded-xl border border-purple-500 shadow-xs shrink-0">
             <activeGreeting.icon className="w-4 h-4 text-amber-300 flex-shrink-0" />
-            <span className="text-white font-black tracking-wide">{activeGreeting.text}</span>
+            <span className="text-white font-black tracking-wide truncate max-w-[140px] sm:max-w-none">{activeGreeting.text}</span>
           </div>
           {mounted && lastSynced && (
-            <div className="hidden sm:flex items-center gap-1.5 text-[11px] font-semibold text-gray-500 dark:text-gray-400">
-              <Wifi className="w-3.5 h-3.5 text-emerald-500" />
+            <div className="hidden sm:flex items-center gap-1.5 text-[11px] font-semibold text-gray-500 dark:text-gray-400 truncate">
+              <Wifi className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
               <span>{dt.syncText} {lastSynced.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}</span>
             </div>
           )}
@@ -429,7 +432,7 @@ export default function MemberDashboard() {
         <button
           onClick={() => loadFeeds(false)}
           disabled={isRefreshing}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-gray-100 dark:bg-white/5 hover:bg-purple-50 dark:hover:bg-purple-950/40 border border-gray-200 dark:border-white/10 text-xs font-bold text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-300 transition-all active:scale-95 cursor-pointer"
+          className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-gray-100 dark:bg-white/5 hover:bg-purple-50 dark:hover:bg-purple-950/40 border border-gray-200 dark:border-white/10 text-xs font-bold text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-300 transition-all active:scale-95 cursor-pointer ml-auto"
           title="Refresh Data"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin text-purple-600" : ""}`} />
@@ -442,17 +445,17 @@ export default function MemberDashboard() {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35 }}
-        className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 p-5 sm:p-8 md:p-10 text-white shadow-xl shadow-purple-500/10 border border-white/10"
+        className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 p-4.5 sm:p-7 md:p-9 text-white shadow-xl shadow-purple-500/10 border border-white/10"
       >
         {/* Ambient Glows */}
         <div className="pointer-events-none absolute inset-0">
-          <div className="absolute -top-16 -right-16 w-80 h-80 bg-white/10 rounded-full blur-3xl" />
-          <div className="absolute -bottom-20 -left-10 w-64 h-64 bg-indigo-400/20 rounded-full blur-2xl" />
+          <div className="absolute -top-16 -right-16 w-72 sm:w-80 h-72 sm:h-80 bg-white/10 rounded-full blur-3xl" />
+          <div className="absolute -bottom-20 -left-10 w-56 sm:w-64 h-56 sm:h-64 bg-indigo-400/20 rounded-full blur-2xl" />
         </div>
 
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5 sm:gap-6">
-          <div className="space-y-2 sm:space-y-3 max-w-2xl">
-            <h2 className="text-xl sm:text-3xl lg:text-4xl font-black tracking-tight leading-tight">
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
+          <div className="space-y-1.5 sm:space-y-3 max-w-2xl">
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black tracking-tight leading-tight">
               {dt.greetings.welcome},{" "}
               <span className="text-amber-300">{firstName}! 🙏</span>
             </h2>
@@ -461,19 +464,19 @@ export default function MemberDashboard() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-2.5 sm:gap-3.5 shrink-0 w-full md:w-auto">
-            <div className="flex items-center gap-2.5 sm:gap-3 bg-white/12 backdrop-blur-md border border-white/20 rounded-2xl p-3 sm:px-4 sm:py-3 min-w-0">
-              <Calendar className="w-4.5 h-4.5 sm:w-5 sm:h-5 text-amber-300 shrink-0" />
+          <div className="grid grid-cols-2 gap-2 sm:gap-3.5 shrink-0 w-full md:w-auto">
+            <div className="flex items-center gap-2 sm:gap-3 bg-white/12 backdrop-blur-md border border-white/20 rounded-2xl p-2.5 sm:px-4 sm:py-3 min-w-0">
+              <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-amber-300 shrink-0" />
               <div className="min-w-0 flex-1">
-                <p className="text-lg sm:text-xl font-black leading-none">{loadingFeeds ? "..." : stats.events}</p>
-                <p className="text-[9.5px] sm:text-[10.5px] text-white/90 font-extrabold uppercase tracking-wider mt-1 truncate">{dt.stats.events.label}</p>
+                <p className="text-base sm:text-xl font-black leading-none">{loadingFeeds ? "..." : stats.events}</p>
+                <p className="text-[9px] sm:text-[10.5px] text-white/90 font-extrabold uppercase tracking-wider mt-1 truncate">{dt.stats.events.label}</p>
               </div>
             </div>
-            <div className="flex items-center gap-2.5 sm:gap-3 bg-white/12 backdrop-blur-md border border-white/20 rounded-2xl p-3 sm:px-4 sm:py-3 min-w-0">
-              <Heart className="w-4.5 h-4.5 sm:w-5 sm:h-5 text-rose-300 shrink-0" />
+            <div className="flex items-center gap-2 sm:gap-3 bg-white/12 backdrop-blur-md border border-white/20 rounded-2xl p-2.5 sm:px-4 sm:py-3 min-w-0">
+              <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-rose-300 shrink-0" />
               <div className="min-w-0 flex-1">
-                <p className="text-lg sm:text-xl font-black leading-none">{loadingFeeds ? "..." : stats.prayers}</p>
-                <p className="text-[9.5px] sm:text-[10.5px] text-white/90 font-extrabold uppercase tracking-wider mt-1 truncate">{dt.stats.prayers.label}</p>
+                <p className="text-base sm:text-xl font-black leading-none">{loadingFeeds ? "..." : stats.prayers}</p>
+                <p className="text-[9px] sm:text-[10.5px] text-white/90 font-extrabold uppercase tracking-wider mt-1 truncate">{dt.stats.prayers.label}</p>
               </div>
             </div>
           </div>
@@ -485,23 +488,23 @@ export default function MemberDashboard() {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.08 }}
-        className="relative bg-gradient-to-r from-amber-50/80 via-orange-50/50 to-amber-50/80 dark:from-amber-950/30 dark:via-amber-900/10 dark:to-amber-950/30 border border-amber-200/70 dark:border-amber-800/30 rounded-2xl p-5 sm:p-6 overflow-hidden shadow-xs"
+        className="relative bg-gradient-to-r from-amber-50/80 via-orange-50/50 to-amber-50/80 dark:from-amber-950/30 dark:via-amber-900/10 dark:to-amber-950/30 border border-amber-200/70 dark:border-amber-800/30 rounded-2xl p-4 sm:p-5.5 overflow-hidden shadow-xs"
       >
         <div className="absolute right-4 top-1/2 -translate-y-1/2 text-amber-500/10 dark:text-amber-500/10 pointer-events-none">
-          <BookOpen className="w-24 h-24" />
+          <BookOpen className="w-20 h-20 sm:w-24 sm:h-24" />
         </div>
-        <div className="relative flex items-start gap-4">
-          <div className="p-3 bg-amber-100 dark:bg-amber-900/40 rounded-2xl flex-shrink-0 shadow-xs border border-amber-200/50 dark:border-amber-700/40">
-            <Flame className="w-6 h-6 text-amber-600 dark:text-amber-400" />
+        <div className="relative flex items-start gap-3 sm:gap-4">
+          <div className="p-2.5 sm:p-3 bg-amber-100 dark:bg-amber-900/40 rounded-2xl flex-shrink-0 shadow-xs border border-amber-200/50 dark:border-amber-700/40">
+            <Flame className="w-5 h-5 sm:w-6 sm:h-6 text-amber-600 dark:text-amber-400" />
           </div>
           <div className="flex-1 min-w-0">
             <span className="text-[10px] uppercase font-extrabold tracking-widest text-amber-700 dark:text-amber-400 block mb-1">
               {dt.scriptureHeading}
             </span>
-            <p className="text-sm sm:text-base font-semibold italic text-gray-800 dark:text-gray-100 leading-relaxed">
+            <p className="text-xs sm:text-sm md:text-base font-semibold italic text-gray-800 dark:text-gray-100 leading-relaxed">
               &ldquo;{scripture.text}&rdquo;
             </p>
-            <span className="inline-block mt-2.5 text-xs font-black text-amber-950 dark:text-amber-50 bg-amber-200 dark:bg-amber-800/80 px-3.5 py-1.5 rounded-full border border-amber-400 dark:border-amber-500/80 shadow-xs">
+            <span className="inline-block mt-2 text-xs font-black text-amber-950 dark:text-amber-50 bg-amber-200 dark:bg-amber-800/80 px-3 py-1 rounded-full border border-amber-400 dark:border-amber-500/80 shadow-xs">
               — {scripture.ref}
             </span>
           </div>
@@ -513,7 +516,7 @@ export default function MemberDashboard() {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.12 }}
-        className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4.5"
+        className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4"
       >
         {[
           {
@@ -560,19 +563,19 @@ export default function MemberDashboard() {
           <Link
             key={i}
             href={href}
-            className={`group relative bg-white dark:bg-gray-900/60 border ${border} rounded-2xl p-3.5 sm:p-5 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 overflow-hidden flex flex-col justify-between`}
+            className={`group relative bg-white dark:bg-gray-900/60 border ${border} rounded-2xl p-3 sm:p-4.5 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 overflow-hidden flex flex-col justify-between`}
           >
-            <div className="flex items-center justify-between gap-1.5 mb-2.5">
-              <div className={`w-9 h-9 sm:w-10 sm:h-10 ${iconBg} rounded-xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform`}>
-                <Icon className={`w-4.5 h-4.5 sm:w-5 sm:h-5 ${iconColor}`} />
+            <div className="flex items-center justify-between gap-1.5 mb-2 sm:mb-2.5">
+              <div className={`w-8 h-8 sm:w-10 sm:h-10 ${iconBg} rounded-xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform`}>
+                <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${iconColor}`} />
               </div>
-              <span className="text-[9px] sm:text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 truncate max-w-[95px] shrink-0">
+              <span className="text-[9px] sm:text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 truncate max-w-[85px] sm:max-w-[100px] shrink-0">
                 {badge}
               </span>
             </div>
             <div>
-              <span className="text-[10px] sm:text-xs font-extrabold text-gray-500 dark:text-gray-400 uppercase tracking-wider block truncate">{label}</span>
-              <span className={`text-2xl sm:text-3xl font-black ${iconColor} block mt-0.5 tracking-tight`}>
+              <span className="text-[9.5px] sm:text-xs font-extrabold text-gray-500 dark:text-gray-400 uppercase tracking-wider block truncate">{label}</span>
+              <span className={`text-xl sm:text-2xl lg:text-3xl font-black ${iconColor} block mt-0.5 tracking-tight`}>
                 {loadingFeeds ? <span className="inline-block w-8 h-7 bg-gray-100 dark:bg-gray-800 rounded animate-pulse" /> : value}
               </span>
             </div>
@@ -585,7 +588,7 @@ export default function MemberDashboard() {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.16 }}
-        className="space-y-4"
+        className="space-y-3 sm:space-y-4"
       >
         <div className="flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-purple-500" />
@@ -594,7 +597,7 @@ export default function MemberDashboard() {
           </h3>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {dt.cards.map((card, i) => {
             const Icon = card.icon;
             return (
@@ -606,23 +609,23 @@ export default function MemberDashboard() {
               >
                 <Link
                   href={card.href}
-                  className={`group h-full flex flex-col justify-between bg-white dark:bg-gray-900/60 border border-gray-200/80 dark:border-white/5 rounded-2xl p-5 hover:shadow-xl ${card.glow} hover:border-purple-300 dark:hover:border-purple-800/50 hover:-translate-y-1 transition-all duration-300`}
+                  className={`group h-full flex flex-col justify-between bg-white dark:bg-gray-900/60 border border-gray-200/80 dark:border-white/5 rounded-2xl p-4 sm:p-5 hover:shadow-xl ${card.glow} hover:border-purple-300 dark:hover:border-purple-800/50 hover:-translate-y-0.5 transition-all duration-300`}
                 >
-                  <div className="flex items-start justify-between gap-3 mb-4">
-                    <div className={`w-12 h-12 bg-gradient-to-br ${card.gradient} rounded-2xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300`}>
-                      <Icon className="w-6 h-6 text-white" />
+                  <div className="flex items-start justify-between gap-3 mb-3 sm:mb-4">
+                    <div className={`w-11 h-11 sm:w-12 sm:h-12 bg-gradient-to-br ${card.gradient} rounded-2xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300 shrink-0`}>
+                      <Icon className="w-5.5 h-5.5 sm:w-6 sm:h-6 text-white" />
                     </div>
-                    <span className={`text-[10px] font-extrabold px-2.5 py-1 rounded-full ${card.badgeColor}`}>
+                    <span className={`text-[9.5px] sm:text-[10px] font-extrabold px-2.5 py-1 rounded-full ${card.badgeColor}`}>
                       {card.badge}
                     </span>
                   </div>
 
                   <div>
-                    <h4 className="text-base font-extrabold text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors flex items-center justify-between">
-                      <span>{card.title}</span>
-                      <ChevronRight className="w-4 h-4 text-gray-400 group-hover:translate-x-1 transition-transform" />
+                    <h4 className="text-sm sm:text-base font-extrabold text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors flex items-center justify-between">
+                      <span className="truncate">{card.title}</span>
+                      <ChevronRight className="w-4 h-4 text-gray-400 group-hover:translate-x-1 transition-transform shrink-0 ml-1" />
                     </h4>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed line-clamp-2">
                       {card.desc}
                     </p>
                   </div>
@@ -634,9 +637,9 @@ export default function MemberDashboard() {
       </motion.section>
 
       {/* ── 2-Column Section for Secondary Content ──────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-start">
         {/* Left Col (Announcements & Activity) */}
-        <div className="lg:col-span-7 xl:col-span-7 space-y-6">
+        <div className="lg:col-span-7 xl:col-span-7 space-y-5 sm:space-y-6">
           {/* Announcements Card */}
           <motion.div
             id="announcements"
@@ -645,12 +648,12 @@ export default function MemberDashboard() {
             transition={{ delay: 0.2 }}
             className="bg-white dark:bg-gray-900/60 border border-gray-200/80 dark:border-white/5 rounded-2xl shadow-xs overflow-hidden"
           >
-            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-white/5">
+            <div className="flex items-center justify-between px-4 sm:px-5 py-3.5 sm:py-4 border-b border-gray-100 dark:border-white/5">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 bg-purple-50 dark:bg-purple-950/40 rounded-xl flex items-center justify-center">
-                  <Bell className="w-4.5 h-4.5 text-purple-600 dark:text-purple-400" />
+                <div className="w-8 h-8 sm:w-9 sm:h-9 bg-purple-50 dark:bg-purple-950/40 rounded-xl flex items-center justify-center">
+                  <Bell className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                 </div>
-                <h3 className="text-sm font-black text-gray-900 dark:text-white">{dt.announcementsTitle}</h3>
+                <h3 className="text-xs sm:text-sm font-black text-gray-900 dark:text-white">{dt.announcementsTitle}</h3>
               </div>
               <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400">
                 <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
@@ -666,19 +669,19 @@ export default function MemberDashboard() {
                   ))}
                 </div>
               ) : stats.announcements.length === 0 ? (
-                <div className="text-center py-10">
-                  <Bookmark className="w-8 h-8 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
+                <div className="text-center py-8 sm:py-10">
+                  <Bookmark className="w-7 h-7 sm:w-8 sm:h-8 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
                   <p className="text-xs text-gray-400 font-medium">{dt.noAnnouncements}</p>
                 </div>
               ) : (
                 stats.announcements.map((anc) => {
                   const isUrgent = anc.priority === "URGENT" || anc.priority === "HIGH";
                   return (
-                    <div key={anc.id} className="p-4 hover:bg-gray-50/50 dark:hover:bg-white/3 transition-colors">
+                    <div key={anc.id} className="p-3.5 sm:p-4 hover:bg-gray-50/50 dark:hover:bg-white/3 transition-colors">
                       <div className="flex items-center justify-between gap-2 mb-1">
-                        <span className="text-sm font-bold text-gray-900 dark:text-white">{anc.title}</span>
+                        <span className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white">{anc.title}</span>
                         {isUrgent && (
-                          <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-red-500 text-white">
+                          <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-red-500 text-white shrink-0">
                             Urgent
                           </span>
                         )}
@@ -696,7 +699,7 @@ export default function MemberDashboard() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.24 }}
-            className="bg-white dark:bg-gray-900/60 border border-gray-200/80 dark:border-white/5 rounded-2xl p-5 shadow-xs"
+            className="bg-white dark:bg-gray-900/60 border border-gray-200/80 dark:border-white/5 rounded-2xl p-4 sm:p-5 shadow-xs"
           >
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
@@ -704,7 +707,7 @@ export default function MemberDashboard() {
                 <h4 className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">{dt.activityTitle}</h4>
               </div>
             </div>
-            <div className="space-y-4">
+            <div className="space-y-3.5 sm:space-y-4">
               {[
                 { label: dt.activityLabels.events, value: stats.events, color: "bg-purple-500" },
                 { label: dt.activityLabels.prayers, value: stats.prayers, color: "bg-rose-500" },
@@ -713,8 +716,8 @@ export default function MemberDashboard() {
               ].map(({ label, value, color }) => (
                 <div key={label} className="space-y-1.5">
                   <div className="flex items-center justify-between text-xs font-semibold">
-                    <span className="text-gray-700 dark:text-gray-300">{label}</span>
-                    <span className="font-bold text-gray-900 dark:text-white">{loadingFeeds ? "..." : value}</span>
+                    <span className="text-gray-700 dark:text-gray-300 truncate">{label}</span>
+                    <span className="font-bold text-gray-900 dark:text-white ml-2">{loadingFeeds ? "..." : value}</span>
                   </div>
                   <div className="h-2 rounded-full bg-gray-100 dark:bg-gray-800 overflow-hidden">
                     <div className={`h-full rounded-full ${color}`} style={{ width: `${Math.min(100, (value / 5) * 100)}%` }} />
@@ -726,28 +729,56 @@ export default function MemberDashboard() {
         </div>
 
         {/* Right Col (Quick Actions & Feedback) */}
-        <div className="lg:col-span-5 xl:col-span-5 space-y-6">
-          {/* Quick Actions */}
+        <div className="lg:col-span-5 xl:col-span-5 space-y-5 sm:space-y-6">
+          {/* ── Redesigned Responsive Quick Actions Card ─── */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.22 }}
-            className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-600 via-violet-600 to-indigo-700 p-4.5 sm:p-5 text-white shadow-lg border border-white/10"
+            className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-white dark:bg-gray-900/80 border border-purple-200/80 dark:border-purple-900/40 p-4 sm:p-5 shadow-xl shadow-purple-500/5 backdrop-blur-xl"
           >
-            <div className="flex items-center gap-2 mb-3.5">
-              <Zap className="w-4 h-4 text-amber-300 shrink-0" />
-              <h4 className="text-sm font-black tracking-wide">{dt.quickActionsTitle}</h4>
+            {/* Ambient subtle decorative glows */}
+            <div className="pointer-events-none absolute -top-12 -right-12 w-36 h-36 bg-purple-500/10 rounded-full blur-2xl" />
+            <div className="pointer-events-none absolute -bottom-12 -left-12 w-36 h-36 bg-indigo-500/10 rounded-full blur-2xl" />
+
+            <div className="relative z-10 flex items-center justify-between gap-2 mb-3.5 sm:mb-4">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 sm:w-9 sm:h-9 bg-purple-100 dark:bg-purple-950/60 rounded-xl flex items-center justify-center border border-purple-200 dark:border-purple-800/60 shadow-xs shrink-0">
+                  <Zap className="w-4 h-4 text-purple-600 dark:text-purple-300" />
+                </div>
+                <div className="min-w-0">
+                  <h4 className="text-sm sm:text-base font-black text-gray-900 dark:text-white tracking-tight truncate">
+                    {dt.quickActionsTitle}
+                  </h4>
+                  <p className="text-[10px] text-gray-400 dark:text-gray-500 font-medium hidden sm:block truncate">
+                    {dt.quickActionsSub}
+                  </p>
+                </div>
+              </div>
+              <span className="text-[9px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-300 border border-purple-200/60 dark:border-purple-800/40 shrink-0">
+                Fast Links
+              </span>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-2.5">
-              {dt.quickActions.map(({ label, href, icon: Icon }) => (
+
+            <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-2.5">
+              {dt.quickActions.map(({ label, desc, href, icon: Icon, gradient, text, bg, border }) => (
                 <Link
                   key={href}
                   href={href}
-                  className="group flex items-center gap-3 p-3 bg-white/12 hover:bg-white/22 rounded-xl border border-white/15 transition-all text-xs font-extrabold"
+                  className={`group relative flex items-center gap-3 p-3 sm:p-3.5 rounded-2xl bg-gray-50/80 dark:bg-gray-800/40 hover:bg-white dark:hover:bg-gray-800/90 border ${border} hover:shadow-md hover:border-purple-300 dark:hover:border-purple-700/60 transition-all duration-200 active:scale-[0.98] min-w-0`}
                 >
-                  <Icon className="w-4 h-4 text-purple-200 shrink-0" />
-                  <span className="flex-1 truncate">{label}</span>
-                  <ArrowRight className="w-3.5 h-3.5 text-purple-200 group-hover:translate-x-1 transition-transform shrink-0" />
+                  <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center text-white shadow-xs shrink-0 group-hover:scale-105 transition-transform`}>
+                    <Icon className="w-4.5 h-4.5 text-white" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs sm:text-sm font-extrabold text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors leading-tight">
+                      {label}
+                    </p>
+                    <p className="text-[10.5px] text-gray-500 dark:text-gray-400 font-medium leading-tight mt-0.5 truncate">
+                      {desc}
+                    </p>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 group-hover:translate-x-0.5 transition-all shrink-0 ml-auto" />
                 </Link>
               ))}
             </div>
