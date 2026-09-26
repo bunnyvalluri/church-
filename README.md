@@ -1,6 +1,10 @@
-# 🏛️ Kingdom of Christ Ministries (KCM Church) — Enterprise Digital Platform
-
 <div align="center">
+
+<a href="https://kcmchurch.vercel.app">
+  <img src="docs/assets/hero-banner.png" alt="Welcome to Kingdom of Christ Ministries" width="100%" style="border-radius: 12px; max-width: 1200px;" />
+</a>
+
+# 🏛️ Kingdom of Christ Ministries (KCM Church) — Enterprise Digital Platform
 
 [![Production Status](https://img.shields.io/badge/Production-Live-success?style=for-the-badge&logo=vercel&logoColor=white)](https://kcmchurch.vercel.app)
 [![Next.js](https://img.shields.io/badge/Next.js_14-App_Router-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
