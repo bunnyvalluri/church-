@@ -51,9 +51,8 @@ Powering real-time church operations, online stewardship, offline-first congrega
 
 ## 🌟 Overview
 
-The **Kingdom of Christ Ministries Platform** is an all-in-one digital operating system built to connect congregations, streamline worship broadcasts, automate tax-exempt financial stewardship, and coordinate community outreach programs.
+The **Kingdom of Christ Ministries Platform** is an all-in-one digital operating system built to connect congregations, streamline worship broadcasts, automate tax-exempt financial stewardship, and coordinate community outreach programs across multiple campus locations.
 
-### Key Highlights
 - **Lightning-Fast Performance**: Built on Next.js 14 App Router with React Server Components, streaming SSR, and Edge Middleware optimization.
 - **Pure White Modern Design**: Accessible, high-contrast, mobile-first design system with zero layout shifts and instant touch feedback.
 - **Resilient Offline Architecture**: Progressive Web App (PWA) with persistent IndexedDB queue for offline prayers, notes, and event check-ins.
@@ -63,14 +62,29 @@ The **Kingdom of Christ Ministries Platform** is an all-in-one digital operating
 
 ## ⚡ Core Platform Capabilities
 
-| Module | Description | Key Technologies |
-| :--- | :--- | :--- |
-| 🌐 **Trilingual Localization** | Complete dictionary synchronization across English, Telugu, and Hindi (2,200+ verified translation keys). Automated CI checks prevent missing-key fallbacks. | Next.js i18n, Static Parity Audits |
-| 💳 **Verified Financial Pipeline** | Server-side Razorpay order generation with HMAC-SHA256 signature verification, idempotent webhook processing, and instant 80G tax receipt PDF generation. | Razorpay SDK, Web Crypto HMAC, PDFKit |
-| 📱 **Offline-First PWA** | Offline submissions (prayer requests, event registrations) are securely buffered in IndexedDB (`kcm-offline-db`) and automatically replayed upon network recovery. | Service Workers, IndexedDB, Workbox |
-| 🎥 **Media & Broadcast Hub** | Real-time live streaming integration, sermon archive indexing, categorization, and adaptive video streaming. | Cloudinary CDN, YouTube API |
-| 🧠 **Theological AI Engine** | Context-aware biblical knowledge retrieval engine with input sanitization, rate-limiting, and theological guardrails. | Next.js Edge AI, DOMPurify |
-| 🩺 **Automated Health Engine** | Continuous 40+ point automated health checks across database pools, external APIs, queue depth, and responsiveness with self-healing triggers. | Health Engine, BullMQ, Redis |
+#### 🌐 Trilingual Localization Engine (EN | TE | HI)
+- **Synchronized Dictionaries**: 100% parity across English, Telugu, and Hindi across 2,200+ verified keys.
+- **Automated Verification**: Monorepo static CI audits prevent missing-key fallbacks.
+- **Fluid UX**: Dynamic locale switching without hydration layout shifts.
+
+#### 💳 Verified Financial Stewardship & 80G Receipts
+- **Tamper-Proof Ingress**: Razorpay payment orders generated strictly within backend server actions.
+- **Webhook HMAC Verification**: Cryptographic payload validation and SHA-256 event deduplication.
+- **Instant Tax Certificates**: Cryptographically verifiable 80G receipts with dynamic PDF rendering.
+
+#### 📱 Offline-First Progressive Web Application
+- **Resilient Mutation Queue**: Offline actions (prayers, event registrations) buffered locally in IndexedDB (`kcm-offline-db`).
+- **Auto-Replay Engine**: Background sync reconciles queued items upon network recovery.
+- **Cross-Platform**: Installable on iOS, Android, and Desktop with full offline caching.
+
+#### 🎥 Ministry Media & Knowledge Engine
+- **Broadcast Hub**: Integrated YouTube live streams, sermon video library, and categorization.
+- **AI Theological Assistant**: Context-aware biblical knowledge engine with input sanitization and rate limits.
+- **Asset Pipeline**: Cloudinary CDN delivery with automated WebP/AVIF transformations.
+
+#### 🩺 Automated Health Engine & Observability
+- **Continuous Telemetry**: 40+ automated health checks monitoring database pools, Redis latency, and API contracts.
+- **Self-Healing Runbooks**: Automated scripts for deployment verification and recovery.
 
 ---
 
@@ -149,18 +163,16 @@ K.C.M-Portal/
 
 ## 🛠️ Technology Matrix
 
-| Layer | Technology | Version | Purpose |
-| :--- | :--- | :--- | :--- |
-| **Framework** | [Next.js](https://nextjs.org/) | `14.2.x` | React Server Components, Streaming SSR, Edge Middleware |
-| **Language** | [TypeScript](https://www.typescriptlang.org/) | `5.4.x` | Monorepo-wide strict type contracts & compile-time safety |
-| **Styling** | [Tailwind CSS](https://tailwindcss.com/) | `3.4.x` | Clean, accessible, mobile-first design system |
-| **Database** | [Neon PostgreSQL](https://neon.tech/) | `v16` | Serverless relational database with autoscaling & branching |
-| **ORM** | [Prisma](https://www.prisma.io/) | `5.12.x` | Type-safe query building, migrations & relational modeling |
-| **Caching & Queue** | [Upstash Redis](https://upstash.com/) & [BullMQ](https://bullmq.io/) | `Latest` | Sliding window rate limits, job scheduling & distributed locks |
-| **Payment Gateway** | [Razorpay](https://razorpay.com/) | `Latest` | UPI Intent, Cards, Netbanking & verified 80G tax receipting |
-| **Media & CDN** | [Cloudinary](https://cloudinary.com/) | `Latest` | Image optimization, AVIF/WebP transformations, PDF rendering |
-| **Testing** | [Playwright](https://playwright.dev/) & [Jest](https://jestjs.io/) | `Latest` | Cross-browser automated end-to-end and unit testing |
-| **Containerization** | [Docker](https://www.docker.com/) & [Kubernetes](https://kubernetes.io/) | `node:22-alpine` | Hardened non-root containers & declarative cloud orchestration |
+- **Application Framework**: [Next.js 14](https://nextjs.org/) App Router (React Server Components, Streaming SSR, Edge Middleware)
+- **Programming Language**: [TypeScript 5.4](https://www.typescriptlang.org/) (Strict monorepo type contracts & compile-time safety)
+- **Styling System**: [Tailwind CSS 3.4](https://tailwindcss.com/) (Accessible, pure white mobile-first design tokens)
+- **Database Layer**: [Neon PostgreSQL v16](https://neon.tech/) (Serverless relational database with connection pooling & PITR)
+- **ORM & Migrations**: [Prisma 5.12](https://www.prisma.io/) (Type-safe query building, relational modeling & migrations)
+- **Cache & Task Queues**: [Upstash Redis](https://upstash.com/) & [BullMQ](https://bullmq.io/) (Sliding window rate limits & background job scheduling)
+- **Payment Ingress**: [Razorpay](https://razorpay.com/) (UPI Intent, Netbanking, Cards & automated 80G tax receipting)
+- **Media & Delivery**: [Cloudinary](https://cloudinary.com/) (Dynamic WebP/AVIF transformations & PDF generation)
+- **Testing & Quality**: [Playwright](https://playwright.dev/) & [Jest](https://jestjs.io/) (Cross-browser automated E2E and unit test suites)
+- **DevOps & Cloud**: [Docker](https://www.docker.com/) & [Kubernetes](https://kubernetes.io/) (Multi-stage non-root container images & manifests)
 
 ---
 
@@ -185,7 +197,7 @@ cp frontend/.env.example frontend/.env.local
 cp backend/.env.example backend/.env
 ```
 
-Configure the essential connection parameters in `frontend/.env.local`:
+Configure essential parameters in `frontend/.env.local`:
 ```env
 # Database Connection (Neon / PostgreSQL)
 DATABASE_URL="postgresql://<USER>:<PASSWORD>@<HOST>:5432/<DB_NAME>?sslmode=require"
