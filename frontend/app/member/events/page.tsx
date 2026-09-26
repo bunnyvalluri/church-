@@ -7,7 +7,7 @@ import { useLanguage } from "@/components/providers/LanguageProvider";
 import {
   Calendar, MapPin, Clock, CheckCircle2, UserCheck,
   Loader2, RefreshCw, Bell, Users, TrendingUp, Activity,
-  Filter, Search, ChevronRight, AlertCircle, Sparkles
+  Filter, Search, ChevronRight, AlertCircle, Sparkles, X
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -295,14 +295,24 @@ export default function MemberEvents() {
       {/* CONTROLS: Search Input & Filter Tabs */}
       <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3">
         <div className="relative flex-1">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 dark:text-gray-400 pointer-events-none" />
           <input
             type="text"
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder={et.searchPlaceholder}
-            className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-transparent focus:outline-none transition-all text-xs sm:text-sm font-medium shadow-sm"
+            className="w-full pl-10 pr-10 py-2.5 rounded-2xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-transparent focus:outline-none transition-all text-xs sm:text-sm font-semibold shadow-sm"
           />
+          {search && (
+            <button
+              type="button"
+              onClick={() => setSearch("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+              title="Clear search"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
         </div>
         <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl p-1 shadow-sm grid grid-cols-3 gap-1 w-full sm:w-auto min-w-[280px]">
           {(["ALL", "UPCOMING", "REGISTERED"] as FilterTab[]).map(tab => (

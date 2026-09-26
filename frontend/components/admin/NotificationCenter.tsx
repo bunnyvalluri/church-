@@ -4,11 +4,13 @@
  * components/admin/NotificationCenter.tsx
  * ─────────────────────────────────────────────────────────────────────────────
  * Slide-in notification panel triggered by the header bell icon.
+ * Uses createPortal to mount directly to document.body to prevent stacking context/clipping issues.
  * Features: list all notifications, mark individual/all as read, delete.
  * SWR-powered with 15s polling for real-time updates.
  */
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   Bell,
   X,
@@ -66,8 +68,8 @@ function NotifRow({
 }) {
   return (
     <div
-      className={`group relative flex gap-3 px-4 py-3.5 border-b border-slate-100 dark:border-white/[0.03] transition-colors hover:bg-slate-50 dark:hover:bg-white/[0.015] ${
-        !notif.isRead ? "bg-indigo-50/40 dark:bg-indigo-500/[0.04]" : ""
+      className={`group relative flex gap-3 px-4 py-3.5 border-b border-slate-100 dark:border-white/[0.05] transition-colors hover:bg-slate-50 dark:hover:bg-white/[0.02] ${
+        !notif.isRead ? "bg-indigo-50/40 dark:bg-indigo-500/[0.06]" : ""
       }`}
     >
       {/* Unread dot */}
@@ -85,11 +87,11 @@ function NotifRow({
         <p className={`text-xs font-bold truncate ${notif.isRead ? "text-slate-600 dark:text-gray-300" : "text-slate-900 dark:text-white"}`}>
           {notif.title}
         </p>
-        <p className="text-[10px] text-slate-400 dark:text-gray-500 mt-0.5 line-clamp-2 leading-relaxed">
+        <p className="text-[11px] text-slate-500 dark:text-gray-400 mt-0.5 line-clamp-2 leading-relaxed">
           {notif.content}
         </p>
-        <div className="flex items-center gap-2 mt-1">
-          <span className="text-[9px] font-bold text-slate-300 dark:text-gray-600 uppercase tracking-wide">
+        <div className="flex items-center gap-2 mt-1.5">
+          <span className="text-[9px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-wide">
             {relativeTime(notif.createdAt)}
           </span>
           {notif.link && (
@@ -105,13 +107,13 @@ function NotifRow({
         </div>
       </div>
 
-      {/* Action buttons (appear on hover) */}
-      <div className="flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+      {/* Action buttons */}
+      <div className="flex flex-col gap-1 opacity-70 sm:opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
         {!notif.isRead && (
           <button
             onClick={() => onMarkRead(notif.id)}
             title="Mark as read"
-            className="w-6 h-6 rounded-lg bg-slate-100 dark:bg-white/[0.06] hover:bg-indigo-100 dark:hover:bg-indigo-500/20 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 flex items-center justify-center transition-all"
+            className="w-6 h-6 rounded-lg bg-slate-100 dark:bg-white/[0.06] hover:bg-indigo-100 dark:hover:bg-indigo-500/20 text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 flex items-center justify-center transition-all"
           >
             <CheckCheck className="w-3 h-3" />
           </button>
@@ -136,23 +138,16 @@ interface NotificationCenterProps {
 
 export default function NotificationCenter({ isOpen, onClose }: NotificationCenterProps) {
   const { language } = useLanguage();
+  const [mounted, setMounted] = useState(false);
   const { notifications, unreadCount, isLoading, markRead, markAllRead, deleteNotification } =
     useNotifications();
   const panelRef = useRef<HTMLDivElement>(null);
 
-  // Close on outside click
   useEffect(() => {
-    if (!isOpen) return;
-    const handler = (e: MouseEvent) => {
-      if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
-        onClose();
-      }
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, [isOpen, onClose]);
+    setMounted(true);
+  }, []);
 
-  // Close on Escape
+  // Close on Escape key
   useEffect(() => {
     if (!isOpen) return;
     const handler = (e: KeyboardEvent) => {
@@ -169,46 +164,51 @@ export default function NotificationCenter({ isOpen, onClose }: NotificationCent
     emptyDesc: language === "te" ? "మీరు అన్ని కార్యాచరణలపై తాజాగా ఉన్నారు." : language === "hi" ? "आप सभी गतिविधियों पर अप-टू-डेट हैं।" : "You are up to date on all platform activity.",
   };
 
-  return (
-    <>
+  if (!mounted) return null;
+
+  return createPortal(
+    <div
+      className={`fixed inset-0 z-[9999] transition-all duration-300 ${
+        isOpen ? "opacity-100 visible pointer-events-auto" : "opacity-0 invisible pointer-events-none"
+      }`}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Notification Center"
+    >
       {/* Backdrop */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black/20 backdrop-blur-[2px]"
-          onClick={onClose}
-          aria-hidden="true"
-        />
-      )}
+      <div
+        className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs transition-opacity"
+        onClick={onClose}
+        aria-hidden="true"
+      />
 
       {/* Slide-in panel */}
       <div
         ref={panelRef}
-        className={`fixed top-0 right-0 h-full w-full max-w-sm z-50 flex flex-col bg-white dark:bg-[#0C0D1E] border-l border-slate-200 dark:border-white/[0.06] shadow-2xl shadow-black/20 transition-transform duration-300 ease-out ${
+        className={`fixed top-0 right-0 h-full w-full max-w-[360px] sm:max-w-md z-10 flex flex-col bg-white dark:bg-[#0C0D1E] border-l border-slate-200 dark:border-white/[0.08] shadow-2xl shadow-black/30 transition-transform duration-300 ease-out ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
-        role="dialog"
-        aria-label="Notification Center"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-white/[0.05] bg-slate-50/50 dark:bg-white/[0.01] shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-500 flex items-center justify-center border border-indigo-100 dark:border-indigo-500/20">
+        <div className="flex items-center justify-between px-4 sm:px-5 py-3.5 sm:py-4 border-b border-slate-100 dark:border-white/[0.06] bg-slate-50/70 dark:bg-white/[0.02] shrink-0">
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center border border-indigo-100 dark:border-indigo-500/20">
               <Bell className="w-4 h-4" />
             </div>
             <div>
               <h2 className="text-sm font-extrabold text-slate-900 dark:text-white">{label.title}</h2>
               {unreadCount > 0 && (
-                <p className="text-[10px] text-indigo-500 font-bold">
+                <p className="text-[10px] text-indigo-600 dark:text-indigo-400 font-bold">
                   {unreadCount} unread
                 </p>
               )}
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             {unreadCount > 0 && (
               <button
                 onClick={markAllRead}
-                className="text-[10px] font-bold text-indigo-500 hover:text-indigo-700 dark:hover:text-indigo-300 px-2.5 py-1.5 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-colors flex items-center gap-1"
+                className="text-[10px] font-bold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 px-2.5 py-1.5 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-colors flex items-center gap-1"
               >
                 <CheckCheck className="w-3 h-3" />
                 {label.markAll}
@@ -217,7 +217,7 @@ export default function NotificationCenter({ isOpen, onClose }: NotificationCent
             <button
               onClick={onClose}
               className="w-8 h-8 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06] flex items-center justify-center transition-all"
-              aria-label="Close"
+              aria-label="Close notifications"
             >
               <X className="w-4 h-4" />
             </button>
@@ -228,7 +228,7 @@ export default function NotificationCenter({ isOpen, onClose }: NotificationCent
         <div className="flex-1 overflow-y-auto custom-scrollbar">
           {isLoading ? (
             <div className="flex items-center justify-center py-16">
-              <Loader2 className="w-6 h-6 animate-spin text-indigo-400" />
+              <Loader2 className="w-6 h-6 animate-spin text-indigo-500" />
             </div>
           ) : notifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
@@ -263,6 +263,7 @@ export default function NotificationCenter({ isOpen, onClose }: NotificationCent
           </div>
         )}
       </div>
-    </>
+    </div>,
+    document.body
   );
 }

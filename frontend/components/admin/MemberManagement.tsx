@@ -188,16 +188,15 @@ export default function MemberManagement({
 
   return (
     <div className="space-y-4 sm:space-y-6 min-w-0 w-full">
-      
       {/* ─── Top Overview Metric Bar ─── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
         {/* Metric 1 */}
-        <div className="bg-white dark:bg-[#121428] border border-slate-200 dark:border-white/[0.08] p-3.5 sm:p-5 rounded-xl sm:rounded-2xl shadow-sm hover:shadow-md dark:shadow-none flex items-center justify-between hover:-translate-y-0.5 transition-all min-w-0">
-          <div className="min-w-0 pr-2">
-            <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 block truncate">
+        <div className="bg-white dark:bg-[#121428] border border-slate-200 dark:border-white/[0.08] p-3 sm:p-4 md:p-5 rounded-xl sm:rounded-2xl shadow-sm hover:shadow-md dark:shadow-none flex items-center justify-between hover:-translate-y-0.5 transition-all min-w-0">
+          <div className="min-w-0 pr-1.5 sm:pr-2">
+            <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 block leading-tight">
               {isTe ? "మొత్తం విశ్వాసులు" : isHi ? "कुल विश्वासी" : "Total Believers"}
             </span>
-            <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mt-0.5 sm:mt-1 tracking-tight">{stats.total}</h3>
+            <h3 className="text-lg sm:text-2xl font-black text-slate-900 dark:text-white mt-0.5 sm:mt-1 tracking-tight">{stats.total}</h3>
           </div>
           <div className="p-2 sm:p-3 bg-indigo-50 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/30 rounded-xl sm:rounded-2xl shrink-0">
             <Users className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -205,12 +204,12 @@ export default function MemberManagement({
         </div>
 
         {/* Metric 2 */}
-        <div className="bg-white dark:bg-[#121428] border border-slate-200 dark:border-white/[0.08] p-3.5 sm:p-5 rounded-xl sm:rounded-2xl shadow-sm hover:shadow-md dark:shadow-none flex items-center justify-between hover:-translate-y-0.5 transition-all min-w-0">
-          <div className="min-w-0 pr-2">
-            <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 block truncate">
+        <div className="bg-white dark:bg-[#121428] border border-slate-200 dark:border-white/[0.08] p-3 sm:p-4 md:p-5 rounded-xl sm:rounded-2xl shadow-sm hover:shadow-md dark:shadow-none flex items-center justify-between hover:-translate-y-0.5 transition-all min-w-0">
+          <div className="min-w-0 pr-1.5 sm:pr-2">
+            <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 block leading-tight">
               {isTe ? "కాపరులు & పాస్టర్లు" : isHi ? "पास्टर और चरवाहे" : "Shepherds & Pastors"}
             </span>
-            <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mt-0.5 sm:mt-1 tracking-tight">{stats.pastors}</h3>
+            <h3 className="text-lg sm:text-2xl font-black text-slate-900 dark:text-white mt-0.5 sm:mt-1 tracking-tight">{stats.pastors}</h3>
           </div>
           <div className="p-2 sm:p-3 bg-amber-50 dark:bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-500/30 rounded-xl sm:rounded-2xl shrink-0">
             <Star className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -218,12 +217,12 @@ export default function MemberManagement({
         </div>
 
         {/* Metric 3 */}
-        <div className="bg-white dark:bg-[#121428] border border-slate-200 dark:border-white/[0.08] p-3.5 sm:p-5 rounded-xl sm:rounded-2xl shadow-sm hover:shadow-md dark:shadow-none flex items-center justify-between hover:-translate-y-0.5 transition-all min-w-0">
-          <div className="min-w-0 pr-2">
-            <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 block truncate">
+        <div className="bg-white dark:bg-[#121428] border border-slate-200 dark:border-white/[0.08] p-3 sm:p-4 md:p-5 rounded-xl sm:rounded-2xl shadow-sm hover:shadow-md dark:shadow-none flex items-center justify-between hover:-translate-y-0.5 transition-all min-w-0">
+          <div className="min-w-0 pr-1.5 sm:pr-2">
+            <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 block leading-tight">
               {isTe ? "అడ్మినిస్ట్రేటర్లు" : isHi ? "एडमिनिस्ट्रेटर" : "System Administrators"}
             </span>
-            <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mt-0.5 sm:mt-1 tracking-tight">{stats.superAdmins + stats.admins}</h3>
+            <h3 className="text-lg sm:text-2xl font-black text-slate-900 dark:text-white mt-0.5 sm:mt-1 tracking-tight">{stats.superAdmins + stats.admins}</h3>
           </div>
           <div className="p-2 sm:p-3 bg-purple-50 dark:bg-purple-500/15 text-purple-600 dark:text-purple-400 border border-purple-100 dark:border-purple-500/30 rounded-xl sm:rounded-2xl shrink-0">
             <Shield className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -231,12 +230,12 @@ export default function MemberManagement({
         </div>
 
         {/* Metric 4 */}
-        <div className="bg-white dark:bg-[#121428] border border-slate-200 dark:border-white/[0.08] p-3.5 sm:p-5 rounded-xl sm:rounded-2xl shadow-sm hover:shadow-md dark:shadow-none flex items-center justify-between hover:-translate-y-0.5 transition-all min-w-0">
-          <div className="min-w-0 pr-2">
-            <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 block truncate">
+        <div className="bg-white dark:bg-[#121428] border border-slate-200 dark:border-white/[0.08] p-3 sm:p-4 md:p-5 rounded-xl sm:rounded-2xl shadow-sm hover:shadow-md dark:shadow-none flex items-center justify-between hover:-translate-y-0.5 transition-all min-w-0">
+          <div className="min-w-0 pr-1.5 sm:pr-2">
+            <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 block leading-tight">
               {isTe ? "సంఘ సభ్యులు" : isHi ? "कलीसिया सदस्य" : "Active Believers"}
             </span>
-            <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mt-0.5 sm:mt-1 tracking-tight">{stats.members}</h3>
+            <h3 className="text-lg sm:text-2xl font-black text-slate-900 dark:text-white mt-0.5 sm:mt-1 tracking-tight">{stats.members}</h3>
           </div>
           <div className="p-2 sm:p-3 bg-emerald-50 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/30 rounded-xl sm:rounded-2xl shrink-0">
             <User className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -245,7 +244,7 @@ export default function MemberManagement({
       </div>
 
       {/* ─── Header Controls Panel ─── */}
-      <div className="bg-white dark:bg-[#121428] border border-slate-200 dark:border-white/[0.08] p-4 sm:p-6 flex flex-col xl:flex-row xl:items-center justify-between gap-4 sm:gap-5 rounded-xl sm:rounded-2xl shadow-sm dark:shadow-none min-w-0">
+      <div className="bg-white dark:bg-[#121428] border border-slate-200 dark:border-white/[0.08] p-3.5 sm:p-5 flex flex-col xl:flex-row xl:items-center justify-between gap-3 sm:gap-4 rounded-xl sm:rounded-2xl shadow-sm dark:shadow-none min-w-0">
         
         <div>
           <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
@@ -314,7 +313,7 @@ export default function MemberManagement({
                     className="fixed inset-0 z-20" 
                     onClick={() => setIsFilterDropdownOpen(false)} 
                   />
-                  <div className="absolute right-0 sm:right-0 mt-1.5 w-52 py-1.5 bg-white dark:bg-[#161832] border border-slate-200 dark:border-white/15 rounded-xl shadow-xl z-30 animate-in fade-in zoom-in-95 duration-150">
+                  <div className="absolute left-0 sm:left-auto sm:right-0 mt-1.5 w-52 py-1.5 bg-white dark:bg-[#161832] border border-slate-200 dark:border-white/15 rounded-xl shadow-xl z-30 animate-in fade-in zoom-in-95 duration-150">
                     {[
                       { value: "ALL", label: t.filterAll },
                       { value: "SUPER_ADMIN", label: t.superAdmins },
@@ -345,41 +344,43 @@ export default function MemberManagement({
             </div>
           </div>
 
-          {/* Search registry bar */}
-          <div className="relative flex-1 w-full sm:w-56 min-w-0">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 dark:text-slate-400" />
-            <input 
-              type="text" 
-              placeholder={t.searchPlaceholder} 
-              value={search} 
-              onChange={(e) => setSearch(e.target.value)} 
-              className="w-full pl-9 pr-3.5 py-2 text-xs bg-slate-50 dark:bg-[#1A1C36] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-semibold" 
-            />
+          <div className="grid grid-cols-1 sm:flex items-center gap-2.5 sm:gap-3 flex-1 min-w-0">
+            {/* Search registry bar */}
+            <div className="relative flex-1 w-full sm:w-56 min-w-0">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 dark:text-slate-400" />
+              <input 
+                type="text" 
+                placeholder={t.searchPlaceholder} 
+                value={search} 
+                onChange={(e) => setSearch(e.target.value)} 
+                className="w-full pl-9 pr-3.5 py-2 text-xs bg-slate-50 dark:bg-[#1A1C36] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-semibold" 
+              />
+            </div>
+            
+            {/* Add User button */}
+            <button 
+              onClick={handleOpenAddModal} 
+              className="w-full sm:w-auto py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 shadow-md shadow-indigo-500/20 transition-all active:scale-95 shrink-0"
+            >
+              <Plus className="w-4 h-4" /> {t.addUser}
+            </button>
           </div>
-          
-          {/* Add User button */}
-          <button 
-            onClick={handleOpenAddModal} 
-            className="w-full sm:w-auto py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 shadow-md shadow-indigo-500/20 transition-all active:scale-95 shrink-0"
-          >
-            <Plus className="w-4 h-4" /> {t.addUser}
-          </button>
         </div>
       </div>
 
       {/* ─── Role Filter Tabs Bar ─── */}
-      <div className="flex gap-2 overflow-x-auto no-scrollbar scrollbar-none pb-1.5 pt-0.5 touch-pan-x min-w-0 max-w-full">
+      <div className="flex gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar scrollbar-none pb-1.5 pt-0.5 touch-pan-x min-w-0 max-w-full">
         {[
           { key: "ALL", label: isTe ? "అన్నీ" : isHi ? "सभी" : "All Users", count: stats.total },
           { key: "SUPER_ADMIN", label: isTe ? "రూట్ అడ్మిన్‌లు" : isHi ? "सुपर एडमिन" : "Super Admins", count: stats.superAdmins },
           { key: "ADMIN", label: isTe ? "అడ్మిన్‌లు" : isHi ? "एडमिन" : "Admins", count: stats.admins },
-          { key: "PASTOR", label: isTe ? "పాస్టర్లు" : isHi ? "पास्टर" : "Pastors", count: stats.pastors },
+          { key: "PASTOR", label: isTe ? "పాస్టర్లు" : isHi ? "పాస్టర్" : "Pastors", count: stats.pastors },
           { key: "MEMBER", label: isTe ? "విశ్వాసులు" : isHi ? "विश्वासी" : "Believers", count: stats.members }
         ].map(tab => (
           <button
             key={tab.key}
             onClick={() => setRoleFilter(tab.key)}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shrink-0 whitespace-nowrap ${
+            className={`px-3 sm:px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 sm:gap-2 shrink-0 whitespace-nowrap ${
               roleFilter === tab.key
                 ? "bg-indigo-600 text-white shadow-sm"
                 : "bg-white dark:bg-[#121428] text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/[0.06] border border-slate-200 dark:border-white/10"
@@ -399,7 +400,7 @@ export default function MemberManagement({
 
       {/* ─── VIEW 1: GRID CARDS VIEW ─── */}
       {viewMode === "grid" && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5">
           {filteredUsers.map((u) => {
             const badge = getRoleBadgeStyles(u.role || "MEMBER");
             const RoleIcon = badge.icon;
@@ -407,7 +408,7 @@ export default function MemberManagement({
             return (
               <div 
                 key={u.id} 
-                className="bg-white dark:bg-[#121428] border border-slate-200 dark:border-white/[0.08] p-4 sm:p-5 flex flex-col justify-between relative overflow-hidden rounded-xl sm:rounded-2xl shadow-sm hover:shadow-md dark:shadow-none hover:border-indigo-300 dark:hover:border-indigo-500/40 transition-all duration-200 group min-w-0"
+                className="bg-white dark:bg-[#121428] border border-slate-200 dark:border-white/[0.08] p-3.5 sm:p-5 flex flex-col justify-between relative overflow-hidden rounded-xl sm:rounded-2xl shadow-sm hover:shadow-md dark:shadow-none hover:border-indigo-300 dark:hover:border-indigo-500/40 transition-all duration-200 group min-w-0"
               >
                 {/* Delete button */}
                 <button 
@@ -418,7 +419,7 @@ export default function MemberManagement({
                   <Trash2 className="w-4 h-4" />
                 </button>
 
-                <div className="space-y-3.5 sm:space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   <div className="flex items-center gap-3 sm:gap-3.5 pr-6">
                     {/* Avatar Circle */}
                     <div className={`w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br ${getMemberAvatarGrad(u.name, u.role)} font-black rounded-xl sm:rounded-2xl flex items-center justify-center uppercase text-xs sm:text-sm shadow-md shrink-0 transition-transform duration-200 group-hover:scale-105`}>
@@ -443,14 +444,14 @@ export default function MemberManagement({
                   <hr className="border-t border-slate-100 dark:border-white/[0.06]" />
                   
                   {/* Info details */}
-                  <div className="space-y-2.5 text-xs font-medium text-slate-700 dark:text-slate-300">
+                  <div className="space-y-2 text-xs font-medium text-slate-700 dark:text-slate-300">
                     
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2 overflow-hidden min-w-0">
                         <div className="w-6 sm:w-7 h-6 sm:h-7 rounded-lg sm:rounded-xl bg-indigo-50 dark:bg-indigo-500/15 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0 border border-indigo-100 dark:border-indigo-500/25">
                           <Mail className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                         </div>
-                        <span className="truncate font-bold text-slate-900 dark:text-slate-100 max-w-[150px] min-[400px]:max-w-[200px] sm:max-w-[220px]" title={u.email}>{u.email || "—"}</span>
+                        <span className="truncate font-bold text-slate-900 dark:text-slate-100 max-w-[180px] min-[380px]:max-w-[220px] sm:max-w-none" title={u.email}>{u.email || "—"}</span>
                       </div>
                       {u.email && (
                         <button 

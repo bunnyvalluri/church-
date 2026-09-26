@@ -759,14 +759,7 @@ async function main() {
   // ──────────────────────────────────────────────
   // 12. VOLUNTEERS
   // ──────────────────────────────────────────────
-  const volunteers = [
-    { id: 'vol_001', name: 'Ravi Kumar', email: 'ravi.kumar@gmail.com', phone: '+91 98001 12345', ministry: 'Worship Ministry', status: 'Active', appliedAt: '2024-01-15' },
-    { id: 'vol_002', name: 'Preethi Naidu', email: 'preethi.naidu@gmail.com', phone: '+91 97002 23456', ministry: 'Children\'s Ministry', status: 'Active', appliedAt: '2024-02-10' },
-    { id: 'vol_003', name: 'Suresh Babu', email: 'suresh.babu@gmail.com', phone: '+91 96003 34567', ministry: 'Outreach & Missions', status: 'Active', appliedAt: '2024-01-20' },
-    { id: 'vol_004', name: 'Anitha Rao', email: 'anitha.rao@gmail.com', phone: '+91 95004 45678', ministry: 'Women\'s Ministry', status: 'Pending', appliedAt: '2024-06-01' },
-    { id: 'vol_005', name: 'Kiran Reddy', email: 'kiran.reddy@gmail.com', phone: '+91 94005 56789', ministry: 'Youth Ministry', status: 'Active', appliedAt: '2024-03-05' },
-    { id: 'vol_006', name: 'Vijaya Lakshmi', email: 'vijaya.l@gmail.com', phone: '+91 93006 67890', ministry: 'Men\'s Ministry', status: 'Pending', appliedAt: '2024-06-08' },
-  ];
+  const volunteers = [];
 
   for (const vol of volunteers) {
     await prisma.volunteer.upsert({

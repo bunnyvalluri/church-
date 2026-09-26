@@ -82,12 +82,9 @@ export default function UserAccountsSettingsPage() {
       icon={Users}
       onRefresh={loadData}
       isLoading={loading}
-      searchPlaceholder="Search users by name, role or email..."
-      searchValue={search}
-      onSearchChange={setSearch}
     >
       <MemberManagement
-        users={filteredUsers}
+        users={users}
         onRoleChange={handleRoleChange}
         onDeleteMember={handleDeleteMember}
         onAddMember={() => {}}

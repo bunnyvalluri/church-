@@ -49,17 +49,17 @@ export default function BranchLocationPage({
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300">
       <Navbar />
 
-      {/* Hero Header */}
-      <section className="relative pt-32 pb-16 md:pt-40 md:pb-24 bg-slate-950 text-white overflow-hidden shadow-2xl">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-15 pointer-events-none" />
-        <div className="absolute -top-32 -right-32 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
+      {/* Hero Header - Adaptive Light/Dark Theme */}
+      <section className="relative pt-28 pb-16 md:pt-36 md:pb-24 bg-gradient-to-b from-indigo-50/90 via-purple-50/40 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 border-b border-slate-200/60 dark:border-white/[0.06] overflow-hidden transition-colors duration-300">
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.04] dark:opacity-15 pointer-events-none" />
+        <div className="absolute -top-32 -right-32 w-96 h-96 bg-purple-500/10 dark:bg-purple-600/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-indigo-500/10 dark:bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
 
         <div className="container mx-auto px-4 relative z-10">
-          <div className="mb-6">
+          <div className="mb-5">
             <Link
               href="/locations"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-all backdrop-blur-md border border-white/10"
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white/80 dark:bg-white/10 hover:bg-white dark:hover:bg-white/20 text-slate-700 dark:text-white text-xs font-bold transition-all backdrop-blur-md border border-slate-200 dark:border-white/10 shadow-xs"
             >
               <ArrowLeft className="w-4 h-4" />
               <span>{isTelugu ? "అన్ని ప్రాంతాలు" : isHindi ? "सभी शाखाएं" : "All Locations"}</span>
@@ -67,7 +67,7 @@ export default function BranchLocationPage({
           </div>
 
           <div className="max-w-4xl">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-900/70 border border-purple-400/50 text-xs font-extrabold uppercase tracking-wider text-amber-300 mb-4 backdrop-blur-md">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-100/90 dark:bg-purple-900/60 border border-purple-200 dark:border-purple-500/30 text-xs font-extrabold uppercase tracking-wider text-purple-700 dark:text-purple-300 mb-4 backdrop-blur-md shadow-xs">
               <Church className="w-4 h-4" />
               <span>
                 {branch.isMain
@@ -84,11 +84,11 @@ export default function BranchLocationPage({
               </span>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight mb-4 font-serif text-white">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight mb-4 font-serif text-slate-900 dark:text-white">
               {branchName}
             </h1>
 
-            <p className="text-base sm:text-lg md:text-xl text-slate-300 font-light leading-relaxed max-w-3xl">
+            <p className="text-sm sm:text-base md:text-lg text-slate-600 dark:text-slate-300 font-medium leading-relaxed max-w-3xl">
               {branchDescription}
             </p>
           </div>

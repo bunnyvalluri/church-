@@ -145,8 +145,8 @@ interface VolunteerItem {
   name: string;
   email: string;
   phone: string;
-  ministry: "Choir" | "Ushering" | "Media & AV" | "Outreach" | "Sunday School";
-  status: "Pending" | "Approved";
+  ministry: string;
+  status: "Pending" | "Approved" | "Active" | "Rejected";
   appliedAt: string;
 }
 
@@ -2343,141 +2343,264 @@ export default function PastorDashboard() {
 
           {/* TAB 9: VOLUNTEERS VIEW */}
           {activeNav === "Volunteers" && (
-            <div className="admin-card p-6 space-y-6 animate-in fade-in duration-200">
-              <div>
-                <h2 className="admin-title text-base">Volunteer Applications</h2>
-                <p className="admin-subtitle mt-1">Review registrations for choir, ushering, technical, outreach, and Sunday School departments</p>
+            <div className="admin-card p-4 sm:p-6 space-y-4 sm:space-y-6 animate-in fade-in duration-200">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h2 className="admin-title text-base sm:text-lg">{t.volunteersTitle || "Volunteer Applications"}</h2>
+                  <p className="admin-subtitle text-xs mt-0.5">{t.volunteersSubtitle || "Review registrations for choir, ushering, technical, outreach, and Sunday School departments"}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    if (!confirm("Are you sure you want to remove all test records?")) return;
+                    try {
+                      const res = await fetch("/api/pastor/volunteers?cleanAllFake=true", { method: "DELETE" });
+                      if (res.ok) {
+                        setVolunteers([]);
+                        triggerToast("Test volunteer records purged.", "success");
+                      }
+                    } catch {}
+                  }}
+                  className="px-3 py-1.5 text-xs font-bold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/40 rounded-xl hover:bg-rose-100 transition-all self-start sm:self-auto"
+                >
+                  {t.clearFakeVolunteers || "Clear Test"}
+                </button>
               </div>
 
-              <div className="admin-table-wrapper overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="admin-table-head">
-                      <th className="py-3 px-4">Volunteer</th>
-                      <th className="py-3 px-4">Ministry Area</th>
-                      <th className="py-3 px-4">Applied Date</th>
-                      <th className="py-3 px-4">Status</th>
-                      <th className="py-3 px-4 text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
+              {volunteers.filter(v => v.name.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 ? (
+                <div className="text-center py-12 px-4 space-y-2">
+                  <UserCheck className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
+                  <p className="text-sm font-bold text-gray-900 dark:text-white">{t.noVolunteersFound || "No volunteer applications found"}</p>
+                  <p className="text-xs text-gray-400">{t.noVolunteersSubtitle || "New signups will appear here in real time."}</p>
+                </div>
+              ) : (
+                <>
+                  {/* MOBILE CARDS VIEW */}
+                  <div className="block md:hidden divide-y divide-gray-100 dark:divide-white/[0.05]">
                     {volunteers.filter(v => v.name.toLowerCase().includes(searchQuery.toLowerCase())).map(vol => (
-                      <tr key={vol.id} className="admin-table-row">
-                        <td className="py-3 px-4">
-                          <div>
-                            <span className="text-xs font-bold text-gray-800 dark:text-white block">{vol.name}</span>
-                            <span className="text-[9px] text-gray-400 dark:text-gray-500">{vol.email} • {vol.phone}</span>
+                      <div key={vol.id} className="py-3.5 space-y-2">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="min-w-0">
+                            <span className="text-xs font-bold text-gray-900 dark:text-white block truncate">{vol.name}</span>
+                            <span className="text-[10px] text-gray-400 dark:text-gray-500">Applied: {vol.appliedAt}</span>
                           </div>
-                        </td>
-                        <td className="py-3 px-4 text-xs font-semibold text-gray-700 dark:text-gray-300">{vol.ministry}</td>
-                        <td className="py-3 px-4 text-xs text-gray-500 dark:text-gray-400">{vol.appliedAt}</td>
-                        <td className="py-3 px-4">
-                          <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${
-                            vol.status === "Approved" 
-                              ? "bg-emerald-50 dark:bg-emerald-950/20 text-emerald-500 border border-emerald-150 dark:border-emerald-500/10" 
-                              : "bg-amber-50 dark:bg-amber-955/20 text-amber-500 border border-amber-150 dark:border-amber-500/10"
+                          <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider shrink-0 ${
+                            vol.status === "Approved" || vol.status === "Active"
+                              ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/40"
+                              : "bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800/40"
                           }`}>
                             {vol.status}
                           </span>
-                        </td>
-                        <td className="py-3 px-4 text-right">
-                          {vol.status === "Pending" ? (
-                            <button 
+                        </div>
+
+                        <div className="text-xs font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50/50 dark:bg-indigo-950/30 px-2.5 py-1 rounded-lg border border-indigo-100 dark:border-indigo-900/30">
+                          {vol.ministry}
+                        </div>
+
+                        <div className="flex items-center justify-between gap-2 text-[11px] text-gray-500 pt-1">
+                          <span className="truncate max-w-[180px]">{vol.email || vol.phone || "No contact"}</span>
+                          {vol.status === "Pending" && (
+                            <button
                               type="button"
                               onClick={() => handleApproveVolunteer(vol.id)}
-                              className="px-3 py-1 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] hover:from-[#5053E4] hover:to-[#7C3AED] text-white rounded-lg text-xs font-bold shadow-sm transition-all"
+                              className="px-3 py-1 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] text-white rounded-lg text-xs font-bold shadow-xs transition-all active:scale-95 shrink-0"
                             >
                               Approve
                             </button>
-                          ) : (
-                            <span className="text-xs text-gray-400 dark:text-gray-500 italic">No Actions</span>
                           )}
-                        </td>
-                      </tr>
+                        </div>
+                      </div>
                     ))}
-                  </tbody>
-                </table>
-              </div>
+                  </div>
+
+                  {/* DESKTOP TABLE VIEW */}
+                  <div className="hidden md:block admin-table-wrapper overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="admin-table-head">
+                          <th className="py-3 px-4">Volunteer</th>
+                          <th className="py-3 px-4">Ministry Area</th>
+                          <th className="py-3 px-4">Applied Date</th>
+                          <th className="py-3 px-4">Status</th>
+                          <th className="py-3 px-4 text-right">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {volunteers.filter(v => v.name.toLowerCase().includes(searchQuery.toLowerCase())).map(vol => (
+                          <tr key={vol.id} className="admin-table-row">
+                            <td className="py-3 px-4">
+                              <div>
+                                <span className="text-xs font-bold text-gray-800 dark:text-white block">{vol.name}</span>
+                                <span className="text-[10px] text-gray-400 dark:text-gray-500">{vol.email} {vol.phone ? `• ${vol.phone}` : ""}</span>
+                              </div>
+                            </td>
+                            <td className="py-3 px-4 text-xs font-semibold text-gray-700 dark:text-gray-300">{vol.ministry}</td>
+                            <td className="py-3 px-4 text-xs text-gray-500 dark:text-gray-400">{vol.appliedAt}</td>
+                            <td className="py-3 px-4">
+                              <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${
+                                vol.status === "Approved" || vol.status === "Active"
+                                  ? "bg-emerald-50 dark:bg-emerald-950/20 text-emerald-500 border border-emerald-150 dark:border-emerald-500/10" 
+                                  : "bg-amber-50 dark:bg-amber-955/20 text-amber-500 border border-amber-150 dark:border-amber-500/10"
+                              }`}>
+                                {vol.status}
+                              </span>
+                            </td>
+                            <td className="py-3 px-4 text-right">
+                              {vol.status === "Pending" ? (
+                                <button 
+                                  type="button"
+                                  onClick={() => handleApproveVolunteer(vol.id)}
+                                  className="px-3 py-1 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] hover:from-[#5053E4] hover:to-[#7C3AED] text-white rounded-lg text-xs font-bold shadow-sm transition-all"
+                                >
+                                  Approve
+                                </button>
+                              ) : (
+                                <span className="text-xs text-gray-400 dark:text-gray-500 italic">No Actions</span>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
+              )}
             </div>
           )}
 
           {/* TAB 10: PROFILE VIEW */}
           {activeNav === "Profile" && (
-            <div className="admin-card p-6 space-y-6 max-w-2xl mx-auto animate-in fade-in duration-200">
-              <div>
-                <h2 className="admin-title text-base">My Pastor Profile</h2>
-                <p className="admin-subtitle mt-1">Manage biography details, profiles pictures, contact phone, and account credentials</p>
-              </div>
-
-              <form onSubmit={handleSaveProfile} className="space-y-5">
-                <div className="flex items-center gap-4 pb-4 border-b admin-divider">
-                  <div className="w-16 h-16 rounded-full overflow-hidden relative border border-gray-250 dark:border-white/10 shrink-0 bg-gray-50 dark:bg-white/5">
-                    {pastorProfile.image && typeof pastorProfile.image === 'string' && pastorProfile.image.length > 0 ? (
-                      <Image src={pastorProfile.image} alt={pastorProfile.name} fill sizes="64px" className="object-cover" />
-                    ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-                        <span className="text-white font-black text-xl">{(pastorProfile.name || 'P').charAt(0)}</span>
+            <div className="space-y-4 sm:space-y-6 animate-in fade-in duration-200">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+                {/* Profile Overview Card */}
+                <div className="lg:col-span-1 space-y-4">
+                  <div className="admin-card p-5 sm:p-6 text-center space-y-4">
+                    <div className="relative w-24 h-24 sm:w-28 sm:h-28 mx-auto">
+                      <div className="w-full h-full rounded-3xl overflow-hidden border-2 border-indigo-200 dark:border-indigo-500/30 shadow-md relative bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-950/40 dark:to-purple-950/40">
+                        {pastorProfile.image && typeof pastorProfile.image === 'string' && pastorProfile.image.length > 0 ? (
+                          <Image src={pastorProfile.image} alt={pastorProfile.name} fill sizes="112px" className="object-cover" priority />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-black text-3xl">
+                            {(pastorProfile.name || 'P').charAt(0)}
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
-                  <div>
-                    <button type="button" onClick={() => triggerToast("Picture upload is mock-simulated.", "success")} className="admin-btn-ghost">
-                      Change Photo
-                    </button>
+                      <button
+                        type="button"
+                        onClick={() => triggerToast("Photo upload simulation active.", "success")}
+                        className="absolute -bottom-1 -right-1 p-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-md border-2 border-white dark:border-gray-900 transition-all active:scale-95"
+                        title="Change Photo"
+                      >
+                        <ImageIcon className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-center gap-1.5">
+                        <h3 className="text-base sm:text-lg font-black text-gray-900 dark:text-white">
+                          {pastorProfile.name}
+                        </h3>
+                        <Sparkles className="w-4 h-4 text-amber-500 shrink-0" />
+                      </div>
+                      <p className="text-xs font-bold text-indigo-600 dark:text-indigo-400">
+                        {pastorProfile.title}
+                      </p>
+                      <span className="inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/40 mt-1">
+                        Verified Senior Minister
+                      </span>
+                    </div>
+
+                    <div className="pt-3 border-t border-gray-100 dark:border-white/5 space-y-2 text-left text-xs">
+                      <div className="flex items-center gap-2.5 text-gray-600 dark:text-gray-300">
+                        <Mail className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
+                        <span className="truncate">{pastorProfile.email}</span>
+                      </div>
+                      <div className="flex items-center gap-2.5 text-gray-600 dark:text-gray-300">
+                        <Phone className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
+                        <span>{pastorProfile.phone}</span>
+                      </div>
+                      <div className="flex items-center gap-2.5 text-gray-600 dark:text-gray-300">
+                        <MapPin className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
+                        <span className="truncate">Jeedimetla Sanctuary, Hyderabad</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="admin-modal-label">Pastor Name</label>
-                    <input 
-                      type="text" value={pastorProfile.name}
-                      onChange={(e) => setPastorProfile({ ...pastorProfile, name: e.target.value })}
-                      className="admin-input w-full font-semibold"
-                    />
-                  </div>
-                  <div>
-                    <label className="admin-modal-label">Title / Designation</label>
-                    <input 
-                      type="text" value={pastorProfile.title}
-                      onChange={(e) => setPastorProfile({ ...pastorProfile, title: e.target.value })}
-                      className="admin-input w-full font-semibold"
-                    />
+                {/* Edit Form */}
+                <div className="lg:col-span-2">
+                  <div className="admin-card p-5 sm:p-7 space-y-5">
+                    <div className="border-b border-gray-100 dark:border-white/5 pb-3">
+                      <h2 className="admin-title text-base sm:text-lg">Edit Pastor Profile</h2>
+                      <p className="admin-subtitle text-xs mt-0.5">Manage biography details, credentials, contact phone, and account details</p>
+                    </div>
+
+                    <form onSubmit={handleSaveProfile} className="space-y-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                        <div className="space-y-1">
+                          <label className="text-xs font-bold text-gray-700 dark:text-gray-300">Pastor Name *</label>
+                          <input 
+                            type="text" 
+                            required
+                            value={pastorProfile.name}
+                            onChange={(e) => setPastorProfile({ ...pastorProfile, name: e.target.value })}
+                            className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-white/5 text-gray-900 dark:text-white font-medium focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-xs font-bold text-gray-700 dark:text-gray-300">Title / Designation *</label>
+                          <input 
+                            type="text" 
+                            required
+                            value={pastorProfile.title}
+                            onChange={(e) => setPastorProfile({ ...pastorProfile, title: e.target.value })}
+                            className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-white/5 text-gray-900 dark:text-white font-medium focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                        <div className="space-y-1">
+                          <label className="text-xs font-bold text-gray-700 dark:text-gray-300">Email Address *</label>
+                          <input 
+                            type="email" 
+                            required
+                            value={pastorProfile.email}
+                            onChange={(e) => setPastorProfile({ ...pastorProfile, email: e.target.value })}
+                            className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-white/5 text-gray-900 dark:text-white font-medium focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-xs font-bold text-gray-700 dark:text-gray-300">Contact Phone *</label>
+                          <input 
+                            type="text" 
+                            required
+                            value={pastorProfile.phone}
+                            onChange={(e) => setPastorProfile({ ...pastorProfile, phone: e.target.value })}
+                            className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-white/5 text-gray-900 dark:text-white font-medium focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold text-gray-700 dark:text-gray-300">Biography</label>
+                        <textarea 
+                          rows={4} 
+                          value={pastorProfile.bio}
+                          onChange={(e) => setPastorProfile({ ...pastorProfile, bio: e.target.value })}
+                          className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-white/5 text-gray-900 dark:text-white font-medium focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30 resize-none leading-relaxed"
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-end pt-3 border-t border-gray-100 dark:border-white/5">
+                        <button type="submit" className="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] hover:from-[#5053E4] hover:to-[#7C3AED] text-white rounded-xl font-bold text-xs shadow-sm transition-all flex items-center justify-center gap-1.5 active:scale-95">
+                          <Save className="w-4 h-4" /> Save Profile
+                        </button>
+                      </div>
+                    </form>
                   </div>
                 </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="admin-modal-label">Email Address</label>
-                    <input 
-                      type="email" value={pastorProfile.email}
-                      onChange={(e) => setPastorProfile({ ...pastorProfile, email: e.target.value })}
-                      className="admin-input w-full font-semibold"
-                    />
-                  </div>
-                  <div>
-                    <label className="admin-modal-label">Contact Phone</label>
-                    <input 
-                      type="text" value={pastorProfile.phone}
-                      onChange={(e) => setPastorProfile({ ...pastorProfile, phone: e.target.value })}
-                      className="admin-input w-full font-semibold"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="admin-modal-label">Biography</label>
-                  <textarea 
-                    rows={4} value={pastorProfile.bio}
-                    onChange={(e) => setPastorProfile({ ...pastorProfile, bio: e.target.value })}
-                    className="admin-input w-full resize-none leading-relaxed"
-                  />
-                </div>
-
-                <button type="submit" className="px-5 py-2.5 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] hover:from-[#5053E4] hover:to-[#7C3AED] text-white rounded-xl font-bold text-xs uppercase tracking-wider shadow-sm transition-all flex items-center gap-1.5">
-                  <Save className="w-4 h-4" /> Save Profile
-                </button>
-              </form>
+              </div>
             </div>
           )}
 

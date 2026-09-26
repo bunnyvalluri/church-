@@ -10,29 +10,21 @@ export default function AdminFooter() {
 
   return (
     <footer
-      className="w-full border-t border-gray-200/80 dark:border-white/10 bg-white/80 dark:bg-[#0D0E1A]/90 backdrop-blur-md select-none transition-colors"
-      style={{
-        paddingTop: "1rem",
-        paddingBottom: "max(1rem, env(safe-area-inset-bottom, 1rem))",
-        paddingLeft: "max(1rem, env(safe-area-inset-left, 1rem))",
-        paddingRight: "max(1rem, env(safe-area-inset-right, 1rem))",
-      }}
+      className="w-full border-t border-gray-200/80 dark:border-white/10 bg-white/90 dark:bg-[#0D0E1A]/95 backdrop-blur-md select-none transition-colors pt-4 pb-24 lg:pb-4 px-4 sm:px-6"
     >
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-2 text-xs text-gray-500 dark:text-gray-400">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3 md:gap-4 text-xs text-gray-500 dark:text-gray-400">
 
         {/* Left: copyright + credit + India badge */}
-        <div className="flex flex-col items-center sm:items-start gap-1 min-w-0 text-center sm:text-left">
-          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-1.5">
-            <span className="font-bold text-gray-900 dark:text-white text-xs break-words">
-              Kingdom of Christ Ministries
-            </span>
-            <span suppressHydrationWarning className="text-xs text-gray-500 dark:text-gray-400">
+        <div className="flex flex-col items-center md:items-start gap-1.5 min-w-0 text-center md:text-left">
+          <div className="flex flex-wrap items-center justify-center md:justify-start gap-1.5 font-bold text-gray-900 dark:text-white text-xs">
+            <span>Kingdom of Christ Ministries</span>
+            <span suppressHydrationWarning className="text-gray-500 dark:text-gray-400 font-normal">
               © {currentYear} All Rights Reserved.
             </span>
           </div>
 
           {/* Credit + badge row */}
-          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+          <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
             <a
               href="https://valluri-rahul-portfolio.vercel.app/"
               target="_blank"
@@ -45,7 +37,7 @@ export default function AdminFooter() {
               <IndiaFlag className="w-3.5 h-3.5 flex-shrink-0" />
               <span>India</span>
             </span>
-            <span className="hidden md:inline text-gray-400 dark:text-gray-500 text-xs">• Enterprise Portal v2.6</span>
+            <span className="hidden sm:inline text-gray-400 dark:text-gray-500 text-xs">• Enterprise Portal v2.6</span>
           </div>
         </div>
 
@@ -57,9 +49,9 @@ export default function AdminFooter() {
           </div>
           <Link
             href="/admin/settings/security"
-            className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors flex items-center gap-1"
+            className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors flex items-center gap-1 text-gray-600 dark:text-gray-300 hover:underline"
           >
-            <ShieldCheck className="w-3.5 h-3.5" />
+            <ShieldCheck className="w-3.5 h-3.5 text-indigo-500" />
             <span>Security Logs</span>
           </Link>
         </div>

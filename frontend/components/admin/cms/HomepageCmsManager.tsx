@@ -216,24 +216,24 @@ export default function HomepageCmsManager() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* CMS Header & Status Notification */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-100 dark:border-white/10 shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-4 sm:p-6 md:p-7 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-white/10 shadow-sm">
         <div>
-          <h2 className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2">
-            <Sparkles className="w-6 h-6 text-violet-500" />
+          <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2">
+            <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-violet-500 shrink-0" />
             Homepage Dynamic CMS
           </h2>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
             Manage every section, title, image, stat, and contact detail across the KCM Church website.
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="grid grid-cols-2 sm:flex items-center gap-2.5 sm:gap-3 shrink-0 w-full sm:w-auto">
           <button
             onClick={fetchAllCmsData}
             disabled={loading}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 transition-all text-xs font-bold"
+            className="flex items-center justify-center gap-2 px-3.5 sm:px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 active:scale-95 transition-all text-xs font-bold w-full sm:w-auto"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin text-violet-500" : ""}`} />
             Refresh
@@ -242,7 +242,7 @@ export default function HomepageCmsManager() {
             href="/"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs shadow-md shadow-violet-500/20 transition-all"
+            className="flex items-center justify-center gap-2 px-3.5 sm:px-4 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs shadow-md shadow-violet-500/20 active:scale-95 transition-all w-full sm:w-auto"
           >
             <ExternalLink className="w-4 h-4" />
             Live Preview
@@ -252,7 +252,7 @@ export default function HomepageCmsManager() {
 
       {message && (
         <div
-          className={`p-4 rounded-2xl flex items-center gap-3 text-sm font-semibold border ${
+          className={`p-3.5 sm:p-4 rounded-xl sm:rounded-2xl flex items-center gap-3 text-xs sm:text-sm font-semibold border ${
             message.type === "success"
               ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400"
               : "bg-rose-500/10 border-rose-500/30 text-rose-600 dark:text-rose-400"
@@ -268,7 +268,7 @@ export default function HomepageCmsManager() {
       )}
 
       {/* Sub Tabs Navigation */}
-      <div className="flex gap-2 p-1.5 bg-slate-100 dark:bg-slate-900 rounded-2xl overflow-x-auto">
+      <div className="flex gap-1.5 sm:gap-2 p-1.5 bg-slate-100 dark:bg-slate-900 rounded-xl sm:rounded-2xl overflow-x-auto no-scrollbar scroll-smooth">
         {[
           { id: "hero", label: "Hero Section", icon: Layout },
           { id: "stats", label: "Statistics & Counter Cards", icon: BarChart3 },
@@ -282,13 +282,13 @@ export default function HomepageCmsManager() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as CmsSubTab)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm whitespace-nowrap transition-all duration-200 ${
+              className={`flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl font-bold text-xs sm:text-sm whitespace-nowrap shrink-0 transition-all duration-200 ${
                 isActive
                   ? "bg-white dark:bg-violet-600 text-violet-600 dark:text-white shadow-sm"
                   : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
-              <Icon className="w-4 h-4" />
+              <Icon className="w-4 h-4 shrink-0" />
               {tab.label}
             </button>
           );
@@ -297,23 +297,23 @@ export default function HomepageCmsManager() {
 
       {/* ── TAB 1: HERO SECTION ────────────────────────────────────────────── */}
       {activeTab === "hero" && (
-        <div className="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-3xl border border-slate-100 dark:border-white/10 shadow-sm space-y-6">
-          <div className="flex items-center justify-between border-b border-slate-100 dark:border-white/10 pb-4">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <Layout className="w-5 h-5 text-violet-500" />
+        <div className="bg-white dark:bg-slate-900 p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-white/10 shadow-sm space-y-5 sm:space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-white/10 pb-4">
+            <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <Layout className="w-5 h-5 text-violet-500 shrink-0" />
               Hero Section Settings
             </h3>
             <button
               onClick={saveHero}
               disabled={saving}
-              className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs shadow-md transition-all"
+              className="flex items-center justify-center gap-2 px-5 sm:px-6 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 active:scale-95 text-white font-bold text-xs shadow-md shadow-violet-500/20 transition-all w-full sm:w-auto"
             >
               <Save className="w-4 h-4" />
               {saving ? "Saving..." : "Save Hero"}
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             <div>
               <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
                 Top Announcement Badge Text
@@ -322,7 +322,7 @@ export default function HomepageCmsManager() {
                 type="text"
                 value={hero.badgeText || ""}
                 onChange={(e) => setHero({ ...hero, badgeText: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm"
+                className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all"
                 placeholder="We are here for you 24/7"
               />
             </div>
@@ -335,7 +335,7 @@ export default function HomepageCmsManager() {
                 type="text"
                 value={hero.headline || ""}
                 onChange={(e) => setHero({ ...hero, headline: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm"
+                className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all"
                 placeholder="Welcome to"
               />
             </div>
@@ -348,7 +348,7 @@ export default function HomepageCmsManager() {
                 type="text"
                 value={hero.subheadline || ""}
                 onChange={(e) => setHero({ ...hero, subheadline: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm"
+                className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all"
                 placeholder="Kingdom of Christ"
               />
             </div>
@@ -361,87 +361,87 @@ export default function HomepageCmsManager() {
                 rows={3}
                 value={hero.subtitle || ""}
                 onChange={(e) => setHero({ ...hero, subtitle: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm"
+                className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all"
                 placeholder="A place of Love, Faith, and Miracles"
               />
             </div>
           </div>
 
-          <div className="border-t border-slate-100 dark:border-white/10 pt-6">
-            <h4 className="text-sm font-bold text-slate-900 dark:text-white mb-4">CTA Buttons Configuration</h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="border-t border-slate-100 dark:border-white/10 pt-5 sm:pt-6">
+            <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white mb-3 sm:mb-4">CTA Buttons Configuration</h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
               {/* Primary CTA */}
-              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-3">
-                <span className="text-xs font-bold text-violet-500 uppercase tracking-wider">Primary Button</span>
+              <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-2.5 sm:space-y-3">
+                <span className="text-[11px] sm:text-xs font-bold text-violet-500 uppercase tracking-wider">Primary Button</span>
                 <input
                   type="text"
                   value={hero.ctaPrimaryText || ""}
                   onChange={(e) => setHero({ ...hero, ctaPrimaryText: e.target.value })}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-xs font-semibold"
+                  className="w-full px-3 py-2 sm:py-2.5 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-violet-500/20"
                   placeholder="Button Text"
                 />
                 <input
                   type="text"
                   value={hero.ctaPrimaryHref || ""}
                   onChange={(e) => setHero({ ...hero, ctaPrimaryHref: e.target.value })}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-xs text-slate-500"
+                  className="w-full px-3 py-2 sm:py-2.5 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-xs text-slate-600 dark:text-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500/20"
                   placeholder="Link Href (#services)"
                 />
               </div>
 
               {/* Secondary CTA */}
-              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-3">
-                <span className="text-xs font-bold text-amber-500 uppercase tracking-wider">Secondary Button</span>
+              <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-2.5 sm:space-y-3">
+                <span className="text-[11px] sm:text-xs font-bold text-amber-500 uppercase tracking-wider">Secondary Button</span>
                 <input
                   type="text"
                   value={hero.ctaSecondaryText || ""}
                   onChange={(e) => setHero({ ...hero, ctaSecondaryText: e.target.value })}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-xs font-semibold"
+                  className="w-full px-3 py-2 sm:py-2.5 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-violet-500/20"
                   placeholder="Button Text"
                 />
                 <input
                   type="text"
                   value={hero.ctaSecondaryHref || ""}
                   onChange={(e) => setHero({ ...hero, ctaSecondaryHref: e.target.value })}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-xs text-slate-500"
+                  className="w-full px-3 py-2 sm:py-2.5 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-xs text-slate-600 dark:text-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500/20"
                   placeholder="Link Href (/gallery)"
                 />
               </div>
 
               {/* Tertiary CTA */}
-              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-3">
-                <span className="text-xs font-bold text-rose-500 uppercase tracking-wider">Tertiary Button</span>
+              <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-2.5 sm:space-y-3">
+                <span className="text-[11px] sm:text-xs font-bold text-rose-500 uppercase tracking-wider">Tertiary Button</span>
                 <input
                   type="text"
                   value={hero.ctaTertiaryText || ""}
                   onChange={(e) => setHero({ ...hero, ctaTertiaryText: e.target.value })}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-xs font-semibold"
+                  className="w-full px-3 py-2 sm:py-2.5 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-violet-500/20"
                   placeholder="Button Text"
                 />
                 <input
                   type="text"
                   value={hero.ctaTertiaryHref || ""}
                   onChange={(e) => setHero({ ...hero, ctaTertiaryHref: e.target.value })}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-xs text-slate-500"
+                  className="w-full px-3 py-2 sm:py-2.5 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-xs text-slate-600 dark:text-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500/20"
                   placeholder="Link Href (/prayer)"
                 />
               </div>
 
               {/* NGO Portal CTA */}
-              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-3">
-                <span className="text-xs font-bold text-fuchsia-500 uppercase tracking-wider">NGO Portal Button</span>
+              <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-2.5 sm:space-y-3">
+                <span className="text-[11px] sm:text-xs font-bold text-fuchsia-500 uppercase tracking-wider">NGO Portal Button</span>
                 <input
                   type="text"
                   value={hero.ctaNgoText || ""}
                   onChange={(e) => setHero({ ...hero, ctaNgoText: e.target.value })}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-xs font-semibold"
+                  className="w-full px-3 py-2 sm:py-2.5 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-violet-500/20"
                   placeholder="Button Text (Visit NGO Portal)"
                 />
                 <input
                   type="text"
                   value={hero.ctaNgoHref || ""}
                   onChange={(e) => setHero({ ...hero, ctaNgoHref: e.target.value })}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-xs text-slate-500"
+                  className="w-full px-3 py-2 sm:py-2.5 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-xs text-slate-600 dark:text-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500/20"
                   placeholder="Link Href (/ngo)"
                 />
               </div>
@@ -452,13 +452,13 @@ export default function HomepageCmsManager() {
 
       {/* ── TAB 2: STATISTICS ──────────────────────────────────────────────── */}
       {activeTab === "stats" && (
-        <div className="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-3xl border border-slate-100 dark:border-white/10 shadow-sm space-y-6">
-          <div className="flex items-center justify-between border-b border-slate-100 dark:border-white/10 pb-4">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <BarChart3 className="w-5 h-5 text-violet-500" />
+        <div className="bg-white dark:bg-slate-900 p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-white/10 shadow-sm space-y-5 sm:space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-white/10 pb-4">
+            <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <BarChart3 className="w-5 h-5 text-violet-500 shrink-0" />
               Homepage Statistics Cards
             </h3>
-            <div className="flex items-center gap-3">
+            <div className="grid grid-cols-2 sm:flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
               <button
                 onClick={() => {
                   const newStat: SiteStatistic = {
@@ -479,14 +479,14 @@ export default function HomepageCmsManager() {
                   };
                   setStats([...stats, newStat]);
                 }}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 dark:bg-white/10 hover:bg-slate-200 text-slate-700 dark:text-slate-300 font-bold text-xs"
+                className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-slate-100 dark:bg-white/10 hover:bg-slate-200 text-slate-700 dark:text-slate-300 font-bold text-xs active:scale-95 transition-all w-full sm:w-auto"
               >
-                <Plus className="w-4 h-4" /> Add Stat Card
+                <Plus className="w-4 h-4" /> Add Card
               </button>
               <button
                 onClick={saveStats}
                 disabled={saving}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs shadow-md transition-all"
+                className="flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 active:scale-95 text-white font-bold text-xs shadow-md shadow-violet-500/20 transition-all w-full sm:w-auto"
               >
                 <Save className="w-4 h-4" />
                 {saving ? "Saving..." : "Save Statistics"}
@@ -494,17 +494,17 @@ export default function HomepageCmsManager() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-4">
             {stats.map((stat, idx) => (
               <div
                 key={stat.id || idx}
-                className="p-5 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-4 relative"
+                className="p-4 sm:p-5 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-3.5 sm:space-y-4 relative"
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-extrabold text-violet-500 uppercase tracking-wider">
+                  <span className="text-[11px] sm:text-xs font-extrabold text-violet-500 uppercase tracking-wider">
                     Card #{idx + 1}
                   </span>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
                     <button
                       onClick={() => {
                         if (idx === 0) return;
@@ -515,7 +515,7 @@ export default function HomepageCmsManager() {
                         setStats(copy);
                       }}
                       disabled={idx === 0}
-                      className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-white disabled:opacity-30"
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-white/10 disabled:opacity-30 transition-all"
                     >
                       <ArrowUp className="w-4 h-4" />
                     </button>
@@ -529,22 +529,22 @@ export default function HomepageCmsManager() {
                         setStats(copy);
                       }}
                       disabled={idx === stats.length - 1}
-                      className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-white disabled:opacity-30"
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-white/10 disabled:opacity-30 transition-all"
                     >
                       <ArrowDown className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => setStats(stats.filter((_, i) => i !== idx))}
-                      className="p-1 text-rose-400 hover:text-rose-600"
+                      className="p-1.5 rounded-lg text-rose-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-all"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">
+                    <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">
                       Label (English)
                     </label>
                     <input
@@ -555,12 +555,12 @@ export default function HomepageCmsManager() {
                         copy[idx].label = e.target.value;
                         setStats(copy);
                       }}
-                      className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-xs font-bold"
+                      className="w-full px-3 py-2 sm:py-2.5 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500/20"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">
+                    <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">
                       Counter Value
                     </label>
                     <input
@@ -571,12 +571,12 @@ export default function HomepageCmsManager() {
                         copy[idx].value = e.target.value;
                         setStats(copy);
                       }}
-                      className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-xs font-extrabold text-violet-600 dark:text-violet-400"
+                      className="w-full px-3 py-2 sm:py-2.5 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-xs font-extrabold text-violet-600 dark:text-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-500/20"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">
+                    <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">
                       Telugu Label
                     </label>
                     <input
@@ -587,12 +587,12 @@ export default function HomepageCmsManager() {
                         copy[idx].labelTe = e.target.value;
                         setStats(copy);
                       }}
-                      className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-xs"
+                      className="w-full px-3 py-2 sm:py-2.5 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500/20"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">
+                    <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">
                       Color Scheme
                     </label>
                     <select
@@ -602,7 +602,7 @@ export default function HomepageCmsManager() {
                         copy[idx].colorScheme = e.target.value as any;
                         setStats(copy);
                       }}
-                      className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-xs"
+                      className="w-full px-3 py-2 sm:py-2.5 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500/20"
                     >
                       <option value="violet">Violet</option>
                       <option value="emerald">Emerald</option>
@@ -621,38 +621,38 @@ export default function HomepageCmsManager() {
 
       {/* ── TAB 3: CONTACT & BRANCHES ──────────────────────────────────────── */}
       {activeTab === "contact" && (
-        <div className="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-3xl border border-slate-100 dark:border-white/10 shadow-sm space-y-6">
+        <div className="bg-white dark:bg-slate-900 p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-white/10 shadow-sm space-y-5 sm:space-y-6">
           <div className="border-b border-slate-100 dark:border-white/10 pb-4">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <MapPin className="w-5 h-5 text-violet-500" />
+            <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <MapPin className="w-5 h-5 text-violet-500 shrink-0" />
               Branch Contacts & Google Maps
             </h3>
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
               Edit addresses, phone numbers, and Google Maps embed links for each church branch.
             </p>
           </div>
 
-          <div className="space-y-8">
+          <div className="space-y-6 sm:space-y-8">
             {contacts.map((c, idx) => (
               <div
                 key={c.id || idx}
-                className="p-6 rounded-3xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-4"
+                className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-4"
               >
-                <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/10 pb-3">
-                  <h4 className="text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
-                    <span className="w-3 h-3 rounded-full bg-violet-500" />
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-white/10 pb-3">
+                  <h4 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-violet-500 shrink-0" />
                     {c.branchName} ({c.branchKey})
                   </h4>
                   <button
                     onClick={() => saveContactBranch(c)}
                     disabled={saving}
-                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs shadow-sm transition-all"
+                    className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-700 active:scale-95 text-white font-bold text-xs shadow-sm transition-all w-full sm:w-auto"
                   >
                     <Save className="w-3.5 h-3.5" /> Save {c.branchName}
                   </button>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-4">
                   <div>
                     <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                       Branch Name
@@ -665,7 +665,7 @@ export default function HomepageCmsManager() {
                         copy[idx].branchName = e.target.value;
                         setContacts(copy);
                       }}
-                      className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-xs font-bold"
+                      className="w-full px-3 py-2 sm:py-2.5 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500/20"
                     />
                   </div>
 
@@ -681,7 +681,7 @@ export default function HomepageCmsManager() {
                         copy[idx].serviceHours = e.target.value;
                         setContacts(copy);
                       }}
-                      className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-xs"
+                      className="w-full px-3 py-2 sm:py-2.5 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500/20"
                       placeholder="Sunday: 5:45 AM – 8:30 AM"
                     />
                   </div>
@@ -698,7 +698,7 @@ export default function HomepageCmsManager() {
                         copy[idx].address = e.target.value;
                         setContacts(copy);
                       }}
-                      className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-xs font-mono"
+                      className="w-full px-3 py-2 sm:py-2.5 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500/20"
                     />
                   </div>
 
@@ -714,7 +714,7 @@ export default function HomepageCmsManager() {
                         copy[idx].mapsUrl = e.target.value;
                         setContacts(copy);
                       }}
-                      className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-xs font-mono text-slate-600 dark:text-slate-300"
+                      className="w-full px-3 py-2 sm:py-2.5 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-xs font-mono text-slate-600 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-violet-500/20"
                     />
                   </div>
 
@@ -730,7 +730,7 @@ export default function HomepageCmsManager() {
                         copy[idx].embedUrl = e.target.value;
                         setContacts(copy);
                       }}
-                      className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-xs font-mono text-slate-600 dark:text-slate-300"
+                      className="w-full px-3 py-2 sm:py-2.5 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-xs font-mono text-slate-600 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-violet-500/20"
                     />
                   </div>
                 </div>
@@ -742,23 +742,23 @@ export default function HomepageCmsManager() {
 
       {/* ── TAB 4: FOOTER & SOCIAL LINKS ───────────────────────────────────── */}
       {activeTab === "footer" && (
-        <div className="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-3xl border border-slate-100 dark:border-white/10 shadow-sm space-y-6">
-          <div className="flex items-center justify-between border-b border-slate-100 dark:border-white/10 pb-4">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <Globe className="w-5 h-5 text-violet-500" />
+        <div className="bg-white dark:bg-slate-900 p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-white/10 shadow-sm space-y-5 sm:space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-white/10 pb-4">
+            <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <Globe className="w-5 h-5 text-violet-500 shrink-0" />
               Footer Configuration & Social Links
             </h3>
             <button
               onClick={saveFooter}
               disabled={saving}
-              className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs shadow-md transition-all"
+              className="flex items-center justify-center gap-2 px-5 sm:px-6 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 active:scale-95 text-white font-bold text-xs shadow-md shadow-violet-500/20 transition-all w-full sm:w-auto"
             >
               <Save className="w-4 h-4" />
               {saving ? "Saving..." : "Save Footer"}
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             <div className="md:col-span-2">
               <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
                 Scripture / Tagline Quote (English)
@@ -767,7 +767,7 @@ export default function HomepageCmsManager() {
                 rows={2}
                 value={footer.tagline || ""}
                 onChange={(e) => setFooter({ ...footer, tagline: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm"
+                className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all"
               />
             </div>
 
@@ -779,7 +779,7 @@ export default function HomepageCmsManager() {
                 type="email"
                 value={footer.email || ""}
                 onChange={(e) => setFooter({ ...footer, email: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm"
+                className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all"
               />
             </div>
 
@@ -791,7 +791,7 @@ export default function HomepageCmsManager() {
                 type="text"
                 value={footer.mapsUrl || ""}
                 onChange={(e) => setFooter({ ...footer, mapsUrl: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm font-mono"
+                className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-xs sm:text-sm font-mono focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all"
               />
             </div>
 
@@ -803,7 +803,7 @@ export default function HomepageCmsManager() {
                 type="text"
                 value={footer.youtubeUrl || ""}
                 onChange={(e) => setFooter({ ...footer, youtubeUrl: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm"
+                className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all"
               />
             </div>
 
@@ -815,7 +815,7 @@ export default function HomepageCmsManager() {
                 type="text"
                 value={footer.instagramUrl || ""}
                 onChange={(e) => setFooter({ ...footer, instagramUrl: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm"
+                className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all"
               />
             </div>
           </div>
@@ -824,23 +824,23 @@ export default function HomepageCmsManager() {
 
       {/* ── TAB 5: ABOUT SECTION ───────────────────────────────────────────── */}
       {activeTab === "about" && (
-        <div className="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-3xl border border-slate-100 dark:border-white/10 shadow-sm space-y-6">
-          <div className="flex items-center justify-between border-b border-slate-100 dark:border-white/10 pb-4">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <Info className="w-5 h-5 text-violet-500" />
+        <div className="bg-white dark:bg-slate-900 p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-white/10 shadow-sm space-y-5 sm:space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-white/10 pb-4">
+            <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <Info className="w-5 h-5 text-violet-500 shrink-0" />
               About Ministry Content & Mission
             </h3>
             <button
               onClick={saveAbout}
               disabled={saving}
-              className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs shadow-md transition-all"
+              className="flex items-center justify-center gap-2 px-5 sm:px-6 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 active:scale-95 text-white font-bold text-xs shadow-md shadow-violet-500/20 transition-all w-full sm:w-auto"
             >
               <Save className="w-4 h-4" />
               {saving ? "Saving..." : "Save About Section"}
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             <div>
               <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
                 Section Badge Pill Text
@@ -849,7 +849,7 @@ export default function HomepageCmsManager() {
                 type="text"
                 value={about.sectionBadge || ""}
                 onChange={(e) => setAbout({ ...about, sectionBadge: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm"
+                className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all"
                 placeholder="Who We Are"
               />
             </div>
@@ -862,7 +862,7 @@ export default function HomepageCmsManager() {
                 type="text"
                 value={about.heading || ""}
                 onChange={(e) => setAbout({ ...about, heading: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm font-bold"
+                className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-xs sm:text-sm font-bold focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all"
                 placeholder="About Our Ministry"
               />
             </div>
@@ -875,7 +875,7 @@ export default function HomepageCmsManager() {
                 rows={2}
                 value={about.subtitle || ""}
                 onChange={(e) => setAbout({ ...about, subtitle: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm"
+                className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all"
               />
             </div>
 
@@ -887,7 +887,7 @@ export default function HomepageCmsManager() {
                 type="text"
                 value={about.missionTitle || ""}
                 onChange={(e) => setAbout({ ...about, missionTitle: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm font-bold"
+                className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-xs sm:text-sm font-bold focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all"
                 placeholder="Our Mission"
               />
             </div>
@@ -900,7 +900,7 @@ export default function HomepageCmsManager() {
                 rows={4}
                 value={about.missionText || ""}
                 onChange={(e) => setAbout({ ...about, missionText: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm leading-relaxed"
+                className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-xs sm:text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all"
               />
             </div>
           </div>

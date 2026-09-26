@@ -8,7 +8,7 @@ import { useLanguage } from "@/components/providers/LanguageProvider";
 import {
   BookOpen, User, Calendar, Play, Video, Volume2,
   RefreshCw, Bell, Search, Clock, Tag, Headphones,
-  TrendingUp, Eye, CheckCircle2, AlertCircle, Sparkles
+  TrendingUp, Eye, CheckCircle2, AlertCircle, Sparkles, X
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -247,14 +247,24 @@ export default function MemberSermons() {
       {/* CONTROLS: Search Input & Category Filters */}
       <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3">
         <div className="relative flex-1">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 dark:text-gray-400 pointer-events-none" />
           <input
             type="text"
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder={st.searchPlaceholder}
-            className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent focus:outline-none transition-all text-xs sm:text-sm font-medium shadow-sm"
+            className="w-full pl-10 pr-10 py-2.5 rounded-2xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent focus:outline-none transition-all text-xs sm:text-sm font-semibold shadow-sm"
           />
+          {search && (
+            <button
+              type="button"
+              onClick={() => setSearch("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+              title="Clear search"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
         </div>
         <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 scrollbar-none flex-nowrap max-w-full">
           {categories.map(cat => (
@@ -264,7 +274,7 @@ export default function MemberSermons() {
               className={`px-3.5 py-2 rounded-2xl text-xs font-black transition-all border whitespace-nowrap flex-shrink-0 shadow-xs ${
                 activeCategory === cat
                   ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white border-transparent shadow-md"
-                  : "bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:text-gray-900 dark:hover:text-white hover:border-purple-300 dark:hover:border-purple-700"
+                  : "bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:text-gray-900 dark:hover:text-white hover:border-purple-300 dark:hover:border-purple-700"
               }`}
             >
               {catsDict[cat as keyof typeof catsDict] || cat}

@@ -19,7 +19,8 @@ import {
   Sunrise,
   Heart,
   Crown,
-  Star
+  Star,
+  Sparkles,
 } from "lucide-react";
 
 export default function LocationsPage() {
@@ -72,11 +73,11 @@ export default function LocationsPage() {
           },
         ],
         serviceBorder: "border-l-amber-500",
-        badgeBg: "bg-amber-600 text-white border border-amber-500 font-black shadow-sm",
-        btnColor: "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg shadow-blue-600/30",
+        badgeBg: "bg-amber-600 text-white border border-amber-500 font-black shadow-xs",
+        btnColor: "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md shadow-blue-600/20",
         isMain: true,
         Icon: Church,
-        iconBg: "bg-amber-600 border border-amber-500 text-white shadow-md",
+        iconBg: "bg-amber-500/10 dark:bg-amber-500/20 border border-amber-500/30 text-amber-600 dark:text-amber-400 shadow-xs",
       },
       {
         id: "subhash",
@@ -112,11 +113,11 @@ export default function LocationsPage() {
           },
         ],
         serviceBorder: "border-l-orange-500",
-        badgeBg: "bg-orange-600 text-white border border-orange-500 font-black shadow-sm",
-        btnColor: "bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white shadow-lg shadow-emerald-600/30",
+        badgeBg: "bg-orange-600 text-white border border-orange-500 font-black shadow-xs",
+        btnColor: "bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-md shadow-emerald-600/20",
         isMain: false,
         Icon: Sunrise,
-        iconBg: "bg-orange-600 border border-orange-500 text-white shadow-md",
+        iconBg: "bg-orange-500/10 dark:bg-orange-500/20 border border-orange-500/30 text-orange-600 dark:text-orange-400 shadow-xs",
       },
       {
         id: "bahadur",
@@ -147,11 +148,11 @@ export default function LocationsPage() {
           },
         ],
         serviceBorder: "border-l-rose-500",
-        badgeBg: "bg-purple-600 text-white border border-purple-500 font-black shadow-sm",
-        btnColor: "bg-gradient-to-r from-pink-500 to-fuchsia-600 hover:from-pink-600 hover:to-fuchsia-700 text-white shadow-lg shadow-pink-600/30",
+        badgeBg: "bg-purple-600 text-white border border-purple-500 font-black shadow-xs",
+        btnColor: "bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white shadow-md shadow-pink-600/20",
         isMain: false,
         Icon: Heart,
-        iconBg: "bg-purple-600 border border-purple-500 text-white shadow-md",
+        iconBg: "bg-purple-500/10 dark:bg-purple-500/20 border border-purple-500/30 text-purple-600 dark:text-purple-400 shadow-xs",
       },
     ];
 
@@ -193,20 +194,20 @@ export default function LocationsPage() {
       {/* 🧭 Global Navigation Bar */}
       <Navbar />
 
-      {/* 🌌 Hero Header - Deep Slate with Ambient Glows */}
-      <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 bg-slate-950 text-white overflow-hidden shadow-xl">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-15 pointer-events-none" />
-        <div className="absolute -top-32 -right-32 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
+      {/* 🌌 Hero Header - Adaptive Light/Dark Theme */}
+      <section className="relative pt-28 pb-16 md:pt-36 md:pb-24 bg-gradient-to-b from-indigo-50/90 via-purple-50/40 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 border-b border-slate-200/60 dark:border-white/[0.06] overflow-hidden transition-colors duration-300">
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.04] dark:opacity-15 pointer-events-none" />
+        <div className="absolute -top-32 -right-32 w-96 h-96 bg-purple-500/10 dark:bg-purple-600/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-indigo-500/10 dark:bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
 
         <div className="container mx-auto px-4 relative z-10 text-center">
-          <div className="mb-6 flex justify-center">
+          <div className="mb-5 flex justify-center">
             <BackToHome label={t?.nav?.home || "Home"} />
           </div>
 
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-900/70 border border-purple-400/50 text-xs font-extrabold uppercase tracking-wider text-white mb-6 backdrop-blur-md shadow-md">
-            <MapPin className="w-4 h-4 text-amber-300 fill-amber-300/30" />
-            <span className="text-white font-extrabold tracking-wider">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-100/90 dark:bg-purple-900/60 border border-purple-200 dark:border-purple-500/30 text-xs font-extrabold uppercase tracking-wider text-purple-700 dark:text-purple-300 mb-5 backdrop-blur-md shadow-xs">
+            <MapPin className="w-4 h-4 text-purple-600 dark:text-amber-300" />
+            <span className="font-extrabold tracking-wider">
               {isTelugu
                 ? "హైదరాబాద్‌లోని 3 బ్రాంచ్ ప్రాంతాలు"
                 : isHindi
@@ -215,11 +216,11 @@ export default function LocationsPage() {
             </span>
           </div>
 
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-6 font-serif text-white">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight mb-4 font-serif text-slate-900 dark:text-white">
             {isTelugu ? "మా ప్రాంతాలు & ఆరాధనలు" : isHindi ? "हमारे स्थान और आराधना" : "Our Locations & Services"}
           </h1>
 
-          <p className="text-base sm:text-lg md:text-xl text-slate-300 font-light max-w-2xl mx-auto leading-relaxed">
+          <p className="text-sm sm:text-base md:text-lg text-slate-600 dark:text-slate-300 font-medium max-w-2xl mx-auto leading-relaxed">
             {isTelugu
               ? "హైదరాబాద్ అంతటా మా బ్రాంచ్‌లలో ఒకదానిలో మాతో చేరి దేవుని ఆశీర్వాదాలను పొందుకోవచ్చు."
               : isHindi
@@ -230,29 +231,29 @@ export default function LocationsPage() {
       </section>
 
       {/* 🏙️ Main Locations Grid */}
-      <main className="container mx-auto px-4 py-16 max-w-7xl relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
+      <main className="container mx-auto px-4 py-12 md:py-16 max-w-7xl relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 items-stretch">
           {branches.map((branch) => {
             const BranchIcon = branch.Icon;
             return (
               <div
                 key={branch.id}
-                className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group"
+                className="bg-white dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-xl dark:hover:border-purple-500/30 transition-all duration-300 flex flex-col justify-between group"
               >
                 <div>
-                  <div className="flex items-center justify-between gap-2 mb-6">
+                  <div className="flex items-center justify-between gap-2 mb-5">
                     <div className="flex items-center gap-3">
                       <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${branch.iconBg}`}>
                         <BranchIcon className="w-6 h-6" />
                       </div>
                       <div>
-                        <h2 className="text-xl font-bold text-slate-900 dark:text-white font-serif">
+                        <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white font-serif">
                           {branch.name}
                         </h2>
                       </div>
                     </div>
                     {branch.isMain && (
-                      <span className="px-3 py-1 rounded-full bg-amber-600 text-white text-[10px] font-black border border-amber-500 uppercase tracking-wider shadow-sm">
+                      <span className="px-3 py-1 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300 dark:bg-amber-600 dark:text-white text-[10px] font-black border border-amber-300 dark:border-amber-500 uppercase tracking-wider shadow-xs">
                         {isTelugu ? "ప్రధాన మందిరం" : isHindi ? "मुख्य Sanctuary" : "Main Hub"}
                       </span>
                     )}
@@ -264,8 +265,8 @@ export default function LocationsPage() {
 
                   {/* Service Schedule */}
                   <div className="space-y-3 mb-6">
-                    <h3 className="text-xs uppercase font-bold text-slate-400 tracking-wider flex items-center gap-1.5">
-                      <Clock className="w-4 h-4 text-purple-500" />
+                    <h3 className="text-xs uppercase font-bold text-slate-500 dark:text-slate-400 tracking-wider flex items-center gap-1.5">
+                      <Clock className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                       {isTelugu ? "ఆరాధన సమయాలు" : isHindi ? "आराधना समय" : "Service Schedule"}
                     </h3>
                     <div className="space-y-2.5">
@@ -274,40 +275,40 @@ export default function LocationsPage() {
                           {
                             border: "border-l-purple-500",
                             badgeBg: "bg-purple-600 text-white",
-                            typeText: "text-slate-900 dark:text-white font-black",
-                            timeText: "text-slate-700 dark:text-slate-200 font-extrabold",
+                            typeText: "text-slate-900 dark:text-white font-bold",
+                            timeText: "text-slate-600 dark:text-slate-300 font-semibold",
                           },
                           {
                             border: "border-l-indigo-500",
                             badgeBg: "bg-indigo-600 text-white",
-                            typeText: "text-slate-900 dark:text-white font-black",
-                            timeText: "text-slate-700 dark:text-slate-200 font-extrabold",
+                            typeText: "text-slate-900 dark:text-white font-bold",
+                            timeText: "text-slate-600 dark:text-slate-300 font-semibold",
                           },
                           {
                             border: "border-l-violet-500",
                             badgeBg: "bg-violet-600 text-white",
-                            typeText: "text-slate-900 dark:text-white font-black",
-                            timeText: "text-slate-700 dark:text-slate-200 font-extrabold",
+                            typeText: "text-slate-900 dark:text-white font-bold",
+                            timeText: "text-slate-600 dark:text-slate-300 font-semibold",
                           },
                           {
                             border: "border-l-purple-600",
                             badgeBg: "bg-purple-700 text-white",
-                            typeText: "text-slate-900 dark:text-white font-black",
-                            timeText: "text-slate-700 dark:text-slate-200 font-extrabold",
+                            typeText: "text-slate-900 dark:text-white font-bold",
+                            timeText: "text-slate-600 dark:text-slate-300 font-semibold",
                           },
                         ];
                         const color = serviceColors[idx % serviceColors.length];
                         return (
                           <div
                             key={idx}
-                            className={`p-3.5 rounded-2xl bg-slate-100 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700/80 border-l-4 ${color.border} flex items-center justify-between text-xs shadow-sm`}
+                            className={`p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/90 border border-slate-200/70 dark:border-slate-700/80 border-l-4 ${color.border} flex items-center justify-between text-xs shadow-xs`}
                           >
-                            <span className={`px-3 py-1 rounded-xl font-black text-xs text-white ${color.badgeBg} shadow-sm border border-white/10 shrink-0`}>
+                            <span className={`px-2.5 py-1 rounded-xl font-black text-[11px] text-white ${color.badgeBg} shadow-xs border border-white/10 shrink-0`}>
                               {srv.day}
                             </span>
                             <div className="text-right pl-2">
-                              <div className={`text-xs sm:text-sm font-black ${color.typeText}`}>{srv.type}</div>
-                              <div className={`text-[11px] font-extrabold ${color.timeText}`}>{srv.time}</div>
+                              <div className={`text-xs sm:text-sm ${color.typeText}`}>{srv.type}</div>
+                              <div className={`text-[11px] ${color.timeText}`}>{srv.time}</div>
                             </div>
                           </div>
                         );
@@ -318,11 +319,11 @@ export default function LocationsPage() {
                   {/* Address & Contacts */}
                   <div className="mb-6 text-xs sm:text-sm space-y-2">
                     <div className="flex items-start gap-2.5 text-slate-700 dark:text-slate-200 font-medium">
-                      <MapPin className="w-4 h-4 text-purple-500 shrink-0 mt-0.5" />
+                      <MapPin className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0 mt-0.5" />
                       <span className="leading-relaxed">{branch.address}</span>
                     </div>
-                    <div className="flex items-center gap-2.5 text-slate-800 dark:text-slate-100 font-extrabold pt-1">
-                      <Phone className="w-4 h-4 text-purple-500 shrink-0" />
+                    <div className="flex items-center gap-2.5 text-slate-800 dark:text-slate-100 font-bold pt-1">
+                      <Phone className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0" />
                       <a href="tel:+919704090069" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors">
                         +91 97040 90069 (Senior Pastor)
                       </a>
@@ -334,7 +335,7 @@ export default function LocationsPage() {
                 <div className="pt-4 border-t border-slate-100 dark:border-slate-800 mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   <a
                     href={`/locations/${branch.id === "shapur" ? "shapur-nagar" : branch.id === "subhash" ? "subhash-nagar" : branch.id === "bahadur" ? "bahadurpally" : branch.id}`}
-                    className="w-full py-3 px-3 rounded-xl bg-purple-50 dark:bg-purple-950/50 hover:bg-purple-100 dark:hover:bg-purple-900/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 text-xs font-bold transition-all flex items-center justify-center gap-1.5 active:scale-98"
+                    className="w-full py-2.5 px-3 rounded-xl bg-purple-50 dark:bg-purple-950/50 hover:bg-purple-100 dark:hover:bg-purple-900/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 text-xs font-bold transition-all flex items-center justify-center gap-1.5 active:scale-95"
                   >
                     <Church className="w-3.5 h-3.5" />
                     <span>{isTelugu ? "వివరాలు చూడండి" : isHindi ? "विवरण देखें" : "Branch Details"}</span>
@@ -343,7 +344,7 @@ export default function LocationsPage() {
                     href={branch.mapUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`w-full py-3 px-3 rounded-xl ${branch.btnColor} text-xs font-bold transition-all flex items-center justify-center gap-1.5 active:scale-98`}
+                    className={`w-full py-2.5 px-3 rounded-xl ${branch.btnColor} text-xs font-bold transition-all flex items-center justify-center gap-1.5 active:scale-95`}
                   >
                     <Navigation className="w-3.5 h-3.5" />
                     <span>{isTelugu ? "దిశలను పొందండి" : isHindi ? "दिशा-निर्देश" : "Get Directions"}</span>
@@ -354,15 +355,15 @@ export default function LocationsPage() {
           })}
         </div>
 
-        {/* 📺 Live Streaming Banner */}
-        <div className="max-w-4xl mx-auto mt-16 bg-slate-950 text-white border border-slate-800 rounded-3xl p-8 sm:p-10 text-center shadow-2xl relative">
-          <div className="w-14 h-14 bg-red-600 text-white border border-red-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-red-600/30">
+        {/* 📺 Live Streaming Banner - Adaptive Light & Dark theme */}
+        <div className="max-w-4xl mx-auto mt-14 sm:mt-16 bg-gradient-to-br from-red-50/80 via-white to-purple-50/40 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 text-slate-900 dark:text-white border border-red-100 dark:border-slate-800 rounded-3xl p-6 sm:p-10 text-center shadow-md dark:shadow-2xl relative">
+          <div className="w-14 h-14 bg-red-600 text-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-red-600/30">
             <Youtube className="w-7 h-7 text-white" />
           </div>
-          <h3 className="text-2xl sm:text-3xl font-extrabold text-white mb-2 font-serif">
+          <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-900 dark:text-white mb-2 font-serif">
             {isTelugu ? "లైవ్ ఆరాధన కూడా అందుబాటులో ఉంది" : isHindi ? "लाइव आराधना भी उपलब्ध है" : "Live Streaming Available"}
           </h3>
-          <p className="text-sm sm:text-base text-slate-300 max-w-xl mx-auto mb-6 font-light leading-relaxed">
+          <p className="text-xs sm:text-sm md:text-base text-slate-600 dark:text-slate-300 max-w-xl mx-auto mb-6 leading-relaxed">
             {isTelugu
               ? "ఒకవేళ మీరు స్వయంగా రాలేకపోతే, మా యూట్యూబ్ ఛానెల్‌లో ప్రతి ఆదివారం ప్రత్యక్ష ఆరాధనలో పాలుపొందవచ్చు."
               : isHindi
@@ -373,7 +374,7 @@ export default function LocationsPage() {
             href="https://youtube.com/@kcmchurchshapur7107?si=NbnoJjdl5lqt7fkO"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-bold text-sm rounded-xl transition-all shadow-lg hover:scale-105"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-bold text-xs sm:text-sm rounded-xl transition-all shadow-md shadow-red-600/25 hover:scale-105 active:scale-95"
           >
             <Youtube className="w-4 h-4" />
             <span>{isTelugu ? "యూట్యూబ్ లో చూడండి" : isHindi ? "YouTube पर देखें" : "Watch Live on YouTube"}</span>

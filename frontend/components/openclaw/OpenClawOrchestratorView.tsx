@@ -4,10 +4,11 @@
  * frontend/components/openclaw/OpenClawOrchestratorView.tsx
  * ─────────────────────────────────────────────────────────────────────────────
  * Multi-Language OpenClaw Orchestrator Workspace View (EN / TE / HI)
+ * Mobile-First, Highly Responsive Architecture
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '@/components/providers/LanguageProvider';
 import { 
   ShieldCheck, 
@@ -26,7 +27,10 @@ import {
   Layers,
   Terminal,
   Server,
-  Search
+  Search,
+  X,
+  ChevronRight,
+  Sliders
 } from 'lucide-react';
 
 interface SkillMeta {
@@ -131,7 +135,7 @@ const UI_TRANSLATIONS: Record<'en' | 'te' | 'hi', any> = {
     runPipeline: 'Run Composite AI Pipeline',
     runningPipeline: 'Running Pipeline...',
     registeredSkills: 'Registered Skills',
-    searchPlaceholder: 'Search AI skills by name, tag, or domain...',
+    searchPlaceholder: 'Search skills by name, ID, or tag...',
     inputParameters: 'Input Parameters (JSON)',
     resetSample: 'Reset Sample',
     executeSkill: 'Execute Skill',
@@ -148,14 +152,16 @@ const UI_TRANSLATIONS: Record<'en' | 'te' | 'hi', any> = {
     statusSuccess: 'SUCCESS',
     statusFailed: 'FAILED',
     pipelineLogsTitle: 'Composite Workflow Pipeline Execution Logs',
+    tabExplorer: 'Skills Explorer',
+    tabConsole: 'Execution Console',
   },
   te: {
     pageTitle: 'OpenClaw AI స్కిల్ ఆర్కెస్ట్రేటర్',
     pageDesc: 'సెక్యూరిటీ, ఈవెంట్, ప్రసంగం, నోటిఫికేషన్, ప్రార్థన మరియు విస్తరణ డొమైన్లలో ప్రొడక్షన్-గ్రేడ్ AI వర్క్‌ఫ్లో ఆటోమేషన్ ఇంజిన్.',
-    runPipeline: 'AI వర్క్‌ఫ్లో పైప్‌లైన్‌ను నరపండి',
+    runPipeline: 'AI వర్క్‌ఫ్లో పైప్‌లైన్‌ను నడపండి',
     runningPipeline: 'పైప్‌లైన్ నడుస్తోంది...',
     registeredSkills: 'నమోదైన AI స్కిల్స్',
-    searchPlaceholder: 'స్కిల్స్ పేరు, ట్యాగ్ లేదా డొమైన్ ద్వారా వెతకండి...',
+    searchPlaceholder: 'స్కిల్స్ పేరు, ఐడి లేదా ట్యాగ్ ద్వారా వెతకండి...',
     inputParameters: 'ఇన్‌పుట్ పారామితులు (JSON)',
     resetSample: 'రీసెట్ నమూనా',
     executeSkill: 'స్కిల్‌ను అమలు చేయండి',
@@ -172,6 +178,8 @@ const UI_TRANSLATIONS: Record<'en' | 'te' | 'hi', any> = {
     statusSuccess: 'విజయం',
     statusFailed: 'విఫలమైంది',
     pipelineLogsTitle: 'వర్క్‌ఫ్లో పైప్‌లైన్ అమలు లాగ్‌లు',
+    tabExplorer: 'స్కిల్స్ జాబితా',
+    tabConsole: 'ఎగ్జిక్యూషన్ కన్సోల్',
   },
   hi: {
     pageTitle: 'OpenClaw AI कौशल आर्केस्ट्रेटर',
@@ -179,7 +187,7 @@ const UI_TRANSLATIONS: Record<'en' | 'te' | 'hi', any> = {
     runPipeline: 'AI पाइपलाइन निष्पादित करें',
     runningPipeline: 'पाइपलाइन चल रही है...',
     registeredSkills: 'पंजीकृत AI कौशल',
-    searchPlaceholder: 'नाम, टैग या डोमेन द्वारा कौशल खोजें...',
+    searchPlaceholder: 'नाम, आईडी या टैग द्वारा कौशल खोजें...',
     inputParameters: 'इनपुट पैरामीटर (JSON)',
     resetSample: 'नमूना रीसेट करें',
     executeSkill: 'कौशल चलाएं',
@@ -196,6 +204,8 @@ const UI_TRANSLATIONS: Record<'en' | 'te' | 'hi', any> = {
     statusSuccess: 'सफलता',
     statusFailed: 'विफल',
     pipelineLogsTitle: 'वर्कफ़्लो पाइपलाइन निष्पादन लॉग',
+    tabExplorer: 'कौशल सूची',
+    tabConsole: 'निष्पादन कंसोल',
   }
 };
 
@@ -326,6 +336,9 @@ export default function OpenClawOrchestratorView() {
   const [pipelineRunning, setPipelineRunning] = useState<boolean>(false);
   const [pipelineLogs, setPipelineLogs] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [mobileActiveTab, setMobileActiveTab] = useState<'EXPLORER' | 'CONSOLE'>('EXPLORER');
+
+  const consoleRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetchSkills();
@@ -339,7 +352,7 @@ export default function OpenClawOrchestratorView() {
       if (data.success) {
         setSkills(data.skills);
         if (data.skills.length > 0) {
-          selectSkill(data.skills[0]);
+          selectSkill(data.skills[0], false);
         }
       }
     } catch (e) {
@@ -349,11 +362,21 @@ export default function OpenClawOrchestratorView() {
     }
   };
 
-  const selectSkill = (skill: SkillMeta) => {
+  const selectSkill = (skill: SkillMeta, shouldSwitchTab = true) => {
     setActiveSkill(skill);
     const sampleInput = DEFAULT_SAMPLE_INPUTS[skill.id] || {};
     setInputJson(JSON.stringify(sampleInput, null, 2));
     setExecutionResult(null);
+
+    if (shouldSwitchTab) {
+      // On mobile devices, switch tab to console or scroll down
+      setMobileActiveTab('CONSOLE');
+      if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+        setTimeout(() => {
+          consoleRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+      }
+    }
   };
 
   const getTranslatedSkillName = (skill: SkillMeta) => {
@@ -397,6 +420,7 @@ export default function OpenClawOrchestratorView() {
 
   const runFullDomainPipeline = async () => {
     setPipelineRunning(true);
+    setMobileActiveTab('CONSOLE');
     setPipelineLogs([`🚀 ${labels.runningPipeline}`]);
 
     const sampleFlow = [
@@ -437,28 +461,30 @@ export default function OpenClawOrchestratorView() {
   const filteredSkills = skills.filter(s => {
     const matchesDomain = selectedDomain === 'ALL' || s.domain === selectedDomain;
     const translatedName = getTranslatedSkillName(s);
-    const matchesSearch = searchQuery === '' || 
-      s.id.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      translatedName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      s.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const q = searchQuery.toLowerCase().trim();
+    const matchesSearch = !q || 
+      s.id.toLowerCase().includes(q) || 
+      s.name.toLowerCase().includes(q) ||
+      translatedName.toLowerCase().includes(q) ||
+      s.description.toLowerCase().includes(q) ||
+      s.tags.some(t => t.toLowerCase().includes(q));
     return matchesDomain && matchesSearch;
   });
 
   return (
-    <div className="space-y-6 text-slate-900 dark:text-white">
+    <div className="space-y-4 sm:space-y-6 text-slate-900 dark:text-white w-full max-w-7xl mx-auto overflow-x-hidden">
       
       {/* Top Header Card */}
-      <div className="bg-white dark:bg-[#121428] border border-slate-200 dark:border-white/10 p-5 sm:p-6 rounded-2xl shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex items-start sm:items-center gap-3">
-          <div className="p-3 rounded-2xl bg-indigo-50 dark:bg-indigo-500/15 border border-indigo-100 dark:border-indigo-500/30 text-indigo-600 dark:text-indigo-400 flex-shrink-0">
-            <Cpu className="w-6 h-6" />
+      <div className="bg-white dark:bg-[#121428] border border-slate-200 dark:border-white/10 p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-3.5 sm:gap-4">
+        <div className="flex items-start gap-3">
+          <div className="p-2.5 sm:p-3 rounded-2xl bg-indigo-50 dark:bg-indigo-500/15 border border-indigo-100 dark:border-indigo-500/30 text-indigo-600 dark:text-indigo-400 flex-shrink-0">
+            <Cpu className="w-5 h-5 sm:w-6 sm:h-6" />
           </div>
           <div>
-            <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+            <h1 className="text-lg sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
               {labels.pageTitle}
             </h1>
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-medium mt-1 leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-medium mt-0.5 sm:mt-1 leading-relaxed">
               {labels.pageDesc}
             </p>
           </div>
@@ -467,15 +493,15 @@ export default function OpenClawOrchestratorView() {
         <button
           onClick={runFullDomainPipeline}
           disabled={pipelineRunning}
-          className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-md border border-indigo-400/30 flex items-center justify-center gap-2 text-xs sm:text-sm transition-all hover:scale-105 active:scale-95 disabled:opacity-50 whitespace-nowrap self-start md:self-center"
+          className="w-full sm:w-auto px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-md border border-indigo-400/30 flex items-center justify-center gap-2 text-xs sm:text-sm transition-all active:scale-95 disabled:opacity-50 whitespace-nowrap flex-shrink-0"
         >
           <Play className={`w-4 h-4 ${pipelineRunning ? 'animate-spin' : ''}`} />
-          {pipelineRunning ? labels.runningPipeline : labels.runPipeline}
+          <span>{pipelineRunning ? labels.runningPipeline : labels.runPipeline}</span>
         </button>
       </div>
 
       {/* Domain Selection Bar */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-thin">
+      <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1.5 pt-0.5 scrollbar-none flex-nowrap -mx-1 px-1">
         {DOMAINS.map(d => {
           const Icon = d.icon;
           const isSelected = selectedDomain === d.id;
@@ -483,125 +509,172 @@ export default function OpenClawOrchestratorView() {
             <button
               key={d.id}
               onClick={() => setSelectedDomain(d.id)}
-              className={`px-3.5 py-2 rounded-xl border text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap shadow-sm ${
+              className={`px-3 sm:px-3.5 py-2 rounded-xl border text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap flex-shrink-0 shadow-xs active:scale-95 ${
                 isSelected
-                  ? `${d.activeColor} shadow-md scale-105`
+                  ? `${d.activeColor} shadow-md`
                   : 'bg-white dark:bg-[#121428] border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/10'
               }`}
             >
               <Icon className="w-3.5 h-3.5" />
-              {d.label}
+              <span>{d.label}</span>
             </button>
           );
         })}
       </div>
 
-      {/* Workspace Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      {/* Mobile Tab Switcher (Visible only on small screens < lg) */}
+      <div className="grid grid-cols-2 gap-1 bg-slate-200/70 dark:bg-[#121428] p-1 rounded-2xl lg:hidden border border-slate-300/60 dark:border-white/10 shadow-xs">
+        <button
+          type="button"
+          onClick={() => setMobileActiveTab('EXPLORER')}
+          className={`py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
+            mobileActiveTab === 'EXPLORER'
+              ? 'bg-white dark:bg-indigo-600 text-slate-900 dark:text-white shadow-sm'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+          }`}
+        >
+          <Layers className="w-3.5 h-3.5" />
+          <span>{labels.tabExplorer} ({filteredSkills.length})</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setMobileActiveTab('CONSOLE')}
+          className={`py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
+            mobileActiveTab === 'CONSOLE'
+              ? 'bg-white dark:bg-indigo-600 text-slate-900 dark:text-white shadow-sm'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+          }`}
+        >
+          <Terminal className="w-3.5 h-3.5" />
+          <span>{labels.tabConsole} {activeSkill ? `(${activeSkill.domain})` : ''}</span>
+        </button>
+      </div>
+
+      {/* Workspace Grid Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
         
         {/* Left Column: Registered Skills Explorer */}
-        <div className="lg:col-span-5 space-y-3">
-          <div className="flex items-center justify-between gap-2 px-1">
-            <h2 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-1.5">
+        <div className={`lg:col-span-5 space-y-3 ${mobileActiveTab === 'EXPLORER' ? 'block' : 'hidden lg:block'}`}>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 px-1">
+            <h2 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-1.5">
               <Layers className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-              {labels.registeredSkills} ({filteredSkills.length})
+              <span>{labels.registeredSkills} ({filteredSkills.length})</span>
             </h2>
 
-            <div className="relative w-40 sm:w-48">
-              <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <div className="relative w-full sm:w-56">
+              <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
               <input
                 type="text"
                 placeholder={labels.searchPlaceholder}
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                className="w-full bg-white dark:bg-[#121428] border border-slate-200 dark:border-white/10 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full bg-white dark:bg-[#121428] border border-slate-300 dark:border-white/10 rounded-xl pl-8 pr-8 py-1.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium transition-all shadow-xs"
               />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-0.5"
+                  title="Clear search"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              )}
             </div>
           </div>
 
-          <div className="space-y-2.5 max-h-[680px] overflow-y-auto pr-1">
-            {filteredSkills.map(skill => {
-              const isSelected = activeSkill?.id === skill.id;
-              const displayName = getTranslatedSkillName(skill);
-              
-              const securityColor = 
-                skill.securityLevel === 'CRITICAL' ? 'bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300 border-rose-300 dark:border-rose-800' :
-                skill.securityLevel === 'HIGH' ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 border-amber-300 dark:border-amber-800' :
-                skill.securityLevel === 'MEDIUM' ? 'bg-blue-100 text-blue-800 dark:bg-blue-950/80 dark:text-blue-300 border-blue-300 dark:border-blue-800' :
-                'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800';
+          <div className="space-y-2.5 max-h-[600px] lg:max-h-[680px] overflow-y-auto pr-0.5 scrollbar-thin">
+            {filteredSkills.length === 0 ? (
+              <div className="p-8 text-center bg-white dark:bg-[#121428] rounded-2xl border border-slate-200 dark:border-white/10 text-slate-400 text-xs">
+                No AI skills match &ldquo;{searchQuery}&rdquo;.
+              </div>
+            ) : (
+              filteredSkills.map(skill => {
+                const isSelected = activeSkill?.id === skill.id;
+                const displayName = getTranslatedSkillName(skill);
+                
+                const securityColor = 
+                  skill.securityLevel === 'CRITICAL' ? 'bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300 border-rose-300 dark:border-rose-800' :
+                  skill.securityLevel === 'HIGH' ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 border-amber-300 dark:border-amber-800' :
+                  skill.securityLevel === 'MEDIUM' ? 'bg-blue-100 text-blue-800 dark:bg-blue-950/80 dark:text-blue-300 border-blue-300 dark:border-blue-800' :
+                  'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800';
 
-              return (
-                <div
-                  key={skill.id}
-                  onClick={() => selectSkill(skill)}
-                  className={`p-3.5 rounded-2xl border cursor-pointer transition-all ${
-                    isSelected
-                      ? 'bg-indigo-50/90 dark:bg-indigo-950/40 border-indigo-600 dark:border-indigo-500 shadow-md ring-2 ring-indigo-500/20'
-                      : 'bg-white dark:bg-[#121428] border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 hover:border-slate-300 dark:hover:border-white/20'
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-[11px] font-mono font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-100 dark:bg-indigo-500/20 px-2 py-0.5 rounded-md border border-indigo-200 dark:border-indigo-500/30">
-                      {skill.id}
-                    </span>
-                    <span className={`text-[10px] font-black px-2 py-0.5 rounded-full uppercase border ${securityColor}`}>
-                      {skill.securityLevel}
-                    </span>
-                  </div>
-
-                  <h3 className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white mb-1">{displayName}</h3>
-                  <p className="text-[11px] sm:text-xs text-slate-600 dark:text-slate-300 line-clamp-2 mb-2.5 leading-relaxed">{skill.description}</p>
-
-                  <div className="flex flex-wrap items-center gap-1">
-                    {skill.tags.map(t => (
-                      <span key={t} className="text-[10px] bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300 font-medium px-1.5 py-0.5 rounded">
-                        #{t}
+                return (
+                  <div
+                    key={skill.id}
+                    onClick={() => selectSkill(skill, true)}
+                    className={`p-3.5 rounded-2xl border cursor-pointer transition-all active:scale-[0.99] ${
+                      isSelected
+                        ? 'bg-indigo-50/90 dark:bg-indigo-950/40 border-indigo-600 dark:border-indigo-500 shadow-md ring-2 ring-indigo-500/20'
+                        : 'bg-white dark:bg-[#121428] border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 hover:border-slate-300 dark:hover:border-white/20'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-2 mb-1.5">
+                      <span className="text-[10px] sm:text-[11px] font-mono font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-100 dark:bg-indigo-500/20 px-2 py-0.5 rounded-md border border-indigo-200 dark:border-indigo-500/30 truncate max-w-[200px]">
+                        {skill.id}
                       </span>
-                    ))}
-                    <span className="text-[10px] text-slate-500 dark:text-slate-400 font-bold ml-auto">
-                      Role: {skill.policy.requiredRole}
-                    </span>
+                      <span className={`text-[9px] sm:text-[10px] font-black px-2 py-0.5 rounded-full uppercase border flex-shrink-0 ${securityColor}`}>
+                        {skill.securityLevel}
+                      </span>
+                    </div>
+
+                    <h3 className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white mb-1 leading-snug">{displayName}</h3>
+                    <p className="text-[11px] sm:text-xs text-slate-600 dark:text-slate-300 line-clamp-2 mb-2 leading-relaxed">{skill.description}</p>
+
+                    <div className="flex flex-wrap items-center gap-1">
+                      {skill.tags.map(t => (
+                        <span key={t} className="text-[9px] sm:text-[10px] bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300 font-medium px-1.5 py-0.5 rounded">
+                          #{t}
+                        </span>
+                      ))}
+                      <span className="text-[10px] text-slate-500 dark:text-slate-400 font-bold ml-auto whitespace-nowrap">
+                        Role: {skill.policy.requiredRole}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })
+            )}
           </div>
         </div>
 
-        {/* Right Column: Execution Workspace */}
-        <div className="lg:col-span-7 space-y-5">
+        {/* Right Column: Execution Workspace Console */}
+        <div 
+          ref={consoleRef}
+          className={`lg:col-span-7 space-y-4 sm:space-y-5 ${mobileActiveTab === 'CONSOLE' ? 'block' : 'hidden lg:block'}`}
+        >
           {activeSkill ? (
-            <div className="bg-white dark:bg-[#121428] border border-slate-200 dark:border-white/10 rounded-2xl p-5 shadow-sm dark:shadow-none space-y-5">
+            <div className="bg-white dark:bg-[#121428] border border-slate-200 dark:border-white/10 rounded-2xl sm:rounded-3xl p-4 sm:p-5 shadow-sm space-y-4 sm:space-y-5">
               
               {/* Header */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-white/10 pb-4">
-                <div>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-white/10 pb-3 sm:pb-4">
+                <div className="min-w-0 pr-2">
                   <div className="flex items-center gap-2 mb-0.5">
                     <span className="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400">{activeSkill.id}</span>
                     <span className="text-xs text-slate-500">• v{activeSkill.version}</span>
                   </div>
-                  <h2 className="text-base sm:text-xl font-black text-slate-900 dark:text-white">
+                  <h2 className="text-sm sm:text-xl font-black text-slate-900 dark:text-white break-words">
                     {getTranslatedSkillName(activeSkill)}
                   </h2>
-                  <p className="text-xs text-slate-600 dark:text-slate-300 mt-1">{activeSkill.description}</p>
+                  <p className="text-[11px] sm:text-xs text-slate-600 dark:text-slate-300 mt-0.5">{activeSkill.description}</p>
                 </div>
 
                 <button
                   onClick={runSkillExecution}
                   disabled={executing}
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl shadow-sm border border-emerald-500/30 flex items-center justify-center gap-2 text-xs sm:text-sm transition-all hover:scale-105 active:scale-95 disabled:opacity-50 whitespace-nowrap self-start sm:self-center"
+                  className="w-full sm:w-auto px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl shadow-sm border border-emerald-500/30 flex items-center justify-center gap-2 text-xs sm:text-sm transition-all active:scale-95 disabled:opacity-50 whitespace-nowrap flex-shrink-0"
                 >
                   <Play className={`w-3.5 h-3.5 ${executing ? 'animate-spin' : ''}`} />
-                  {executing ? labels.executing : labels.executeSkill}
+                  <span>{executing ? labels.executing : labels.executeSkill}</span>
                 </button>
               </div>
 
               {/* Input Editor */}
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <label className="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-1.5">
+                  <label className="text-[11px] sm:text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-1.5">
                     <Code className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
-                    {labels.inputParameters}
+                    <span>{labels.inputParameters}</span>
                   </label>
                   <button
                     onClick={() => setInputJson(JSON.stringify(DEFAULT_SAMPLE_INPUTS[activeSkill.id] || {}, null, 2))}
@@ -614,52 +687,52 @@ export default function OpenClawOrchestratorView() {
                 <textarea
                   value={inputJson}
                   onChange={e => setInputJson(e.target.value)}
-                  rows={7}
-                  className="w-full bg-slate-50/90 dark:bg-[#0A0C1A] text-slate-800 dark:text-emerald-400 font-mono text-xs sm:text-sm p-4 rounded-xl border border-slate-200 dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-[#0A0C1A] shadow-inner transition-all scrollbar-thin"
+                  rows={6}
+                  className="w-full bg-slate-50 dark:bg-[#0A0C1A] text-slate-800 dark:text-emerald-400 font-mono text-xs sm:text-sm p-3 sm:p-4 rounded-xl border border-slate-200 dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-inner transition-all scrollbar-thin"
                 />
               </div>
 
               {/* Telemetry Output */}
               <div>
-                <label className="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-1.5 mb-1.5">
+                <label className="text-[11px] sm:text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-1.5 mb-1.5">
                   <Terminal className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                  {labels.telemetryTitle}
+                  <span>{labels.telemetryTitle}</span>
                 </label>
 
                 {executionResult ? (
-                  <div className="bg-slate-50 dark:bg-[#0A0C1A] border border-slate-200 dark:border-white/10 rounded-xl p-4 font-mono text-xs space-y-3 shadow-sm dark:shadow-inner">
-                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 dark:border-white/10 pb-2.5">
+                  <div className="bg-slate-50 dark:bg-[#0A0C1A] border border-slate-200 dark:border-white/10 rounded-xl p-3 sm:p-4 font-mono text-xs space-y-2.5 shadow-sm">
+                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 dark:border-white/10 pb-2">
                       <div className="flex items-center gap-2">
                         {executionResult.success ? (
-                          <span className="flex items-center gap-1 text-emerald-700 dark:text-emerald-400 font-extrabold bg-emerald-100 dark:bg-emerald-950/80 px-2.5 py-0.5 rounded-lg border border-emerald-300 dark:border-emerald-500/30 text-xs">
+                          <span className="flex items-center gap-1 text-emerald-700 dark:text-emerald-400 font-extrabold bg-emerald-100 dark:bg-emerald-950/80 px-2 py-0.5 rounded-md border border-emerald-300 dark:border-emerald-500/30 text-[11px]">
                             <CheckCircle2 className="w-3.5 h-3.5" /> {labels.statusSuccess}
                           </span>
                         ) : (
-                          <span className="flex items-center gap-1 text-rose-700 dark:text-rose-400 font-extrabold bg-rose-100 dark:bg-rose-950/80 px-2.5 py-0.5 rounded-lg border border-rose-300 dark:border-rose-500/30 text-xs">
+                          <span className="flex items-center gap-1 text-rose-700 dark:text-rose-400 font-extrabold bg-rose-100 dark:bg-rose-950/80 px-2 py-0.5 rounded-md border border-rose-300 dark:border-rose-500/30 text-[11px]">
                             <AlertTriangle className="w-3.5 h-3.5" /> {labels.statusFailed}
                           </span>
                         )}
-                        <span className="text-slate-700 dark:text-slate-300 font-bold text-xs">Domain: {executionResult.domain}</span>
+                        <span className="text-slate-700 dark:text-slate-300 font-bold text-[11px]">Domain: {executionResult.domain}</span>
                       </div>
 
                       {executionResult.telemetry && (
-                        <div className="flex items-center gap-2.5 text-[11px] text-slate-600 dark:text-slate-400 font-medium">
+                        <div className="flex items-center gap-2 text-[10px] sm:text-[11px] text-slate-600 dark:text-slate-400 font-medium">
                           <span className="flex items-center gap-1 font-bold text-indigo-600 dark:text-indigo-300">
-                            <Clock className="w-3.5 h-3.5 text-indigo-500" />
+                            <Clock className="w-3 h-3 text-indigo-500" />
                             {executionResult.telemetry.durationMs} ms
                           </span>
                           <span>•</span>
-                          <span>ID: {executionResult.telemetry.executionId}</span>
+                          <span className="truncate max-w-[120px]">ID: {executionResult.telemetry.executionId}</span>
                         </div>
                       )}
                     </div>
 
-                    <pre className="text-slate-800 dark:text-emerald-300 overflow-x-auto max-h-64 scrollbar-thin leading-relaxed p-3 bg-white dark:bg-black/50 rounded-lg border border-slate-200/90 dark:border-white/5 font-mono text-xs">
+                    <pre className="text-slate-800 dark:text-emerald-300 overflow-x-auto max-h-60 scrollbar-thin leading-relaxed p-2.5 bg-white dark:bg-black/50 rounded-lg border border-slate-200 dark:border-white/5 font-mono text-[11px] sm:text-xs">
                       {JSON.stringify(executionResult, null, 2)}
                     </pre>
                   </div>
                 ) : (
-                  <div className="bg-slate-50 dark:bg-slate-950/60 border border-dashed border-slate-300 dark:border-white/10 rounded-xl p-6 text-center text-slate-500 dark:text-slate-400 text-xs">
+                  <div className="bg-slate-50 dark:bg-slate-950/60 border border-dashed border-slate-300 dark:border-white/10 rounded-xl p-5 text-center text-slate-500 dark:text-slate-400 text-xs">
                     {labels.clickToExecute}
                   </div>
                 )}
@@ -667,21 +740,21 @@ export default function OpenClawOrchestratorView() {
 
             </div>
           ) : (
-            <div className="bg-white dark:bg-[#121428] border border-slate-200 dark:border-white/10 rounded-2xl p-10 text-center text-slate-500 dark:text-slate-400">
-              Select a skill from the left list to open the execution panel.
+            <div className="bg-white dark:bg-[#121428] border border-slate-200 dark:border-white/10 rounded-2xl p-8 text-center text-slate-500 dark:text-slate-400 text-xs">
+              Select a skill from the list to open the execution panel.
             </div>
           )}
 
           {/* Pipeline Logs */}
           {pipelineLogs.length > 0 && (
-            <div className="bg-white dark:bg-[#121428] border border-slate-200 dark:border-white/10 rounded-2xl p-4 sm:p-5 space-y-2.5 text-slate-900 dark:text-slate-100 shadow-sm">
+            <div className="bg-white dark:bg-[#121428] border border-slate-200 dark:border-white/10 rounded-2xl sm:rounded-3xl p-4 sm:p-5 space-y-2 text-slate-900 dark:text-slate-100 shadow-sm">
               <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-2">
                 <Server className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-                {labels.pipelineLogsTitle}
+                <span>{labels.pipelineLogsTitle}</span>
               </h3>
-              <div className="bg-slate-50 dark:bg-[#0A0C1A] border border-slate-200 dark:border-white/10 rounded-xl p-3.5 font-mono text-xs space-y-1.5 max-h-48 overflow-y-auto">
+              <div className="bg-slate-50 dark:bg-[#0A0C1A] border border-slate-200 dark:border-white/10 rounded-xl p-3 font-mono text-xs space-y-1 max-h-48 overflow-y-auto">
                 {pipelineLogs.map((log, idx) => (
-                  <div key={idx} className="text-slate-800 dark:text-slate-200 font-medium leading-relaxed">
+                  <div key={idx} className="text-slate-800 dark:text-slate-200 font-medium leading-relaxed text-[11px]">
                     {log}
                   </div>
                 ))}

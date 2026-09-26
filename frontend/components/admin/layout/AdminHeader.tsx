@@ -83,23 +83,17 @@ export default function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps)
           <div className="relative shrink-0">
             <button
               type="button"
-              onClick={() => setIsNotifOpen(!isNotifOpen)}
-              className="relative p-2 rounded-full bg-gray-100/80 dark:bg-white/5 border border-gray-200/80 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:bg-gray-200/80 dark:hover:bg-white/10 transition-colors"
-              aria-label="Notifications"
+              onClick={() => setIsNotifOpen((prev) => !prev)}
+              className="relative p-2 rounded-full bg-gray-100/80 dark:bg-white/5 border border-gray-200/80 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:bg-gray-200/80 dark:hover:bg-white/10 active:scale-95 transition-all"
+              aria-label="Toggle notifications"
             >
               <Bell className="w-5 h-5" />
               {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-white font-bold text-[9px] flex items-center justify-center animate-pulse shadow-sm">
+                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 text-white font-extrabold text-[9px] flex items-center justify-center animate-pulse shadow-md">
                   {unreadCount > 9 ? "9+" : unreadCount}
                 </span>
               )}
             </button>
-
-            {/* Notification Center Dropdown */}
-            <NotificationCenter
-              isOpen={isNotifOpen}
-              onClose={() => setIsNotifOpen(false)}
-            />
           </div>
 
           {/* Language Switcher */}
@@ -184,6 +178,12 @@ export default function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps)
           }}
         />
       )}
+
+      {/* Notification Center Slide-over */}
+      <NotificationCenter
+        isOpen={isNotifOpen}
+        onClose={() => setIsNotifOpen(false)}
+      />
     </>
   );
 }

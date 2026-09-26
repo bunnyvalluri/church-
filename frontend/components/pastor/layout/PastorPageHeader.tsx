@@ -116,14 +116,14 @@ export default function PastorPageHeader({
       {(onSearchChange !== undefined || children) && (
         <div className="pt-2 border-t border-slate-100 dark:border-white/[0.03] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
           {onSearchChange !== undefined && (
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-gray-500" />
+            <div className="relative flex-1 max-w-full sm:max-w-md w-full">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-gray-500 pointer-events-none shrink-0" />
               <input
                 type="text"
                 placeholder={effectivePlaceholder}
                 value={searchValue || ""}
                 onChange={(e) => onSearchChange(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 text-xs bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.08] text-slate-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6366F1]/20 focus:border-[#6366F1] transition-all"
+                className="w-full pl-10 pr-4 py-2.5 sm:py-2 text-xs bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.08] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-gray-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6366F1]/20 focus:border-[#6366F1] transition-all"
               />
             </div>
           )}

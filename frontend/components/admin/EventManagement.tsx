@@ -356,20 +356,20 @@ export default function EventManagement() {
       <NotificationPopup notification={notification} onDismiss={() => setNotification(null)} />
 
       {/* ── Welcome Banner ───────────────────────────────────────────────────── */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-indigo-950 via-slate-900 to-indigo-900 rounded-3xl p-6 sm:p-7 text-white border border-indigo-500/20 shadow-xl group">
-        <div className="absolute -right-8 -top-8 w-48 h-48 rounded-full bg-indigo-500/10 group-hover:scale-110 transition-transform duration-500" />
-        <div className="absolute -right-4 -bottom-4 text-white/10 group-hover:rotate-12 transition-transform duration-700 pointer-events-none">
+      <div className="relative overflow-hidden bg-gradient-to-br from-indigo-50/90 via-purple-50/40 to-slate-50 dark:from-indigo-950 dark:via-slate-900 dark:to-indigo-900 rounded-3xl p-6 sm:p-7 border border-indigo-100/80 dark:border-indigo-500/20 shadow-sm dark:shadow-xl group">
+        <div className="absolute -right-8 -top-8 w-48 h-48 rounded-full bg-indigo-500/5 dark:bg-indigo-500/10 group-hover:scale-110 transition-transform duration-500" />
+        <div className="absolute -right-4 -bottom-4 text-indigo-500/10 dark:text-white/10 group-hover:rotate-12 transition-transform duration-700 pointer-events-none">
           <Sparkles className="w-36 h-36" />
         </div>
 
         <div className="relative space-y-2 max-w-xl">
-          <span className="inline-flex px-2.5 py-1 rounded-full bg-indigo-500/20 border border-indigo-400/30 text-[9px] font-black uppercase tracking-widest text-indigo-200">
+          <span className="inline-flex px-2.5 py-1 rounded-full bg-indigo-100 dark:bg-indigo-500/20 border border-indigo-200 dark:border-indigo-400/30 text-[9px] font-black uppercase tracking-widest text-indigo-700 dark:text-indigo-200">
             Principal Admin Portal
           </span>
-          <h2 className="text-2xl sm:text-3xl font-black tracking-tight mt-1 text-white">
+          <h2 className="text-2xl sm:text-3xl font-black tracking-tight mt-1 text-slate-900 dark:text-white">
             Event Management Suite
           </h2>
-          <p className="text-xs sm:text-sm text-indigo-100/80 leading-relaxed font-medium">
+          <p className="text-xs sm:text-sm text-slate-600 dark:text-indigo-100/80 leading-relaxed font-medium">
             Fully dynamic CRUD, reordering, QR check-ins, and post-event reports synced instantly via Socket.IO to the public homepage.
           </p>
         </div>
@@ -378,14 +378,14 @@ export default function EventManagement() {
           <div className="flex flex-wrap items-center gap-3 mt-6 relative z-10">
             <button
               onClick={() => setModal("create")}
-              className="flex items-center gap-2 px-4 py-2.5 bg-white text-indigo-950 hover:bg-indigo-50 rounded-xl text-xs font-bold transition-all shadow-md hover:scale-[1.02] active:scale-95"
+              className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-indigo-500/20 hover:scale-[1.02] active:scale-95"
             >
-              <PlusCircle className="w-4 h-4 text-indigo-600" />
+              <PlusCircle className="w-4 h-4 text-white" />
               Create Event
             </button>
             <button
               onClick={() => refetch()}
-              className="flex items-center gap-2 px-4 py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl text-xs font-bold text-white transition-all active:scale-95 backdrop-blur-sm"
+              className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-white/10 hover:bg-slate-50 dark:hover:bg-white/20 border border-slate-200 dark:border-white/20 rounded-xl text-xs font-bold text-slate-700 dark:text-white transition-all active:scale-95 shadow-sm dark:shadow-none backdrop-blur-sm"
             >
               <RefreshCw className="w-4 h-4" />
               Sync API
