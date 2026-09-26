@@ -126,6 +126,16 @@ export function churchSchema() {
     sameAs: [
       "https://www.youtube.com/@kcmchurchshapur7107",
     ],
+    slogan: "Time is fulfilled, and the Kingdom of God is at hand; repent and believe in the Gospel.",
+    knowsAbout: [
+      "Christianity",
+      "Gospel Preaching",
+      "Sunday Worship Service",
+      "Intercessory Prayer",
+      "Christian Community in Hyderabad",
+      "Bishop Kurra Kristhu Raju Sermons",
+      "Humanitarian Aid & Social Welfare",
+    ],
     areaServed: [
       {
         "@type": "City",
@@ -137,6 +147,10 @@ export function churchSchema() {
         "@type": "AdministrativeArea",
         name: "Telangana",
         addressCountry: "IN",
+      },
+      {
+        "@type": "Country",
+        name: "India",
       },
     ],
     subOrganization: branches.map((b) => ({
@@ -170,6 +184,7 @@ export function websiteSchema() {
       "KCM Ministries",
       "KCM",
       "Kingdom of Christ",
+      "KCM Church Hyderabad",
     ],
     url: `${SITE_URL}/`,
     description:
@@ -177,6 +192,58 @@ export function websiteSchema() {
     publisher: {
       "@id": ORGANIZATION_ID,
     },
+    potentialAction: {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `${SITE_URL}/sermons?search={search_term_string}`,
+      },
+      "query-input": "required name=search_term_string",
+    },
+    hasPart: [
+      {
+        "@type": "WebPage",
+        "@id": `${SITE_URL}/sermons`,
+        name: "Sermons & Gospel Messages",
+        url: `${SITE_URL}/sermons`,
+        description: "Watch and listen to gospel-centred sermons by Senior Pastor Bishop Kurra Kristhu Raju.",
+      },
+      {
+        "@type": "WebPage",
+        "@id": `${SITE_URL}/events`,
+        name: "Church Events & Services",
+        url: `${SITE_URL}/events`,
+        description: "Explore Sunday worship services, revival meetings, and prayer vigils.",
+      },
+      {
+        "@type": "WebPage",
+        "@id": `${SITE_URL}/locations`,
+        name: "Church Locations in Hyderabad",
+        url: `${SITE_URL}/locations`,
+        description: "Sanctuaries in Shapur Nagar, Subhash Nagar, and Bahadurpally with service timings.",
+      },
+      {
+        "@type": "WebPage",
+        "@id": `${SITE_URL}/prayer`,
+        name: "Prayer Request",
+        url: `${SITE_URL}/prayer`,
+        description: "Submit 24/7 prayer requests to our faithful pastoral intercessory team.",
+      },
+      {
+        "@type": "WebPage",
+        "@id": `${SITE_URL}/about`,
+        name: "About KCM & Leadership",
+        url: `${SITE_URL}/about`,
+        description: "Learn about the founding vision and leadership under Bishop Kurra Kristhu Raju.",
+      },
+      {
+        "@type": "WebPage",
+        "@id": `${SITE_URL}/ngo/donations`,
+        name: "80G Tax-Exempt Donations",
+        url: `${SITE_URL}/ngo/donations`,
+        description: "Support community outreach, senior care, and medical relief with tax benefits.",
+      },
+    ],
     inLanguage: ["en-IN", "te", "hi"],
   };
 }
