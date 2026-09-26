@@ -25,7 +25,7 @@ Engineered with Next.js 14 App Router, TypeScript, Neon PostgreSQL, Upstash Redi
 ## 📋 Table of Contents
 - [Executive Overview](#-executive-overview)
 - [Enterprise Architecture](#-enterprise-architecture)
-- [Role-Based Access Control (RBAC)](#-role-based-access-control-rbac)
+- [Security & Access Control](#-security--access-control)
 - [Core Platform Capabilities](#-core-platform-capabilities)
   - [1. Multilingual Trilingual Parity](#1-multilingual-trilingual-parity-en--te--hi)
   - [2. Zero-Trust Online Giving & 80G Tax Receipts](#2-zero-trust-online-giving--80g-tax-receipts)
@@ -45,12 +45,12 @@ Engineered with Next.js 14 App Router, TypeScript, Neon PostgreSQL, Upstash Redi
 
 ## 🏛️ Executive Overview
 
-The **Kingdom of Christ Ministries Digital Platform** serves as the central operational backbone for multi-campus church administration, sermon broadcasts, community prayer networks, hospital volunteer ministries, event logistics, and financial stewardship.
+The **Kingdom of Christ Ministries Digital Platform** serves as the central digital ecosystem for church services, sermon broadcasts, community prayer networks, outreach volunteer initiatives, and financial stewardship.
 
 Designed for high reliability, strict data integrity, and cross-device accessibility:
 - **Pure White Visual Identity**: Clean, accessible, modern interface enforcing light-only color consistency across Android and desktop web engines.
 - **Micro-Audited Data Layer**: 42 relational models in PostgreSQL with point-in-time recovery (PITR) and Prisma interactive transaction boundaries.
-- **Strict Role Isolation**: Server-side Edge Middleware route guards protecting Member, Pastor, Admin, and Event Manager portals.
+- **Edge Access Control**: Cryptographic server-side Edge Middleware session verification protecting authenticated user areas and private workflows.
 
 ---
 
@@ -62,7 +62,7 @@ flowchart TB
         PWA["PWA / Browser Client"]
         SW["Service Worker Cache"]
         IDB["IndexedDB Offline Queue"]
-        Edge["Next.js Edge Middleware\n(RBAC, HMAC Verification, Rate Limits)"]
+        Edge["Next.js Edge Middleware\n(Session Verification, HMAC Security, Rate Limits)"]
     end
 
     subgraph AppServer ["Next.js 14 & Node.js Application Layer"]
@@ -95,18 +95,12 @@ flowchart TB
 
 ---
 
-## 🔐 Role-Based Access Control (RBAC)
+## 🔐 Security & Access Control
 
-The platform enforces strict server-side authorization at the Edge Middleware layer ([`frontend/middleware.ts`](frontend/middleware.ts)):
-
-| Role | Authorized Portals & Prefix | Responsibilities & Capabilities |
-| :--- | :--- | :--- |
-| **Super Admin** | `/admin/*`, `/pastor/*`, `/member/*`, `/event-manager/*` | Full system governance, audit log inspection, security event reviews, role assignments |
-| **Admin** | `/admin/*`, `/member/*`, `/event-manager/*` | Financial management, donation reconciliation, CMS updates, volunteer approvals |
-| **Pastor** | `/pastor/*`, `/member/*` | Spiritual oversight, sermon broadcasts, branch member care, prayer request workflows |
-| **Event Manager** | `/event-manager/*`, `/member/*` | Campus event logistics, seat management, QR ticket scanning, attendance reports |
-| **Member** | `/member/*`, `/church-member/*` | Self-service profile, personal giving history, 80G tax receipt downloads, prayer submissions |
-| **Guest** | `/`, `/about/*`, `/sermons`, `/events`, `/prayer`, `/ngo/*` | Public sermon streaming, visitor event registrations, general giving, contact forms |
+The platform enforces strict server-side session authentication at the Edge Middleware layer ([`frontend/middleware.ts`](frontend/middleware.ts)):
+- **Cryptographic Token Verification**: Sessions are verified at the network edge using Web Crypto HMAC-SHA256 tokens stored in secure, HttpOnly, SameSite cookies.
+- **IDOR Defense**: All data queries enforce ownership verification server-side, preventing unauthorized cross-account access.
+- **CSRF & Origin Protection**: State-mutating API requests validate origin and referer headers against trusted domain allowlists.
 
 ---
 
@@ -146,7 +140,7 @@ K.C.M-Portal/
 │   ├── hooks/                    # useAuth, useSync, useOnlineStatus, useI18n
 │   ├── lib/                      # Services (Razorpay, Email, AI, Prisma singleton)
 │   ├── prisma/                   # PostgreSQL schema (42 models) & seeds
-│   └── tests/                    # Playwright E2E, RBAC, chaos, and security test suites
+│   └── tests/                    # Playwright E2E, chaos, and security test suites
 ├── backend/                      # Node.js / Express Auxiliary Services
 │   ├── src/                      # Background BullMQ queues, cron workers, routes
 │   └── server.js                 # Auxiliary server & Socket.io real-time engine
