@@ -1,11 +1,15 @@
 <div align="center">
 
+# 🏛️ Kingdom of Christ Ministries
+### Enterprise Digital Platform & Ministry Operating System
+
+<br/>
+
 <a href="https://kcmchurch.vercel.app">
   <img src="docs/assets/hero-banner.png" alt="Kingdom of Christ Ministries Banner" width="100%" style="border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);" />
 </a>
 
-# 🏛️ Kingdom of Christ Ministries
-### Enterprise Digital Platform & Ministry Operating System
+<br/><br/>
 
 [![Live Production](https://img.shields.io/badge/Production-Live-success?style=flat-square&logo=vercel&logoColor=white)](https://kcmchurch.vercel.app)
 [![Next.js](https://img.shields.io/badge/Next.js-14_App_Router-black?style=flat-square&logo=next.js&logoColor=white)](https://nextjs.org/)
