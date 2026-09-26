@@ -1,267 +1,312 @@
-# 🏛️ Kingdom of Christ Ministries - Digital Platform
-<!-- cache sync -->
+# 🏛️ Kingdom of Christ Ministries (KCM Church) — Enterprise Digital Platform
 
-[![Next.js](https://img.shields.io/badge/Next.js-14.2-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.4-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
-[![Firebase](https://img.shields.io/badge/Firebase-Auth-FFCA28?style=for-the-badge&logo=firebase)](https://firebase.google.com/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?style=for-the-badge&logo=postgresql)](https://www.postgresql.org/)
-[![Prisma](https://img.shields.io/badge/Prisma-5.12-2D3748?style=for-the-badge&logo=prisma)](https://www.prisma.io/)
-[![Vercel](https://img.shields.io/badge/Vercel-Deployed-000000?style=for-the-badge&logo=vercel)](https://kcmchurch.vercel.app)
-[![AI Powered](https://img.shields.io/badge/AI-Powered-purple?style=for-the-badge&logo=openai)](https://openai.com/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
+<div align="center">
 
-A state-of-the-art, enterprise-grade digital ecosystem and web platform designed for **Kingdom of Christ Ministries (K.C.M)**. Built with Next.js 14, TypeScript, Tailwind CSS, Node.js, PostgreSQL, Firebase Auth, and intelligent AI capabilities—delivering multilingual support (English, Telugu & Hindi), offline-first PWA resilience, seamless sermon media streaming, prayer requests, and secure online giving.
+[![Production Status](https://img.shields.io/badge/Production-Live-success?style=for-the-badge&logo=vercel&logoColor=white)](https://kcmchurch.vercel.app)
+[![Next.js](https://img.shields.io/badge/Next.js_14-App_Router-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.4_Strict-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Neon_Serverless-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](https://neon.tech/)
+[![Prisma ORM](https://img.shields.io/badge/Prisma-5.12_ORM-2D3748?style=for-the-badge&logo=prisma&logoColor=white)](https://www.prisma.io/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4_Minimal_White-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Razorpay](https://img.shields.io/badge/Razorpay-Zero--Trust_Giving-0C2340?style=for-the-badge&logo=razorpay&logoColor=white)](https://razorpay.com/)
+[![PWA Ready](https://img.shields.io/badge/PWA-Offline--First_Sync-5A0FC8?style=for-the-badge&logo=pwa&logoColor=white)](https://web.dev/progressive-web-apps/)
+[![i18n Parity](https://img.shields.io/badge/i18n-100%25_Synced_(EN%20%7C%20TE%20%7C%20HI)-22C55E?style=for-the-badge)](docs/frontend/I18N.md)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
 
----
+**A mission-critical, enterprise-grade digital ecosystem built for Kingdom of Christ Ministries (Hyderabad, India).**  
+Engineered with Next.js 14 App Router, TypeScript, Neon PostgreSQL, Upstash Redis, Razorpay Online Giving, PWA Offline Sync, and an AI-powered Theological Context Engine.
 
-## 🌐 Live Application
-- **Production Website**: [https://kcmchurch.vercel.app](https://kcmchurch.vercel.app)
-- **Source Code**: [GitHub Repository](https://github.com/bunnyvalluri/church-)
+[Explore Live Web App](https://kcmchurch.vercel.app) • [Architecture Documentation](docs/architecture/ARCHITECTURE.md) • [API Directory](docs/api/API-INVENTORY.md) • [Runbooks](docs/reliability/runbooks/)
+
+</div>
 
 ---
 
 ## 📋 Table of Contents
-
-- [Overview](#-overview)
-- [Key Features](#-key-features)
+- [Executive Overview](#-executive-overview)
+- [Enterprise Architecture](#-enterprise-architecture)
+- [Role-Based Access Control (RBAC)](#-role-based-access-control-rbac)
+- [Core Platform Capabilities](#-core-platform-capabilities)
+  - [1. Multilingual Trilingual Parity](#1-multilingual-trilingual-parity-en--te--hi)
+  - [2. Zero-Trust Online Giving & 80G Tax Receipts](#2-zero-trust-online-giving--80g-tax-receipts)
+  - [3. Offline-First PWA & IndexedDB Queue](#3-offline-first-pwa--indexeddb-queue)
+  - [4. Church AI Context Assistant](#4-church-ai-context-assistant)
+  - [5. Centralized Health Engine & Self-Healing](#5-centralized-health-engine--self-healing)
+- [Monorepo Directory Layout](#-monorepo-directory-layout)
 - [Technology Stack](#-technology-stack)
-- [Monorepo Architecture](#-monorepo-architecture)
-- [Getting Started](#-getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Installation \& Setup](#1-installation--setup)
-  - [Environment Configuration](#2-environment-configuration)
-  - [Database \& Migrations](#3-database--migrations)
-  - [Development Server](#4-development-server)
-- [Database Schema \& Models](#-database-schema--models)
-- [AI \& Network Resilience](#-ai--network-resilience)
-- [Deployment \& Infrastructure](#-deployment--infrastructure)
-- [License \& Support](#-license--support)
+- [Getting Started & Local Setup](#-getting-started--local-setup)
+- [Quality Gates & Testing](#-quality-gates--testing)
+- [Security, Backup & Disaster Recovery](#-security-backup--disaster-recovery)
+- [Production Infrastructure & Kubernetes](#-production-infrastructure--kubernetes)
+- [Contact & Ministry Locations](#-contact--ministry-locations)
+- [License](#-license)
 
 ---
 
-## 🌟 Overview
+## 🏛️ Executive Overview
 
-The **Kingdom of Christ Ministries Platform** serves as a digital gateway connecting church members, visitors, and global supporters. Designed with visual excellence, intuitive user navigation, and high availability, the platform streamlines sermon delivery, event management, prayer requests, community outreach, and secure financial contributions.
+The **Kingdom of Christ Ministries Digital Platform** serves as the central operational backbone for multi-campus church administration, sermon broadcasts, community prayer networks, hospital volunteer ministries, event logistics, and financial stewardship.
 
-> [!NOTE]  
-> The platform features full multilingual support (English, Telugu & Hindi), adaptive offline-first sync capabilities, dynamic accent theme switching, and zero-latency media playback.
-
----
-
-## ✨ Key Features
-
-### 🎨 Modern Design & Experience
-- **Apple Glassmorphism Interface**: Crafted with modern typography, glassmorphism UI components, fluid gradients, and dark/light mode customization.
-- **Dynamic Accent Themes**: 10 customizable color accent themes (Purple, Emerald, Holy Blue, Crimson, Royal Gold, Rose, Sky, Olive, Earth, Platinum).
-- **Fully Responsive**: Flawless responsive layout optimized across mobile, tablet, laptop, and widescreen displays.
-- **Micro-Animations**: Smooth component micro-interactions and route transitions.
-
-### 🌐 Community Hub & Media Library
-- **Hero & Ministry Showcase**: Displays mission statements, weekly service schedules, and ministry highlights.
-- **Sermon & Media Archive**: Filterable sermon library with high-definition audio and video streaming, plus transcript support.
-- **Interactive Events Calendar**: Full event listing with category filters, schedule details, and location maps.
-- **Prayer & Testimonials**: Online prayer request submissions and verified community testimony sharing.
-- **Multilingual Interface**: Seamless translation across English, Telugu, and Hindi.
-
-### ⚡ Offline-First Architecture & Network Resilience
-- **PWA Service Worker**: Instant page load with offline caching and background synchronization.
-- **Real-Time Health Monitoring**: Automatic network quality detection and sync handling.
-
-### 🤖 Intelligent AI Assistant
-- **Multilingual Conversational AI (English, Telugu & Hindi)**: Provides 24/7 answers to church schedules, location details, sermon insights, and service information.
-- **Dynamic Color Theme Sync**: Chatbot interface automatically synchronizes with active accent themes.
-
-### 💳 Production Payment Gateway & Online Giving
-- **Zero-Trust Financial Architecture**: Real Razorpay payment processing with server-side HMAC-SHA256 signature verification and webhook settlement.
-- **Dynamic UPI QR & Deep Links**: Instant QR generation and one-click launch in GPay, PhonePe, Paytm, BHIM, and FamApp.
-- **Atomic Accounting & Verifiable Receipts**: Automated ledger settlement in PostgreSQL, unique verification codes, and PDF receipt downloads.
-- **Admin Reconciliation**: Automated discrepancy detection and auditing between Razorpay gateway and platform ledger.
+Designed for high reliability, strict data integrity, and cross-device accessibility:
+- **Pure White Visual Identity**: Clean, accessible, modern interface enforcing light-only color consistency across Android and desktop web engines.
+- **Micro-Audited Data Layer**: 42 relational models in PostgreSQL with point-in-time recovery (PITR) and Prisma interactive transaction boundaries.
+- **Strict Role Isolation**: Server-side Edge Middleware route guards protecting Member, Pastor, Admin, and Event Manager portals.
 
 ---
 
-## 🚀 Technology Stack
+## 🏗️ Enterprise Architecture
 
-| Category | Technology | Description |
+```mermaid
+flowchart TB
+    subgraph Client ["Client & Edge Layer"]
+        PWA["PWA / Browser Client"]
+        SW["Service Worker Cache"]
+        IDB["IndexedDB Offline Queue"]
+        Edge["Next.js Edge Middleware\n(RBAC, HMAC Verification, Rate Limits)"]
+    end
+
+    subgraph AppServer ["Next.js 14 & Node.js Application Layer"]
+        RSC["React Server Components (RSC)"]
+        Routes["API Route Handlers (189 Endpoints)"]
+        Services["Domain Services (Auth, Giving, Email, AI, SMS)"]
+    end
+
+    subgraph Persistence ["Persistence & External Services"]
+        PG[("Neon PostgreSQL\n(Primary System of Record)")]
+        Redis[("Upstash Redis\n(Cache, Rate Limits, Locks)")]
+        Cloudinary["Cloudinary (CDN Media)"]
+        Razorpay["Razorpay (Payment Gateway)"]
+        FastAPI["FastAPI Python Microservice\n(Church AI Context Engine)"]
+    end
+
+    PWA --> Edge
+    PWA <--> SW
+    PWA <--> IDB
+    Edge --> RSC
+    Edge --> Routes
+    RSC --> Services
+    Routes --> Services
+    Services --> PG
+    Services --> Redis
+    Services --> Cloudinary
+    Services --> Razorpay
+    Services <--> FastAPI
+```
+
+---
+
+## 🔐 Role-Based Access Control (RBAC)
+
+The platform enforces strict server-side authorization at the Edge Middleware layer ([`frontend/middleware.ts`](frontend/middleware.ts)):
+
+| Role | Authorized Portals & Prefix | Responsibilities & Capabilities |
 | :--- | :--- | :--- |
-| **Frontend** | Next.js 14 (App Router) | React framework with Server Side Rendering (SSR) & Static Site Generation (SSG) |
-| **Language** | TypeScript 5.4 | End-to-end type safety across client and server |
-| **Styling** | Tailwind CSS 3.4 & Radix UI | Utility-first styling with accessible UI primitives |
-| **Animations** | Framer Motion | Smooth component micro-interactions and route transitions |
-| **Backend API** | Next.js API Routes & Express | Modular REST endpoints with rate limiting and security guards |
-| **Authentication** | Firebase Auth (Google & Email) | Secure identity provider with OAuth and session tokens |
-| **Database & ORM** | PostgreSQL 16 & Prisma | Relational database management with schema migrations |
-| **AI Engine** | OpenAI & Gemini API | Natural Language Processing (NLP) & Retrieval-Augmented Generation (RAG) |
-| **Payments** | Razorpay Gateway (UPI / Cards) | Production-grade payment provider abstraction with HMAC verification |
-| **Deployment** | Vercel & Docker | Automated CI/CD edge deployment and containerization |
+| **Super Admin** | `/admin/*`, `/pastor/*`, `/member/*`, `/event-manager/*` | Full system governance, audit log inspection, security event reviews, role assignments |
+| **Admin** | `/admin/*`, `/member/*`, `/event-manager/*` | Financial management, donation reconciliation, CMS updates, volunteer approvals |
+| **Pastor** | `/pastor/*`, `/member/*` | Spiritual oversight, sermon broadcasts, branch member care, prayer request workflows |
+| **Event Manager** | `/event-manager/*`, `/member/*` | Campus event logistics, seat management, QR ticket scanning, attendance reports |
+| **Member** | `/member/*`, `/church-member/*` | Self-service profile, personal giving history, 80G tax receipt downloads, prayer submissions |
+| **Guest** | `/`, `/about/*`, `/sermons`, `/events`, `/prayer`, `/ngo/*` | Public sermon streaming, visitor event registrations, general giving, contact forms |
 
 ---
 
-## 🏗️ Monorepo Architecture
+## ✨ Core Platform Capabilities
+
+### 1. Multilingual Trilingual Parity (EN | TE | HI)
+- 100% dictionary synchronization across **English (`en`)**, **Telugu (`te`)**, and **Hindi (`hi`)** (2,286 verified translation keys per locale).
+- Zero runtime translation missing-key fallback anomalies.
+- Automated parity verification via `npm run i18n:check -w frontend`.
+
+### 2. Zero-Trust Online Giving & 80G Tax Receipts
+- **Server-Verified Checkout**: Razorpay orders created exclusively on the backend with client-side price manipulation prevention.
+- **HMAC-SHA256 Webhook Verification**: Ingress webhooks capture raw payload buffers and deduplicate via `webhookEventId` (SHA-256 hash).
+- **80G Compliant Receipts**: Instant cryptographic verification code generation and verified PDF receipt downloads.
+
+### 3. Offline-First PWA & IndexedDB Queue
+- **Resilient Mutation Queue**: Offline actions (prayer submissions, event registrations) are buffered in IndexedDB (`kcm-offline-db` v2) with deterministic client UUIDs.
+- **Automatic Replay Engine**: Background sync reconciles queued mutations when network connectivity returns without duplicating records.
+
+### 4. Church AI Context Assistant
+- Dedicated conversational assistant with biblical knowledge retrieval, branch schedule context, and theological guardrails.
+- Zero server secret leakage; prompt inputs sanitized with DOMPurify and strict rate-limiting.
+
+### 5. Centralized Health Engine & Self-Healing
+- 40+ specialized health checkers across 11 subsystems ([`health/`](health/)) auditing database connection pooling, API contracts, responsiveness, and security.
+- Integrated automated health monitoring and deployment recovery scripts ([`scripts/deployment/`](scripts/deployment/)).
+
+---
+
+## 📂 Monorepo Directory Layout
 
 ```
-church-platform/
-├── frontend/                 # Next.js 14 Web Application
-│   ├── app/                  # App Router pages and API routes
-│   ├── components/           # UI components, cards, and AI chat interface
-│   ├── hooks/                # Custom React hooks (Network, Audio, PWA)
-│   ├── lib/                  # Utilities, translations, API clients
-│   └── public/               # Public static assets, icons, service worker
-├── backend/                  # Node.js Express API Engine
-│   ├── src/                  # Controllers, services, and middleware
-│   └── prisma/               # Prisma database schema & seeds
-├── database/                 # Database initialization and migration scripts
-├── docker/                   # Docker Compose development and production configs
-├── k8s/                      # Kubernetes manifests & Helm charts
-├── monitoring/               # Prometheus alert rules & Grafana dashboards
-├── platform/                 # Shared platform configs & gateway routes
-├── package.json              # Workspace root configuration
-└── README.md                 # Documentation
+K.C.M-Portal/
+├── frontend/                     # Next.js 14 App Router Web Application
+│   ├── app/                      # 148 compiled routes and 35 API subdomains
+│   ├── components/               # Pure white UI components, cards, tables, modals
+│   ├── hooks/                    # useAuth, useSync, useOnlineStatus, useI18n
+│   ├── lib/                      # Services (Razorpay, Email, AI, Prisma singleton)
+│   ├── prisma/                   # PostgreSQL schema (42 models) & seeds
+│   └── tests/                    # Playwright E2E, RBAC, chaos, and security test suites
+├── backend/                      # Node.js / Express Auxiliary Services
+│   ├── src/                      # Background BullMQ queues, cron workers, routes
+│   └── server.js                 # Auxiliary server & Socket.io real-time engine
+├── health/                       # Centralized 11-Tier Health Check Engine
+│   ├── core/                     # HealthRegistry, HealthEngine, registerAllChecks
+│   ├── database/                 # 13 database & data-integrity checks
+│   ├── backend/                  # 12 API & webhook security checks
+│   ├── frontend/                 # 15 responsive, accessibility & PWA checks
+│   └── reports/                  # Machine-readable Step 1 to 10 audit JSON reports
+├── docs/                         # Engineering Documentation & Runbooks
+│   ├── architecture/             # System blueprints and ADR-001 to ADR-006
+│   ├── database/                 # Data model, PITR backups, migrations, indexing
+│   ├── api/                      # 189-endpoint API directory & contracts
+│   ├── frontend/                 # Design tokens, WCAG 2.1 AA, PWA specifications
+│   ├── reliability/              # Error budgets, SLOs, and 11 incident runbooks
+│   └── infrastructure/           # Disaster recovery & production deployment guides
+├── docker/                       # Hardened multi-stage node:22-alpine Dockerfiles
+├── k8s/                          # Kubernetes manifests (PDB, NetworkPolicy, Kustomize)
+└── package.json                  # Workspace monorepo root
 ```
 
 ---
 
-## 📦 Getting Started
+## 🛠️ Technology Stack
+
+| Domain | Technology | Purpose |
+| :--- | :--- | :--- |
+| **Frontend Framework** | [Next.js 14](https://nextjs.org/) (App Router) | React Server Components, Streaming SSR, Edge Middleware |
+| **Language** | [TypeScript 5.4](https://www.typescriptlang.org/) | Strict end-to-end type safety |
+| **Styling & Tokens** | [Tailwind CSS 3.4](https://tailwindcss.com/) | Pure white minimalist design system (`color-scheme: light only`) |
+| **Database & ORM** | [Neon PostgreSQL](https://neon.tech/) & [Prisma 5.12](https://www.prisma.io/) | Serverless connection pooling, 42 schema models, ACID transactions |
+| **Caching & Queues** | [Upstash Redis](https://upstash.com/) & [BullMQ](https://bullmq.io/) | Rate-limiting sliding windows, distributed locks, retry queues |
+| **Payments** | [Razorpay](https://razorpay.com/) | UPI Intent, QR generation, cards, net banking, 80G tax receipts |
+| **Media Delivery** | [Cloudinary](https://cloudinary.com/) | On-the-fly media optimization (`f_auto`, `q_auto`) & PDF receipt generation |
+| **Testing** | [Playwright](https://playwright.dev/) & [Jest](https://jestjs.io/) | Cross-browser E2E testing (Chromium, Firefox, WebKit, Mobile Safari) |
+| **Container & Orchestration**| [Docker](https://www.docker.com/) & [Kubernetes](https://kubernetes.io/) | Non-root container builds, PodDisruptionBudgets, NetworkPolicies |
+
+---
+
+## 🚀 Getting Started & Local Setup
 
 ### Prerequisites
+- **Node.js**: `>= 20.0.0`
+- **npm**: `>= 10.0.0`
+- **PostgreSQL**: PostgreSQL 15+ or a free [Neon](https://neon.tech) serverless database.
 
-Ensure the following tools are installed:
-- **Node.js**: `v18.0.0` or higher
-- **npm**: `v9.0.0` or higher
-- **PostgreSQL**: `v14.0` or higher (or cloud database connection)
-- **Git**: Installed for version control
-
----
-
-### 1. Installation & Setup
-
-Clone the repository and install all workspace dependencies:
-
+### 1. Clone & Install Dependencies
 ```bash
 git clone https://github.com/bunnyvalluri/church-.git
 cd church-
 npm install
 ```
 
----
-
-### 2. Environment Configuration
-
-Create environment configuration files:
-
+### 2. Configure Environment Variables
+Copy the example environment templates:
 ```bash
-# Frontend setup
 cp frontend/.env.example frontend/.env.local
-
-# Backend setup
 cp backend/.env.example backend/.env
 ```
 
-Configure your environment variables in `frontend/.env.local`:
-
+Configure essential variables in `frontend/.env.local`:
 ```env
-# Database Connection
+# Database Connection (Neon Pooled Connection)
 DATABASE_URL="postgresql://[USER]:[PASSWORD]@[HOST]:5432/[DB_NAME]?sslmode=require"
 
-# NextAuth / App Secret
-NEXTAUTH_URL="http://localhost:3000"
-NEXTAUTH_SECRET="your-secure-secret-key"
+# Session & JWT Secret
+SESSION_SECRET="your-secure-64-character-random-hex-secret"
 
-# Payments (Stripe)
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="pk_test_..."
-STRIPE_SECRET_KEY="sk_test_..."
+# Public Identifiers (Client-Safe)
+NEXT_PUBLIC_GOOGLE_CLIENT_ID="your-google-client-id.apps.googleusercontent.com"
+NEXT_PUBLIC_RAZORPAY_KEY_ID="rzp_test_..."
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME="your-cloud-name"
 
-# AI Integration
-OPENAI_API_KEY="sk-..."
-GEMINI_API_KEY="..."
+# Private Server Secrets (Never Exposed to Browser)
+RAZORPAY_KEY_SECRET="your-razorpay-key-secret"
+RAZORPAY_WEBHOOK_SECRET="your-webhook-secret"
 ```
 
----
-
-### 3. Database & Migrations
-
-Set up the PostgreSQL database schema and seed initial data using Prisma:
-
+### 3. Initialize Database
 ```bash
 # Generate Prisma Client
-npm run db:generate
+npm run postinstall
 
-# Push database schema
+# Push Schema to PostgreSQL
 npm run db:push
 
-# Seed initial data
+# (Optional) Seed Initial Church Campuses & Services
 npm run db:seed
 ```
 
----
-
-### 4. Development Server
-
-Run the development server for both frontend and backend concurrently:
-
+### 4. Run Development Server
 ```bash
 npm run dev
 ```
-
-Navigate to [http://localhost:3000](http://localhost:3000) in your web browser.
-
----
-
-## 📊 Database Schema & Models
-
-Managed seamlessly via Prisma ORM:
-
-- **User**: User accounts, authentication credentials, and preferences.
-- **Event**: Church services, community events, location details, and dates.
-- **Sermon**: Video/audio sermon media links, speaker information, and transcripts.
-- **PrayerRequest**: Community prayer requests with privacy controls.
-- **Donation**: Giving records, transaction reference IDs, and payment status tracking.
-- **Announcement**: Bulletin notices and church news updates.
-- **Testimonial**: Community testimonies and stories.
-- **Ministry**: Ministry teams and community outreach programs.
-- **Gallery**: Event photos and media archives.
+Open [http://localhost:3000](http://localhost:3000) to view the application.
 
 ---
 
-## 🤖 AI & Network Resilience
+## 🧪 Quality Gates & Testing
 
-### Intelligent AI Assistant
-- Interactive multilingual chat assistance for service timings, prayer requests, and biblical inquiries.
-- Real-time theme synchronization with the user's active visual palette.
+Execute the automated test suites:
 
-### Network Quality Manager
-- Monitors connection speed and availability in real-time.
-- Automatically handles temporary offline states, caching content locally and syncing back gracefully.
-
----
-
-## 🐳 Deployment & Infrastructure
-
-### Production Vercel Deployment
-Automatically builds and deploys on every push to `main` branch.
-
-### Containerization with Docker
 ```bash
-# Development stack
-npm run docker:dev
+# 1. Typecheck the entire monorepo
+npm run typecheck
 
-# Production stack
-npm run docker:prod
+# 2. Verify 100% multilingual translation sync (EN, TE, HI)
+npm run i18n:check -w frontend
+
+# 3. Execute End-to-End Playwright test suite
+npm run test:e2e
+
+# 4. Run Centralized Health & Self-Healing Audit
+npm run agent:audit
+
+# 5. Build production bundle
+npm run build
 ```
 
 ---
 
-## 📄 License & Support
+## 🛡️ Security, Backup & Disaster Recovery
 
-### License
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
-
-### Contact & Location
-- 🌐 **Website**: [https://kcmchurch.vercel.app](https://kcmchurch.vercel.app)
-- 📧 **Email**: info@kingdomofchrist.org
-- 📱 **Phone**: +91 96409 43777
-- 📍 **Address**: 15-201, Vivekananda Nagar, Jeedimetla, Hyderabad, Telangana 500055
+- **Zero Client Secrets**: Strict client/server quarantine ensuring database credentials and API secrets are never bundled in client code.
+- **Continuous PITR Backups**: Neon PostgreSQL maintains 7-day continuous Write-Ahead Log (WAL) archiving with Recovery Point Objective (RPO) < 15 minutes and Recovery Time Objective (RTO) < 30 minutes.
+- **Incident Runbooks**: 11 production runbooks available in [`docs/reliability/runbooks/`](docs/reliability/runbooks/) covering database outages, payment webhook failures, and certificate renewals.
 
 ---
 
-**Built with ❤️ for Kingdom of Christ Ministries, Hyderabad**
+## 🐳 Production Infrastructure & Kubernetes
+
+Production container images are built using multi-stage `node:22-alpine` Dockerfiles with non-root security contexts (`UID 1001`):
+
+```bash
+# Build and run production Docker containers locally
+npm run docker:prod
+
+# Deploy to Kubernetes cluster
+npm run k8s:apply
+```
+
+Kubernetes manifests located in [`k8s/`](k8s/) include:
+- `pdb.yaml`: Pod Disruption Budgets ensuring high availability during node drain operations.
+- `network-policy.yaml`: Default-deny ingress network policies allowing only verified frontend-to-backend traffic.
+- `kustomization.yaml`: Unified resource orchestration.
+
+---
+
+## 📍 Contact & Ministry Locations
+
+**Kingdom of Christ Ministries (KCM Church)**  
+- 🌐 **Website**: [https://kcmchurch.vercel.app](https://kcmchurch.vercel.app)  
+- 📧 **Primary Email**: [kingofchristministries23@gmail.com](mailto:kingofchristministries23@gmail.com)  
+- 📱 **Phone**: +91 96409 43777  
+- 📍 **Main Campus**: 15-201, Vivekananda Nagar, Srinivas Nagar, Jeedimetla, Hyderabad – 500055, Telangana, India  
+- 📍 **Campuses**: Shapur Nagar • Subhash Nagar • Bahadurpally  
+
+---
+
+## 📄 License
+
+This repository is licensed under the [MIT License](LICENSE).  
+Copyright © 2026 Kingdom of Christ Ministries. All rights reserved.
