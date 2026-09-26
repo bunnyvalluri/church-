@@ -1,25 +1,29 @@
 <div align="center">
 
+<a href="https://kcmchurch.vercel.app">
+  <img src="docs/assets/hero-banner.png" alt="Kingdom of Christ Ministries Banner" width="100%" style="border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);" />
+</a>
+
 # 🏛️ Kingdom of Christ Ministries
 ### Enterprise Digital Platform & Ministry Operating System
 
-[![Production Status](https://img.shields.io/badge/Production-Live-22C55E?style=for-the-badge&logo=vercel&logoColor=white)](https://kcmchurch.vercel.app)
-[![Next.js 14](https://img.shields.io/badge/Next.js-14_App_Router-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
-[![TypeScript 5.4](https://img.shields.io/badge/TypeScript-5.4_Strict-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Neon_Serverless-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](https://neon.tech/)
-[![Prisma ORM](https://img.shields.io/badge/Prisma-5.12_ORM-2D3748?style=for-the-badge&logo=prisma&logoColor=white)](https://www.prisma.io/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4_Modern_UI-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![Razorpay](https://img.shields.io/badge/Razorpay-Verified_Giving-0C2340?style=for-the-badge&logo=razorpay&logoColor=white)](https://razorpay.com/)
-[![PWA](https://img.shields.io/badge/PWA-Offline_Sync-5A0FC8?style=for-the-badge&logo=pwa&logoColor=white)](https://web.dev/progressive-web-apps/)
-[![i18n](https://img.shields.io/badge/i18n-EN_%7C_TE_%7C_HI-10B981?style=for-the-badge)](docs/frontend/I18N.md)
-[![License](https://img.shields.io/badge/License-MIT-gray.svg?style=for-the-badge)](LICENSE)
+[![Live Production](https://img.shields.io/badge/Production-Live-success?style=flat-square&logo=vercel&logoColor=white)](https://kcmchurch.vercel.app)
+[![Next.js](https://img.shields.io/badge/Next.js-14_App_Router-black?style=flat-square&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.4_Strict-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Neon_Serverless-4169E1?style=flat-square&logo=postgresql&logoColor=white)](https://neon.tech/)
+[![Prisma](https://img.shields.io/badge/Prisma-5.12_ORM-2D3748?style=flat-square&logo=prisma&logoColor=white)](https://www.prisma.io/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4_Modern_UI-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Razorpay](https://img.shields.io/badge/Razorpay-Verified_Giving-0C2340?style=flat-square&logo=razorpay&logoColor=white)](https://razorpay.com/)
+[![PWA](https://img.shields.io/badge/PWA-Offline_Sync-5A0FC8?style=flat-square&logo=pwa&logoColor=white)](https://web.dev/progressive-web-apps/)
+[![i18n](https://img.shields.io/badge/i18n-EN_%7C_TE_%7C_HI-10B981?style=flat-square)](docs/frontend/I18N.md)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
 
 <br/>
 
-**A high-performance, resilient digital ecosystem engineered for Kingdom of Christ Ministries (Hyderabad, India).**  
-Built with Next.js 14 App Router, TypeScript, Neon Serverless PostgreSQL, Upstash Redis, Razorpay Online Giving, Offline-First PWA Synchronization, and an AI Theological Context Engine.
+**An enterprise-grade, high-availability digital ecosystem engineered for Kingdom of Christ Ministries (Hyderabad, India).**  
+Powering real-time church operations, online stewardship, offline-first congregation engagement, trilingual localization, and multi-campus ministry management.
 
-[**🌐 Live Application**](https://kcmchurch.vercel.app) • [**📐 System Architecture**](docs/architecture/ARCHITECTURE.md) • [**⚡ API Directory**](docs/api/API-INVENTORY.md) • [**📖 Operational Runbooks**](docs/reliability/runbooks/)
+[**Explore Live Application ↗**](https://kcmchurch.vercel.app) • [**Architecture Specs**](docs/architecture/ARCHITECTURE.md) • [**API Inventory**](docs/api/API-INVENTORY.md) • [**Disaster Recovery Runbooks**](docs/reliability/runbooks/)
 
 </div>
 
@@ -27,47 +31,42 @@ Built with Next.js 14 App Router, TypeScript, Neon Serverless PostgreSQL, Upstas
 
 ## 📑 Table of Contents
 
-- [Executive Summary](#-executive-summary)
-- [Key Architectural Pillars](#-key-architectural-pillars)
-- [System Architecture](#-system-architecture)
+- [Overview](#-overview)
 - [Core Platform Capabilities](#-core-platform-capabilities)
-- [Monorepo Workspace Layout](#-monorepo-workspace-layout)
+- [System Architecture](#-system-architecture)
+- [Repository Structure](#-repository-structure)
 - [Technology Matrix](#-technology-matrix)
-- [Getting Started & Local Development](#-getting-started--local-development)
+- [Getting Started & Local Setup](#-getting-started--local-setup)
 - [Quality Assurance & Verification](#-quality-assurance--verification)
-- [Security, Backup & Disaster Recovery](#-security-backup--disaster-recovery)
+- [Platform Security & Reliability](#-platform-security--reliability)
 - [Containerization & Deployment](#-containerization--deployment)
-- [Ministry Locations & Contact](#-ministry-locations--contact)
+- [Ministry Campuses & Contact](#-ministry-campuses--contact)
 - [License](#-license)
 
 ---
 
-## 📌 Executive Summary
+## 🌟 Overview
 
-The **Kingdom of Christ Ministries Platform** powers the congregation's digital services, live broadcast coordination, community prayer requests, philanthropic outreach, event registrations, and financial stewardship across multiple campus locations.
+The **Kingdom of Christ Ministries Platform** is an all-in-one digital operating system built to connect congregations, streamline worship broadcasts, automate tax-exempt financial stewardship, and coordinate community outreach programs.
 
-- **Unified Cross-Platform Experience**: Responsive design tailored for mobile web, desktop, and progressive web application (PWA) clients.
-- **Relational Data Integrity**: 42 relational models maintained in PostgreSQL with transaction isolation and continuous point-in-time recovery (PITR).
-- **Edge Security Verification**: Session authentication and perimeter defense handled at the Next.js Edge Middleware layer.
-- **Trilingual Accessibility**: Complete UI localization across English, Telugu, and Hindi without missing-key fallback anomalies.
+### Key Highlights
+- **Lightning-Fast Performance**: Built on Next.js 14 App Router with React Server Components, streaming SSR, and Edge Middleware optimization.
+- **Pure White Modern Design**: Accessible, high-contrast, mobile-first design system with zero layout shifts and instant touch feedback.
+- **Resilient Offline Architecture**: Progressive Web App (PWA) with persistent IndexedDB queue for offline prayers, notes, and event check-ins.
+- **Trilingual Parity**: 100% dictionary synchronization across English (`en`), Telugu (`te`), and Hindi (`hi`).
 
 ---
 
-## 🏛️ Key Architectural Pillars
+## ⚡ Core Platform Capabilities
 
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                      Next.js 14 App Router (RSC)                        │
-├────────────────────┬────────────────────┬───────────────────────────────┤
-│   Zero-Trust Edge  │ Offline-First PWA  │    Verified Financial Flow    │
-│  Middleware Auth   │  & Replay Engine   │    & 80G Tax-Deductible Ingress │
-└────────────────────┴────────────────────┴───────────────────────────────┘
-```
-
-1. **Edge-First Verification**: Session integrity, rate-limiting, and security headers are processed at the network perimeter before reaching origin compute.
-2. **Offline-Resilient Mutations**: Critical interactions (such as prayer requests and registrations) queue locally in IndexedDB and synchronize automatically upon network reconnection.
-3. **Cryptographic Payment Pipelines**: Server-verified order creation with HMAC-SHA256 signature verification and idempotent webhook reconciliation.
-4. **Comprehensive Telemetry**: Health checks across all subsystems with automated recovery runbooks.
+| Module | Description | Key Technologies |
+| :--- | :--- | :--- |
+| 🌐 **Trilingual Localization** | Complete dictionary synchronization across English, Telugu, and Hindi (2,200+ verified translation keys). Automated CI checks prevent missing-key fallbacks. | Next.js i18n, Static Parity Audits |
+| 💳 **Verified Financial Pipeline** | Server-side Razorpay order generation with HMAC-SHA256 signature verification, idempotent webhook processing, and instant 80G tax receipt PDF generation. | Razorpay SDK, Web Crypto HMAC, PDFKit |
+| 📱 **Offline-First PWA** | Offline submissions (prayer requests, event registrations) are securely buffered in IndexedDB (`kcm-offline-db`) and automatically replayed upon network recovery. | Service Workers, IndexedDB, Workbox |
+| 🎥 **Media & Broadcast Hub** | Real-time live streaming integration, sermon archive indexing, categorization, and adaptive video streaming. | Cloudinary CDN, YouTube API |
+| 🧠 **Theological AI Engine** | Context-aware biblical knowledge retrieval engine with input sanitization, rate-limiting, and theological guardrails. | Next.js Edge AI, DOMPurify |
+| 🩺 **Automated Health Engine** | Continuous 40+ point automated health checks across database pools, external APIs, queue depth, and responsiveness with self-healing triggers. | Health Engine, BullMQ, Redis |
 
 ---
 
@@ -75,195 +74,192 @@ The **Kingdom of Christ Ministries Platform** powers the congregation's digital 
 
 ```mermaid
 flowchart TD
-    Client["📱 PWA & Web Clients (Desktop / Mobile)"]
-    Edge["🛡️ Edge Middleware Layer<br/>(Session Verification & Rate Limiting)"]
-    App["⚡ Next.js 14 Core Engine<br/>(React Server Components & API Subsystems)"]
-    DB[("🗄️ Neon PostgreSQL<br/>(Primary System of Record - 42 Models)")]
-    Cache[("⚡ Upstash Redis & BullMQ<br/>(Rate Limiting, Cache & Job Queues)")]
-    Ext["🌐 Cloud Services<br/>(Razorpay • Cloudinary CDN • AI Engine)"]
+    subgraph Clients[" 📱 Client Tier "]
+        PWA["PWA Mobile & Desktop Web"]
+        OfflineStore[("Local IndexedDB Queue")]
+        PWA <--> OfflineStore
+    end
 
-    Client -->|HTTPS / PWA| Edge
-    Edge --> App
-    App -->|Prisma ORM (Connection Pool)| DB
-    App -->|Redis Client| Cache
-    App -->|Signed HTTPS Calls| Ext
+    subgraph Perimeter[" 🛡️ Edge Security & Routing "]
+        EdgeMiddleware["Next.js Edge Middleware<br/>• Session Integrity Verification<br/>• Rate Limiting & Origin Defense"]
+    end
+
+    subgraph Compute[" ⚡ Core Application Layer "]
+        NextCore["Next.js 14 Server Engine<br/>• React Server Components (RSC)<br/>• 189 API Route Handlers<br/>• Trilingual Localization Pipeline"]
+        AuxService["Node.js Auxiliary Workers<br/>• BullMQ Job Schedulers<br/>• Real-time WebSocket Dispatches"]
+    end
+
+    subgraph Data[" 🗄️ Persistence & Caching "]
+        Postgres[("Neon PostgreSQL<br/>(42 Relational Models + PITR)")]
+        RedisStore[("Upstash Redis<br/>(Distributed Cache & Rate Limits)")]
+    end
+
+    subgraph Integrations[" 🌐 Cloud & Payment Services "]
+        RazorpayGateway["Razorpay Ingress<br/>(UPI Intent, Webhook HMAC)"]
+        CloudinaryCDN["Cloudinary Media CDN<br/>(WebP/AVIF & 80G PDF Generation)"]
+        AIEngine["AI Theological Engine"]
+    end
+
+    Clients -->|HTTPS Requests| Perimeter
+    Perimeter --> NextCore
+    NextCore -->|Prisma Connection Pool| Postgres
+    NextCore -->|Redis Client| RedisStore
+    NextCore --> RazorpayGateway
+    NextCore --> CloudinaryCDN
+    NextCore --> AIEngine
+    AuxService --> NextCore
 ```
 
 ---
 
-## ✨ Core Platform Capabilities
-
-### 1. Trilingual Localization Engine (EN | TE | HI)
-- Dictionary-synchronized translation pipeline across **English (`en`)**, **Telugu (`te`)**, and **Hindi (`hindi`)** with over 2,200 verified keys per locale.
-- Client and server locale detection with zero layout shift during locale switches.
-- Automated static key verification via `npm run i18n:check -w frontend`.
-
-### 2. Secure Financial Stewardship & 80G Receipts
-- **Server-Verified Checkout**: Razorpay payment orders generated strictly within backend server actions to eliminate client-side price tampering.
-- **HMAC-SHA256 Signature Validation**: Ingress payment webhooks process raw payload buffers and deduplicate events using deterministic SHA-256 event hashing.
-- **Instant Tax Receipt Generation**: Compliant 80G tax-exempt digital certificates featuring verifiable cryptographic validation codes and dynamic PDF streaming.
-
-### 3. Offline-First Progressive Web Application
-- **IndexedDB Mutation Store**: Offline submissions (prayer networks, event participation) buffer securely inside IndexedDB with client-generated UUIDs.
-- **Replay & Reconciliation**: Background service workers detect network resumption and safely drain queues with server idempotency.
-
-### 4. Ministry Media & Knowledge Engine
-- Dynamic video catalog and live-stream integration with optimized adaptive streaming metadata.
-- Context-aware biblical knowledge engine with strict rate-limiting, sanitization, and theological boundaries.
-
-### 5. Automated Health Engine & Observability
-- Centralized health check registry covering database connectivity, query response times, queue latency, and CDN availability.
-- Automated monitoring tools and failure recovery scripts located in `scripts/deployment/`.
-
----
-
-## 📂 Monorepo Workspace Layout
+## 📂 Repository Structure
 
 ```
 K.C.M-Portal/
-├── frontend/               # Next.js 14 App Router Web Application
-│   ├── app/                # Route handlers, server components & API routes
-│   ├── components/         # Modern UI design system components
-│   ├── hooks/              # Custom hooks (useAuth, useSync, useOnlineStatus, useI18n)
-│   ├── lib/                # Shared utilities, payment handlers & database clients
-│   ├── prisma/             # PostgreSQL database schema & migration files
-│   └── tests/              # Playwright E2E and visual regression test suites
-├── backend/                # Node.js Auxiliary Services & Queues
-│   ├── src/                # Background job workers, schedulers & BullMQ queues
-│   └── server.js           # Real-time WebSocket and background dispatchers
-├── health/                 # Multi-tier Health & Audit Engine
-│   ├── core/               # Health registry and engine orchestrator
-│   ├── database/           # Connection pooling & integrity audits
-│   ├── backend/            # API endpoints & webhook verification checks
-│   └── frontend/           # Responsiveness, accessibility & PWA audits
-├── docs/                   # Architectural blueprints, schemas & operational runbooks
-│   ├── architecture/       # System diagrams & Architecture Decision Records (ADRs)
-│   ├── api/                # API contracts and route inventory
-│   ├── database/           # Schema documentation & PITR guidelines
-│   └── reliability/        # Incident runbooks and recovery plans
-├── docker/                 # Production-hardened container configurations
-├── k8s/                    # Kubernetes manifests & deployment configurations
-└── package.json            # Root workspace scripts and dependencies
+├── frontend/                 # Next.js 14 App Router Monorepo Package
+│   ├── app/                  # Application routes, server components & API handlers
+│   ├── components/           # Modern UI components, modals, and design tokens
+│   ├── hooks/                # Custom React hooks (useAuth, useSync, useI18n, useOnlineStatus)
+│   ├── lib/                  # Shared core libraries (Prisma, Razorpay, Email, AI Engine)
+│   ├── prisma/               # PostgreSQL relational schema (42 models) & seeds
+│   └── tests/                # Automated Playwright E2E and visual tests
+├── backend/                  # Node.js Auxiliary Services & Workers
+│   ├── src/                  # Background BullMQ queues & cron workers
+│   └── server.js             # Real-time WebSocket dispatcher
+├── health/                   # Centralized Health & Diagnostics Engine
+│   ├── core/                 # Health check registry and orchestrator
+│   ├── database/             # 13 relational database integrity checks
+│   ├── backend/              # 12 API endpoint and webhook verification checks
+│   └── frontend/             # 15 responsive, accessibility and PWA checks
+├── docs/                     # Technical Documentation & Operational Guides
+│   ├── architecture/         # System diagrams & Architecture Decision Records (ADRs)
+│   ├── api/                  # API inventory and endpoint contracts
+│   ├── database/             # Schema documentation & PITR guidelines
+│   └── reliability/          # High-availability runbooks and failure recovery guides
+├── docker/                   # Multi-stage production-hardened Dockerfiles
+├── k8s/                      # Kubernetes manifests (Deployments, Services, PDB, NetworkPolicies)
+└── package.json              # Monorepo workspaces and root scripts
 ```
 
 ---
 
 ## 🛠️ Technology Matrix
 
-| Layer | Technology | Purpose & Capabilities |
-| :--- | :--- | :--- |
-| **Frontend Framework** | [Next.js 14](https://nextjs.org/) App Router | React Server Components, Streaming SSR, Edge Middleware |
-| **Programming Language** | [TypeScript 5.4](https://www.typescriptlang.org/) | Strict end-to-end type safety and contract enforcement |
-| **Styling & Design** | [Tailwind CSS 3.4](https://tailwindcss.com/) | Consistent mobile-first styling and design tokens |
-| **Primary Database** | [Neon PostgreSQL](https://neon.tech/) | Serverless PostgreSQL with connection pooling & branching |
-| **ORM & Migrations** | [Prisma 5.12](https://www.prisma.io/) | Schema definitions, type generation, and automated migrations |
-| **Caching & Job Queue** | [Upstash Redis](https://upstash.com/) & [BullMQ](https://bullmq.io/) | Distributed rate-limiting, session store & background queues |
-| **Payment Gateway** | [Razorpay](https://razorpay.com/) | UPI Intent, Netbanking, Cards, automated 80G receipt generation |
-| **Asset Delivery** | [Cloudinary](https://cloudinary.com/) | Cloud media optimization with WebP/AVIF transformations |
-| **Testing Framework** | [Playwright](https://playwright.dev/) & [Jest](https://jestjs.io/) | Cross-browser automated end-to-end and unit testing |
-| **Container & Orchestration** | [Docker](https://www.docker.com/) & [Kubernetes](https://kubernetes.io/) | Multi-stage non-root containers, PDBs, and NetworkPolicies |
+| Layer | Technology | Version | Purpose |
+| :--- | :--- | :--- | :--- |
+| **Framework** | [Next.js](https://nextjs.org/) | `14.2.x` | React Server Components, Streaming SSR, Edge Middleware |
+| **Language** | [TypeScript](https://www.typescriptlang.org/) | `5.4.x` | Monorepo-wide strict type contracts & compile-time safety |
+| **Styling** | [Tailwind CSS](https://tailwindcss.com/) | `3.4.x` | Clean, accessible, mobile-first design system |
+| **Database** | [Neon PostgreSQL](https://neon.tech/) | `v16` | Serverless relational database with autoscaling & branching |
+| **ORM** | [Prisma](https://www.prisma.io/) | `5.12.x` | Type-safe query building, migrations & relational modeling |
+| **Caching & Queue** | [Upstash Redis](https://upstash.com/) & [BullMQ](https://bullmq.io/) | `Latest` | Sliding window rate limits, job scheduling & distributed locks |
+| **Payment Gateway** | [Razorpay](https://razorpay.com/) | `Latest` | UPI Intent, Cards, Netbanking & verified 80G tax receipting |
+| **Media & CDN** | [Cloudinary](https://cloudinary.com/) | `Latest` | Image optimization, AVIF/WebP transformations, PDF rendering |
+| **Testing** | [Playwright](https://playwright.dev/) & [Jest](https://jestjs.io/) | `Latest` | Cross-browser automated end-to-end and unit testing |
+| **Containerization** | [Docker](https://www.docker.com/) & [Kubernetes](https://kubernetes.io/) | `node:22-alpine` | Hardened non-root containers & declarative cloud orchestration |
 
 ---
 
-## 🚀 Getting Started & Local Development
+## 🚀 Getting Started & Local Setup
 
 ### Prerequisites
 - **Node.js**: `v20.x` or higher (LTS recommended)
 - **npm**: `v10.x` or higher
-- **PostgreSQL**: PostgreSQL 15+ instance or a cloud database (such as [Neon](https://neon.tech))
+- **PostgreSQL**: PostgreSQL 15+ instance or a free [Neon](https://neon.tech) database
 
-### 1. Clone the Repository
+### 1. Clone & Install
 ```bash
 git clone https://github.com/bunnyvalluri/church-.git
 cd church-
 npm install
 ```
 
-### 2. Configure Environment Variables
+### 2. Environment Configuration
+Copy the template configuration files into your local environment:
 ```bash
 cp frontend/.env.example frontend/.env.local
 cp backend/.env.example backend/.env
 ```
 
-Ensure essential values are defined in `frontend/.env.local`:
+Configure the essential connection parameters in `frontend/.env.local`:
 ```env
-# Database Connection
+# Database Connection (Neon / PostgreSQL)
 DATABASE_URL="postgresql://<USER>:<PASSWORD>@<HOST>:5432/<DB_NAME>?sslmode=require"
 
-# Session Security
-SESSION_SECRET="<generate-secure-64-character-hex-string>"
+# Cryptographic Session Secret
+SESSION_SECRET="<generate-a-secure-64-character-hex-string>"
 
-# Public Credentials
+# Public Keys & Client Config
 NEXT_PUBLIC_GOOGLE_CLIENT_ID="<your-google-client-id>"
 NEXT_PUBLIC_RAZORPAY_KEY_ID="rzp_test_<your-key-id>"
 NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME="<your-cloud-name>"
 
-# Private Integrations
+# Private Backend Integration Secrets
 RAZORPAY_KEY_SECRET="<your-razorpay-key-secret>"
 RAZORPAY_WEBHOOK_SECRET="<your-webhook-secret>"
 ```
 
-### 3. Initialize Database Schema
+### 3. Database Initialization
 ```bash
 # Generate Prisma Client bindings
 npm run postinstall
 
-# Push schema definitions to database
+# Synchronize schema definitions with database
 npm run db:push
 
-# (Optional) Seed initial records
+# (Optional) Seed sample data
 npm run db:seed
 ```
 
-### 4. Launch Development Environment
+### 4. Start Development Server
 ```bash
 npm run dev
 ```
-The application will be accessible at [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000) to view the application.
 
 ---
 
 ## 🧪 Quality Assurance & Verification
 
-Execute the test suites and validation tools across the monorepo:
+The project includes an extensive suite of automated checks, static analysis tools, and health monitors:
 
 ```bash
-# 1. Monorepo TypeScript static analysis
+# 1. Typecheck the entire monorepo
 npm run typecheck
 
-# 2. Multilingual translation key parity verification
+# 2. Verify 100% trilingual translation sync (EN, TE, HI)
 npm run i18n:check -w frontend
 
-# 3. End-to-End browser test suite
+# 3. Execute End-to-End browser test suite
 npm run test:e2e
 
-# 4. Comprehensive health and integrity audit
+# 4. Run Centralized Health & Self-Healing Audit
 npm run agent:audit
 
-# 5. Production build compilation
+# 5. Compile production build
 npm run build
 ```
 
 ---
 
-## 🛡️ Security, Backup & Disaster Recovery
+## 🛡️ Platform Security & Reliability
 
-- **Perimeter Defense**: Cryptographic session tokens verified at the Edge Middleware layer using Web Crypto HMAC-SHA256 in secure, `HttpOnly`, `SameSite=Lax` cookies.
-- **Origin & CSRF Defense**: State-mutating endpoints enforce strict origin and referer header verification against trusted domain allowlists.
-- **Continuous Backups (PITR)**: Neon PostgreSQL maintains continuous Write-Ahead Log (WAL) archiving with Recovery Point Objective (RPO) < 15 minutes.
-- **Standardized Runbooks**: Operational guides located in [`docs/reliability/runbooks/`](docs/reliability/runbooks/) covering disaster recovery, cache resets, and failovers.
+- **Perimeter Edge Verification**: Cryptographic session tokens verified at the Edge Middleware layer via Web Crypto HMAC-SHA256 using secure, `HttpOnly`, `SameSite=Lax` cookies.
+- **CSRF & Origin Enforcement**: State-mutating API routes validate incoming origin and referer headers against trusted domain allowlists.
+- **Continuous PITR Backups**: Neon PostgreSQL maintains continuous 7-day WAL archiving with Recovery Point Objective (RPO) < 15 minutes.
+- **Operational Runbooks**: 11 detailed production runbooks located in [`docs/reliability/runbooks/`](docs/reliability/runbooks/) covering disaster recovery, cache resets, and database failovers.
 
 ---
 
 ## 🐳 Containerization & Deployment
 
-Production container builds utilize multi-stage Alpine Linux images running under an unprivileged user context:
+Production container images are constructed using multi-stage `node:22-alpine` Dockerfiles with unprivileged non-root execution contexts (`UID 1001`):
 
 ```bash
 # Build and run production containers locally
 npm run docker:prod
 
-# Terminate production containers
+# Stop production containers
 npm run docker:prod:down
 
 # Apply Kubernetes cluster manifests
@@ -272,11 +268,11 @@ npm run k8s:apply
 
 ---
 
-## 📍 Ministry Locations & Contact
+## 📍 Ministry Campuses & Contact
 
 **Kingdom of Christ Ministries (KCM Church)**  
 - 🌐 **Official Portal**: [https://kcmchurch.vercel.app](https://kcmchurch.vercel.app)  
-- 📧 **Direct Inquiries**: [kingofchristministries23@gmail.com](mailto:kingofchristministries23@gmail.com)  
+- 📧 **General Inquiries**: [kingofchristministries23@gmail.com](mailto:kingofchristministries23@gmail.com)  
 - 📱 **Phone Contact**: +91 96409 43777  
 - 📍 **Main Campus**: 15-201, Vivekananda Nagar, Srinivas Nagar, Jeedimetla, Hyderabad – 500055, Telangana, India  
 - 📍 **Affiliated Campuses**: Shapur Nagar • Subhash Nagar • Bahadurpally  
