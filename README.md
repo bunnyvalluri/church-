@@ -161,7 +161,7 @@ Configure your environment variables in `frontend/.env.local`:
 
 ```env
 # Database Connection
-DATABASE_URL="postgresql://user:password@localhost:5432/kcm_db"
+DATABASE_URL="postgresql://[USER]:[PASSWORD]@[HOST]:5432/[DB_NAME]?sslmode=require"
 
 # NextAuth / App Secret
 NEXTAUTH_URL="http://localhost:3000"

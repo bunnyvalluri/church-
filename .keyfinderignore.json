@@ -234,6 +234,10 @@
       "targetDomain": "*",
       "storageType": "external_script",
       "patterns": [
+        "chatgpt.com*",
+        "leetcode.com*",
+        "www.codechef.com*",
+        "clinical-decision-support-system*",
         "console.neon.tech*",
         "dashboard.render.com*",
         "search.google.com*",
@@ -245,7 +249,7 @@
         "safeframe.googlesyndication.com*"
       ],
       "classification": "FALSE_POSITIVE",
-      "rationale": "Third-party browser tabs and management dashboards open during browser automated recording. Isolated from KCM application bundle.",
+      "rationale": "Third-party developer websites, coding platforms (LeetCode, CodeChef), AI interfaces (ChatGPT), and management dashboards open during browser automated recording. Completely isolated from KCM application bundle.",
       "action": "EXCLUDE_FROM_SCAN"
     }
   ]
