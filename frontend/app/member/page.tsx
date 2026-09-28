@@ -445,7 +445,7 @@ export default function MemberDashboard() {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35 }}
-        className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 p-4.5 sm:p-7 md:p-9 text-white shadow-xl shadow-purple-500/10 border border-white/10"
+        className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-violet-700 via-purple-700 to-indigo-800 p-5 sm:p-7 md:p-8 text-white shadow-xl shadow-purple-900/20 border border-white/15"
       >
         {/* Ambient Glows */}
         <div className="pointer-events-none absolute inset-0">
@@ -453,30 +453,38 @@ export default function MemberDashboard() {
           <div className="absolute -bottom-20 -left-10 w-56 sm:w-64 h-56 sm:h-64 bg-indigo-400/20 rounded-full blur-2xl" />
         </div>
 
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
-          <div className="space-y-1.5 sm:space-y-3 max-w-2xl">
-            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black tracking-tight leading-tight">
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5 sm:gap-6">
+          <div className="space-y-2 sm:space-y-2.5 max-w-2xl">
+            <div className="flex items-center gap-1.5 text-amber-300 text-xs font-bold uppercase tracking-wider">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>{new Date().getHours() < 12 ? dt.greetings.morning : new Date().getHours() < 17 ? dt.greetings.afternoon : dt.greetings.evening}</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-white leading-tight">
               {dt.greetings.welcome},{" "}
-              <span className="text-amber-300">{firstName}! 🙏</span>
+              <span className="text-amber-300 inline-block">{firstName}! 🙏</span>
             </h2>
-            <p className="text-xs sm:text-sm md:text-base text-purple-100/90 font-medium leading-relaxed max-w-xl">
+            <p className="text-xs sm:text-sm md:text-base text-purple-100/90 font-normal leading-relaxed max-w-xl pt-0.5">
               {dt.greetings.sub}
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 sm:gap-3.5 shrink-0 w-full md:w-auto">
-            <div className="flex items-center gap-2 sm:gap-3 bg-white/12 backdrop-blur-md border border-white/20 rounded-2xl p-2.5 sm:px-4 sm:py-3 min-w-0">
-              <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-amber-300 shrink-0" />
+          <div className="grid grid-cols-2 gap-2.5 sm:gap-3.5 shrink-0 w-full md:w-auto pt-2 md:pt-0">
+            <div className="flex items-center gap-3 bg-white/15 backdrop-blur-md border border-white/20 rounded-2xl p-3 sm:px-4 sm:py-3.5 min-w-0 shadow-xs">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-amber-400/20 flex items-center justify-center shrink-0 border border-amber-300/30">
+                <Calendar className="w-4.5 h-4.5 sm:w-5 sm:h-5 text-amber-300" />
+              </div>
               <div className="min-w-0 flex-1">
-                <p className="text-base sm:text-xl font-black leading-none">{loadingFeeds ? "..." : stats.events}</p>
-                <p className="text-[9px] sm:text-[10.5px] text-white/90 font-extrabold uppercase tracking-wider mt-1 truncate">{dt.stats.events.label}</p>
+                <p className="text-lg sm:text-2xl font-black text-white leading-tight">{loadingFeeds ? "..." : stats.events}</p>
+                <p className="text-[10px] sm:text-xs text-purple-100 font-bold uppercase tracking-wider mt-0.5 truncate">{dt.stats.events.label}</p>
               </div>
             </div>
-            <div className="flex items-center gap-2 sm:gap-3 bg-white/12 backdrop-blur-md border border-white/20 rounded-2xl p-2.5 sm:px-4 sm:py-3 min-w-0">
-              <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-rose-300 shrink-0" />
+            <div className="flex items-center gap-3 bg-white/15 backdrop-blur-md border border-white/20 rounded-2xl p-3 sm:px-4 sm:py-3.5 min-w-0 shadow-xs">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-rose-400/20 flex items-center justify-center shrink-0 border border-rose-300/30">
+                <Heart className="w-4.5 h-4.5 sm:w-5 sm:h-5 text-rose-300" />
+              </div>
               <div className="min-w-0 flex-1">
-                <p className="text-base sm:text-xl font-black leading-none">{loadingFeeds ? "..." : stats.prayers}</p>
-                <p className="text-[9px] sm:text-[10.5px] text-white/90 font-extrabold uppercase tracking-wider mt-1 truncate">{dt.stats.prayers.label}</p>
+                <p className="text-lg sm:text-2xl font-black text-white leading-tight">{loadingFeeds ? "..." : stats.prayers}</p>
+                <p className="text-[10px] sm:text-xs text-purple-100 font-bold uppercase tracking-wider mt-0.5 truncate">{dt.stats.prayers.label}</p>
               </div>
             </div>
           </div>
