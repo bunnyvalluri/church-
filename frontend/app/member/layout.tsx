@@ -395,9 +395,9 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
       </AnimatePresence>
 
       {/* Main Content */}
-      <div className="flex-1 min-w-0 max-w-full overflow-x-hidden lg:ml-64 xl:ml-72 flex flex-col min-h-screen">
+      <div className="flex-1 min-w-0 max-w-full overflow-x-clip lg:ml-64 xl:ml-72 flex flex-col min-h-screen">
         {/* Top Bar */}
-        <header className={`sticky top-0 z-20 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-b border-gray-100 dark:border-white/5 transition-shadow ${scrolled ? "shadow-md" : ""}`}>
+        <header className={`sticky top-0 z-30 w-full shrink-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-b border-gray-100 dark:border-white/5 transition-shadow ${scrolled ? "shadow-md" : ""}`}>
           <div className="flex items-center gap-2 sm:gap-4 px-3 sm:px-6 h-14">
             {/* Mobile Hamburger */}
             <button
