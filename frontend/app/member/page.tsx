@@ -11,7 +11,10 @@ import {
   Heart,
   BookOpen,
   Sparkles,
+  ArrowRight,
+  LogOut,
   Bell,
+  Clock,
   Briefcase,
   Flame,
   Bookmark,
@@ -20,13 +23,15 @@ import {
   Wifi,
   Activity,
   ChevronRight,
+  ChevronDown,
   Play,
+  Shield,
+  Sun,
+  Moon,
+  Sunset,
   Zap,
+  Sliders,
   AlertTriangle,
-  TrendingUp,
-  Star,
-  CheckCircle2,
-  ArrowUpRight,
 } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import LanguageToggle from "@/components/LanguageToggle";
@@ -243,24 +248,13 @@ const dashboardTranslations = {
   }
 };
 
-
-/* ── Animated Counter ─────────────────────────────────────── */
-function AnimatedCounter({ value, loading }: { value: number; loading: boolean }) {
-  const [display, setDisplay] = useState(0);
-  useEffect(() => {
-    if (loading) return;
-    if (value === 0) { setDisplay(0); return; }
-    let start = 0;
-    const step = Math.max(1, Math.ceil(value / 30));
-    const timer = setInterval(() => {
-      start += step;
-      if (start >= value) { setDisplay(value); clearInterval(timer); }
-      else setDisplay(start);
-    }, 20);
-    return () => clearInterval(timer);
-  }, [value, loading]);
-  if (loading) return <span className="inline-block w-8 h-6 bg-white/20 rounded animate-pulse" />;
-  return <>{display}</>;
+/* ────────────────────────── Helpers ─────────────────────── */
+function getGreeting(lang: string): { text: string; icon: React.ElementType } {
+  const dt = dashboardTranslations[lang as keyof typeof dashboardTranslations] || dashboardTranslations.en;
+  const hour = new Date().getHours();
+  if (hour < 12) return { text: dt.greetings.morning, icon: Sun };
+  if (hour < 17) return { text: dt.greetings.afternoon, icon: Sunset };
+  return { text: dt.greetings.evening, icon: Moon };
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -272,6 +266,7 @@ export default function MemberDashboard() {
   const router = useRouter();
 
   const dt = dashboardTranslations[language as keyof typeof dashboardTranslations] || dashboardTranslations.en;
+  const activeGreeting = getGreeting(language);
 
   const [stats, setStats] = useState<DashboardStats>({
     prayers: 0,
@@ -400,9 +395,8 @@ export default function MemberDashboard() {
      RENDER
   ═════════════════════════════════════════════════════════ */
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-5 sm:space-y-7 pb-16 px-1 sm:px-2 md:px-4">
-
-      {/* ── Toast ────────────────────────────────────── */}
+    <div className="w-full max-w-7xl mx-auto space-y-4 sm:space-y-6 lg:space-y-8 pb-12 px-1 sm:px-2 md:px-4">
+      {/* ── Toast ─────────────────────────────────────────── */}
       <AnimatePresence>
         {toast && (
           <motion.div
@@ -421,291 +415,219 @@ export default function MemberDashboard() {
         )}
       </AnimatePresence>
 
-      {/* ══════════════════════════════════════════════════
-          HERO — CINEMATIC WELCOME BANNER
-      ══════════════════════════════════════════════════ */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.45, ease: "easeOut" }}
-        className="relative overflow-hidden rounded-2xl sm:rounded-3xl"
-        style={{ background: "linear-gradient(135deg, #3b0764 0%, #581c87 25%, #4c1d95 55%, #1e1b4b 85%, #0f172a 100%)" }}
-      >
-        {/* Layered ambient glows */}
-        <div className="pointer-events-none absolute inset-0">
-          <div className="absolute -top-24 -right-24 w-96 h-96 bg-violet-500/25 rounded-full blur-3xl" />
-          <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-indigo-600/20 rounded-full blur-3xl" />
-          <div className="absolute top-1/3 left-1/3 w-48 h-48 bg-purple-500/15 rounded-full blur-2xl" />
-        </div>
-
-        {/* Decorative cross watermark */}
-        <div className="pointer-events-none absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 opacity-[0.05] select-none">
-          <svg viewBox="0 0 100 130" className="w-36 h-48 sm:w-52 sm:h-72 fill-white">
-            <rect x="40" y="0" width="20" height="130" rx="5" />
-            <rect x="0" y="35" width="100" height="20" rx="5" />
-          </svg>
-        </div>
-
-        {/* Top utility strip */}
-        <div className="relative z-10 flex items-center justify-between px-4 sm:px-7 pt-4 pb-0">
-          <div className="flex items-center gap-2">
-            <span className="flex items-center gap-1.5 bg-white/10 backdrop-blur-sm border border-white/15 text-white text-[10px] font-bold px-3 py-1 rounded-full">
-              <Star className="w-3 h-3 text-amber-300 fill-amber-300" />
-              {dt.memberTag}
-            </span>
+      {/* ── Refresh & Header Utility Bar ─────────────────── */}
+      <div className="flex flex-wrap items-center justify-between gap-3 bg-white dark:bg-gray-900/60 p-3 sm:px-5 rounded-2xl border border-gray-200/80 dark:border-white/5 shadow-xs">
+        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 bg-purple-600 dark:bg-purple-700 text-white text-xs font-black px-3 py-1.5 rounded-xl border border-purple-500 shadow-xs shrink-0">
+            <activeGreeting.icon className="w-4 h-4 text-amber-300 flex-shrink-0" />
+            <span className="text-white font-black tracking-wide truncate max-w-[140px] sm:max-w-none">{activeGreeting.text}</span>
           </div>
-          <div className="flex items-center gap-2">
-            {mounted && lastSynced && (
-              <span className="hidden sm:flex items-center gap-1.5 text-[10px] font-semibold text-white/50">
-                <Wifi className="w-3 h-3 text-emerald-400" />
-                {dt.syncText} {lastSynced.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
-              </span>
-            )}
-            <button
-              onClick={() => loadFeeds(false)}
-              disabled={isRefreshing}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-[10px] font-bold text-white/80 hover:text-white transition-all active:scale-95 cursor-pointer"
-            >
-              <RefreshCw className={`w-3 h-3 ${isRefreshing ? "animate-spin text-violet-300" : ""}`} />
-              <span className="hidden sm:inline">Refresh</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Main hero content */}
-        <div className="relative z-10 px-4 sm:px-7 md:px-9 pt-5 pb-6 sm:pt-7 sm:pb-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 md:gap-10">
-
-            {/* Left — Name & greeting */}
-            <div className="space-y-3 max-w-lg">
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-amber-300" />
-                <span className="text-amber-300/90 text-xs font-semibold tracking-wide">
-                  {new Date().getHours() < 12 ? dt.greetings.morning : new Date().getHours() < 17 ? dt.greetings.afternoon : dt.greetings.evening}
-                </span>
-              </div>
-              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[2.75rem] font-black text-white tracking-tight leading-[1.1]">
-                {dt.greetings.welcome},{" "}
-                <br className="sm:hidden" />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-200 to-amber-400">
-                  {firstName}! 🙏
-                </span>
-              </h1>
-              <p className="text-sm sm:text-base text-purple-200/80 font-medium leading-relaxed max-w-md">
-                {dt.greetings.sub}
-              </p>
+          {mounted && lastSynced && (
+            <div className="hidden sm:flex items-center gap-1.5 text-[11px] font-semibold text-gray-500 dark:text-gray-400 truncate">
+              <Wifi className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+              <span>{dt.syncText} {lastSynced.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}</span>
             </div>
-
-            {/* Right — 4 stat chips */}
-            <div className="grid grid-cols-2 gap-2.5 shrink-0 md:w-68">
-              {[
-                { icon: Calendar, label: dt.stats.events.label, value: stats.events, color: "from-violet-500/35 to-purple-500/25" },
-                { icon: Heart, label: dt.stats.prayers.label, value: stats.prayers, color: "from-rose-500/35 to-pink-500/25" },
-                { icon: BookOpen, label: dt.stats.sermons.label, value: stats.sermons, color: "from-indigo-500/35 to-blue-500/25" },
-                { icon: Bell, label: dt.stats.announcements.label, value: stats.announcements.length, color: "from-amber-500/35 to-orange-500/25" },
-              ].map(({ icon: Icon, label, value, color }, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, scale: 0.85 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.1 + i * 0.06, ease: "backOut" }}
-                  className={`bg-gradient-to-br ${color} backdrop-blur-md border border-white/12 rounded-2xl p-3 sm:p-3.5`}
-                >
-                  <Icon className="w-4 h-4 text-white/65 mb-2" />
-                  <p className="text-xl sm:text-2xl font-black text-white leading-none">
-                    <AnimatedCounter value={value} loading={loadingFeeds} />
-                  </p>
-                  <p className="text-[9px] sm:text-[10px] text-white/55 font-bold uppercase tracking-wider mt-1 leading-tight">
-                    {label}
-                  </p>
-                </motion.div>
-              ))}
-            </div>
-          </div>
+          )}
         </div>
+        <button
+          onClick={() => loadFeeds(false)}
+          disabled={isRefreshing}
+          className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-gray-100 dark:bg-white/5 hover:bg-purple-50 dark:hover:bg-purple-950/40 border border-gray-200 dark:border-white/10 text-xs font-bold text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-300 transition-all active:scale-95 cursor-pointer ml-auto"
+          title="Refresh Data"
+        >
+          <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin text-purple-600" : ""}`} />
+          <span className="hidden sm:inline">Refresh</span>
+        </button>
+      </div>
 
-        {/* Bottom edge line */}
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent" />
-      </motion.div>
-
-      {/* ══════════════════════════════════════════════════
-          DAILY SCRIPTURE
-      ══════════════════════════════════════════════════ */}
+      {/* ── Hero Welcome Banner ──────────────────────────── */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.15 }}
-        className="relative overflow-hidden rounded-2xl border border-amber-200/60 dark:border-amber-800/30 bg-gradient-to-r from-amber-50 via-yellow-50 to-amber-50 dark:from-amber-950/40 dark:via-amber-900/20 dark:to-amber-950/40"
+        transition={{ duration: 0.35 }}
+        className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 p-4.5 sm:p-7 md:p-9 text-white shadow-xl shadow-purple-500/10 border border-white/10"
       >
-        <div className="absolute right-0 top-0 bottom-0 w-28 opacity-[0.07] pointer-events-none flex items-center justify-center">
-          <BookOpen className="w-24 h-24 text-amber-800 dark:text-amber-200" />
+        {/* Ambient Glows */}
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute -top-16 -right-16 w-72 sm:w-80 h-72 sm:h-80 bg-white/10 rounded-full blur-3xl" />
+          <div className="absolute -bottom-20 -left-10 w-56 sm:w-64 h-56 sm:h-64 bg-indigo-400/20 rounded-full blur-2xl" />
         </div>
-        <div className="relative flex items-start gap-3 sm:gap-4 p-4 sm:p-5">
-          <div className="w-10 h-10 sm:w-11 sm:h-11 bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl flex items-center justify-center shadow-lg shadow-amber-500/30 flex-shrink-0">
-            <Flame className="w-5 h-5 sm:w-5.5 sm:h-5.5 text-white" />
+
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
+          <div className="space-y-1.5 sm:space-y-3 max-w-2xl">
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black tracking-tight leading-tight">
+              {dt.greetings.welcome},{" "}
+              <span className="text-amber-300">{firstName}! 🙏</span>
+            </h2>
+            <p className="text-xs sm:text-sm md:text-base text-purple-100/90 font-medium leading-relaxed max-w-xl">
+              {dt.greetings.sub}
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2 sm:gap-3.5 shrink-0 w-full md:w-auto">
+            <div className="flex items-center gap-2 sm:gap-3 bg-white/12 backdrop-blur-md border border-white/20 rounded-2xl p-2.5 sm:px-4 sm:py-3 min-w-0">
+              <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-amber-300 shrink-0" />
+              <div className="min-w-0 flex-1">
+                <p className="text-base sm:text-xl font-black leading-none">{loadingFeeds ? "..." : stats.events}</p>
+                <p className="text-[9px] sm:text-[10.5px] text-white/90 font-extrabold uppercase tracking-wider mt-1 truncate">{dt.stats.events.label}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 sm:gap-3 bg-white/12 backdrop-blur-md border border-white/20 rounded-2xl p-2.5 sm:px-4 sm:py-3 min-w-0">
+              <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-rose-300 shrink-0" />
+              <div className="min-w-0 flex-1">
+                <p className="text-base sm:text-xl font-black leading-none">{loadingFeeds ? "..." : stats.prayers}</p>
+                <p className="text-[9px] sm:text-[10.5px] text-white/90 font-extrabold uppercase tracking-wider mt-1 truncate">{dt.stats.prayers.label}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* ── Daily Scripture Promise ──────────────────────── */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.08 }}
+        className="relative bg-gradient-to-r from-amber-50/80 via-orange-50/50 to-amber-50/80 dark:from-amber-950/30 dark:via-amber-900/10 dark:to-amber-950/30 border border-amber-200/70 dark:border-amber-800/30 rounded-2xl p-4 sm:p-5.5 overflow-hidden shadow-xs"
+      >
+        <div className="absolute right-4 top-1/2 -translate-y-1/2 text-amber-500/10 dark:text-amber-500/10 pointer-events-none">
+          <BookOpen className="w-20 h-20 sm:w-24 sm:h-24" />
+        </div>
+        <div className="relative flex items-start gap-3 sm:gap-4">
+          <div className="p-2.5 sm:p-3 bg-amber-100 dark:bg-amber-900/40 rounded-2xl flex-shrink-0 shadow-xs border border-amber-200/50 dark:border-amber-700/40">
+            <Flame className="w-5 h-5 sm:w-6 sm:h-6 text-amber-600 dark:text-amber-400" />
           </div>
           <div className="flex-1 min-w-0">
-            <span className="text-[10px] uppercase font-black tracking-widest text-amber-700 dark:text-amber-400 block mb-1">
-              ✦ {dt.scriptureHeading} ✦
+            <span className="text-[10px] uppercase font-extrabold tracking-widest text-amber-700 dark:text-amber-400 block mb-1">
+              {dt.scriptureHeading}
             </span>
-            <p className="text-sm sm:text-base font-semibold italic text-amber-900 dark:text-amber-100 leading-relaxed">
+            <p className="text-xs sm:text-sm md:text-base font-semibold italic text-gray-800 dark:text-gray-100 leading-relaxed">
               &ldquo;{scripture.text}&rdquo;
             </p>
-            <span className="inline-block mt-2 text-[10px] font-black text-amber-900 dark:text-amber-50 bg-amber-300/50 dark:bg-amber-800/50 px-3 py-1 rounded-full border border-amber-400/40 dark:border-amber-600/40">
+            <span className="inline-block mt-2 text-xs font-black text-amber-950 dark:text-amber-50 bg-amber-200 dark:bg-amber-800/80 px-3 py-1 rounded-full border border-amber-400 dark:border-amber-500/80 shadow-xs">
               — {scripture.ref}
             </span>
           </div>
         </div>
       </motion.div>
 
-      {/* ══════════════════════════════════════════════════
-          STAT CARDS — PREMIUM GRID
-      ══════════════════════════════════════════════════ */}
+      {/* ── Fellowship Overview Stats Grid ──────────────── */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-        className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4"
+        transition={{ delay: 0.12 }}
+        className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4"
       >
         {[
           {
             label: dt.stats.events.label,
             value: stats.events,
             icon: Calendar,
-            gradient: "from-violet-500 to-purple-600",
-            lightBg: "from-violet-50/70 to-purple-50/50",
-            darkBg: "dark:from-violet-950/50 dark:to-purple-950/30",
-            valueColor: "text-violet-600 dark:text-violet-300",
+            iconColor: "text-purple-600 dark:text-purple-400",
+            iconBg: "bg-purple-50 dark:bg-purple-950/40",
+            border: "border-purple-200/80 dark:border-purple-900/30",
+            badge: stats.events > 0 ? `${stats.events} ${dt.stats.events.badgeRSVP}` : dt.stats.events.badgeDefault,
             href: "/member/events",
-            trend: stats.events > 0 ? `${stats.events} RSVPs` : null,
           },
           {
             label: dt.stats.prayers.label,
             value: stats.prayers,
             icon: Heart,
-            gradient: "from-rose-500 to-pink-600",
-            lightBg: "from-rose-50/70 to-pink-50/50",
-            darkBg: "dark:from-rose-950/50 dark:to-pink-950/30",
-            valueColor: "text-rose-600 dark:text-rose-300",
+            iconColor: "text-rose-600 dark:text-rose-400",
+            iconBg: "bg-rose-50 dark:bg-rose-950/40",
+            border: "border-rose-200/80 dark:border-rose-900/30",
+            badge: stats.prayersAnswered > 0 ? `${stats.prayersAnswered} ${dt.stats.prayers.badgeAnswered}` : dt.stats.prayers.badgeDefault,
             href: "/member/prayers",
-            trend: stats.prayersAnswered > 0 ? `✓ ${stats.prayersAnswered} answered` : null,
           },
           {
             label: dt.stats.sermons.label,
             value: stats.sermons,
             icon: BookOpen,
-            gradient: "from-indigo-500 to-blue-600",
-            lightBg: "from-indigo-50/70 to-blue-50/50",
-            darkBg: "dark:from-indigo-950/50 dark:to-blue-950/30",
-            valueColor: "text-indigo-600 dark:text-indigo-300",
+            iconColor: "text-indigo-600 dark:text-indigo-400",
+            iconBg: "bg-indigo-50 dark:bg-indigo-950/40",
+            border: "border-indigo-200/80 dark:border-indigo-900/30",
+            badge: dt.stats.sermons.badgeDefault,
             href: "/member/sermons",
-            trend: null,
           },
           {
             label: dt.stats.announcements.label,
             value: stats.announcements.length,
             icon: Bell,
-            gradient: "from-amber-500 to-orange-500",
-            lightBg: "from-amber-50/70 to-orange-50/50",
-            darkBg: "dark:from-amber-950/50 dark:to-orange-950/30",
-            valueColor: "text-amber-600 dark:text-amber-300",
+            iconColor: "text-amber-600 dark:text-amber-400",
+            iconBg: "bg-amber-50 dark:bg-amber-950/40",
+            border: "border-amber-200/80 dark:border-amber-900/30",
+            badge: stats.announcements.some(a => a.priority === "URGENT") ? dt.stats.announcements.badgeUrgent : dt.stats.announcements.badgeDefault,
             href: "#announcements",
-            trend: stats.announcements.some(a => a.priority === "URGENT") ? "⚠️ Urgent" : null,
           },
-        ].map(({ label, value, icon: Icon, gradient, lightBg, darkBg, valueColor, href, trend }, i) => (
+        ].map(({ label, value, icon: Icon, iconColor, iconBg, border, badge, href }, i) => (
           <Link
             key={i}
             href={href}
-            className="group relative overflow-hidden rounded-2xl border border-gray-200/60 dark:border-white/8 bg-white dark:bg-gray-900/60 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+            className={`group relative bg-white dark:bg-gray-900/60 border ${border} rounded-2xl p-3 sm:p-4.5 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 overflow-hidden flex flex-col justify-between`}
           >
-            {/* Gradient accent top bar */}
-            <div className={`absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r ${gradient}`} />
-            {/* Subtle background tint */}
-            <div className={`absolute inset-0 bg-gradient-to-br ${lightBg} ${darkBg} opacity-60 group-hover:opacity-90 transition-opacity`} />
-
-            <div className="relative z-10 p-4 sm:p-5">
-              <div className="flex items-start justify-between mb-3">
-                <div className={`w-10 h-10 bg-gradient-to-br ${gradient} rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300`}>
-                  <Icon className="w-5 h-5 text-white" />
-                </div>
-                {trend && (
-                  <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/40 text-right leading-tight">
-                    {trend}
-                  </span>
-                )}
+            <div className="flex items-center justify-between gap-1.5 mb-2 sm:mb-2.5">
+              <div className={`w-8 h-8 sm:w-10 sm:h-10 ${iconBg} rounded-xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform`}>
+                <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${iconColor}`} />
               </div>
-              <p className={`text-2xl sm:text-3xl font-black ${valueColor} leading-none tracking-tight mb-1`}>
-                <AnimatedCounter value={value} loading={loadingFeeds} />
-              </p>
-              <p className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider leading-tight">
-                {label}
-              </p>
+              <span className="text-[9px] sm:text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 truncate max-w-[85px] sm:max-w-[100px] shrink-0">
+                {badge}
+              </span>
+            </div>
+            <div>
+              <span className="text-[9.5px] sm:text-xs font-extrabold text-gray-500 dark:text-gray-400 uppercase tracking-wider block truncate">{label}</span>
+              <span className={`text-xl sm:text-2xl lg:text-3xl font-black ${iconColor} block mt-0.5 tracking-tight`}>
+                {loadingFeeds ? <span className="inline-block w-8 h-7 bg-gray-100 dark:bg-gray-800 rounded animate-pulse" /> : value}
+              </span>
             </div>
           </Link>
         ))}
       </motion.div>
 
-      {/* ══════════════════════════════════════════════════
-          SERVICES DIRECTORY — PREMIUM CARDS
-      ══════════════════════════════════════════════════ */}
+      {/* ── Believer Services Directory ─────────────────── */}
       <motion.section
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.25 }}
-        className="space-y-4"
+        transition={{ delay: 0.16 }}
+        className="space-y-3 sm:space-y-4"
       >
-        <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 bg-gradient-to-br from-violet-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
-            <Sparkles className="w-3.5 h-3.5 text-white" />
-          </div>
-          <h2 className="text-sm font-black text-gray-700 dark:text-gray-300 uppercase tracking-widest">
+        <div className="flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-purple-500" />
+          <h3 className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">
             {dt.directoryHeading}
-          </h2>
+          </h3>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {dt.cards.map((card, i) => {
             const Icon = card.icon;
-            const emojis = ["👤", "📅", "🙏", "🎙️", "🤝", "💚", "🔧"];
             return (
               <motion.div
                 key={card.href}
-                initial={{ opacity: 0, y: 16, scale: 0.96 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ delay: 0.28 + i * 0.04, ease: "easeOut" }}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.18 + i * 0.03 }}
               >
                 <Link
                   href={card.href}
-                  className="group h-full flex flex-col bg-white dark:bg-gray-900/60 border border-gray-200/60 dark:border-white/6 rounded-2xl overflow-hidden hover:shadow-2xl hover:shadow-purple-500/10 hover:-translate-y-1 hover:border-purple-300/50 dark:hover:border-purple-800/50 transition-all duration-300"
+                  className={`group h-full flex flex-col justify-between bg-white dark:bg-gray-900/60 border border-gray-200/80 dark:border-white/5 rounded-2xl p-4 sm:p-5 hover:shadow-xl ${card.glow} hover:border-purple-300 dark:hover:border-purple-800/50 hover:-translate-y-0.5 transition-all duration-300`}
                 >
-                  {/* Gradient card header */}
-                  <div className={`relative bg-gradient-to-br ${card.gradient} p-4 sm:p-5`}>
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.18),_transparent_65%)]" />
-                    <div className="relative flex items-start justify-between">
-                      <div className="w-10 h-10 sm:w-11 sm:h-11 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                        <Icon className="w-5 h-5 sm:w-5.5 sm:h-5.5 text-white" />
-                      </div>
-                      <span className="text-[9px] sm:text-[10px] font-black px-2.5 py-1 rounded-full bg-black/20 text-white/90 border border-white/15 backdrop-blur-sm">
-                        {card.badge}
-                      </span>
+                  <div className="flex items-start justify-between gap-3 mb-3 sm:mb-4">
+                    <div className={`w-11 h-11 sm:w-12 sm:h-12 bg-gradient-to-br ${card.gradient} rounded-2xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300 shrink-0`}>
+                      <Icon className="w-5.5 h-5.5 sm:w-6 sm:h-6 text-white" />
                     </div>
-                    <div className="text-xl mt-2 opacity-85 select-none">{emojis[i] || "✨"}</div>
+                    <span className={`text-[9.5px] sm:text-[10px] font-extrabold px-2.5 py-1 rounded-full ${card.badgeColor}`}>
+                      {card.badge}
+                    </span>
                   </div>
 
-                  {/* Card body */}
-                  <div className="flex-1 p-3.5 sm:p-4 flex flex-col justify-between">
-                    <div>
-                      <h3 className="text-sm font-extrabold text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors leading-tight">
-                        {card.title}
-                      </h3>
-                      <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1 leading-relaxed line-clamp-2">
-                        {card.desc}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-1 mt-3 text-purple-600 dark:text-purple-400 text-[11px] font-bold group-hover:gap-1.5 transition-all">
-                      <span>Open</span>
-                      <ArrowUpRight className="w-3 h-3 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                    </div>
+                  <div>
+                    <h4 className="text-sm sm:text-base font-extrabold text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors flex items-center justify-between">
+                      <span className="truncate">{card.title}</span>
+                      <ChevronRight className="w-4 h-4 text-gray-400 group-hover:translate-x-1 transition-transform shrink-0 ml-1" />
+                    </h4>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed line-clamp-2">
+                      {card.desc}
+                    </p>
                   </div>
                 </Link>
               </motion.div>
@@ -714,187 +636,159 @@ export default function MemberDashboard() {
         </div>
       </motion.section>
 
-      {/* ══════════════════════════════════════════════════
-          BOTTOM GRID — Announcements + Quick Actions + Activity
-      ══════════════════════════════════════════════════ */}
+      {/* ── 2-Column Section for Secondary Content ──────── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-start">
-
-        {/* ── Left: Announcements ───────────────────── */}
-        <motion.div
-          id="announcements"
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="lg:col-span-7 bg-white dark:bg-gray-900/60 border border-gray-200/60 dark:border-white/6 rounded-2xl shadow-sm overflow-hidden"
-        >
-          <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-white/5 bg-gradient-to-r from-violet-50/70 to-purple-50/40 dark:from-violet-950/20 dark:to-purple-950/10">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 bg-gradient-to-br from-violet-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
-                <Bell className="w-4 h-4 text-white" />
-              </div>
-              <div>
-                <h3 className="text-sm font-black text-gray-900 dark:text-white">{dt.announcementsTitle}</h3>
-                <p className="text-[10px] text-gray-400 font-medium">Church updates & notices</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 px-2.5 py-1 rounded-full border border-emerald-200/50 dark:border-emerald-800/40">
-              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-              {dt.live}
-            </div>
-          </div>
-
-          <div className="divide-y divide-gray-100 dark:divide-white/5 max-h-[360px] overflow-y-auto">
-            {loadingFeeds ? (
-              <div className="space-y-3 p-5">
-                {[1, 2, 3].map(i => (
-                  <div key={i} className="h-14 bg-gray-50 dark:bg-gray-800/30 animate-pulse rounded-xl" />
-                ))}
-              </div>
-            ) : stats.announcements.length === 0 ? (
-              <div className="text-center py-12">
-                <div className="w-12 h-12 bg-gray-50 dark:bg-gray-800/40 rounded-2xl flex items-center justify-center mx-auto mb-3">
-                  <Bookmark className="w-6 h-6 text-gray-300 dark:text-gray-600" />
+        {/* Left Col (Announcements & Activity) */}
+        <div className="lg:col-span-7 xl:col-span-7 space-y-5 sm:space-y-6">
+          {/* Announcements Card */}
+          <motion.div
+            id="announcements"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="bg-white dark:bg-gray-900/60 border border-gray-200/80 dark:border-white/5 rounded-2xl shadow-xs overflow-hidden"
+          >
+            <div className="flex items-center justify-between px-4 sm:px-5 py-3.5 sm:py-4 border-b border-gray-100 dark:border-white/5">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 sm:w-9 sm:h-9 bg-purple-50 dark:bg-purple-950/40 rounded-xl flex items-center justify-center">
+                  <Bell className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                 </div>
-                <p className="text-sm text-gray-400 font-medium">{dt.noAnnouncements}</p>
-                <p className="text-xs text-gray-300 dark:text-gray-600 mt-1">Check back soon for updates</p>
+                <h3 className="text-xs sm:text-sm font-black text-gray-900 dark:text-white">{dt.announcementsTitle}</h3>
               </div>
-            ) : (
-              stats.announcements.map((anc) => {
-                const isUrgent = anc.priority === "URGENT" || anc.priority === "HIGH";
-                return (
-                  <div key={anc.id} className="p-4 sm:p-5 hover:bg-gray-50/50 dark:hover:bg-white/2 transition-colors group">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex items-start gap-3 flex-1 min-w-0">
-                        <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${isUrgent ? "bg-red-500 animate-pulse" : "bg-purple-400"}`} />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-bold text-gray-900 dark:text-white truncate group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
-                            {anc.title}
-                          </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed mt-1 line-clamp-2">
-                            {anc.content}
-                          </p>
-                        </div>
+              <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+                {dt.live}
+              </div>
+            </div>
+
+            <div className="divide-y divide-gray-100 dark:divide-white/5 max-h-[360px] overflow-y-auto">
+              {loadingFeeds ? (
+                <div className="space-y-3 p-4">
+                  {[1, 2].map(i => (
+                    <div key={i} className="h-16 bg-gray-50 dark:bg-gray-800/30 animate-pulse rounded-xl" />
+                  ))}
+                </div>
+              ) : stats.announcements.length === 0 ? (
+                <div className="text-center py-8 sm:py-10">
+                  <Bookmark className="w-7 h-7 sm:w-8 sm:h-8 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
+                  <p className="text-xs text-gray-400 font-medium">{dt.noAnnouncements}</p>
+                </div>
+              ) : (
+                stats.announcements.map((anc) => {
+                  const isUrgent = anc.priority === "URGENT" || anc.priority === "HIGH";
+                  return (
+                    <div key={anc.id} className="p-3.5 sm:p-4 hover:bg-gray-50/50 dark:hover:bg-white/3 transition-colors">
+                      <div className="flex items-center justify-between gap-2 mb-1">
+                        <span className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white">{anc.title}</span>
+                        {isUrgent && (
+                          <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-red-500 text-white shrink-0">
+                            Urgent
+                          </span>
+                        )}
                       </div>
-                      {isUrgent && (
-                        <span className="text-[9px] font-black uppercase tracking-wider px-2 py-1 rounded-full bg-red-500 text-white shrink-0">
-                          Urgent
-                        </span>
-                      )}
+                      <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">{anc.content}</p>
                     </div>
-                  </div>
-                );
-              })
-            )}
-          </div>
-        </motion.div>
+                  );
+                })
+              )}
+            </div>
+          </motion.div>
 
-        {/* ── Right: Quick Actions + Activity ───────── */}
-        <div className="lg:col-span-5 space-y-4 sm:space-y-5">
-
-          {/* Quick Actions Card */}
+          {/* Activity Progress */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.33 }}
-            className="relative overflow-hidden rounded-2xl bg-white dark:bg-gray-900/60 border border-purple-200/60 dark:border-purple-900/40 shadow-sm"
+            transition={{ delay: 0.24 }}
+            className="bg-white dark:bg-gray-900/60 border border-gray-200/80 dark:border-white/5 rounded-2xl p-4 sm:p-5 shadow-xs"
           >
-            <div className="absolute -top-10 -right-10 w-28 h-28 bg-purple-500/8 rounded-full blur-2xl pointer-events-none" />
-            <div className="absolute -bottom-10 -left-10 w-28 h-28 bg-indigo-500/8 rounded-full blur-2xl pointer-events-none" />
-
-            <div className="relative z-10 flex items-center justify-between px-5 py-4 border-b border-purple-100/60 dark:border-purple-900/30 bg-gradient-to-r from-purple-50/70 to-indigo-50/40 dark:from-purple-950/20 dark:to-indigo-950/10">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-md">
-                  <Zap className="w-4 h-4 text-white" />
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Activity className="w-4 h-4 text-emerald-500" />
+                <h4 className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">{dt.activityTitle}</h4>
+              </div>
+            </div>
+            <div className="space-y-3.5 sm:space-y-4">
+              {[
+                { label: dt.activityLabels.events, value: stats.events, color: "bg-purple-500" },
+                { label: dt.activityLabels.prayers, value: stats.prayers, color: "bg-rose-500" },
+                { label: dt.activityLabels.answered, value: stats.prayersAnswered, color: "bg-emerald-500" },
+                { label: dt.activityLabels.sermons, value: stats.sermons, color: "bg-indigo-500" },
+              ].map(({ label, value, color }) => (
+                <div key={label} className="space-y-1.5">
+                  <div className="flex items-center justify-between text-xs font-semibold">
+                    <span className="text-gray-700 dark:text-gray-300 truncate">{label}</span>
+                    <span className="font-bold text-gray-900 dark:text-white ml-2">{loadingFeeds ? "..." : value}</span>
+                  </div>
+                  <div className="h-2 rounded-full bg-gray-100 dark:bg-gray-800 overflow-hidden">
+                    <div className={`h-full rounded-full ${color}`} style={{ width: `${Math.min(100, (value / 5) * 100)}%` }} />
+                  </div>
                 </div>
-                <div>
-                  <h4 className="text-sm font-black text-gray-900 dark:text-white">{dt.quickActionsTitle}</h4>
-                  <p className="text-[10px] text-gray-400 font-medium hidden sm:block">{dt.quickActionsSub}</p>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Right Col (Quick Actions & Feedback) */}
+        <div className="lg:col-span-5 xl:col-span-5 space-y-5 sm:space-y-6">
+          {/* ── Redesigned Responsive Quick Actions Card ─── */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.22 }}
+            className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-white dark:bg-gray-900/80 border border-purple-200/80 dark:border-purple-900/40 p-4 sm:p-5 shadow-xl shadow-purple-500/5 backdrop-blur-xl"
+          >
+            {/* Ambient subtle decorative glows */}
+            <div className="pointer-events-none absolute -top-12 -right-12 w-36 h-36 bg-purple-500/10 rounded-full blur-2xl" />
+            <div className="pointer-events-none absolute -bottom-12 -left-12 w-36 h-36 bg-indigo-500/10 rounded-full blur-2xl" />
+
+            <div className="relative z-10 flex items-center justify-between gap-2 mb-3.5 sm:mb-4">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 sm:w-9 sm:h-9 bg-purple-100 dark:bg-purple-950/60 rounded-xl flex items-center justify-center border border-purple-200 dark:border-purple-800/60 shadow-xs shrink-0">
+                  <Zap className="w-4 h-4 text-purple-600 dark:text-purple-300" />
+                </div>
+                <div className="min-w-0">
+                  <h4 className="text-sm sm:text-base font-black text-gray-900 dark:text-white tracking-tight truncate">
+                    {dt.quickActionsTitle}
+                  </h4>
+                  <p className="text-[10px] text-gray-400 dark:text-gray-500 font-medium hidden sm:block truncate">
+                    {dt.quickActionsSub}
+                  </p>
                 </div>
               </div>
-              <span className="text-[9px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-300 border border-purple-200/60 dark:border-purple-800/40">
+              <span className="text-[9px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-300 border border-purple-200/60 dark:border-purple-800/40 shrink-0">
                 Fast Links
               </span>
             </div>
 
-            <div className="relative z-10 p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-2.5">
-              {dt.quickActions.map(({ label, desc, href, icon: Icon, gradient }) => (
+            <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-2.5">
+              {dt.quickActions.map(({ label, desc, href, icon: Icon, gradient, text, bg, border }) => (
                 <Link
                   key={href}
                   href={href}
-                  className="group flex items-center gap-3 p-3.5 rounded-xl bg-gray-50/70 dark:bg-gray-800/30 hover:bg-white dark:hover:bg-gray-800/70 border border-gray-200/60 dark:border-white/6 hover:border-purple-300 dark:hover:border-purple-700/60 hover:shadow-md transition-all duration-200 active:scale-[0.98]"
+                  className={`group relative flex items-center gap-3 p-3 sm:p-3.5 rounded-2xl bg-gray-50/80 dark:bg-gray-800/40 hover:bg-white dark:hover:bg-gray-800/90 border ${border} hover:shadow-md hover:border-purple-300 dark:hover:border-purple-700/60 transition-all duration-200 active:scale-[0.98] min-w-0`}
                 >
-                  <div className={`w-9 h-9 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform shrink-0`}>
-                    <Icon className="w-4 h-4 text-white" />
+                  <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center text-white shadow-xs shrink-0 group-hover:scale-105 transition-transform`}>
+                    <Icon className="w-4.5 h-4.5 text-white" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-xs font-extrabold text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors leading-tight">
+                    <p className="text-xs sm:text-sm font-extrabold text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors leading-tight">
                       {label}
                     </p>
-                    <p className="text-[10px] text-gray-500 dark:text-gray-400 font-medium leading-tight mt-0.5 truncate">
+                    <p className="text-[10.5px] text-gray-500 dark:text-gray-400 font-medium leading-tight mt-0.5 truncate">
                       {desc}
                     </p>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 group-hover:translate-x-0.5 transition-all shrink-0" />
+                  <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 group-hover:translate-x-0.5 transition-all shrink-0 ml-auto" />
                 </Link>
               ))}
             </div>
           </motion.div>
 
-          {/* Activity Tracker */}
+          {/* Feedback Widget */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.37 }}
-            className="bg-white dark:bg-gray-900/60 border border-gray-200/60 dark:border-white/6 rounded-2xl p-5 shadow-sm"
-          >
-            <div className="flex items-center justify-between mb-5">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-md">
-                  <Activity className="w-4 h-4 text-white" />
-                </div>
-                <div>
-                  <h4 className="text-sm font-black text-gray-900 dark:text-white">{dt.activityTitle}</h4>
-                  <p className="text-[10px] text-gray-400 font-medium">Your spiritual journey</p>
-                </div>
-              </div>
-              <TrendingUp className="w-4 h-4 text-emerald-500" />
-            </div>
-
-            <div className="space-y-4">
-              {[
-                { label: dt.activityLabels.events, value: stats.events, max: 10, gradient: "from-violet-500 to-purple-600", icon: Calendar },
-                { label: dt.activityLabels.prayers, value: stats.prayers, max: 10, gradient: "from-rose-500 to-pink-600", icon: Heart },
-                { label: dt.activityLabels.answered, value: stats.prayersAnswered, max: 10, gradient: "from-emerald-500 to-teal-600", icon: CheckCircle2 },
-                { label: dt.activityLabels.sermons, value: stats.sermons, max: 20, gradient: "from-indigo-500 to-blue-600", icon: Play },
-              ].map(({ label, value, max, gradient, icon: Icon }) => (
-                <div key={label} className="space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Icon className="w-3.5 h-3.5 text-gray-400" />
-                      <span className="text-xs font-semibold text-gray-600 dark:text-gray-300">{label}</span>
-                    </div>
-                    <span className="text-xs font-black text-gray-900 dark:text-white">
-                      {loadingFeeds ? "..." : value}
-                    </span>
-                  </div>
-                  <div className="h-2 rounded-full bg-gray-100 dark:bg-gray-800 overflow-hidden">
-                    <motion.div
-                      className={`h-full rounded-full bg-gradient-to-r ${gradient}`}
-                      initial={{ width: 0 }}
-                      animate={{ width: loadingFeeds ? "0%" : `${Math.min(100, (value / max) * 100)}%` }}
-                      transition={{ duration: 0.9, delay: 0.4 + Math.random() * 0.2, ease: "easeOut" }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* Feedback */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
+            transition={{ delay: 0.26 }}
           >
             <ChurchFeedbackWidget userId={user?.uid} userName={user?.name || undefined} />
           </motion.div>
@@ -902,4 +796,4 @@ export default function MemberDashboard() {
       </div>
     </div>
   );
-}
+}
