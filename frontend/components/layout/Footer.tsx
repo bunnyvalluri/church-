@@ -439,12 +439,16 @@ export default function Footer() {
 
               {/* Statutory Trust Badge */}
               <div className="pt-1">
-                <div className="flex items-center gap-2 p-2.5 rounded-xl bg-purple-500/10 border border-purple-500/20 text-[11px] text-purple-200">
-                  <ShieldCheck className="w-4 h-4 text-amber-400 shrink-0" />
+                <Link
+                  href="/about/story#80g"
+                  title="View Official Statutory Approvals & 80G Tax-Exemption Certificates"
+                  className="flex items-center gap-2 p-2.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 hover:border-purple-500/40 text-[11px] text-purple-200 hover:text-white transition-all group"
+                >
+                  <ShieldCheck className="w-4 h-4 text-amber-400 shrink-0 group-hover:scale-110 transition-transform" />
                   <span className="font-semibold leading-tight">
                     Regd. Society 206/2012 • 80G Certified
                   </span>
-                </div>
+                </Link>
               </div>
             </div>
           </div>
@@ -479,8 +483,9 @@ export default function Footer() {
                   <span>India</span>
                 </span>
                 <Link
-                  href="/ngo/donations"
-                  className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-400 text-xs font-medium transition-colors"
+                  href="/about/story#80g"
+                  title="View Official 80G Tax-Exempt Certificate & Compliance"
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 hover:border-emerald-500/40 text-emerald-400 hover:text-emerald-300 text-xs font-medium transition-all shadow-xs hover:scale-105 active:scale-95"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                   <span>80G Tax-Exempt Certified</span>

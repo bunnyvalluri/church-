@@ -76,6 +76,32 @@ export default function OurStoryPage() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [selectedDocIndex]);
 
+  // Direct hash anchor handler for #80g and legal documents
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const handleHash = () => {
+      const hash = window.location.hash.toLowerCase().replace("#", "");
+      if (hash === "80g" || hash === "12a" || hash === "roc" || hash === "darpan" || hash === "e-anudhan" || hash === "msme") {
+        setDocCategory("all");
+        setTimeout(() => {
+          const el = document.getElementById(hash) || document.getElementById("our-documents");
+          if (el) {
+            el.scrollIntoView({ behavior: "smooth", block: "center" });
+          }
+        }, 200);
+      } else if (hash === "our-documents") {
+        setTimeout(() => {
+          const el = document.getElementById("our-documents");
+          if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 200);
+      }
+    };
+
+    handleHash();
+    window.addEventListener("hashchange", handleHash);
+    return () => window.removeEventListener("hashchange", handleHash);
+  }, []);
+
   const stats = [
     { 
       value: "2012", 
@@ -718,7 +744,8 @@ export default function OurStoryPage() {
               return (
                 <div
                   key={doc.id}
-                  className="bg-slate-50 dark:bg-[#11192e] border border-slate-200/90 dark:border-slate-800/90 rounded-3xl p-6 sm:p-7 shadow-xl shadow-slate-950/5 dark:shadow-black/30 hover:border-purple-500/50 dark:hover:border-purple-500/50 hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between group relative overflow-hidden"
+                  id={doc.id}
+                  className="bg-slate-50 dark:bg-[#11192e] border border-slate-200/90 dark:border-slate-800/90 rounded-3xl p-6 sm:p-7 shadow-xl shadow-slate-950/5 dark:shadow-black/30 hover:border-purple-500/50 dark:hover:border-purple-500/50 hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between group relative overflow-hidden scroll-mt-32"
                 >
                   <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full blur-2xl pointer-events-none" />
 
