@@ -135,12 +135,28 @@ export default function Contact() {
     setSubmitStatus("idle");
 
     try {
-      const response = await fetch("/api/contact", {
+      // 1. Dispatch directly to Formspark.io
+      const { submitToFormspark } = await import("@/lib/formspark");
+      const fsRes = await submitToFormspark({
+        formType: "Contact Message",
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.trim() || undefined,
+        subject: formData.subject || "General Inquiry",
+        message: formData.message.trim(),
+      });
+
+      // 2. Also forward to internal backend API in background
+      fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
-      });
-      if (!response.ok) throw new Error("Failed to send message");
+      }).catch((apiErr) => console.warn("[CONTACT_API] Background sync note:", apiErr));
+
+      if (!fsRes.success && fsRes.error) {
+        console.warn("[FORMSPARK] Direct submission notice:", fsRes.error);
+      }
+
       setSubmitStatus("success");
     } catch (err) {
       console.error(err);

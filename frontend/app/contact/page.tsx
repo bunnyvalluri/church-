@@ -268,7 +268,20 @@ export default function ContactPage() {
     setErrorMessage("");
 
     try {
-      const res = await fetch("/api/contact", {
+      // 1. Direct Formspark dispatch
+      const { submitToFormspark } = await import("@/lib/formspark");
+      await submitToFormspark({
+        formType: "Contact Page Message",
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.trim() || undefined,
+        category: formData.category,
+        subject: `[${formData.category}] Inquiry from ${formData.name.trim()}`,
+        message: formData.message.trim(),
+      });
+
+      // 2. Background sync to local API
+      fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -278,12 +291,7 @@ export default function ContactPage() {
           subject: `[${formData.category}] Contact Form Inquiry`,
           message: formData.message.trim(),
         }),
-      });
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => null);
-        throw new Error(data?.error || (isTe ? "సందేశం పంపడంలో విఫలమైంది. దయచేసి మళ్లీ ప్రయత్నించండి." : isHi ? "संदेश भेजने में विफल। कृपया पुनः प्रयास करें।" : "Failed to send message. Please try again."));
-      }
+      }).catch((apiErr) => console.warn("[CONTACT_API] Background sync note:", apiErr));
 
       setSubmittedName(formData.name.trim() || (isTe ? "ప్రియమైన మిత్రులారా" : isHi ? "प्रिय मित्र" : "Beloved Friend"));
       setStatus("success");
