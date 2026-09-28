@@ -163,7 +163,7 @@ export default function ContactPage() {
         ? "15-201, विवेकानन्द नगर, श्रीनिवास नगर, शापूर नगर, जीदीमेट्ला, हैदराबाद, तेलंगाना - 500055" 
         : "15-201, Vivekananda Nagar, Srinivas Nagar, Shapur Nagar, Jeedimetla, Hyderabad, Telangana - 500055",
       landmark: isTe ? "పైప్‌లైన్ రోడ్ & షాపూర్ నగర్ బస్ స్టాప్ సమీపంలో" : isHi ? "पाइपलाइन रोड और शापूर नगर बस स्टॉप के पास" : "Near Pipeline Road & Shapur Nagar Bus Stop",
-      embedUrl: "https://maps.google.com/maps?q=15-201,+Vivekananda+Nagar,+Srinivas+Nagar,+Jeedimetla,+Hyderabad,+Telangana+500055&hl=en&z=15&output=embed",
+      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3805.0!2d78.44416!3d17.56771!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb91e2f02d5555%3A0x1234!2sKingdom+of+Christ+Ministries!5e0!3m2!1sen!2sin!4v1680000000001!5m2!1sen!2sin",
       mapsUrl: "https://maps.google.com/?q=Kingdom+of+Christ+Ministries,+15-201,+Vivekananda+Nagar,+Srinivas+Nagar,+Jeedimetla,+Hyderabad,+Telangana+500055",
       phone: "+91 97040 90069",
       timings: [
@@ -205,7 +205,7 @@ export default function ContactPage() {
         ? "सुभाष नगर, LP 119, जीदीमेट्ला, हैदराबाद, तेलंगाना - 500055" 
         : "Subhash Nagar, LP 119, Jeedimetla, Hyderabad, Telangana - 500055",
       landmark: isTe ? "LP 119 సమీపంలో, కుత్బుల్లాపూర్ & చింతల్ ద్వారా చేరుకోవచ్చు" : isHi ? "LP 119 के पास, कुथबुल्लापुर और चिंतल के रास्ते" : "Near LP 119, easily accessible via Quthbullapur & Chintal",
-      embedUrl: "https://maps.google.com/maps?q=Subhash+Nagar,+Jeedimetla,+Hyderabad,+Telangana+500055&hl=en&z=15&output=embed",
+      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3805.2!2d78.43800!3d17.56500!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2sSubhash+Nagar+Jeedimetla!5e0!3m2!1sen!2sin!4v1680000000002!5m2!1sen!2sin",
       mapsUrl: "https://maps.google.com/?q=Subhash+nagar+jeedimetla+119lp",
       phone: "+91 97040 90069",
       timings: [
@@ -235,7 +235,7 @@ export default function ContactPage() {
         ? "बहादुरपल्ली मुख्य मार्ग, गांडीमैसम्मा / टेक महिंद्रा के पास, हैदराबाद - 500043" 
         : "Bahadurpally Main Road, Near Gandimaisamma / Tech Mahindra, Hyderabad - 500043",
       landmark: isTe ? "గాండిమైసమ్మ-మేడ్చల్ రోడ్, టెక్ మహీంద్రా సమీపంలో" : isHi ? "गांडीमैसम्मा-मेडचल रोड, टेक महिंद्रा के पास" : "Gandimaisamma-Medchal Road, near Tech Mahindra",
-      embedUrl: "https://maps.google.com/maps?q=Bahadurpally,+Quthbullapur,+Hyderabad,+Telangana+500043&hl=en&z=15&output=embed",
+      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3801.0!2d78.44396!3d17.56769!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2sBahadurpally+Hyderabad!5e0!3m2!1sen!2sin!4v1680000000003!5m2!1sen!2sin",
       mapsUrl: "https://maps.google.com/?q=17.567689,78.443963",
       phone: "+91 97040 90069",
       timings: [

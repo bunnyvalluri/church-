@@ -433,12 +433,12 @@ export default function Contact() {
                         return selectedContact.embedUrl;
                       }
                       if (selectedContact.branchKey === "subhash" || selectedContact.branchName?.toLowerCase().includes("subhash")) {
-                        return "https://maps.google.com/maps?q=Subhash+Nagar,+Jeedimetla,+Hyderabad,+Telangana+500055&hl=en&z=15&output=embed";
+                        return "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3805.2!2d78.43800!3d17.56500!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2sSubhash+Nagar+Jeedimetla!5e0!3m2!1sen!2sin!4v1680000000002!5m2!1sen!2sin";
                       }
                       if (selectedContact.branchKey === "bahadur" || selectedContact.branchName?.toLowerCase().includes("bahadur")) {
-                        return "https://maps.google.com/maps?q=Bahadurpally,+Quthbullapur,+Hyderabad,+Telangana+500043&hl=en&z=15&output=embed";
+                        return "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3801.0!2d78.44396!3d17.56769!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2sBahadurpally+Hyderabad!5e0!3m2!1sen!2sin!4v1680000000003!5m2!1sen!2sin";
                       }
-                      return "https://maps.google.com/maps?q=15-201,+Vivekananda+Nagar,+Srinivas+Nagar,+Jeedimetla,+Hyderabad,+Telangana+500055&hl=en&z=15&output=embed";
+                      return "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3805.0!2d78.44416!3d17.56771!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb91e2f02d5555%3A0x1234!2sKingdom+of+Christ+Ministries!5e0!3m2!1sen!2sin!4v1680000000001!5m2!1sen!2sin";
                     })()}
                     title="Church Branch Map Location"
                     width="100%"
