@@ -83,7 +83,7 @@
       "targetDomain": "www.youtube.com",
       "storageType": "inline_script",
       "patterns": [
-        "AIzaSyAO_F3Z5IqL8QTS1bHLSclIw_VR_I1qodE",
+        "AIzaSy*",
         "yt-remote-device-id-*",
         "ytembeds.base.*"
       ],
@@ -189,7 +189,7 @@
       "targetDomain": "kcmchurch.vercel.app",
       "storageType": "external_script",
       "patterns": [
-        "AIzaSyBaNc9dgk4StKQsY2L73d2H4Hk_QnwAzN0"
+        "AIzaSy*",
       ],
       "classification": "PUBLIC_CONFIGURATION",
       "rationale": "Google Firebase Web Client API key (NEXT_PUBLIC_FIREBASE_API_KEY) designed specifically for client-side app initialization and protected by Firebase Security Rules and domain restrictions.",

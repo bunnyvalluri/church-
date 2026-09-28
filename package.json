@@ -21,6 +21,7 @@
     "test:responsive": "npm run test:responsive -w frontend",
     "test:a11y": "npm run test:a11y -w frontend",
     "test:smoke": "npm run test:smoke -w frontend",
+    "scan:secrets": "node scripts/pre-commit-secret-scan.js",
     "agent:audit": "node scripts/quality-agent/index.js --audit-only",
     "agent:heal": "node scripts/quality-agent/index.js --auto-heal",
     "health:monitor": "node scripts/deployment/auto-healing-monitor.js",

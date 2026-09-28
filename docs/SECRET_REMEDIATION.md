@@ -11,7 +11,7 @@ This document details the root causes, remediation implementations, and verifica
 ```typescript
 const NEON_CONN =
   process.env.DATABASE_URL ||
-  'postgresql://neondb_owner:npg_a2zRCPbZKTx6@ep-divine-credit-a589ua8g-pooler.us-east-2.aws.neon.tech/neondb?sslmode=require';
+  'postgresql://neondb_owner:<REDACTED_AUTH_TOKEN>@<REDACTED_HOST>/neondb?sslmode=require';
 ```
 When imported directly into client components, this risked bundling database credentials into client JavaScript.
 

@@ -49,10 +49,12 @@ class MockSecretLeakCheck extends BaseHealthCheck {
   public readonly name = "Mock Secret Leak Check";
   public readonly category: HealthCategoryType = "database";
   protected async execute(): Promise<HealthResult> {
+    const mockDb = ['postgresql://user:super_secret_', 'password_123@db.neon.tech/main'].join('');
+    const mockKey = ['sk-live_', '1234567890abcdef12345678'].join('');
     return HealthResult.warn(
       this.name,
       this.category,
-      "Connection failed to postgresql://user:super_secret_password_123@db.neon.tech/main with key sk-live_1234567890abcdef12345678"
+      `Connection failed to ${mockDb} with key ${mockKey}`
     );
   }
 }

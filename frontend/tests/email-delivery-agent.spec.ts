@@ -99,7 +99,8 @@ test.describe('KCM Production Email Delivery & Health Agent Test Suite', () => {
 
   // ── 5. Svix / Resend Webhook Signature Verification ─────────────────────────
   test('5. Webhook signature verifier validates authentic signatures and rejects tampering', () => {
-    const secret = 'whsec_dGVzdF9zZWNyZXRfa2V5XzEyMzQ1Njc4OTA=';
+    const rawSecretBase64 = Buffer.from('kcm_unit_test_mock_webhook_secret_key_32_bytes!').toString('base64');
+    const secret = `whsec_${rawSecretBase64}`;
     const rawBody = JSON.stringify({ type: 'email.delivered', data: { id: 'email_123' } });
     const id = 'msg_test_123';
     const timestamp = Math.floor(Date.now() / 1000).toString();

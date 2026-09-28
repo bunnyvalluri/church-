@@ -50,6 +50,7 @@ import { createDedicatedSocket } from "@/lib/socketClient";
 import { DonationAgentProvider, useDonationAgent } from "@/components/donations/DonationAgentProvider";
 import { AgentStatusBar } from "@/components/donations/AgentStatusBar";
 import { PaymentStateMonitor } from "@/components/donations/PaymentStateMonitor";
+import { usePreventContextMenu } from "@/hooks/usePreventContextMenu";
 
 // Brand SVG Icon Components for GPay, PhonePe, Paytm, and BHIM UPI
 const GPayIcon = () => (
@@ -1838,9 +1839,13 @@ function NgoDonationsContent() {
 }
 
 export default function NgoDonationsPage() {
+  usePreventContextMenu();
+
   return (
-    <DonationAgentProvider>
-      <NgoDonationsContent />
-    </DonationAgentProvider>
+    <div onContextMenu={(e) => e.preventDefault()} className="w-full">
+      <DonationAgentProvider>
+        <NgoDonationsContent />
+      </DonationAgentProvider>
+    </div>
   );
 }

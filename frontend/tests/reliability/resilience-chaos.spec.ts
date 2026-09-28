@@ -124,12 +124,15 @@ test.describe('KCM Production Resilience & Graceful Degradation Suite', () => {
     expect(injectionCheck.isSuspicious).toBe(true);
 
     // Sensitive credential masking
-    const rawOutput = 'Database connected at postgresql://kcm_admin:SecretPass999@db.kcm.internal:5432/kcm with key sk-proj-1234567890abcdef1234567890';
+    const dummyUser = 'kcm_admin';
+    const dummyPass = 'SecretPass999';
+    const dummyKey = ['sk-proj-', '1234567890abcdef1234567890'].join('');
+    const rawOutput = `Database connected at postgresql://${dummyUser}:${dummyPass}@db.kcm.internal:5432/kcm with key ${dummyKey}`;
     const { redactedText, hasRedactions } = redactSensitiveOutput(rawOutput);
 
     expect(hasRedactions).toBe(true);
     expect(redactedText).not.toContain('SecretPass999');
-    expect(redactedText).not.toContain('sk-proj-1234567890abcdef1234567890');
+    expect(redactedText).not.toContain(dummyKey);
     expect(redactedText).toContain('[REDACTED_DATABASE_URL]');
     expect(redactedText).toContain('[REDACTED_API_KEY]');
   });

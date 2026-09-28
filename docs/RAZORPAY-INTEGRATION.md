@@ -14,12 +14,12 @@ Kingdom of Christ Ministries utilizes **Razorpay Payment Gateway** supporting:
 
 ```bash
 # Server-Side Private Secrets (NEVER expose to client bundle)
-RAZORPAY_KEY_ID="rzp_live_xxxxxxxxxxxxxxxx"
-RAZORPAY_KEY_SECRET="xxxxxxxxxxxxxxxxxxxxxxxx"
-RAZORPAY_WEBHOOK_SECRET="xxxxxxxxxxxxxxxxxxxxxxxx"
+RAZORPAY_KEY_ID="<YOUR_RAZORPAY_KEY_ID>"
+RAZORPAY_KEY_SECRET="<YOUR_RAZORPAY_KEY_SECRET>"
+RAZORPAY_WEBHOOK_SECRET="<YOUR_RAZORPAY_WEBHOOK_SECRET>"
 
 # Public-Facing Client Key (Allowed for Checkout SDK modal only)
-NEXT_PUBLIC_RAZORPAY_KEY_ID="rzp_live_xxxxxxxxxxxxxxxx"
+NEXT_PUBLIC_RAZORPAY_KEY_ID="<YOUR_PUBLIC_RAZORPAY_KEY_ID>"
 ```
 
 > **WARNING**: Never set `NEXT_PUBLIC_RAZORPAY_KEY_SECRET` or `NEXT_PUBLIC_RAZORPAY_WEBHOOK_SECRET`.

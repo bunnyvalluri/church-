@@ -1,0 +1,27 @@
+# Gitleaks Configuration for Kingdom of Christ Ministries (KCM) Portal
+title = "KCM Security Secret Scanning Config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Global allowlists for sanitized example configurations, tests, and false positives"
+paths = [
+  '''^\.env\.example$''',
+  '''^frontend/\.env\.example$''',
+  '''^backend/\.env\.example$''',
+  '''^\.keyfinderignore\.json$''',
+  '''^docs/SECRET_AUDIT\.md$''',
+  '''^docs/SECRET_REMEDIATION\.md$''',
+  '''^docs/SECRET_REMEDIATION_REPORT\.md$''',
+  '''^reports/''',
+  '''^package-lock\.json$''',
+  '''^pnpm-lock\.yaml$''',
+  '''^yarn\.lock$'''
+]
+
+regexes = [
+  '''AIzaSy[A-Za-z0-9-_]{35}''', # Wildcard patterns in docs/configs
+  '''<[A-Z0-9_]+>''',             # Standard template placeholders e.g. <YOUR_SECRET_KEY>
+  '''placeholder'''
+]

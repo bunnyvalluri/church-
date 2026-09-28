@@ -10,8 +10,8 @@ Trivy Secret Scanning guards against accidental leakage of sensitive credentials
 | Category | Pattern Target | Example Match | Severity |
 | :--- | :--- | :--- | :--- |
 | **Firebase Auth** | Private Key | `-----BEGIN PRIVATE KEY-----` | CRITICAL |
-| **PostgreSQL** | Database Connection String | `postgresql://user:pass@host:5432/db` | CRITICAL |
-| **Cloudinary** | API Secret | `cloudinary://api_key:secret@cloud_name` | HIGH |
+| **PostgreSQL** | Database Connection String | `postgresql://<USER>:<PASSWORD>@<HOST>:5432/<DB>` | CRITICAL |
+| **Cloudinary** | API Secret | `cloudinary://<API_KEY>:<SECRET>@<CLOUD_NAME>` | HIGH |
 | **RSA / SSH** | Private Keys | `-----BEGIN RSA PRIVATE KEY-----` | CRITICAL |
 | **JWT / Tokens** | Bearer Tokens | `eyJhbGciOiJIUzI1Ni...` | HIGH |
 

@@ -61,6 +61,6 @@ Application logging strictly sanitizes all sensitive tokens before outputting to
    GOOD: Authorization: Bearer [REDACTED]
    ```
 2. **Database Credentials**:
-   `postgres://neondb_owner:password@...` is automatically redacted to `postgresql://[REDACTED_USER]:[REDACTED_PASS]@[REDACTED_HOST]`.
+   `postgresql://[USER]:[PASSWORD]@[HOST]:[PORT]/[DB]` is automatically redacted to `postgresql://[REDACTED_USER]:[REDACTED_PASS]@[REDACTED_HOST]`.
 3. **Environment Validation Logging**:
    `validateEnv()` in `frontend/lib/env.ts` logs only variable key names that failed schema validation, never their values.

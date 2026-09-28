@@ -28,13 +28,22 @@ export default function BackToTop() {
   useEffect(() => {
     if (isExcludedPage) return;
     setMounted(true);
-    const onScroll = () => {
+
+    let ticking = false;
+    const updateScrollMetrics = () => {
       const scrollY = window.scrollY;
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
       
-      // Visible whenever the page is scrollable (more than 200px overflow)
       setVisible(docHeight > 200);
       setProgress(docHeight > 0 ? Math.min((scrollY / docHeight) * 100, 100) : 0);
+      ticking = false;
+    };
+
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(updateScrollMetrics);
+        ticking = true;
+      }
     };
 
     onScroll();
