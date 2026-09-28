@@ -335,8 +335,8 @@ export default function AIChat() {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
             <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500 border-[1.5px] border-white shadow-sm" />
           </span>
-          <div className="relative z-10 w-9 h-9 rounded-full overflow-hidden bg-white/20">
-            <Image src="/chatbot-bird-logo.png" alt="KCM Assistant" width={36} height={36} unoptimized className="object-cover rounded-full w-full h-full" />
+          <div className="relative z-10 w-9 h-9 rounded-full overflow-hidden bg-white shadow-inner ring-1 ring-white/50">
+            <Image src="/pastor.png" alt="Pastor & KCM Assistant" width={36} height={36} unoptimized className="object-cover object-top rounded-full w-full h-full scale-110" />
           </div>
         </button>
         <div className="absolute right-full top-1/2 -translate-y-1/2 mr-3 px-2.5 py-1.5 bg-gray-950/90 text-white text-[11px] font-semibold rounded-xl shadow-xl opacity-0 group-hover:opacity-100 transition-all whitespace-nowrap pointer-events-none border border-white/10 hidden sm:block">
@@ -376,8 +376,8 @@ export default function AIChat() {
         >
           <div className="flex items-center gap-2.5 text-white min-w-0">
             <div className="relative shrink-0">
-              <div className="w-8 h-8 rounded-full overflow-hidden bg-white/20 p-0.5 border border-white/30">
-                <Image src="/chatbot-bird-logo.png" alt="KCM Assistant" width={28} height={28} className="object-cover rounded-full w-full h-full" />
+              <div className="w-8 h-8 rounded-full overflow-hidden bg-white shadow-sm p-0.5 border border-white/40">
+                <Image src="/pastor.png" alt="Pastor & KCM Assistant" width={28} height={28} className="object-cover object-top rounded-full w-full h-full scale-110" />
               </div>
               <span className="absolute bottom-0 right-0 w-2 h-2 bg-emerald-400 rounded-full ring-2 ring-indigo-700" />
             </div>
@@ -435,7 +435,7 @@ export default function AIChat() {
                   <div className="flex items-center gap-3 bg-gradient-to-r from-gray-50 to-purple-50/50 dark:from-gray-900 dark:to-gray-900/80 px-3 py-2.5 rounded-xl border border-gray-200/80 dark:border-gray-800">
                     <div className={cn("w-9 h-9 rounded-full bg-gradient-to-tr p-0.5 shadow-md shrink-0", themeStyle.userBubble)}>
                       <div className="w-full h-full bg-white dark:bg-gray-900 rounded-full overflow-hidden">
-                        <Image src="/chatbot-bird-logo.png" alt="KCM Assistant" width={32} height={32} className="object-cover rounded-full w-full h-full" />
+                        <Image src="/pastor.png" alt="Pastor & KCM Assistant" width={32} height={32} className="object-cover object-top rounded-full w-full h-full scale-110" />
                       </div>
                     </div>
                     <div className="min-w-0">
@@ -505,7 +505,7 @@ export default function AIChat() {
                       {/* Bot avatar */}
                       {m.role === "assistant" && (
                         <div className="w-7 h-7 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 overflow-hidden shrink-0 mt-0.5">
-                          <Image src="/chatbot-bird-logo.png" alt="KCM Assistant" width={28} height={28} className="object-cover rounded-full" />
+                          <Image src="/pastor.png" alt="Pastor & KCM Assistant" width={28} height={28} className="object-cover object-top rounded-full w-full h-full scale-110" />
                         </div>
                       )}
 
@@ -539,7 +539,7 @@ export default function AIChat() {
                   {isLoading && (
                     <div className="flex gap-2 justify-start">
                       <div className="w-7 h-7 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 overflow-hidden shrink-0">
-                        <Image src="/chatbot-bird-logo.png" alt="KCM Assistant" width={28} height={28} className="object-cover rounded-full" />
+                        <Image src="/pastor.png" alt="Pastor & KCM Assistant" width={28} height={28} className="object-cover object-top rounded-full w-full h-full scale-110" />
                       </div>
                       <div className="px-4 py-3 rounded-2xl rounded-tl-sm bg-white dark:bg-gray-900 border border-gray-200/80 dark:border-gray-800 shadow-sm flex items-center gap-1.5">
                         <span className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-bounce [animation-delay:-0.3s]" />
