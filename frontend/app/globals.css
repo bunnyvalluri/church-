@@ -113,6 +113,11 @@
     -webkit-tap-highlight-color: transparent;
   }
 
+  /* Universal touch optimization: Eliminate 300ms double-tap zoom delay and prevent touch-to-hover emulation trap */
+  a, button, input, select, textarea, [role="button"], label, summary, .touch-manipulation {
+    touch-action: manipulation;
+  }
+
   html, body {
     max-width: 100%;
     overflow-x: clip;

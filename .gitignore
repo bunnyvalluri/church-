@@ -58,6 +58,7 @@ yarn-error.log*
 !.env.example
 .env.local
 *.local
+keyfinder-findings-*.csv
 .env.development.local
 .env.test.local
 .env.production.local

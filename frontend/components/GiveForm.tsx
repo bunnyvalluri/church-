@@ -485,6 +485,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
   };
 
   const handleGeneratePaymentSession = async () => {
+    if (actionLoading) return;
     if (typeof navigator !== "undefined" && !navigator.onLine) {
       setErrorMessage("You're currently offline. Internet connection is required to complete payment verification.");
       return;
@@ -766,11 +767,13 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
         </div>
 
         {/* ── MOBILE SEGMENTED TAB CONTROLLER ───────────────────── */}
-        <div className="flex lg:hidden items-center justify-between gap-1 p-1 mt-3 bg-slate-200/80 dark:bg-slate-800/90 rounded-2xl border border-slate-300/70 dark:border-slate-700/70 shadow-inner">
+        <div role="tablist" aria-label="Donation Views" className="flex lg:hidden items-center justify-between gap-1 p-1 mt-3 bg-slate-200/80 dark:bg-slate-800/90 rounded-2xl border border-slate-300/70 dark:border-slate-700/70 shadow-inner">
           <button
             type="button"
+            role="tab"
+            aria-selected={mobileTab === 'form'}
             onClick={() => setMobileTab('form')}
-            className={`flex-1 py-2 px-2 rounded-xl font-black text-[11px] sm:text-xs flex items-center justify-center gap-1.5 whitespace-nowrap transition-all ${
+            className={`flex-1 py-2 px-2 rounded-xl font-black text-[11px] sm:text-xs flex items-center justify-center gap-1.5 whitespace-nowrap transition-all touch-manipulation select-none ${
               mobileTab === 'form'
                 ? "bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm"
                 : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
@@ -781,8 +784,10 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
           </button>
           <button
             type="button"
+            role="tab"
+            aria-selected={mobileTab === 'summary'}
             onClick={() => setMobileTab('summary')}
-            className={`flex-1 py-2 px-2 rounded-xl font-black text-[11px] sm:text-xs flex items-center justify-center gap-1.5 whitespace-nowrap transition-all ${
+            className={`flex-1 py-2 px-2 rounded-xl font-black text-[11px] sm:text-xs flex items-center justify-center gap-1.5 whitespace-nowrap transition-all touch-manipulation select-none ${
               mobileTab === 'summary'
                 ? "bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm"
                 : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
@@ -793,8 +798,10 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
           </button>
           <button
             type="button"
+            role="tab"
+            aria-selected={mobileTab === 'ways'}
             onClick={() => setMobileTab('ways')}
-            className={`flex-1 py-2 px-2 rounded-xl font-black text-[11px] sm:text-xs flex items-center justify-center gap-1.5 whitespace-nowrap transition-all ${
+            className={`flex-1 py-2 px-2 rounded-xl font-black text-[11px] sm:text-xs flex items-center justify-center gap-1.5 whitespace-nowrap transition-all touch-manipulation select-none ${
               mobileTab === 'ways'
                 ? "bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm"
                 : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
@@ -914,7 +921,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                   key={preset}
                                   type="button"
                                   onClick={() => { setAmount(preset); setCustomAmount(""); setErrorMessage(""); }}
-                                  className={`py-2.5 sm:py-3 px-1.5 rounded-2xl border-2 text-center font-black text-xs sm:text-sm transition-all duration-200 active:scale-95 ${
+                                  className={`py-2.5 sm:py-3 px-1.5 rounded-2xl border-2 text-center font-black text-xs sm:text-sm transition-all duration-200 active:scale-95 touch-manipulation select-none ${
                                     amount === preset && !customAmount
                                       ? "border-indigo-600 bg-indigo-600 text-white shadow-md shadow-indigo-600/30 scale-[1.02]"
                                       : "border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white hover:border-indigo-400 dark:hover:border-indigo-400 hover:bg-indigo-50/50 dark:hover:bg-slate-700"
@@ -926,15 +933,15 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
 
                               {/* Custom amount input */}
                               <div className="relative col-span-3 sm:col-span-1">
-                                <span className={`absolute left-3 top-1/2 -translate-y-1/2 font-black text-sm z-10 ${customAmount ? "text-indigo-600 dark:text-indigo-400" : "text-slate-400"}`}>₹</span>
+                                <span className={`absolute left-2.5 top-1/2 -translate-y-1/2 font-black text-xs sm:text-sm z-10 pointer-events-none ${customAmount ? "text-indigo-600 dark:text-indigo-400" : "text-slate-400"}`}>₹</span>
                                 <input
                                   type="number"
                                   placeholder={t.pages.give.customPlaceholder}
                                   value={customAmount}
                                   onChange={(e) => { setCustomAmount(e.target.value); setAmount(""); setErrorMessage(""); }}
-                                  className={`w-full py-2.5 sm:py-3 pl-7 pr-2 rounded-2xl border-2 font-black text-xs sm:text-sm transition-all text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-400 focus:outline-none ${
+                                  className={`w-full py-2.5 sm:py-3 pl-6 sm:pl-7 pr-1.5 rounded-2xl border-2 font-bold text-xs sm:text-sm placeholder:text-[11px] sm:placeholder:text-xs placeholder:font-semibold transition-all text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-400 focus:outline-none touch-manipulation ${
                                     customAmount
-                                      ? "border-indigo-600 bg-indigo-50/70 dark:bg-indigo-950/70 ring-2 ring-indigo-500/20"
+                                      ? "border-indigo-600 bg-indigo-50/70 dark:bg-indigo-950/70 ring-2 ring-indigo-500/20 font-black"
                                       : "border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:border-indigo-500"
                                   }`}
                                 />
@@ -948,20 +955,24 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                               <Gift className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                               {t.pages.give.purposeLabel}
                             </label>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5" role="radiogroup" aria-label={t.pages.give.purposeLabel}>
                               {purposes.map((p) => {
                                 const codeKey = p.code || p.id;
                                 const isSelected = selectedPurpose === p.code || selectedPurpose === p.id || selectedPurpose === codeKey;
                                 const gradient = purposeColorMap[codeKey] || purposeColorMap[p.code] || "from-indigo-600 to-purple-600";
                                 const icon = purposeIconMap[codeKey] || purposeIconMap[p.code] || <IndianRupee className="w-4 h-4" />;
                                 const desc = getLanguagePurposeDesc(p);
+                                const purposeName = getLanguagePurposeName(p);
 
                                 return (
                                   <button
                                     key={p.id || p.code}
                                     type="button"
+                                    role="radio"
+                                    aria-checked={isSelected}
+                                    aria-label={purposeName}
                                     onClick={() => { setSelectedPurpose(codeKey); setErrorMessage(""); }}
-                                    className={`relative p-3 sm:p-3.5 rounded-2xl border-2 text-left transition-all duration-200 flex items-start gap-2.5 sm:gap-3 w-full cursor-pointer active:scale-[0.98] ${
+                                    className={`relative p-3 sm:p-3.5 rounded-2xl border-2 text-left transition-all duration-200 flex items-start gap-2.5 sm:gap-3 w-full cursor-pointer active:scale-[0.98] touch-manipulation select-none ${
                                       isSelected
                                         ? "bg-indigo-50/80 dark:bg-indigo-950/80 border-indigo-600 dark:border-indigo-400 text-slate-900 dark:text-white shadow-md ring-2 ring-indigo-500/20"
                                         : "border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800/80 text-slate-800 dark:text-white hover:border-indigo-300 dark:hover:border-slate-600 hover:bg-slate-50/80 dark:hover:bg-slate-800"
@@ -972,7 +983,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                     </div>
                                     <div className="min-w-0 flex-1">
                                       <span className="block font-extrabold text-xs sm:text-sm text-slate-900 dark:text-white leading-tight">
-                                        {getLanguagePurposeName(p)}
+                                        {purposeName}
                                       </span>
                                       {desc && (
                                         <span className="block text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-200 font-medium leading-tight mt-1 line-clamp-2">
@@ -1079,7 +1090,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                             type="button"
                             disabled={actionLoading}
                             onClick={handleGeneratePaymentSession}
-                            className="w-full py-3.5 sm:py-4 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 text-white rounded-2xl font-extrabold text-xs sm:text-base flex items-center justify-center gap-2.5 shadow-lg shadow-indigo-600/25 hover:shadow-xl hover:shadow-indigo-600/35 active:scale-[0.99] transition-all duration-300 disabled:opacity-60 relative overflow-hidden group"
+                            className="w-full py-3.5 sm:py-4 min-h-[48px] bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 text-white rounded-2xl font-extrabold text-xs sm:text-base flex items-center justify-center gap-2.5 shadow-lg shadow-indigo-600/25 hover:shadow-xl hover:shadow-indigo-600/35 active:scale-[0.99] transition-all duration-300 disabled:opacity-60 relative overflow-hidden group touch-manipulation select-none"
                           >
                             {actionLoading ? (
                               <>
@@ -1163,7 +1174,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                       if (socketRef.current) socketRef.current.disconnect();
                                       setStep(1);
                                     }}
-                                    className="w-full py-3.5 bg-indigo-600 text-white rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/25 active:scale-95 text-xs sm:text-sm"
+                                    className="w-full py-3.5 min-h-[44px] bg-indigo-600 text-white rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/25 active:scale-95 text-xs sm:text-sm touch-manipulation select-none"
                                   >
                                     <RefreshCw className="w-4 h-4" />
                                     {language === 'te' ? 'కొత్త QR రూపొందించండి' : language === 'hi' ? 'नया QR जनरेट करें' : 'Generate New QR'}
@@ -1235,7 +1246,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                       <button
                                         type="button"
                                         onClick={() => copyToClipboard(upiId, "UPI ID")}
-                                        className="w-full sm:w-auto px-2.5 py-1.5 bg-white/15 hover:bg-white/25 rounded-xl text-white text-xs font-bold transition-all flex items-center justify-center gap-1 border border-white/20 flex-shrink-0 active:scale-95"
+                                        className="w-full sm:w-auto min-h-[36px] px-2.5 py-1.5 bg-white/15 hover:bg-white/25 rounded-xl text-white text-xs font-bold transition-all flex items-center justify-center gap-1 border border-white/20 flex-shrink-0 active:scale-95 touch-manipulation select-none"
                                       >
                                         {copiedLabel === "UPI ID" ? (
                                           <><Check className="w-3.5 h-3.5 text-emerald-400 stroke-[3]" /> Copied</>
@@ -1253,7 +1264,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                     <button
                                       type="button"
                                       onClick={handleOpenUpiApp}
-                                      className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 text-white font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2.5 shadow-xl shadow-indigo-600/30 hover:shadow-2xl hover:shadow-indigo-600/40 active:scale-[0.99] transition-all"
+                                      className="w-full py-3.5 px-4 min-h-[48px] rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 text-white font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2.5 shadow-xl shadow-indigo-600/30 hover:shadow-2xl hover:shadow-indigo-600/40 active:scale-[0.99] transition-all touch-manipulation select-none"
                                     >
                                       <Smartphone className="w-4 h-4 sm:w-5 sm:h-5" />
                                       <span>
@@ -1274,7 +1285,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                             key={app.name}
                                             type="button"
                                             onClick={() => handleOpenSpecificApp(app.pkg, app.scheme)}
-                                            className={`flex flex-col items-center justify-center gap-1 p-1.5 sm:p-2 rounded-2xl border transition-all active:scale-90 hover:shadow-md cursor-pointer ${app.bgClass}`}
+                                            className={`flex flex-col items-center justify-center gap-1 p-1.5 sm:p-2 min-h-[44px] rounded-2xl border transition-all active:scale-90 hover:shadow-md cursor-pointer touch-manipulation select-none ${app.bgClass}`}
                                             title={`Pay with ${app.name}`}
                                           >
                                             {app.svg}
@@ -1290,7 +1301,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                     <button
                                       type="button"
                                       onClick={() => copyToClipboard(upiUri, "LINK")}
-                                      className="w-full py-2.5 px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-extrabold text-xs transition-all flex items-center justify-center gap-2 active:scale-95"
+                                      className="w-full py-2.5 px-4 min-h-[40px] rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-extrabold text-xs transition-all flex items-center justify-center gap-2 active:scale-95 touch-manipulation select-none"
                                     >
                                       {copiedLabel === "LINK" ? (
                                         <><Check className="w-4 h-4 text-emerald-500 stroke-[3]" /> {language === 'te' ? 'లింక్ కాపీ అయింది!' : language === 'hi' ? 'लिंक कॉपी हो गया!' : 'Payment link copied!'}</>
@@ -1316,7 +1327,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                         type="button"
                                         disabled={verificationLoading || isExpired}
                                         onClick={handleVerifyPayment}
-                                        className="w-full sm:flex-1 py-3.5 bg-gradient-to-r from-emerald-500 to-green-600 text-white rounded-2xl font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/25 hover:shadow-xl active:scale-[0.99] disabled:opacity-60"
+                                        className="w-full sm:flex-1 py-3.5 min-h-[48px] bg-gradient-to-r from-emerald-500 to-green-600 text-white rounded-2xl font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/25 hover:shadow-xl active:scale-[0.99] disabled:opacity-60 touch-manipulation select-none"
                                       >
                                         {verificationLoading ? (
                                           <><Loader2 className="w-4 h-4 animate-spin" /> Verifying...</>
@@ -1332,7 +1343,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                           if (socketRef.current) socketRef.current.disconnect();
                                           setStep(1);
                                         }}
-                                        className="w-full sm:w-auto px-4 py-2.5 sm:py-3.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-2xl font-bold text-xs transition-all flex items-center justify-center gap-1 active:scale-95"
+                                        className="w-full sm:w-auto px-4 py-2.5 sm:py-3.5 min-h-[44px] bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-2xl font-bold text-xs transition-all flex items-center justify-center gap-1 active:scale-95 touch-manipulation select-none"
                                       >
                                         <ArrowLeft className="w-4 h-4" />
                                         {t.pages.give.backBtn}
@@ -1415,9 +1426,11 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                         <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">{t.pages.give.liveHistorySubtitle}</p>
                       </div>
                       <button 
+                        type="button"
                         onClick={() => loadHistory()} 
                         disabled={historyLoading}
-                        className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all border border-slate-200 dark:border-slate-700"
+                        aria-label="Refresh Giving History"
+                        className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all border border-slate-200 dark:border-slate-700 touch-manipulation select-none"
                       >
                         <RefreshCw className={`w-3.5 h-3.5 ${historyLoading ? "animate-spin" : ""}`} />
                       </button>

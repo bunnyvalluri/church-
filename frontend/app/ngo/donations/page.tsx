@@ -564,6 +564,7 @@ function NgoDonationsContent() {
   };
 
   const handleCreatePaymentOrder = async () => {
+    if (loading) return;
     if (typeof navigator !== "undefined" && !navigator.onLine) {
       setErrorMessage("You're currently offline. Internet connection is required to complete payment verification.");
       return;
@@ -993,11 +994,13 @@ function NgoDonationsContent() {
             </p>
 
             {/* Interactive Giving Frequency Switcher */}
-            <div className="p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-white/15 flex items-center justify-between gap-1.5 shadow-inner">
+            <div role="radiogroup" aria-label={dp.tag || "Giving Frequency"} className="p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-white/15 flex items-center justify-between gap-1.5 shadow-inner">
               <button
                 type="button"
+                role="radio"
+                aria-checked={frequency === "ONE_TIME"}
                 onClick={() => setFrequency("ONE_TIME")}
-                className={`flex-1 py-3 px-3 rounded-xl text-xs sm:text-sm font-black transition-all duration-200 flex items-center justify-center gap-1.5 ${
+                className={`flex-1 py-3 px-3 rounded-xl text-xs sm:text-sm font-black transition-all duration-200 flex items-center justify-center gap-1.5 touch-manipulation select-none ${
                   frequency === "ONE_TIME"
                     ? "bg-white dark:bg-purple-600 text-purple-950 dark:text-white shadow-md border border-purple-200 dark:border-purple-400"
                     : "text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
@@ -1009,8 +1012,10 @@ function NgoDonationsContent() {
 
               <button
                 type="button"
+                role="radio"
+                aria-checked={frequency === "MONTHLY"}
                 onClick={() => setFrequency("MONTHLY")}
-                className={`flex-1 py-3 px-3 rounded-xl text-xs sm:text-sm font-black transition-all duration-200 flex items-center justify-center gap-1.5 relative ${
+                className={`flex-1 py-3 px-3 rounded-xl text-xs sm:text-sm font-black transition-all duration-200 flex items-center justify-center gap-1.5 relative touch-manipulation select-none ${
                   frequency === "MONTHLY"
                     ? "bg-purple-600 text-white shadow-md shadow-purple-500/25 border border-purple-500"
                     : "text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
@@ -1030,18 +1035,23 @@ function NgoDonationsContent() {
                 {dp.selectCause || "Select Cause to Support"}
               </label>
 
-              <div className="space-y-3">
+              <div className="space-y-3" role="radiogroup" aria-label={dp.selectCause || "Select Cause to Support"}>
                 {causes.map((c) => {
                   const isSelected = selectedCause === c.code;
                   const target = c.targetAmount || 1;
                   const raised = c.raisedAmount || 0;
                   const pct = Math.min(100, Math.round((raised / target) * 100));
+                  const causeName = getCauseDisplayName(c, language);
 
                   return (
-                    <div
+                    <button
                       key={c.id}
+                      type="button"
+                      role="radio"
+                      aria-checked={isSelected}
+                      aria-label={`${causeName}, ${pct}% funded`}
                       onClick={() => setSelectedCause(c.code)}
-                      className={`p-4 rounded-2xl border transition-all cursor-pointer ${
+                      className={`w-full text-left p-4 rounded-2xl border transition-all cursor-pointer touch-manipulation select-none active:scale-[0.99] ${
                         isSelected
                           ? "bg-purple-50/90 dark:bg-purple-900/60 border-purple-500 dark:border-purple-400 shadow-md ring-2 ring-purple-500/30"
                           : "bg-white dark:bg-slate-900/90 border-slate-200 dark:border-white/15 hover:border-purple-300 dark:hover:border-purple-500/50 hover:bg-slate-50 dark:hover:bg-slate-800"
@@ -1049,7 +1059,7 @@ function NgoDonationsContent() {
                     >
                       <div className="flex items-center justify-between mb-2">
                         <span className={`text-xs sm:text-sm font-black ${isSelected ? "text-purple-950 dark:text-white" : "text-slate-900 dark:text-white"}`}>
-                          {getCauseDisplayName(c, language)}
+                          {causeName}
                         </span>
                         <span className={`text-[11px] font-mono font-bold ${isSelected ? "text-purple-800 dark:text-purple-100" : "text-slate-600 dark:text-slate-300"}`}>
                           ₹{formatNumber(raised)} / ₹{formatNumber(target)} ({pct}%)
@@ -1062,7 +1072,7 @@ function NgoDonationsContent() {
                           style={{ width: `${pct}%` }}
                         />
                       </div>
-                    </div>
+                    </button>
                   );
                 })}
               </div>
@@ -1208,7 +1218,7 @@ function NgoDonationsContent() {
                             setAmount(preset.amount.toString());
                             setCustomAmount("");
                           }}
-                          className={`py-3.5 rounded-2xl border font-black text-sm sm:text-base transition-all duration-200 flex items-center justify-center gap-1.5 ${
+                          className={`py-3.5 rounded-2xl border font-black text-sm sm:text-base transition-all duration-200 flex items-center justify-center gap-1.5 touch-manipulation select-none ${
                             isSelected ? scheme.selected : scheme.unselected
                           }`}
                         >
@@ -1230,13 +1240,13 @@ function NgoDonationsContent() {
                           setCustomAmount(e.target.value);
                           setAmount("");
                         }}
-                        className={`w-full py-3.5 pl-7 sm:pl-8 pr-2 rounded-2xl border-2 text-xs sm:text-sm font-bold focus:outline-none transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
+                        className={`w-full py-3.5 pl-6 sm:pl-7 pr-1.5 rounded-2xl border-2 text-xs sm:text-sm font-bold placeholder:text-[11px] sm:placeholder:text-xs placeholder:font-semibold focus:outline-none transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none touch-manipulation ${
                           customAmount
                             ? "bg-purple-50/90 dark:bg-purple-950/90 text-slate-900 dark:text-white border-purple-600 dark:border-purple-400 shadow-md shadow-purple-500/10 ring-2 ring-purple-600/20 font-black"
-                            : "bg-slate-50 hover:bg-purple-50/50 dark:bg-slate-800/90 dark:hover:bg-slate-700/90 border-slate-200 dark:border-white/20 text-slate-900 dark:text-white placeholder:text-slate-500 dark:placeholder:text-slate-300 placeholder:font-bold focus:border-purple-500 dark:focus:border-purple-400 focus:ring-2 focus:ring-purple-500/20"
+                            : "bg-slate-50 hover:bg-purple-50/50 dark:bg-slate-800/90 dark:hover:bg-slate-700/90 border-slate-200 dark:border-white/20 text-slate-900 dark:text-white placeholder:text-slate-500 dark:placeholder:text-slate-300 focus:border-purple-500 dark:focus:border-purple-400 focus:ring-2 focus:ring-purple-500/20"
                         }`}
                       />
-                      <span className={`absolute left-3 top-1/2 -translate-y-1/2 text-xs sm:text-sm font-black pointer-events-none ${customAmount ? "text-purple-700 dark:text-purple-200" : "text-purple-600 dark:text-purple-300"}`}>
+                      <span className={`absolute left-2.5 top-1/2 -translate-y-1/2 text-xs sm:text-sm font-black pointer-events-none ${customAmount ? "text-purple-700 dark:text-purple-200" : "text-purple-600 dark:text-purple-300"}`}>
                         ₹
                       </span>
                     </div>
@@ -1250,7 +1260,7 @@ function NgoDonationsContent() {
                         key={addVal}
                         type="button"
                         onClick={() => handleQuickAdd(addVal)}
-                        className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-purple-100 dark:hover:bg-purple-900/60 text-slate-800 dark:text-slate-100 dark:hover:text-white text-xs font-black border border-slate-200 dark:border-white/15 transition-colors"
+                        className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-purple-100 dark:hover:bg-purple-900/60 text-slate-800 dark:text-slate-100 dark:hover:text-white text-xs font-black border border-slate-200 dark:border-white/15 transition-colors touch-manipulation select-none"
                       >
                         +₹{formatNumber(addVal)}
                       </button>
@@ -1261,7 +1271,7 @@ function NgoDonationsContent() {
                 <button
                   type="button"
                   onClick={handleProceedToStep2}
-                  className="w-full py-4 min-h-[48px] bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-extrabold text-sm sm:text-base rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-purple-500/25 active:scale-[0.99] transition-all"
+                  className="w-full py-4 min-h-[48px] bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-extrabold text-sm sm:text-base rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-purple-500/25 active:scale-[0.99] transition-all touch-manipulation select-none"
                 >
                   <span>{dp.continueDetails || "Continue to Donor Details"}</span>
                   <ArrowRight className="w-4 h-4" />
@@ -1298,8 +1308,11 @@ function NgoDonationsContent() {
                   </div>
                   <button
                     type="button"
+                    role="switch"
+                    aria-checked={wantTaxExemption}
+                    aria-label={dp.request80g || "Request 80G Tax Exemption Receipt"}
                     onClick={() => setWantTaxExemption(!wantTaxExemption)}
-                    className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors flex-shrink-0 ${
+                    className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors flex-shrink-0 touch-manipulation select-none ${
                       wantTaxExemption ? "bg-amber-500 justify-end" : "bg-slate-300 dark:bg-slate-800 justify-start"
                     }`}
                   >
@@ -1325,13 +1338,16 @@ function NgoDonationsContent() {
                           </span>
                           <button
                             type="button"
+                            role="switch"
+                            aria-checked={!!donorDetails[field.fieldName]}
+                            aria-label={fieldLabel}
                             onClick={() =>
                               setDonorDetails((prev) => ({
                                 ...prev,
                                 [field.fieldName]: !prev[field.fieldName],
                               }))
                             }
-                            className={`w-11 h-6 flex items-center rounded-full p-1 transition-colors ${
+                            className={`w-11 h-6 flex items-center rounded-full p-1 transition-colors touch-manipulation select-none ${
                               donorDetails[field.fieldName] ? "bg-purple-600 justify-end" : "bg-slate-300 dark:bg-slate-800 justify-start"
                             }`}
                           >
@@ -1359,7 +1375,7 @@ function NgoDonationsContent() {
                             }))
                           }
                           placeholder={field.placeholder || ""}
-                          className="w-full py-3 px-4 rounded-xl border border-slate-200 dark:border-white/15 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-400 text-sm font-medium focus:outline-none focus:border-purple-500 disabled:opacity-60"
+                          className="w-full py-3 px-4 rounded-xl border border-slate-200 dark:border-white/15 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-400 text-sm font-medium focus:outline-none focus:border-purple-500 disabled:opacity-60 touch-manipulation"
                         />
                       </div>
                     );
@@ -1386,7 +1402,7 @@ function NgoDonationsContent() {
                           }))
                         }
                         placeholder="e.g. ABCDE1234F"
-                        className="w-full py-3 px-4 rounded-xl border border-amber-500/40 bg-white dark:bg-slate-950 text-slate-900 dark:text-white font-mono uppercase text-sm font-bold focus:outline-none focus:ring-2 focus:ring-amber-500/30"
+                        className="w-full py-3 px-4 rounded-xl border border-amber-500/40 bg-white dark:bg-slate-950 text-slate-900 dark:text-white font-mono uppercase text-sm font-bold focus:outline-none focus:ring-2 focus:ring-amber-500/30 touch-manipulation"
                       />
                       <p className="text-[10.5px] text-slate-600 dark:text-slate-300 font-medium">
                         {dp.panCardDesc || "Required by Govt of India Income Tax Dept for issuing Section 80G certificate."}
@@ -1404,7 +1420,7 @@ function NgoDonationsContent() {
                     <select
                       value={selectedCause}
                       onChange={(e) => setSelectedCause(e.target.value)}
-                      className="w-full py-3 px-3 rounded-xl border border-slate-200 dark:border-white/15 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-xs font-bold focus:outline-none focus:border-purple-500"
+                      className="w-full py-3 px-3 rounded-xl border border-slate-200 dark:border-white/15 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-xs font-bold focus:outline-none focus:border-purple-500 touch-manipulation"
                     >
                       {causes.map((c) => (
                         <option key={c.id} value={c.code}>
@@ -1421,7 +1437,7 @@ function NgoDonationsContent() {
                     <select
                       value={selectedBranch}
                       onChange={(e) => setSelectedBranch(e.target.value)}
-                      className="w-full py-3 px-3 rounded-xl border border-slate-200 dark:border-white/15 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-xs font-bold focus:outline-none focus:border-purple-500"
+                      className="w-full py-3 px-3 rounded-xl border border-slate-200 dark:border-white/15 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-xs font-bold focus:outline-none focus:border-purple-500 touch-manipulation"
                     >
                       {branches.map((b) => (
                         <option key={b.id} value={b.id}>
@@ -1437,7 +1453,7 @@ function NgoDonationsContent() {
                   <button
                     type="button"
                     onClick={() => setStep(1)}
-                    className="flex-1 py-3.5 min-h-[44px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-white border border-slate-200 dark:border-white/15 font-extrabold rounded-xl text-xs flex items-center justify-center gap-1.5"
+                    className="flex-1 py-3.5 min-h-[44px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-white border border-slate-200 dark:border-white/15 font-extrabold rounded-xl text-xs flex items-center justify-center gap-1.5 touch-manipulation select-none"
                   >
                     <ArrowLeft className="w-4 h-4" />
                     <span>{dp.back || "Back"}</span>
@@ -1447,7 +1463,7 @@ function NgoDonationsContent() {
                     type="button"
                     onClick={handleCreatePaymentOrder}
                     disabled={loading}
-                    className="flex-[2] py-3.5 min-h-[44px] bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-extrabold rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-purple-500/25 disabled:opacity-50"
+                    className="flex-[2] py-3.5 min-h-[44px] bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-extrabold rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-purple-500/25 disabled:opacity-50 touch-manipulation select-none"
                   >
                     {loading ? (
                       <>
@@ -1516,7 +1532,7 @@ function NgoDonationsContent() {
                     <button
                       type="button"
                       onClick={() => copyToClipboard(settings.upiId, "upi")}
-                      className="text-purple-700 dark:text-purple-200 font-extrabold hover:text-purple-400 flex items-center gap-1 min-h-[32px] px-2"
+                      className="text-purple-700 dark:text-purple-200 font-extrabold hover:text-purple-400 flex items-center gap-1 min-h-[36px] px-2 touch-manipulation select-none"
                     >
                       <Copy className="w-3.5 h-3.5" />
                       <span>{copiedLabel === "upi" ? (dp.copied || "Copied!") : (dp.copy || "Copy")}</span>
@@ -1540,7 +1556,7 @@ function NgoDonationsContent() {
                         key={app.name}
                         type="button"
                         onClick={() => handleOpenUpiApp(app.pkg, app.scheme)}
-                        className="py-2.5 px-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/15 text-xs font-black text-slate-800 dark:text-white hover:border-purple-500 hover:shadow-md active:scale-95 transition-all flex items-center justify-center gap-1.5 shadow-sm min-h-[44px]"
+                        className="py-2.5 px-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/15 text-xs font-black text-slate-800 dark:text-white hover:border-purple-500 hover:shadow-md active:scale-95 transition-all flex items-center justify-center gap-1.5 shadow-sm min-h-[44px] touch-manipulation select-none"
                       >
                         <app.icon />
                         <span>{app.name}</span>
@@ -1553,7 +1569,7 @@ function NgoDonationsContent() {
                   <button
                     type="button"
                     onClick={handleOpenRazorpayCheckout}
-                    className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-purple-700 via-indigo-700 to-violet-700 hover:from-purple-800 hover:to-indigo-800 text-white font-extrabold text-xs sm:text-sm shadow-lg shadow-purple-500/20 active:scale-95 transition-all flex items-center justify-center gap-2 min-h-[46px]"
+                    className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-purple-700 via-indigo-700 to-violet-700 hover:from-purple-800 hover:to-indigo-800 text-white font-extrabold text-xs sm:text-sm shadow-lg shadow-purple-500/20 active:scale-95 transition-all flex items-center justify-center gap-2 min-h-[46px] touch-manipulation select-none"
                   >
                     <CreditCard className="w-4 h-4" />
                     <span>{dp.payViaCheckout || "Pay with Cards, NetBanking, or Wallet"}</span>
@@ -1563,7 +1579,7 @@ function NgoDonationsContent() {
                   <button
                     type="button"
                     onClick={() => handleOpenUpiApp()}
-                    className="w-full py-3 px-4 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-purple-100 dark:hover:bg-purple-950/60 text-purple-900 dark:text-purple-200 border border-purple-200 dark:border-purple-800/60 font-extrabold text-xs shadow-sm active:scale-95 transition-all flex items-center justify-center gap-2 min-h-[44px]"
+                    className="w-full py-3 px-4 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-purple-100 dark:hover:bg-purple-950/60 text-purple-900 dark:text-purple-200 border border-purple-200 dark:border-purple-800/60 font-extrabold text-xs shadow-sm active:scale-95 transition-all flex items-center justify-center gap-2 min-h-[44px] touch-manipulation select-none"
                   >
                     <Smartphone className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                     <span>{dp.openInAnyUpi || "Open in any UPI App"}</span>
@@ -1575,7 +1591,7 @@ function NgoDonationsContent() {
                   <button
                     type="button"
                     onClick={() => setStep(2)}
-                    className="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-bold flex items-center gap-1"
+                    className="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-bold flex items-center gap-1 min-h-[36px] touch-manipulation select-none"
                   >
                     <ArrowLeft className="w-3.5 h-3.5" />
                     <span>{dp.editDetails || "Edit Details"}</span>
@@ -1699,7 +1715,7 @@ function NgoDonationsContent() {
                     href={`/api/receipts/${donationId}/pdf`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full py-3.5 min-h-[48px] bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-extrabold rounded-2xl text-sm flex items-center justify-center gap-2 shadow-lg shadow-purple-500/25 transition-all hover:scale-[1.01] active:scale-[0.99]"
+                    className="w-full py-3.5 min-h-[48px] bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-extrabold rounded-2xl text-sm flex items-center justify-center gap-2 shadow-lg shadow-purple-500/25 transition-all hover:scale-[1.01] active:scale-[0.99] touch-manipulation select-none"
                   >
                     <Download className="w-4 h-4" />
                     {dp.downloadPdf || "Download Receipt (PDF)"}
@@ -1709,7 +1725,7 @@ function NgoDonationsContent() {
                     <button
                       type="button"
                       onClick={handleShareReceipt}
-                      className="py-3 min-h-[44px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-white border border-slate-200 dark:border-white/15 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all"
+                      className="py-3 min-h-[44px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-white border border-slate-200 dark:border-white/15 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all touch-manipulation select-none"
                     >
                       <Share2 className="w-4 h-4 text-purple-600 dark:text-purple-300" />
                       {dp.shareReceipt || "Share Receipt"}
@@ -1722,7 +1738,7 @@ function NgoDonationsContent() {
                           .then(() => showToast("📧 Receipt emailed successfully!", "success"))
                           .catch(() => showToast("Could not send email. Try again.", "error"));
                       }}
-                      className="py-3 min-h-[44px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-white border border-slate-200 dark:border-white/15 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all"
+                      className="py-3 min-h-[44px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-white border border-slate-200 dark:border-white/15 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all touch-manipulation select-none"
                     >
                       <Mail className="w-4 h-4 text-blue-500" />
                       {dp.emailReceipt || "Email Receipt"}
@@ -1733,7 +1749,7 @@ function NgoDonationsContent() {
                     <button
                       type="button"
                       onClick={resetDonationWizard}
-                      className="py-3 min-h-[44px] bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/60 dark:hover:bg-purple-900/60 text-purple-800 dark:text-purple-200 border border-purple-200 dark:border-purple-800/60 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all"
+                      className="py-3 min-h-[44px] bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/60 dark:hover:bg-purple-900/60 text-purple-800 dark:text-purple-200 border border-purple-200 dark:border-purple-800/60 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all touch-manipulation select-none"
                     >
                       <RefreshCw className="w-4 h-4" />
                       <span>{dp.donateAgain || "Donate Again"}</span>
@@ -1741,7 +1757,7 @@ function NgoDonationsContent() {
 
                     <Link
                       href="/member/give"
-                      className="py-3 min-h-[44px] bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:hover:bg-indigo-900/50 text-indigo-800 dark:text-indigo-200 border border-indigo-200 dark:border-indigo-700/50 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all"
+                      className="py-3 min-h-[44px] bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:hover:bg-indigo-900/50 text-indigo-800 dark:text-indigo-200 border border-indigo-200 dark:border-indigo-700/50 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all touch-manipulation select-none"
                     >
                       <FileText className="w-4 h-4" />
                       <span>{dp.donationHistory || "History"}</span>
@@ -1749,7 +1765,7 @@ function NgoDonationsContent() {
 
                     <Link
                       href="/ngo"
-                      className="py-3 min-h-[44px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-white border border-slate-200 dark:border-white/15 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all col-span-2 sm:col-span-1"
+                      className="py-3 min-h-[44px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-white border border-slate-200 dark:border-white/15 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all col-span-2 sm:col-span-1 touch-manipulation select-none"
                     >
                       <Home className="w-4 h-4" />
                       <span>{dp.returnHome || "NGO Home"}</span>
@@ -1789,7 +1805,7 @@ function NgoDonationsContent() {
                   <button
                     type="button"
                     onClick={() => setActiveFaq(isOpen ? null : idx)}
-                    className="w-full p-4 text-left font-extrabold text-sm sm:text-base text-slate-900 dark:text-white flex items-center justify-between gap-3 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                    className="w-full p-4 min-h-[48px] text-left font-extrabold text-sm sm:text-base text-slate-900 dark:text-white flex items-center justify-between gap-3 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors touch-manipulation select-none"
                   >
                     <span className="flex items-center gap-2.5">
                       <HelpCircle className="w-4 h-4 text-purple-500 flex-shrink-0" />

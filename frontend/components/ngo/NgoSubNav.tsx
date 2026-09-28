@@ -1,6 +1,6 @@
 "use client";
 
-import React, { memo, useState, useEffect, useCallback, useRef } from "react";
+import React, { memo, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -95,70 +95,12 @@ const NGO_NAV_ITEMS: NgoNavItem[] = [
   },
 ];
 
-const SECTION_IDS = ["overview", "projects", "donations", "gallery", "videos", "volunteers"] as const;
-
 const NgoSubNav = memo(function NgoSubNav() {
   const pathname = usePathname() ?? "/ngo";
-  const isMainNgoPage = pathname === "/ngo";
   const { t } = useLanguage();
   const ngoNavT = t?.ngo?.nav || {};
-
-  const [activeSection, setActiveSection] = useState<string>("overview");
   const navRef = useRef<HTMLElement>(null);
   const mobileScrollRef = useRef<HTMLDivElement>(null);
-
-  // ── High-Performance IntersectionObserver for In-Page Active Tab Tracking ──
-  useEffect(() => {
-    if (!isMainNgoPage) {
-      // For subpages (e.g. /ngo/projects), the path drives active state
-      return;
-    }
-
-    const elements = SECTION_IDS.map((id) => document.getElementById(id)).filter(
-      (el): el is HTMLElement => el !== null
-    );
-
-    if (elements.length === 0) return;
-
-    // Use IntersectionObserver with rootMargin tuned to the sticky header offset
-    const observer = new IntersectionObserver(
-      (entries) => {
-        // Collect visible elements
-        const visibleEntries = entries.filter((entry) => entry.isIntersecting);
-        if (visibleEntries.length > 0) {
-          // Sort by highest visibility ratio or position closest to header
-          visibleEntries.sort((a, b) => {
-            const rectA = a.target.getBoundingClientRect();
-            const rectB = b.target.getBoundingClientRect();
-            return Math.abs(rectA.top - 120) - Math.abs(rectB.top - 120);
-          });
-          const bestMatch = visibleEntries[0].target.id;
-          setActiveSection(bestMatch);
-        }
-      },
-      {
-        root: null,
-        // Top margin accommodates sticky header (~120px) so section marks active as it enters
-        rootMargin: "-20% 0px -60% 0px",
-        threshold: [0, 0.2, 0.4, 0.6, 0.8, 1],
-      }
-    );
-
-    elements.forEach((el) => observer.observe(el));
-
-    // Handle edge case: at top of page, overview is active
-    const handleScrollTop = () => {
-      if (window.scrollY < 80) {
-        setActiveSection("overview");
-      }
-    };
-    window.addEventListener("scroll", handleScrollTop, { passive: true });
-
-    return () => {
-      observer.disconnect();
-      window.removeEventListener("scroll", handleScrollTop);
-    };
-  }, [isMainNgoPage]);
 
   // ── Auto-scroll mobile nav track to keep active tab in view ──
   useEffect(() => {
@@ -169,25 +111,14 @@ const NgoSubNav = memo(function NgoSubNav() {
       const scrollLeft = activeEl.offsetLeft - container.offsetWidth / 2 + activeEl.offsetWidth / 2;
       container.scrollTo({ left: scrollLeft, behavior: "smooth" });
     }
-  }, [activeSection, pathname]);
+  }, [pathname]);
 
-  // ── Smooth Click Handler ──
-  const handleNavClick = useCallback(
-    (e: React.MouseEvent<HTMLAnchorElement>, item: NgoNavItem) => {
-      if (isMainNgoPage) {
-        const targetElement = document.getElementById(item.id);
-        if (targetElement) {
-          e.preventDefault();
-          targetElement.scrollIntoView({ behavior: "smooth", block: "start" });
-          setActiveSection(item.id);
-          if (typeof window !== "undefined" && window.history.replaceState) {
-            window.history.replaceState(null, "", `#${item.id}`);
-          }
-        }
-      }
-    },
-    [isMainNgoPage]
-  );
+  const isItemActive = (itemHref: string) => {
+    if (itemHref === "/ngo") {
+      return pathname === "/ngo";
+    }
+    return pathname === itemHref || pathname.startsWith(itemHref + "/");
+  };
 
   return (
     <nav
@@ -205,28 +136,22 @@ const NgoSubNav = memo(function NgoSubNav() {
     >
       <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-1.5 sm:py-2">
         {/* ── Mobile View (< md): 6-column balanced dock showing ALL complete names simultaneously ── */}
-        <div className="md:hidden">
+        <div className="md:hidden" ref={mobileScrollRef}>
           <div className="grid grid-cols-6 gap-0.5 min-[360px]:gap-1 p-1 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 shadow-sm w-full">
             {NGO_NAV_ITEMS.map((item) => {
-              const isActive = isMainNgoPage
-                ? activeSection === item.id
-                : item.href === "/ngo"
-                ? pathname === "/ngo"
-                : pathname.startsWith(item.href);
-
+              const isActive = isItemActive(item.href);
               const Icon = item.icon;
               const label = ngoNavT[item.nameKey] || item.defaultLabel;
-              const targetHref = isMainNgoPage ? `#${item.id}` : item.href;
 
               return (
                 <Link
                   key={item.id}
-                  href={targetHref}
-                  onClick={(e) => handleNavClick(e, item)}
+                  href={item.href}
+                  prefetch={true}
                   data-active={isActive ? "true" : "false"}
                   aria-current={isActive ? "page" : undefined}
                   className={cn(
-                    "flex flex-col items-center justify-center py-1.5 px-0.5 rounded-xl transition-all duration-150 text-center select-none w-full min-w-0",
+                    "touch-manipulation flex flex-col items-center justify-center py-1.5 px-0.5 rounded-xl transition-all duration-150 text-center select-none w-full min-w-0 active:scale-95 cursor-pointer",
                     isActive
                       ? "bg-purple-50/90 dark:bg-slate-800 text-purple-700 dark:text-purple-300 shadow-sm border border-purple-300 dark:border-purple-600 font-extrabold"
                       : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
@@ -259,7 +184,8 @@ const NgoSubNav = memo(function NgoSubNav() {
           {/* Brand badge */}
           <Link
             href="/ngo"
-            className="flex items-center gap-2.5 flex-shrink-0 group py-1 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600"
+            prefetch={true}
+            className="touch-manipulation flex items-center gap-2.5 flex-shrink-0 group py-1 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600"
             aria-label="KCM Social Service NGO Home"
           >
             <div className="w-8 h-8 lg:w-9 lg:h-9 rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200/90 dark:border-rose-900/60 flex items-center justify-center text-rose-500 shadow-sm group-hover:scale-105 transition-transform">
@@ -277,25 +203,19 @@ const NgoSubNav = memo(function NgoSubNav() {
             className="flex items-center gap-1.5 p-1 rounded-2xl bg-slate-100/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200/60 dark:border-slate-800/60 flex-shrink-0"
           >
             {NGO_NAV_ITEMS.map((item) => {
-              const isActive = isMainNgoPage
-                ? activeSection === item.id
-                : item.href === "/ngo"
-                ? pathname === "/ngo"
-                : pathname.startsWith(item.href);
-
+              const isActive = isItemActive(item.href);
               const Icon = item.icon;
               const label = ngoNavT[item.nameKey] || item.defaultLabel;
-              const targetHref = isMainNgoPage ? `#${item.id}` : item.href;
 
               return (
                 <Link
                   key={item.id}
-                  href={targetHref}
-                  onClick={(e) => handleNavClick(e, item)}
+                  href={item.href}
+                  prefetch={true}
                   role="menuitem"
                   aria-current={isActive ? "page" : undefined}
                   className={cn(
-                    "flex items-center gap-2 px-3.5 lg:px-4 py-1.5 lg:py-2 rounded-xl text-xs lg:text-sm font-semibold transition-all duration-200 whitespace-nowrap select-none",
+                    "touch-manipulation flex items-center gap-2 px-3.5 lg:px-4 py-1.5 lg:py-2 rounded-xl text-xs lg:text-sm font-semibold transition-all duration-200 whitespace-nowrap select-none active:scale-95 cursor-pointer",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 focus-visible:ring-offset-1",
                     isActive
                       ? "bg-white dark:bg-slate-800 text-purple-700 dark:text-purple-300 shadow-sm border border-purple-200/80 dark:border-purple-700/60 font-bold scale-[1.01]"

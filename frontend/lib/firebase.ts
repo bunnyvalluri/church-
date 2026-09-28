@@ -85,13 +85,25 @@ export async function requestFCMToken(): Promise<string | null> {
   if (typeof window === "undefined") return null;
   try {
     if (!app || !firebaseConfig.apiKey) return null;
+    if (!("Notification" in window) || !("serviceWorker" in navigator)) return null;
+    
+    // If notification permission is not granted, bypass quietly without throwing or logging warnings
+    if (Notification.permission !== "granted") {
+      return null;
+    }
+
     const { getMessaging, getToken } = await import("firebase/messaging");
     const messaging = getMessaging(app);
     const vapidKey = process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY;
     const token = await getToken(messaging, { vapidKey });
     return token;
-  } catch (err) {
-    console.warn("[FCM] Cloud messaging token registration bypassed:", err);
+  } catch (err: any) {
+    if (err?.code === "messaging/permission-blocked" || err?.message?.includes("permission was not granted")) {
+      return null;
+    }
+    if (process.env.NODE_ENV === "development") {
+      console.debug("[FCM] Cloud messaging registration status:", err?.message || err);
+    }
     return null;
   }
 }
