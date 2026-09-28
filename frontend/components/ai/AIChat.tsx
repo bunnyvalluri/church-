@@ -335,8 +335,8 @@ export default function AIChat() {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
             <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500 border-[1.5px] border-white shadow-sm" />
           </span>
-          <div className="relative z-10 w-9 h-9 rounded-full overflow-hidden bg-white shadow-inner ring-1 ring-white/50">
-            <Image src="/pastor.png" alt="Pastor & KCM Assistant" width={36} height={36} unoptimized className="object-cover object-top rounded-full w-full h-full scale-110" />
+          <div className="relative z-10 w-9 h-9 rounded-full overflow-hidden bg-white/20">
+            <Image src="/chatbot-bird-logo.png" alt="KCM Assistant" width={36} height={36} unoptimized className="object-cover rounded-full w-full h-full" />
           </div>
         </button>
         <div className="absolute right-full top-1/2 -translate-y-1/2 mr-3 px-2.5 py-1.5 bg-gray-950/90 text-white text-[11px] font-semibold rounded-xl shadow-xl opacity-0 group-hover:opacity-100 transition-all whitespace-nowrap pointer-events-none border border-white/10 hidden sm:block">
