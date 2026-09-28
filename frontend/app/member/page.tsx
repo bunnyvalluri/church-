@@ -654,50 +654,75 @@ export default function MemberDashboard() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-white dark:bg-gray-900/60 border border-gray-200/80 dark:border-white/5 rounded-2xl shadow-xs overflow-hidden"
+            className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-white dark:bg-gray-900/80 border border-purple-200/80 dark:border-purple-900/40 p-4 sm:p-5 shadow-xl shadow-purple-500/5 backdrop-blur-xl"
           >
-            <div className="flex items-center justify-between px-4 sm:px-5 py-3.5 sm:py-4 border-b border-gray-100 dark:border-white/5">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 sm:w-9 sm:h-9 bg-purple-50 dark:bg-purple-950/40 rounded-xl flex items-center justify-center">
-                  <Bell className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+            {/* Ambient subtle decorative glow */}
+            <div className="pointer-events-none absolute -top-12 -right-12 w-36 h-36 bg-purple-500/10 rounded-full blur-2xl" />
+            <div className="pointer-events-none absolute -bottom-12 -left-12 w-36 h-36 bg-indigo-500/10 rounded-full blur-2xl" />
+
+            <div className="relative z-10 flex items-center justify-between gap-2 mb-4">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 sm:w-9 sm:h-9 bg-purple-100 dark:bg-purple-950/60 rounded-xl flex items-center justify-center border border-purple-200 dark:border-purple-800/60 shadow-xs shrink-0">
+                  <Bell className="w-4 h-4 text-purple-600 dark:text-purple-300" />
                 </div>
-                <h3 className="text-xs sm:text-sm font-black text-gray-900 dark:text-white">{dt.announcementsTitle}</h3>
+                <div className="min-w-0">
+                  <h4 className="text-sm sm:text-base font-black text-gray-900 dark:text-white tracking-tight truncate">
+                    {dt.announcementsTitle}
+                  </h4>
+                  <p className="text-[10px] text-gray-400 dark:text-gray-500 font-medium hidden sm:block truncate">
+                    Church updates, notifications & schedules
+                  </p>
+                </div>
               </div>
-              <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-                {dt.live}
+              <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800/40 text-[9px] font-extrabold uppercase tracking-wider shrink-0">
+                <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+                <span>{dt.live}</span>
               </div>
             </div>
 
-            <div className="divide-y divide-gray-100 dark:divide-white/5 max-h-[360px] overflow-y-auto">
+            <div className="relative z-10 min-h-[220px] sm:min-h-[250px] flex flex-col justify-center">
               {loadingFeeds ? (
-                <div className="space-y-3 p-4">
-                  {[1, 2].map(i => (
-                    <div key={i} className="h-16 bg-gray-50 dark:bg-gray-800/30 animate-pulse rounded-xl" />
+                <div className="space-y-3 p-2">
+                  {[1, 2, 3].map(i => (
+                    <div key={i} className="h-16 bg-gray-50 dark:bg-gray-800/40 animate-pulse rounded-2xl" />
                   ))}
                 </div>
               ) : stats.announcements.length === 0 ? (
-                <div className="text-center py-8 sm:py-10">
-                  <Bookmark className="w-7 h-7 sm:w-8 sm:h-8 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
-                  <p className="text-xs text-gray-400 font-medium">{dt.noAnnouncements}</p>
+                <div className="text-center py-8 sm:py-12 px-4 rounded-2xl bg-gray-50/60 dark:bg-gray-800/30 border border-dashed border-gray-200/80 dark:border-white/5 flex flex-col items-center justify-center">
+                  <div className="w-12 h-12 rounded-2xl bg-purple-100 dark:bg-purple-950/60 flex items-center justify-center text-purple-600 dark:text-purple-400 mb-3 shadow-xs">
+                    <Bell className="w-6 h-6" />
+                  </div>
+                  <h5 className="text-sm font-extrabold text-gray-900 dark:text-white mb-1">All Caught Up!</h5>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 max-w-sm leading-relaxed">
+                    There are no new announcements at this time. Stay connected for upcoming ministry events and pastoral updates.
+                  </p>
                 </div>
               ) : (
-                stats.announcements.map((anc) => {
-                  const isUrgent = anc.priority === "URGENT" || anc.priority === "HIGH";
-                  return (
-                    <div key={anc.id} className="p-3.5 sm:p-4 hover:bg-gray-50/50 dark:hover:bg-white/3 transition-colors">
-                      <div className="flex items-center justify-between gap-2 mb-1">
-                        <span className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white">{anc.title}</span>
-                        {isUrgent && (
-                          <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-red-500 text-white shrink-0">
-                            Urgent
-                          </span>
-                        )}
+                <div className="space-y-2.5 max-h-[360px] overflow-y-auto pr-1 custom-scrollbar">
+                  {stats.announcements.map((anc) => {
+                    const isUrgent = anc.priority === "URGENT" || anc.priority === "HIGH";
+                    return (
+                      <div
+                        key={anc.id}
+                        className={`p-3.5 sm:p-4 rounded-2xl border transition-all duration-200 ${
+                          isUrgent
+                            ? "bg-rose-50/70 dark:bg-rose-950/20 border-rose-200 dark:border-rose-900/40"
+                            : "bg-gray-50/70 dark:bg-gray-800/40 border-gray-100 dark:border-gray-800/80 hover:border-purple-200 dark:hover:border-purple-800/50"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between gap-2 mb-1.5">
+                          <span className="text-xs sm:text-sm font-extrabold text-gray-900 dark:text-white">{anc.title}</span>
+                          {isUrgent && (
+                            <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-rose-500 text-white shrink-0">
+                              Urgent
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed">{anc.content}</p>
                       </div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">{anc.content}</p>
-                    </div>
-                  );
-                })
+                    );
+                  })}
+                </div>
               )}
             </div>
           </motion.div>
@@ -707,13 +732,25 @@ export default function MemberDashboard() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.24 }}
-            className="bg-white dark:bg-gray-900/60 border border-gray-200/80 dark:border-white/5 rounded-2xl p-4 sm:p-5 shadow-xs"
+            className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-white dark:bg-gray-900/80 border border-purple-200/80 dark:border-purple-900/40 p-4 sm:p-5 shadow-xl shadow-purple-500/5 backdrop-blur-xl"
           >
             <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <Activity className="w-4 h-4 text-emerald-500" />
-                <h4 className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">{dt.activityTitle}</h4>
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 sm:w-9 sm:h-9 bg-emerald-100 dark:bg-emerald-950/60 rounded-xl flex items-center justify-center border border-emerald-200 dark:border-emerald-800/60 shadow-xs shrink-0">
+                  <Activity className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                </div>
+                <div>
+                  <h4 className="text-sm sm:text-base font-black text-gray-900 dark:text-white tracking-tight">
+                    {dt.activityTitle}
+                  </h4>
+                  <p className="text-[10px] text-gray-400 dark:text-gray-500 font-medium hidden sm:block">
+                    Your spiritual journey & engagement
+                  </p>
+                </div>
               </div>
+              <span className="text-[9px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800/40 shrink-0">
+                Live Stats
+              </span>
             </div>
             <div className="space-y-3.5 sm:space-y-4">
               {[
