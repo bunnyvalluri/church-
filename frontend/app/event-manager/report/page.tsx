@@ -481,14 +481,14 @@ function FieldReportFormContent() {
   }
 
   return (
-    <div className="min-h-screen text-slate-800 dark:text-slate-100 transition-colors duration-300 flex flex-col pb-20 relative overflow-hidden"
+    <div className="min-h-screen text-slate-800 dark:text-slate-100 transition-colors duration-300 flex flex-col pb-20 relative overflow-x-clip"
       style={{ background: "var(--color-bg, #f8fafc)" }}>
       
       {/* Subtle static gradient background — NO animations for performance */}
       <div className="fixed inset-0 -z-10 bg-gradient-to-br from-violet-50/60 via-slate-50 to-indigo-50/40 dark:from-slate-950 dark:via-slate-950 dark:to-indigo-950/30 transition-colors duration-500" />
 
       {/* Top Header */}
-      <header className="sticky top-0 z-30 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-4 sm:px-6 py-3 flex items-center justify-between shadow-sm border-b border-slate-200/80 dark:border-slate-800/80">
+      <header className="sticky top-0 z-30 shrink-0 w-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-4 sm:px-6 py-3 flex items-center justify-between shadow-sm border-b border-slate-200/80 dark:border-slate-800/80">
         
         {/* Bottom Border Gradient Accent */}
         <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-violet-600 via-indigo-600 to-emerald-500" />

@@ -856,7 +856,7 @@ export default function UnifiedEventManagementPortal() {
   }).filter(b => b.count > 0);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#070814] text-slate-900 dark:text-slate-100 transition-colors duration-300 flex flex-col pb-8 relative overflow-x-hidden">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#070814] text-slate-900 dark:text-slate-100 transition-colors duration-300 flex flex-col pb-8 relative overflow-x-clip">
       
       {/* Dynamic Mesh Ambient Glow Background */}
       <div className="fixed inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-violet-900/25 via-slate-950 to-[#04050A] transition-colors duration-500" />
@@ -864,7 +864,7 @@ export default function UnifiedEventManagementPortal() {
       <div className="fixed bottom-10 right-10 w-96 h-96 rounded-full bg-indigo-600/10 dark:bg-indigo-600/15 blur-[140px] pointer-events-none -z-10" />
 
       {/* Top Header */}
-      <header className="sticky top-0 z-30 bg-white/90 dark:bg-[#0C0E22]/90 backdrop-blur-2xl border-b border-slate-200/80 dark:border-violet-500/20 px-4 sm:px-6 py-3 flex items-center justify-between shadow-md" style={{ isolation: 'isolate' }}>
+      <header className="sticky top-0 z-30 shrink-0 w-full bg-white/95 dark:bg-[#0C0E22]/95 backdrop-blur-2xl border-b border-slate-200/80 dark:border-violet-500/20 px-4 sm:px-6 py-3 flex items-center justify-between shadow-md" style={{ isolation: 'isolate' }}>
         {/* Bottom Border Gradient */}
         <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-violet-500 via-indigo-500 to-purple-500" />
 
