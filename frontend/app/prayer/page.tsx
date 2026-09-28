@@ -48,15 +48,28 @@ export default function PrayerPage() {
     { label: pageT.other, icon: "✨" }
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate API submission
-    setTimeout(() => {
+    try {
+      const { submitToFormspark } = await import("@/lib/formspark");
+      await submitToFormspark({
+        formType: "Prayer Request",
+        name: formData.anonymous ? "Anonymous Prayer Request" : formData.name,
+        email: formData.email,
+        category: formData.category || "General Prayer",
+        message: formData.request,
+        request: formData.request,
+        anonymous: formData.anonymous,
+        subject: `Prayer Request: [${formData.category || "General"}] from ${formData.anonymous ? "Anonymous" : formData.name}`,
+      });
+    } catch (err) {
+      console.warn("[PRAYER] Formspark submit notice:", err);
+    } finally {
       setIsSubmitting(false);
       setIsSubmitted(true);
-    }, 1200);
+    }
   };
 
   const handleReset = () => {

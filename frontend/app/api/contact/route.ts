@@ -98,7 +98,22 @@ export async function POST(req: Request) {
 
     console.log(`[CONTACT] ✅ Message #${record.id} from ${safeData.name} <${email}>`);
 
-    // Trigger notification
+    // Forward directly to Formspark.io (Email delivery)
+    try {
+      const { submitToFormspark } = await import("@/lib/formspark");
+      await submitToFormspark({
+        formType: "Contact Message",
+        name: safeData.name,
+        email: safeData.email,
+        phone: safeData.phone || undefined,
+        subject: safeData.subject,
+        message: safeData.message,
+      });
+    } catch (fsErr) {
+      console.warn("[CONTACT] Formspark forward failed:", fsErr);
+    }
+
+    // Trigger internal notification
     try {
       const { createNotification } = await import('@/lib/notification');
       await createNotification({

@@ -42,9 +42,25 @@ export default function MembershipPage() {
     preferredDate: "Next Available Sunday (11:30 AM)"
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitted(true);
+
+    try {
+      const { submitToFormspark } = await import("@/lib/formspark");
+      await submitToFormspark({
+        formType: "Church Membership Application",
+        name: regForm.name,
+        email: regForm.email,
+        phone: regForm.phone,
+        preferredBranch: regForm.preferredBranch,
+        preferredDate: regForm.preferredDate,
+        subject: `Membership Application: ${regForm.name} (${regForm.preferredBranch})`,
+      });
+    } catch (err) {
+      console.warn("[MEMBERSHIP] Formspark submit notice:", err);
+    }
+
     setTimeout(() => {
       setIsSubmitted(false);
       setIsModalOpen(false);

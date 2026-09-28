@@ -207,6 +207,23 @@ export default function Events({ initialEvents = [] }: { initialEvents?: Dynamic
         isWaitlisted: data.isWaitlisted,
       });
 
+      // Forward to Formspark for email notification
+      try {
+        const { submitToFormspark } = await import("@/lib/formspark");
+        await submitToFormspark({
+          formType: "Event RSVP Registration",
+          name,
+          email,
+          phone: phone || undefined,
+          eventTitle: registerEvent.title,
+          eventDate: registerEvent.date,
+          eventLocation: registerEvent.location,
+          subject: `Event RSVP: [${registerEvent.title}] from ${name}`,
+        });
+      } catch (fsErr) {
+        console.warn("[EVENTS] Formspark submit notice:", fsErr);
+      }
+
       // Clear fields
       setName("");
       setEmail("");

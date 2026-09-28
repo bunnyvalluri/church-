@@ -93,6 +93,23 @@ export default function NgoVolunteersPage() {
 
       const data = await res.json();
       if (res.ok && data.success) {
+        // Forward to Formspark for direct email alert
+        try {
+          const { submitToFormspark } = await import("@/lib/formspark");
+          await submitToFormspark({
+            formType: "NGO Community Volunteer",
+            name,
+            email,
+            phone: phone || undefined,
+            skills: skills || undefined,
+            projectId: projectId || undefined,
+            notes: skills || undefined,
+            subject: `NGO Volunteer Application from ${name}`,
+          });
+        } catch (fsErr) {
+          console.warn("[NGO_VOLUNTEER] Formspark submit notice:", fsErr);
+        }
+
         setStatus("SUCCESS");
         setName("");
         setEmail("");

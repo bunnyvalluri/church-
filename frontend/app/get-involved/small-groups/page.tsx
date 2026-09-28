@@ -220,9 +220,28 @@ export default function SmallGroupsPage() {
     });
   }, [groups, selectedCategory, selectedDay, searchQuery]);
 
-  const handleJoinSubmit = (e: React.FormEvent) => {
+  const handleJoinSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsJoinSuccess(true);
+
+    try {
+      const { submitToFormspark } = await import("@/lib/formspark");
+      await submitToFormspark({
+        formType: "Small Group Join Request",
+        name: joinForm.name,
+        email: joinForm.email,
+        phone: joinForm.phone,
+        groupName: activeModalGroup?.title || "Small Group",
+        leaderName: activeModalGroup?.leader,
+        location: activeModalGroup?.location,
+        message: joinForm.message,
+        notes: joinForm.message,
+        subject: `Small Group Interest: [${activeModalGroup?.title || "General"}] from ${joinForm.name}`,
+      });
+    } catch (err) {
+      console.warn("[SMALL_GROUPS] Formspark join submit notice:", err);
+    }
+
     setTimeout(() => {
       setIsJoinSuccess(false);
       setActiveModalGroup(null);
@@ -230,9 +249,25 @@ export default function SmallGroupsPage() {
     }, 2500);
   };
 
-  const handleLeaderSubmit = (e: React.FormEvent) => {
+  const handleLeaderSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLeaderSuccess(true);
+
+    try {
+      const { submitToFormspark } = await import("@/lib/formspark");
+      await submitToFormspark({
+        formType: "Small Group Leader Application",
+        name: leaderForm.name,
+        email: leaderForm.email,
+        phone: leaderForm.phone,
+        message: leaderForm.groupIdea,
+        notes: leaderForm.groupIdea,
+        subject: `Group Leader Application from ${leaderForm.name}`,
+      });
+    } catch (err) {
+      console.warn("[SMALL_GROUPS] Formspark leader submit notice:", err);
+    }
+
     setTimeout(() => {
       setIsLeaderSuccess(false);
       setIsLeaderModalOpen(false);

@@ -138,9 +138,28 @@ export default function VolunteerClientPage() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitted(true);
+
+    try {
+      const { submitToFormspark } = await import("@/lib/formspark");
+      await submitToFormspark({
+        formType: "Volunteer Application",
+        name: `${formData.fname} ${formData.lname}`.trim(),
+        firstName: formData.fname,
+        lastName: formData.lname,
+        email: formData.email,
+        phone: formData.phone,
+        areaOfInterest: selectedArea,
+        about: formData.about,
+        message: formData.about,
+        subject: `Volunteer Application: [${selectedArea}] from ${formData.fname} ${formData.lname}`,
+      });
+    } catch (err) {
+      console.warn("[VOLUNTEER] Formspark submit notice:", err);
+    }
+
     setTimeout(() => {
       setIsSubmitted(false);
       setFormData({ fname: "", lname: "", email: "", phone: "", about: "" });
