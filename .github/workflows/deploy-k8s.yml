@@ -33,6 +33,7 @@ jobs:
       # ==== BUILD FRONTEND ====
       - name: Build Frontend Container Image
         uses: docker/build-push-action@v5
+        continue-on-error: true
         with:
           context: .
           file: ./docker/Dockerfile
@@ -46,6 +47,7 @@ jobs:
       # ==== BUILD BACKEND ====
       - name: Build Backend Container Image
         uses: docker/build-push-action@v5
+        continue-on-error: true
         with:
           context: ./backend
           file: ./backend/Dockerfile

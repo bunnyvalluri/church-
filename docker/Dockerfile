@@ -25,10 +25,11 @@ COPY --from=deps /app ./
 COPY . .
 
 # Generate Prisma Client
-RUN cd frontend && npx prisma generate || true
+RUN cd frontend && npx prisma generate --schema=./prisma/schema.prisma || true
 RUN cd backend && npx prisma generate --schema=./prisma/schema.prisma || true
 
 ENV NEXT_TELEMETRY_DISABLED="1"
+ENV NEXT_STANDALONE="1"
 ENV NODE_ENV="production"
 ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
 ENV PRISMA_SKIP_DATABASE_URL_VALIDATION="1"
