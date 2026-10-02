@@ -1,14 +1,16 @@
+import dynamic from "next/dynamic";
 import Hero from "@/components/sections/Hero";
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
-import About from "@/components/sections/About";
-import Services from "@/components/sections/Services";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import ScrollToTopOnMount from "@/components/ui/ScrollToTopOnMount";
-import NgoShowcase from "@/components/sections/NgoShowcase";
-import Events from "@/components/sections/Events";
-import Sermons from "@/components/sections/Sermons";
-import Contact from "@/components/sections/Contact";
+
+const NgoShowcase = dynamic(() => import("@/components/sections/NgoShowcase"));
+const About = dynamic(() => import("@/components/sections/About"));
+const Services = dynamic(() => import("@/components/sections/Services"));
+const Events = dynamic(() => import("@/components/sections/Events"));
+const Sermons = dynamic(() => import("@/components/sections/Sermons"));
+const Contact = dynamic(() => import("@/components/sections/Contact"));
 
 import {
   getHeroContent,

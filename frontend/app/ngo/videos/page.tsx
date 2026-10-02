@@ -69,7 +69,7 @@ const YOUTUBE_ITEMS: MediaItem[] = [
     description: "Detailed video coverage of KCM volunteers distributing warm milk, food boxes, and basic sanitary kits to patient caretakers and critical care wards at Gandhi Hospital.",
     source: "yt",
     videoId: "cugBnrzyPF4",
-    url: "https://www.youtube.com/embed/cugBnrzyPF4?si=JRM4VEcma5_hRW8r",
+    url: "https://www.youtube-nocookie.com/embed/cugBnrzyPF4?si=JRM4VEcma5_hRW8r",
     thumbnail: "/KCM_NGO_SERVICES/HOSPITALS/25-03-2026(GANDHI-HOSPITAL)/IMG-20260325-WA0031.jpg",
     category: "hospital",
     categoryLabel: "Hospital Outreach",
@@ -81,7 +81,7 @@ const YOUTUBE_ITEMS: MediaItem[] = [
     description: "Watch our volunteers distribute specialized medications, patient clothes, and nutritional foods to patients in the oncology and orthopedic departments at NIMS.",
     source: "yt",
     videoId: "y7gLEkS9CcI",
-    url: "https://www.youtube.com/embed/y7gLEkS9CcI?si=YRzU4aaeORdjaGLw",
+    url: "https://www.youtube-nocookie.com/embed/y7gLEkS9CcI?si=YRzU4aaeORdjaGLw",
     thumbnail: "/KCM_NGO_SERVICES/HOSPITALS/11-03-2026(NIMS-HOSPITAL)/IMG-20260311-WA0037.jpg",
     category: "hospital",
     categoryLabel: "Hospital Outreach",
@@ -93,7 +93,7 @@ const YOUTUBE_ITEMS: MediaItem[] = [
     description: "Direct footage showing wheelchair provisions, walkers, patient beds, and food packet distribution drives organized at the local government hospital.",
     source: "yt",
     videoId: "u4-lrU41HAc",
-    url: "https://www.youtube.com/embed/u4-lrU41HAc?si=vgAb5MnRZhG2Awwd",
+    url: "https://www.youtube-nocookie.com/embed/u4-lrU41HAc?si=vgAb5MnRZhG2Awwd",
     thumbnail: "/KCM_NGO_SERVICES/HOSPITALS/23-02-2026(GOVT-HOSPITAL)/IMG-20260223-WA0018.jpg",
     category: "hospital",
     categoryLabel: "Hospital Outreach",
@@ -105,7 +105,7 @@ const YOUTUBE_ITEMS: MediaItem[] = [
     description: "Delivering monthly groceries, rice bags, academic books, and healthy food items to children and residents at Bethany Samrakshana Ashramam.",
     source: "yt",
     videoId: "IhcbOLPMmM8",
-    url: "https://www.youtube.com/embed/IhcbOLPMmM8?si=tOGhSKfBExTLmAT0",
+    url: "https://www.youtube-nocookie.com/embed/IhcbOLPMmM8?si=tOGhSKfBExTLmAT0",
     thumbnail: "/KCM_NGO_SERVICES/BETHANY_SAMRAKSHANA_ASHRAMAM/21-04-2026(AASHRAMAM)/IMG-20260421-WA0013.jpg",
     category: "ashramam",
     categoryLabel: "Ashramam Care",
@@ -117,7 +117,7 @@ const YOUTUBE_ITEMS: MediaItem[] = [
     description: "Providing comfort kits, warm blankets, bedsheets, wheelchairs, and physical support to the residents of the Home for the Disabled.",
     source: "yt",
     videoId: "mE5NiqLGVSw",
-    url: "https://www.youtube.com/embed/mE5NiqLGVSw?si=Fm7E9ViV7TL57mzi",
+    url: "https://www.youtube-nocookie.com/embed/mE5NiqLGVSw?si=Fm7E9ViV7TL57mzi",
     thumbnail: "/KCM_NGO_SERVICES/HOME_FOR_THE_DISABLED_AASHRAMAM/IMG-20260617-WA0010.jpg",
     category: "disabled",
     categoryLabel: "Disabled Care",
@@ -129,7 +129,7 @@ const YOUTUBE_ITEMS: MediaItem[] = [
     description: "Live coverage of KCM provisions, nutritious meals, clothing, and comfort distribution at Home for the Disabled, Secunderabad.",
     source: "yt",
     videoId: "pnvJ8UDfgCg",
-    url: "https://www.youtube.com/embed/pnvJ8UDfgCg?si=RQjnw64iu75PeGqc",
+    url: "https://www.youtube-nocookie.com/embed/pnvJ8UDfgCg?si=RQjnw64iu75PeGqc",
     thumbnail: "/KCM_NGO_SERVICES/HOME_FOR_THE_DISABLED (SECUNDERABAD) [23-07-2026]/IMG-20260723-WA0001.jpg",
     category: "disabled",
     categoryLabel: "Disabled Care",
@@ -141,7 +141,7 @@ const YOUTUBE_ITEMS: MediaItem[] = [
     description: "Comprehensive video report on KCM volunteers serving special needs residents and elderly at Home for the Disabled, Secunderabad.",
     source: "yt",
     videoId: "3n6gPSDBMig",
-    url: "https://www.youtube.com/embed/3n6gPSDBMig?si=PLHFyojYboKrxdQg",
+    url: "https://www.youtube-nocookie.com/embed/3n6gPSDBMig?si=PLHFyojYboKrxdQg",
     thumbnail: "/KCM_NGO_SERVICES/HOME_FOR_THE_DISABLED (SECUNDERABAD) [23-07-2026]/IMG-20260723-WA0002.jpg",
     category: "disabled",
     categoryLabel: "Disabled Care",
@@ -153,7 +153,7 @@ const YOUTUBE_ITEMS: MediaItem[] = [
     description: "Direct video footage of KCM compassionate care mission providing nutrition, essential care supplies, emotional support, and meals at Missionaries of Charity, Bhoiguda.",
     source: "yt",
     videoId: "wH3PiXln8Sc",
-    url: "https://www.youtube.com/embed/wH3PiXln8Sc?si=8V-_Zy5R1ooAQg4W",
+    url: "https://www.youtube-nocookie.com/embed/wH3PiXln8Sc?si=8V-_Zy5R1ooAQg4W",
     thumbnail: "/KCM_NGO_SERVICES/MISSIONARIES OF CHARITY [SECUNDERABAD BHOIGUDA] 25-05-2026/IMG-20260825-WA0008.jpg",
     category: "charity",
     categoryLabel: "Missionaries of Charity",
@@ -165,7 +165,7 @@ const YOUTUBE_ITEMS: MediaItem[] = [
     description: "KCM social service volunteers delivering wholesome meals, beddings, and compassionate care to residents at Missionaries of Charity, Secunderabad Bhoiguda.",
     source: "yt",
     videoId: "JfhkQXtQwLc",
-    url: "https://www.youtube.com/embed/JfhkQXtQwLc?si=sj0CdvoIqC9-oJ6b",
+    url: "https://www.youtube-nocookie.com/embed/JfhkQXtQwLc?si=sj0CdvoIqC9-oJ6b",
     thumbnail: "/KCM_NGO_SERVICES/MISSIONARIES OF CHARITY [SECUNDERABAD BHOIGUDA] 25-05-2026/IMG-20260825-WA0009.jpg",
     category: "charity",
     categoryLabel: "Missionaries of Charity",
@@ -555,7 +555,7 @@ function Lightbox({ videos, index, onClose, onPrev, onNext, onJump, lang, vT }: 
       <div className="flex-1 relative flex items-center justify-center px-4 sm:px-16 py-6 min-h-0 bg-black/90">
         {item.source === "yt" ? (
           <iframe
-            src={`https://www.youtube.com/embed/${item.videoId || item.url?.split("/embed/")[1]?.split("?")[0]}?autoplay=1&playsinline=1&controls=1&fs=1&rel=0&enablejsapi=1`}
+            src={`https://www.youtube-nocookie.com/embed/${item.videoId || item.url?.split("/embed/")[1]?.split("?")[0]}?autoplay=1&playsinline=1&controls=1&fs=1&rel=0&enablejsapi=1`}
             title={item.title}
             className="w-full max-w-5xl h-full rounded-2xl border border-white/10 shadow-2xl"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
@@ -1180,7 +1180,7 @@ export default function NgoVideosPage() {
                   <iframe
                     ref={cinemaIframeRef}
                     key={activeMedia.id + "-playing"}
-                    src={`https://www.youtube.com/embed/${activeMedia.videoId || activeMedia.url?.split("/embed/")[1]?.split("?")[0]}?autoplay=1&playsinline=1&controls=1&fs=1&rel=0&iv_load_policy=3&enablejsapi=1`}
+                    src={`https://www.youtube-nocookie.com/embed/${activeMedia.videoId || activeMedia.url?.split("/embed/")[1]?.split("?")[0]}?autoplay=1&playsinline=1&controls=1&fs=1&rel=0&iv_load_policy=3&enablejsapi=1`}
                     title={activeMedia.title}
                     className="absolute inset-0 w-full h-full"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"

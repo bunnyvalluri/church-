@@ -9,12 +9,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { churchSchema, websiteSchema, churchFaqSchema } from "@/lib/schema";
 import { SITE_URL } from "@/lib/seo";
 
-// Dynamically imported heavy client widgets (loaded after initial paint for fast TTFB & FCP)
-const AIChat = dynamic(() => import("@/components/ai/AIChat"), { ssr: false });
-const SmoothScroll = dynamic(() => import("@/components/ui/SmoothScroll"), { ssr: false });
-const OfflineBanner = dynamic(() => import("@/components/ui/OfflineBanner"), { ssr: false });
-const ServiceWorkerProvider = dynamic(() => import("@/components/providers/ServiceWorkerProvider"), { ssr: false });
-const ConflictDialog = dynamic(() => import("@/components/offline/ConflictDialog"), { ssr: false });
+import DeferredClientWidgets from "@/components/providers/DeferredClientWidgets";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -27,19 +22,21 @@ const outfit = Outfit({
   variable: "--font-outfit",
   display: "swap",
   preload: true,
-  weight: ["400", "600", "700", "800", "900"],
+  weight: ["400", "700", "900"],
 });
 const notoTelugu = Noto_Sans_Telugu({
   subsets: ["telugu"],
   variable: "--font-noto-telugu",
   display: "swap",
-  weight: ["400", "500", "600", "700"],
+  preload: false,
+  weight: ["400", "700"],
 });
 const notoDevanagari = Noto_Sans_Devanagari({
   subsets: ["devanagari"],
   variable: "--font-noto-devanagari",
   display: "swap",
-  weight: ["400", "500", "600", "700"],
+  preload: false,
+  weight: ["400", "700"],
 });
 
 export const viewport: Viewport = {
@@ -177,15 +174,10 @@ export default function RootLayout({
 
         <Providers>
           <SkipToContent />
-          <ServiceWorkerProvider />
-          <OfflineBanner />
-          <ConflictDialog />
-          <SmoothScroll />
           <div id="main-content" tabIndex={-1} className="outline-none">
             {children}
           </div>
-          <BackToTop />
-          <AIChat />
+          <DeferredClientWidgets />
         </Providers>
       </body>
     </html>

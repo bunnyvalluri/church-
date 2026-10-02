@@ -1579,7 +1579,7 @@ export default function ChurchGalleryPage() {
                       <iframe
                         ref={cinemaIframeRef}
                         key={activeVideo.id + "-playing"}
-                        src={`https://www.youtube.com/embed/${activeVideo.videoId}?autoplay=1&playsinline=1&controls=1&fs=1&rel=0&iv_load_policy=3&enablejsapi=1`}
+                        src={`https://www.youtube-nocookie.com/embed/${activeVideo.videoId}?autoplay=1&playsinline=1&controls=1&fs=1&rel=0&iv_load_policy=3&enablejsapi=1`}
                         title={activeVideo.title}
                         className="absolute inset-0 w-full h-full"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
@@ -2071,7 +2071,7 @@ export default function ChurchGalleryPage() {
                   <div className="relative w-full rounded-2xl overflow-hidden shadow-2xl" style={{ paddingTop: "56.25%" }}>
                     <iframe
                       key={vid.id + "-modal"}
-                      src={`https://www.youtube.com/embed/${vid.videoId}?enablejsapi=1&playsinline=1&controls=1&fs=1&rel=0&autoplay=1`}
+                      src={`https://www.youtube-nocookie.com/embed/${vid.videoId}?enablejsapi=1&playsinline=1&controls=1&fs=1&rel=0&autoplay=1`}
                       title={localizedTitle}
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
                       referrerPolicy="strict-origin-when-cross-origin"

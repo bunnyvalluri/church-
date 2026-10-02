@@ -422,51 +422,72 @@ export default function Contact() {
             {/* Map Embed */}
             {!loading && !error && selectedContact && (
               <div className="bg-white dark:bg-white/[0.03] rounded-3xl overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-white/[0.06] h-[18rem] relative group backdrop-blur-xl p-2">
-                <div className="absolute inset-2 rounded-2xl overflow-hidden">
-                  <a
-                    href={selectedContact.mapsUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="absolute inset-0 z-10 flex items-end p-4 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                  >
-                    <span className="text-white text-sm font-semibold flex items-center gap-2 bg-black/30 backdrop-blur-sm px-3 py-2 rounded-xl">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                        <polyline points="15 3 21 3 21 9" />
-                        <line x1="10" y1="14" x2="21" y2="3" />
-                      </svg>
-                      {t.contact.openMaps}
-                    </span>
-                  </a>
-                  <iframe
-                    src={(() => {
-                      if (
-                        selectedContact.embedUrl &&
-                        !selectedContact.embedUrl.includes("0x3bcb91e2f02d5555") &&
-                        !selectedContact.embedUrl.includes("0x0%3A0x0") &&
-                        !selectedContact.embedUrl.includes("0x0:0x0") &&
-                        !selectedContact.embedUrl.includes("6m8!1m7!") &&
-                        selectedContact.embedUrl.includes("output=embed")
-                      ) {
-                        return selectedContact.embedUrl;
-                      }
-                      const key = (selectedContact.branchKey || selectedContact.branchName || "").toLowerCase();
-                      if (key.includes("subhash")) {
-                        return "https://maps.google.com/maps?q=17.56500,78.43800&hl=en&z=16&output=embed";
-                      }
-                      if (key.includes("bahadur")) {
-                        return "https://maps.google.com/maps?q=17.567689,78.443963&hl=en&z=16&output=embed";
-                      }
-                      return "https://maps.google.com/maps?q=17.56771,78.44416&hl=en&z=16&output=embed";
-                    })()}
-                    title="Church Branch Map Location"
-                    width="100%"
-                    height="100%"
-                    style={{ border: 0 }}
-                    allowFullScreen
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                  />
+                <div className="absolute inset-2 rounded-2xl overflow-hidden bg-slate-900 flex flex-col items-center justify-center text-center p-4">
+                  {loadInteractiveMap ? (
+                    <>
+                      <a
+                        href={selectedContact.mapsUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="absolute inset-0 z-10 flex items-end p-4 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                      >
+                        <span className="text-white text-sm font-semibold flex items-center gap-2 bg-black/30 backdrop-blur-sm px-3 py-2 rounded-xl">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                            <polyline points="15 3 21 3 21 9" />
+                            <line x1="10" y1="14" x2="21" y2="3" />
+                          </svg>
+                          {t.contact.openMaps}
+                        </span>
+                      </a>
+                      <iframe
+                        src={(() => {
+                          if (
+                            selectedContact.embedUrl &&
+                            !selectedContact.embedUrl.includes("0x3bcb91e2f02d5555") &&
+                            !selectedContact.embedUrl.includes("0x0%3A0x0") &&
+                            !selectedContact.embedUrl.includes("0x0:0x0") &&
+                            !selectedContact.embedUrl.includes("6m8!1m7!") &&
+                            selectedContact.embedUrl.includes("output=embed")
+                          ) {
+                            return selectedContact.embedUrl;
+                          }
+                          const key = (selectedContact.branchKey || selectedContact.branchName || "").toLowerCase();
+                          if (key.includes("subhash")) {
+                            return "https://maps.google.com/maps?q=17.56500,78.43800&hl=en&z=16&output=embed";
+                          }
+                          if (key.includes("bahadur")) {
+                            return "https://maps.google.com/maps?q=17.567689,78.443963&hl=en&z=16&output=embed";
+                          }
+                          return "https://maps.google.com/maps?q=17.56771,78.44416&hl=en&z=16&output=embed";
+                        })()}
+                        title="Church Branch Map Location"
+                        width="100%"
+                        height="100%"
+                        style={{ border: 0 }}
+                        allowFullScreen
+                        loading="lazy"
+                        referrerPolicy="no-referrer"
+                      />
+                    </>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center h-full w-full space-y-3 z-10">
+                      <div className="w-12 h-12 rounded-2xl bg-primary/20 border border-primary/30 flex items-center justify-center text-primary">
+                        <MapPin className="w-6 h-6 text-primary" />
+                      </div>
+                      <p className="text-xs sm:text-sm font-bold text-white max-w-xs line-clamp-1">
+                        {selectedContact.branchName}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setLoadInteractiveMap(true)}
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary hover:bg-primary/90 text-white text-xs font-bold shadow-lg shadow-primary/30 hover:scale-105 active:scale-95 transition-all"
+                      >
+                        <MapPin className="w-3.5 h-3.5" />
+                        <span>Interactive Map</span>
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
