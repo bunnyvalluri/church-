@@ -368,8 +368,9 @@ export const config = {
      * Match all request paths EXCEPT:
      * - _next/static (static files)
      * - _next/image  (image optimisation)
-     * - favicon.ico
+     * - favicon.ico, sitemap.xml, robots.txt, manifest.json, sw.js
+     * - Static asset extensions (.png, .jpg, .jpeg, .webp, .avif, .svg, .gif, .ico, .woff, .woff2, .ttf, .eot, .mp4, .webm, .mp3, .pdf)
      */
-    '/((?!_next/static|_next/image|favicon.ico).*)',
+    '/((?!_next/static|_next/image|favicon\\.ico|sitemap\\.xml|image-sitemap\\.xml|robots\\.txt|manifest\\.json|sw\\.js|.*\\.(?:png|jpg|jpeg|gif|webp|avif|svg|ico|woff|woff2|ttf|eot|mp4|webm|ogg|mp3|wav|pdf)$).*)',
   ],
 };

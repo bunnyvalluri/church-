@@ -43,7 +43,18 @@ const nextConfig = {
 
   experimental: {
     optimizePackageImports: [
-      'lucide-react', 'framer-motion', 'recharts', 'date-fns', 'clsx', 'tailwind-merge'
+      'lucide-react',
+      'framer-motion',
+      'recharts',
+      'date-fns',
+      'clsx',
+      'tailwind-merge',
+      '@radix-ui/react-dialog',
+      '@radix-ui/react-dropdown-menu',
+      '@radix-ui/react-select',
+      '@radix-ui/react-tabs',
+      '@radix-ui/react-toast',
+      '@radix-ui/react-navigation-menu'
     ],
     serverComponentsExternalPackages: [
       'prisma', '@prisma/client', 'firebase-admin', '@google-cloud/storage', 'cloudinary'
@@ -109,8 +120,12 @@ const nextConfig = {
         headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
       },
       {
-        source: '/(fonts|images)/(.*)',
+        source: '/(fonts|images|brand|icons)/(.*)',
         headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
+      },
+      {
+        source: '/(logo.png|grid.svg|manifest.json|image-sitemap.xml)',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=86400, stale-while-revalidate=604800' }],
       },
       // Payment API routes — strict no-cache + tightest CSP
       {
