@@ -96,6 +96,7 @@ export default function Contact() {
   const [copiedText, setCopiedText] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
+  const [loadInteractiveMap, setLoadInteractiveMap] = useState(false);
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
