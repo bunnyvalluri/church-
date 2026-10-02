@@ -578,7 +578,6 @@ function NgoDonationsContent() {
           purpose: selectedCause,
           branchId: selectedBranch,
           frequency,
-          wantTaxExemption,
           userId: user?.uid || null,
           ...donorDetails,
         }),
