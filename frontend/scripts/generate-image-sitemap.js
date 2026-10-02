@@ -108,5 +108,12 @@ for (const [pageUrl, images] of Object.entries(grouped)) {
 
 xml += `</urlset>\n`;
 
-fs.writeFileSync(OUTPUT_FILE, xml, 'utf8');
-console.log(`Generated Google Image Sitemap with ${ngoImages.length + galleryImages.length + rootFeatured.length} images at ${OUTPUT_FILE}`);
+try {
+  if (!fs.existsSync(PUBLIC_DIR)) {
+    fs.mkdirSync(PUBLIC_DIR, { recursive: true });
+  }
+  fs.writeFileSync(OUTPUT_FILE, xml, 'utf8');
+  console.log(`Generated Google Image Sitemap with ${ngoImages.length + galleryImages.length + rootFeatured.length} images at ${OUTPUT_FILE}`);
+} catch (e) {
+  console.warn(`[IMAGE_SITEMAP] Warning: Could not write image sitemap:`, e.message);
+}
