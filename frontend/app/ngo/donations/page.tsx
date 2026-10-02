@@ -41,7 +41,6 @@ import {
   Users,
   Flame,
   Calendar,
-  CreditCard,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/components/providers/AuthProvider";
@@ -569,19 +568,6 @@ function NgoDonationsContent() {
     };
   }, [expiresAt, step, paymentStatus]);
 
-  const loadRazorpayScript = (): Promise<boolean> => {
-    return new Promise((resolve) => {
-      if (typeof window === "undefined") return resolve(false);
-      if ((window as any).Razorpay) return resolve(true);
-      const script = document.createElement("script");
-      script.src = "https://checkout.razorpay.com/v1/checkout.js";
-      script.async = true;
-      script.onload = () => resolve(true);
-      script.onerror = () => resolve(false);
-      document.body.appendChild(script);
-    });
-  };
-
   const handlePaymentConfirmed = useCallback(async (targetDonationId: string, confirmedPaymentId?: string, confirmedReceiptNumber?: string) => {
     if (pollRef.current) clearInterval(pollRef.current);
     if (timerRef.current) clearInterval(timerRef.current);
@@ -671,85 +657,6 @@ function NgoDonationsContent() {
       if (socketRef.current) socketRef.current.disconnect();
     };
   }, []);
-
-  const handleOpenRazorpayCheckout = async () => {
-    if (!orderId) {
-      showToast("Payment order not initialized. Please try again.", "error");
-      return;
-    }
-
-    const isLoaded = await loadRazorpayScript();
-    if (!isLoaded || !(window as any).Razorpay) {
-      showToast("Could not load Razorpay Checkout. Please scan the UPI QR code.", "error");
-      return;
-    }
-
-    const keyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "";
-    const finalAmt = Number(getFinalAmount());
-    const causeObj = causes.find((c) => c.code === selectedCause);
-
-    const options = {
-      key: keyId,
-      amount: Math.round(finalAmt * 100),
-      currency: "INR",
-      name: settings.merchantName || "Kingdom of Christ Ministries",
-      description: causeObj?.nameEn || "KCM Ministry Donation",
-      order_id: orderId.startsWith("order_") ? orderId : undefined,
-      prefill: {
-        name: donorDetails.isAnonymous ? "Anonymous Donor" : donorDetails.donorName || "",
-        email: donorDetails.donorEmail || "",
-        contact: donorDetails.donorPhone || "",
-      },
-      theme: {
-        color: "#6B21A8",
-      },
-      handler: async function (response: any) {
-        setPaymentStatus("PROCESSING");
-        try {
-          const verifyRes = await fetch("/api/payments/verify", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              sessionId,
-              donationId,
-              razorpayOrderId: response.razorpay_order_id || orderId,
-              razorpayPaymentId: response.razorpay_payment_id,
-              razorpaySignature: response.razorpay_signature,
-            }),
-          });
-
-          const verifyData = await verifyRes.json();
-          if (verifyRes.ok && verifyData.success) {
-            handlePaymentConfirmed(verifyData.donationId || donationId, response.razorpay_payment_id, verifyData.receiptNumber);
-          } else {
-            setErrorMessage(verifyData.error || "Payment signature verification failed.");
-            showToast("Payment verification failed.", "error");
-          }
-        } catch (verifyErr) {
-          console.error("[RAZORPAY] Verification call failed:", verifyErr);
-          showToast("Network error verifying payment. Checking backend...", "error");
-        }
-      },
-      modal: {
-        ondismiss: function () {
-          console.info("[RAZORPAY] Checkout modal dismissed");
-        },
-      },
-    };
-
-    try {
-      const rzp = new (window as any).Razorpay(options);
-      rzp.on("payment.failed", function (failResponse: any) {
-        console.warn("[RAZORPAY] Payment failed:", failResponse.error);
-        setErrorMessage(failResponse.error?.description || "Payment was not completed.");
-        showToast("Payment failed. Please try again.", "error");
-      });
-      rzp.open();
-    } catch (e: any) {
-      console.error("[RAZORPAY] Open modal error:", e);
-      showToast("Could not open Razorpay checkout modal.", "error");
-    }
-  };
 
   const copyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
@@ -1456,16 +1363,6 @@ function NgoDonationsContent() {
                       </button>
                     ))}
                   </div>
-
-                  {/* Razorpay Standard Checkout (Cards, NetBanking, UPI Modal, Wallets) */}
-                  <button
-                    type="button"
-                    onClick={handleOpenRazorpayCheckout}
-                    className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-purple-700 via-indigo-700 to-violet-700 hover:from-purple-800 hover:to-indigo-800 text-white font-extrabold text-xs sm:text-sm shadow-lg shadow-purple-500/20 active:scale-95 transition-all flex items-center justify-center gap-2 min-h-[46px] touch-manipulation select-none"
-                  >
-                    <CreditCard className="w-4 h-4" />
-                    <span>{dp.payViaCheckout || "Pay with Cards, NetBanking, or Wallet"}</span>
-                  </button>
 
                   {/* Universal Open in UPI App Chooser Button */}
                   <button
