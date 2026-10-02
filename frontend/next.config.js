@@ -166,6 +166,32 @@ const nextConfig = {
     ];
   },
 
+  // -- Friendly URL Redirects to prevent 404s --
+  async redirects() {
+    return [
+      {
+        source: '/ngo/donation',
+        destination: '/ngo/donations',
+        permanent: true,
+      },
+      {
+        source: '/donations',
+        destination: '/ngo/donations',
+        permanent: true,
+      },
+      {
+        source: '/donation',
+        destination: '/ngo/donations',
+        permanent: true,
+      },
+      {
+        source: '/donate',
+        destination: '/ngo/donations',
+        permanent: true,
+      },
+    ];
+  },
+
   // -- Health Check Rewrites for Root Probes --
   async rewrites() {
     return [
