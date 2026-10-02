@@ -371,8 +371,7 @@ function NgoDonationsContent() {
   const [selectedCause, setSelectedCause] = useState<string>("CHARITY");
   const [selectedBranch, setSelectedBranch] = useState<string>("b1");
 
-  // 80G Tax Exemption & Donor details
-  const [wantTaxExemption, setWantTaxExemption] = useState<boolean>(false);
+  // Donor details
   const [donorDetails, setDonorDetails] = useState<Record<string, any>>({
     donorName: "",
     donorPhone: "",
@@ -547,11 +546,6 @@ function NgoDonationsContent() {
         setErrorMessage("Please enter a valid 10-digit mobile number.");
         return false;
       }
-    }
-
-    if (wantTaxExemption && (!donorDetails.panNumber || !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i.test(donorDetails.panNumber))) {
-      setErrorMessage("Please enter a valid 10-character PAN card number for 80G tax exemption.");
-      return false;
     }
 
     setErrorMessage("");
@@ -1356,35 +1350,6 @@ function NgoDonationsContent() {
                       </div>
                     );
                   })}
-
-                  {/* PAN Card Input field when 80G Tax Exemption is requested */}
-                  {wantTaxExemption && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      className="sm:col-span-2 space-y-1 bg-amber-500/10 p-3.5 rounded-2xl border border-amber-500/30"
-                    >
-                      <label className="block text-xs font-black uppercase tracking-wider text-amber-800 dark:text-amber-300">
-                        {dp.panCard || "PAN Card Number (Required for 80G Receipt) *"}
-                      </label>
-                      <input
-                        type="text"
-                        maxLength={10}
-                        value={donorDetails.panNumber || ""}
-                        onChange={(e) =>
-                          setDonorDetails((prev) => ({
-                            ...prev,
-                            panNumber: e.target.value.toUpperCase(),
-                          }))
-                        }
-                        placeholder="e.g. ABCDE1234F"
-                        className="w-full py-3 px-4 rounded-xl border border-amber-500/40 bg-white dark:bg-slate-950 text-slate-900 dark:text-white font-mono uppercase text-sm font-bold focus:outline-none focus:ring-2 focus:ring-amber-500/30 touch-manipulation"
-                      />
-                      <p className="text-[10.5px] text-slate-600 dark:text-slate-300 font-medium">
-                        {dp.panCardDesc || "Required by Govt of India Income Tax Dept for issuing Section 80G certificate."}
-                      </p>
-                    </motion.div>
-                  )}
                 </div>
 
                 {/* Purpose & Branch Selectors */}
@@ -1646,11 +1611,6 @@ function NgoDonationsContent() {
                       <FileText className="w-4 h-4 text-purple-600 dark:text-purple-300" />
                       <span className="text-xs font-extrabold uppercase tracking-widest text-purple-800 dark:text-purple-200">{dp.officialReceipt || "Official Receipt"}</span>
                     </div>
-                    {wantTaxExemption && (
-                      <span className="text-[10px] bg-amber-500 text-slate-950 px-2 py-0.5 rounded-full font-black uppercase">
-                        {dp.taxExemptBadge || "80G Tax Exempt"}
-                      </span>
-                    )}
                   </div>
 
                   <div className="divide-y divide-slate-100 dark:divide-white/10 text-xs">
