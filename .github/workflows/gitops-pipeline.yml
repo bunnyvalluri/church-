@@ -8,7 +8,7 @@ on:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 env:
   REGISTRY: ghcr.io
@@ -152,10 +152,15 @@ jobs:
 
       - name: Update Image Tags in Local Helm Values
         run: |
-          sed -i 's/tag: .*/tag: "${{ github.sha }}"/' kcm-church-infra/charts/kcm-frontend/values.yaml
-          sed -i 's/tag: .*/tag: "${{ github.sha }}"/' kcm-church-infra/charts/kcm-backend/values.yaml
+          if [ -f kcm-church-infra/charts/kcm-frontend/values.yaml ]; then
+            sed -i 's/tag: .*/tag: "${{ github.sha }}"/' kcm-church-infra/charts/kcm-frontend/values.yaml
+          fi
+          if [ -f kcm-church-infra/charts/kcm-backend/values.yaml ]; then
+            sed -i 's/tag: .*/tag: "${{ github.sha }}"/' kcm-church-infra/charts/kcm-backend/values.yaml
+          fi
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add kcm-church-infra/charts/
+          git add kcm-church-infra/charts/ || true
           git commit -m "chore(gitops): promote image tag to ${{ github.sha }} [skip ci]" || echo "No changes to commit"
           git push origin main || echo "Push skipped"
+        continue-on-error: true
