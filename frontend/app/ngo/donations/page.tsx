@@ -1296,31 +1296,6 @@ function NgoDonationsContent() {
                   </span>
                 </div>
 
-                {/* 80G Tax Exemption Request Toggle Card */}
-                <div className="p-4 rounded-2xl bg-amber-500/10 dark:bg-amber-500/20 border border-amber-500/30 flex items-center justify-between gap-3 shadow-sm">
-                  <div>
-                    <p className="text-xs font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5">
-                      <Award className="w-4 h-4 text-amber-500" />
-                      <span>{dp.request80g || "Request 80G Tax Exemption Receipt"}</span>
-                    </p>
-                    <p className="text-[11px] text-slate-600 dark:text-slate-300 font-medium mt-0.5">
-                      {dp.request80gDesc || "Claim 50% tax deduction under Section 80G of Income Tax Act"}
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    role="switch"
-                    aria-checked={wantTaxExemption}
-                    aria-label={dp.request80g || "Request 80G Tax Exemption Receipt"}
-                    onClick={() => setWantTaxExemption(!wantTaxExemption)}
-                    className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors flex-shrink-0 touch-manipulation select-none ${
-                      wantTaxExemption ? "bg-amber-500 justify-end" : "bg-slate-300 dark:bg-slate-800 justify-start"
-                    }`}
-                  >
-                    <motion.div layout className="w-4 h-4 rounded-full bg-white shadow-md" />
-                  </button>
-                </div>
-
                 {/* Dynamic Form Fields Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                   {formFields.map((field) => {
