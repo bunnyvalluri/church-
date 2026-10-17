@@ -311,6 +311,218 @@ const DEFAULT_SAMPLE_INPUTS: Record<string, any> = {
   },
 };
 
+const INITIAL_SKILLS: SkillMeta[] = [
+  {
+    id: 'security.jwt_validation',
+    name: 'JWT Token Security Validation',
+    description: 'Validates JWT structure, verifies signature integrity, checks expiration claims, and screens token against blacklist.',
+    domain: 'SECURITY',
+    version: '1.0.0',
+    author: 'KCM Platform Security Core',
+    securityLevel: 'CRITICAL',
+    tags: ['jwt', 'authentication', 'security', 'auth'],
+    policy: { requiredRole: 'GUEST', rateLimitPerMin: 120, requiresAuditLog: true }
+  },
+  {
+    id: 'security.rbac_audit',
+    name: 'Role-Based Access Control (RBAC) Policy Evaluator',
+    description: 'Audits fine-grained role permissions against target actions on church endpoints and sensitive administrative entities.',
+    domain: 'SECURITY',
+    version: '1.0.0',
+    author: 'KCM Platform Security Core',
+    securityLevel: 'CRITICAL',
+    tags: ['rbac', 'authorization', 'security', 'roles'],
+    policy: { requiredRole: 'GUEST', rateLimitPerMin: 120, requiresAuditLog: true }
+  },
+  {
+    id: 'security.upload_validation',
+    name: 'Secure File Upload Inspector & Malware Scanner',
+    description: 'Validates file mime-type, inspects header magic numbers, verifies size budgets, and sanitizes file names for Cloudinary CDN uploads.',
+    domain: 'SECURITY',
+    version: '1.0.0',
+    author: 'KCM Platform Security Core',
+    securityLevel: 'HIGH',
+    tags: ['upload', 'security', 'malware', 'sanitization'],
+    policy: { requiredRole: 'MEMBER', rateLimitPerMin: 60, requiresAuditLog: true }
+  },
+  {
+    id: 'security.api_abuse_detection',
+    name: 'API Abuse & Anomaly Detection Sentinel',
+    description: 'Detects volumetric abuse, distributed scraping anomalies, and repetitive failed requests using adaptive IP threat rating.',
+    domain: 'SECURITY',
+    version: '1.0.0',
+    author: 'KCM SRE Security Core',
+    securityLevel: 'HIGH',
+    tags: ['anomaly', 'waf', 'rate-limit', 'ddos'],
+    policy: { requiredRole: 'GUEST', rateLimitPerMin: 200, requiresAuditLog: true }
+  },
+  {
+    id: 'event.upload_automation',
+    name: 'Automated Event Upload & Ingestion Engine',
+    description: 'Validates, normalizes, and schedules church conferences and community outreaches with automated calendar sync.',
+    domain: 'EVENT',
+    version: '1.0.0',
+    author: 'KCM Event Automation Core',
+    securityLevel: 'MEDIUM',
+    tags: ['events', 'automation', 'ingestion'],
+    policy: { requiredRole: 'FIELD_VOLUNTEER', rateLimitPerMin: 30 }
+  },
+  {
+    id: 'event.media_optimization',
+    name: 'Cloudinary Event Media Transformer',
+    description: 'Automates responsive image optimization, webp conversion, blurhash placeholder generation, and watermark overlay.',
+    domain: 'EVENT',
+    version: '1.0.0',
+    author: 'KCM Media Processing Core',
+    securityLevel: 'LOW',
+    tags: ['media', 'cloudinary', 'image', 'optimization'],
+    policy: { requiredRole: 'MEMBER', rateLimitPerMin: 60 }
+  },
+  {
+    id: 'event.homepage_publishing',
+    name: 'Homepage Live Event Publisher',
+    description: 'Publishes validated event announcements directly to the public home page with instant websocket real-time updates.',
+    domain: 'EVENT',
+    version: '1.0.0',
+    author: 'KCM Platform Core',
+    securityLevel: 'HIGH',
+    tags: ['homepage', 'publishing', 'socketio', 'realtime'],
+    policy: { requiredRole: 'PASTOR', rateLimitPerMin: 20, requiresAuditLog: true }
+  },
+  {
+    id: 'sermon.summarization',
+    name: 'AI Sermon Summarizer & Insight Synthesizer',
+    description: 'Analyzes sermon transcripts and preach notes to extract core theological messages, executive summaries, and practical spiritual takeaways.',
+    domain: 'SERMON',
+    version: '1.0.0',
+    author: 'KCM Sermon Research Core',
+    securityLevel: 'LOW',
+    tags: ['sermon', 'ai', 'summarization', 'theology'],
+    policy: { requiredRole: 'GUEST', rateLimitPerMin: 30 }
+  },
+  {
+    id: 'sermon.verse_suggestions',
+    name: 'Biblical Scripture & Cross-Reference Recommender',
+    description: 'Cross-references sermon themes with Old & New Testament scriptures to provide relevant Bible verse suggestions with context tags.',
+    domain: 'SERMON',
+    version: '1.0.0',
+    author: 'KCM Theology Intelligence',
+    securityLevel: 'LOW',
+    tags: ['bible', 'scripture', 'verses', 'theology'],
+    policy: { requiredRole: 'GUEST', rateLimitPerMin: 60 }
+  },
+  {
+    id: 'sermon.content_generation',
+    name: 'Theological Sermon Content Generator',
+    description: 'Generates small group discussion questions, devotional notes, social media posts, and study guide materials from sermon themes.',
+    domain: 'SERMON',
+    version: '1.0.0',
+    author: 'KCM Content Engine',
+    securityLevel: 'LOW',
+    tags: ['content', 'devotional', 'social', 'study-guide'],
+    policy: { requiredRole: 'FIELD_VOLUNTEER', rateLimitPerMin: 40 }
+  },
+  {
+    id: 'notification.fcm_push',
+    name: 'Firebase FCM Push Notification Dispatcher',
+    description: 'Formats and dispatches push notifications to iOS, Android, and Web PWA clients via Firebase Cloud Messaging.',
+    domain: 'NOTIFICATION',
+    version: '1.0.0',
+    author: 'KCM Notification Engine',
+    securityLevel: 'HIGH',
+    tags: ['fcm', 'push', 'firebase', 'notifications'],
+    policy: { requiredRole: 'FIELD_VOLUNTEER', rateLimitPerMin: 50, requiresAuditLog: true }
+  },
+  {
+    id: 'notification.socket_popup',
+    name: 'Socket.io Live Popup Alert Trigger',
+    description: 'Triggers instant, non-blocking toast and modal notifications to connected clients via Socket.io websocket rooms.',
+    domain: 'NOTIFICATION',
+    version: '1.0.0',
+    author: 'KCM Realtime Core',
+    securityLevel: 'MEDIUM',
+    tags: ['socketio', 'popup', 'toast', 'realtime'],
+    policy: { requiredRole: 'FIELD_VOLUNTEER', rateLimitPerMin: 100 }
+  },
+  {
+    id: 'notification.retry_failed',
+    name: 'Notification Retry & Dead-Letter Queue Worker',
+    description: 'Scans notification logs for failed delivery attempts, executes exponential backoff retry policies, and routes persistent failures to dead-letter storage.',
+    domain: 'NOTIFICATION',
+    version: '1.0.0',
+    author: 'KCM Reliability Core',
+    securityLevel: 'HIGH',
+    tags: ['retry', 'queue', 'dead-letter', 'reliability'],
+    policy: { requiredRole: 'PASTOR', rateLimitPerMin: 20, requiresAuditLog: true }
+  },
+  {
+    id: 'prayer.categorize',
+    name: 'Prayer Request Automated Classifier',
+    description: 'Categorizes incoming prayer requests into domain categories using NLP keyword pattern matching.',
+    domain: 'PRAYER',
+    version: '1.0.0',
+    author: 'KCM Pastoral Care Core',
+    securityLevel: 'LOW',
+    tags: ['prayer', 'categorization', 'pastoral-care', 'nlp'],
+    policy: { requiredRole: 'GUEST', rateLimitPerMin: 60 }
+  },
+  {
+    id: 'prayer.priority_detection',
+    name: 'Crisis Sentiment & Priority Detection Engine',
+    description: 'Scans prayer content for emergency crisis keywords (ICU, life-threatening, grief, sudden loss) and sets SLA response priority.',
+    domain: 'PRAYER',
+    version: '1.0.0',
+    author: 'KCM Pastoral Crisis Response',
+    securityLevel: 'MEDIUM',
+    tags: ['prayer', 'priority', 'crisis', 'sla'],
+    policy: { requiredRole: 'GUEST', rateLimitPerMin: 60 }
+  },
+  {
+    id: 'prayer.pastor_assignment',
+    name: 'Intelligent Pastor Workload & Specialty Assigner',
+    description: 'Matches incoming prayer requests with active pastors based on domain specialty, crisis availability, and load balancing.',
+    domain: 'PRAYER',
+    version: '1.0.0',
+    author: 'KCM Pastoral Care Core',
+    securityLevel: 'HIGH',
+    tags: ['pastor', 'assignment', 'prayer', 'workflow'],
+    policy: { requiredRole: 'PASTOR', rateLimitPerMin: 40, requiresAuditLog: true }
+  },
+  {
+    id: 'deployment.cicd_monitoring',
+    name: 'CI/CD Pipeline Telemetry Monitor',
+    description: 'Monitors build health, deployment commit metadata, automated test coverage, and release status.',
+    domain: 'DEPLOYMENT',
+    version: '1.0.0',
+    author: 'KCM DevOps Core',
+    securityLevel: 'MEDIUM',
+    tags: ['cicd', 'deployment', 'monitoring', 'devops'],
+    policy: { requiredRole: 'PASTOR', rateLimitPerMin: 60 }
+  },
+  {
+    id: 'deployment.rollback',
+    name: 'Automated Deployment Rollback Engine',
+    description: 'Triggers an emergency or metric-driven rollback sequence to the previous stable release commit with automatic DNS failover.',
+    domain: 'DEPLOYMENT',
+    version: '1.0.0',
+    author: 'KCM SRE Core',
+    securityLevel: 'CRITICAL',
+    tags: ['rollback', 'deployment', 'sre', 'failover'],
+    policy: { requiredRole: 'ADMIN', rateLimitPerMin: 5, requiresAuditLog: true }
+  },
+  {
+    id: 'deployment.health_check',
+    name: 'Multi-Point Platform Health Inspector',
+    description: 'Executes concurrent ping & latency probes across Neon PostgreSQL, Cloudinary CDN, Socket.io, and Firebase FCM to compute system health.',
+    domain: 'DEPLOYMENT',
+    version: '1.0.0',
+    author: 'KCM Platform Health Core',
+    securityLevel: 'LOW',
+    tags: ['health', 'monitoring', 'neon', 'cloudinary', 'socketio', 'fcm'],
+    policy: { requiredRole: 'GUEST', rateLimitPerMin: 120 }
+  }
+];
+
 export default function OpenClawOrchestratorView() {
   const { language } = useLanguage();
   const langKey = (language === 'te' || language === 'hi' ? language : 'en') as 'en' | 'te' | 'hi';
@@ -326,16 +538,18 @@ export default function OpenClawOrchestratorView() {
     { id: 'DEPLOYMENT', label: labels.domainDeployment, icon: Activity, activeColor: 'bg-cyan-600 text-white border-cyan-600' },
   ];
 
-  const [skills, setSkills] = useState<SkillMeta[]>([]);
+  const [skills, setSkills] = useState<SkillMeta[]>(INITIAL_SKILLS);
   const [selectedDomain, setSelectedDomain] = useState<string>('ALL');
-  const [activeSkill, setActiveSkill] = useState<SkillMeta | null>(null);
-  const [inputJson, setInputJson] = useState<string>('{}');
+  const [activeSkill, setActiveSkill] = useState<SkillMeta | null>(INITIAL_SKILLS[0]);
+  const [inputJson, setInputJson] = useState<string>(
+    JSON.stringify(DEFAULT_SAMPLE_INPUTS[INITIAL_SKILLS[0].id] || {}, null, 2)
+  );
   const [executing, setExecuting] = useState<boolean>(false);
   const [executionResult, setExecutionResult] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [pipelineRunning, setPipelineRunning] = useState<boolean>(false);
   const [pipelineLogs, setPipelineLogs] = useState<string[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [mobileActiveTab, setMobileActiveTab] = useState<'EXPLORER' | 'CONSOLE'>('EXPLORER');
 
   const consoleRef = useRef<HTMLDivElement>(null);
@@ -345,20 +559,14 @@ export default function OpenClawOrchestratorView() {
   }, []);
 
   const fetchSkills = async () => {
-    setLoading(true);
     try {
       const res = await fetch('/api/openclaw/skills');
       const data = await res.json();
-      if (data.success) {
+      if (data.success && Array.isArray(data.skills) && data.skills.length > 0) {
         setSkills(data.skills);
-        if (data.skills.length > 0) {
-          selectSkill(data.skills[0], false);
-        }
       }
     } catch (e) {
-      console.error('Failed to load OpenClaw skills:', e);
-    } finally {
-      setLoading(false);
+      console.warn('Silent OpenClaw skills background sync notice:', e);
     }
   };
 
@@ -451,7 +659,7 @@ export default function OpenClawOrchestratorView() {
       } catch (err: any) {
         setPipelineLogs(prev => [...prev, `   ⚠️ Step exception: ${err.message}`]);
       }
-      await new Promise(r => setTimeout(r, 600));
+      await new Promise(r => setTimeout(r, 50));
     }
 
     setPipelineLogs(prev => [...prev, '🎉 Composite AI Skill Pipeline Execution Completed Successfully!']);

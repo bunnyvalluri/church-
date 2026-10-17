@@ -85,6 +85,7 @@ export default function PastorPortalLayout({ children }: { children: React.React
                 <Link
                   key={item.href}
                   href={item.href}
+                  prefetch={true}
                   className={`relative flex-1 min-w-0 flex flex-col items-center justify-center py-1.5 px-1 rounded-xl transition-all duration-200 active:scale-95 ${
                     isActive
                       ? "bg-slate-100/90 dark:bg-white/[0.08] shadow-xs"
