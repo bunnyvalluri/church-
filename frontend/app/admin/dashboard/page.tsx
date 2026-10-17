@@ -122,6 +122,8 @@ export default function ExecutiveDashboardPage() {
     }
   };
 
+  const [searchTerm, setSearchTerm] = useState("");
+
   return (
     <AdminPageTemplate
       title="Executive Analytics Dashboard"
@@ -129,6 +131,9 @@ export default function ExecutiveDashboardPage() {
       icon={LayoutDashboard}
       onRefresh={loadData}
       isLoading={loading}
+      searchPlaceholder="Search members, sermons, records..."
+      searchValue={searchTerm}
+      onSearchChange={setSearchTerm}
     >
       <DashboardOverview
         users={data?.users || []}
@@ -137,7 +142,7 @@ export default function ExecutiveDashboardPage() {
         events={data?.events || []}
         announcements={data?.announcements || []}
         attendanceRecords={data?.records || []}
-        searchTerm=""
+        searchTerm={searchTerm}
         onNavigate={handleNavigate}
         onAddMember={() => router.push("/admin/members?action=add")}
         onDeleteMember={handleDeleteMember}
@@ -148,7 +153,7 @@ export default function ExecutiveDashboardPage() {
         onOpenAddAttendance={() => router.push("/admin/attendance")}
         onOpenAddEvent={() => router.push("/admin/content/events")}
         onOpenAddAnnouncement={() => router.push("/admin/content/announcements")}
-        onOpenAddSermon={() => router.push("/admin/content/sermons")}
+        onOpenAddSermon={() => router.push("/admin/content/sermons?action=add")}
       />
     </AdminPageTemplate>
   );

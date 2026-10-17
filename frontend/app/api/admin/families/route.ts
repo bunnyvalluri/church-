@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,75 +10,26 @@ export interface FamilyRecord {
   members: string[]; // User IDs
   contactPhone: string;
   address: string;
-  anniversaryDate?: string;
-  branchName?: string;
-  notes?: string;
-  createdAt: string;
+  anniversaryDate?: string | null;
+  branchName?: string | null;
+  notes?: string | null;
+  createdAt: string | Date;
 }
 
-// In-memory store initialized with seed families
-let familiesStore: FamilyRecord[] = [
-  {
-    id: "fam_001",
-    familyName: "Valluri Household",
-    headOfHouseholdId: "user_super_admin_001",
-    members: ["user_super_admin_001", "user_admin_002", "user_member_004"],
-    contactPhone: "+91 96409 43777",
-    address: "15-201, Vivekananda Nagar, Jeedimetla, Hyderabad",
-    anniversaryDate: "2015-11-26",
-    branchName: "Shapur Nagar Sanctuary",
-    notes: "Active ministry supporters and prayer group hosts.",
-    createdAt: new Date().toISOString()
-  },
-  {
-    id: "fam_002",
-    familyName: "Raju Family",
-    headOfHouseholdId: "user_pastor_003",
-    members: ["user_pastor_003", "user_member_005"],
-    contactPhone: "+91 87654 32109",
-    address: "Subhash Nagar Sanctuary Road, Hyderabad",
-    anniversaryDate: "2012-04-18",
-    branchName: "Subhash Nagar",
-    notes: "Worship ministry and choir leaders.",
-    createdAt: new Date().toISOString()
-  },
-  {
-    id: "fam_003",
-    familyName: "Reddy Household",
-    headOfHouseholdId: "user_member_006",
-    members: ["user_member_006", "user_member_007", "user_member_008"],
-    contactPhone: "+91 65432 10987",
-    address: "Kompally Family Quarters, Hyderabad",
-    anniversaryDate: "2019-08-09",
-    branchName: "Bahadurpally",
-    notes: "Sunday School teachers family.",
-    createdAt: new Date().toISOString()
-  },
-  {
-    id: "fam_004",
-    familyName: "Sharma Family",
-    headOfHouseholdId: "user_member_009",
-    members: ["user_member_009", "user_member_010"],
-    contactPhone: "+91 98765 12345",
-    address: "Suchitra Circle, Quthbullapur, Hyderabad",
-    anniversaryDate: "2021-02-14",
-    branchName: "Shapur Nagar Sanctuary",
-    notes: "New believers family unit.",
-    createdAt: new Date().toISOString()
-  }
-];
-
-// GET: Fetch all families
+// GET: Fetch all families permanently from Postgres DB
 export async function GET(req: Request) {
   try {
-    return NextResponse.json({ success: true, families: familiesStore });
+    const families = await prisma.family.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
+    return NextResponse.json({ success: true, families });
   } catch (err: any) {
     console.error('[ADMIN/FAMILIES/GET] Error:', err);
     return NextResponse.json({ error: err?.message || 'Server error occurred' }, { status: 500 });
   }
 }
 
-// POST: Create a new family
+// POST: Create a new family permanently in Postgres DB
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -92,29 +44,27 @@ export async function POST(req: Request) {
       ? Array.from(new Set([newHeadId, ...members])) 
       : [newHeadId];
 
-    const created: FamilyRecord = {
-      id: `fam_${Date.now()}`,
-      familyName,
-      headOfHouseholdId: newHeadId,
-      members: initialMembers,
-      contactPhone: contactPhone || '+91 96409 43777',
-      address: address || 'Jeedimetla, Hyderabad',
-      anniversaryDate: anniversaryDate || '',
-      branchName: branchName || 'Shapur Nagar Sanctuary',
-      notes: notes || '',
-      createdAt: new Date().toISOString()
-    };
+    const created = await prisma.family.create({
+      data: {
+        familyName,
+        headOfHouseholdId: newHeadId,
+        members: initialMembers,
+        contactPhone: contactPhone || '+91 96409 43777',
+        address: address || 'Jeedimetla, Hyderabad',
+        anniversaryDate: anniversaryDate || null,
+        branchName: branchName || 'Shapur Nagar Sanctuary',
+        notes: notes || null,
+      },
+    });
 
-    familiesStore = [created, ...familiesStore];
-
-    return NextResponse.json({ success: true, family: created, families: familiesStore });
+    return NextResponse.json({ success: true, family: created });
   } catch (err: any) {
     console.error('[ADMIN/FAMILIES/POST] Error:', err);
     return NextResponse.json({ error: err?.message || 'Server error occurred' }, { status: 500 });
   }
 }
 
-// PATCH: Update family details or roster
+// PATCH: Update family details or roster permanently in Postgres DB
 export async function PATCH(req: Request) {
   try {
     const body = await req.json();
@@ -124,34 +74,28 @@ export async function PATCH(req: Request) {
       return NextResponse.json({ error: 'Family ID is required' }, { status: 400 });
     }
 
-    const index = familiesStore.findIndex(f => f.id === id);
-    if (index === -1) {
-      return NextResponse.json({ error: 'Family record not found' }, { status: 404 });
-    }
+    const updated = await prisma.family.update({
+      where: { id },
+      data: {
+        ...(familyName && { familyName }),
+        ...(headOfHouseholdId && { headOfHouseholdId }),
+        ...(contactPhone !== undefined && { contactPhone }),
+        ...(address !== undefined && { address }),
+        ...(members !== undefined && { members }),
+        ...(anniversaryDate !== undefined && { anniversaryDate }),
+        ...(branchName !== undefined && { branchName }),
+        ...(notes !== undefined && { notes }),
+      },
+    });
 
-    const existing = familiesStore[index];
-    const updated: FamilyRecord = {
-      ...existing,
-      ...(familyName && { familyName }),
-      ...(headOfHouseholdId && { headOfHouseholdId }),
-      ...(contactPhone !== undefined && { contactPhone }),
-      ...(address !== undefined && { address }),
-      ...(members !== undefined && { members }),
-      ...(anniversaryDate !== undefined && { anniversaryDate }),
-      ...(branchName !== undefined && { branchName }),
-      ...(notes !== undefined && { notes }),
-    };
-
-    familiesStore[index] = updated;
-
-    return NextResponse.json({ success: true, family: updated, families: familiesStore });
+    return NextResponse.json({ success: true, family: updated });
   } catch (err: any) {
     console.error('[ADMIN/FAMILIES/PATCH] Error:', err);
     return NextResponse.json({ error: err?.message || 'Server error occurred' }, { status: 500 });
   }
 }
 
-// DELETE: Delete a family
+// DELETE: Permanently delete a family from Postgres DB
 export async function DELETE(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -161,9 +105,19 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: 'Family ID is required' }, { status: 400 });
     }
 
-    familiesStore = familiesStore.filter(f => f.id !== id);
+    try {
+      await prisma.family.delete({ where: { id } });
+    } catch (err: any) {
+      if (err?.code !== 'P2025') {
+        throw err;
+      }
+    }
 
-    return NextResponse.json({ success: true, message: 'Family deleted successfully', families: familiesStore });
+    const remaining = await prisma.family.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return NextResponse.json({ success: true, message: 'Family permanently deleted', families: remaining });
   } catch (err: any) {
     console.error('[ADMIN/FAMILIES/DELETE] Error:', err);
     return NextResponse.json({ error: err?.message || 'Server error occurred' }, { status: 500 });

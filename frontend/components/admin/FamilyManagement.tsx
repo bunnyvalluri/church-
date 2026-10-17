@@ -144,12 +144,34 @@ export default function FamilyManagement({ users = [] }: FamilyManagementProps) 
     return addr;
   };
 
-  const [families, setFamilies] = useState<Family[]>(DEFAULT_FAMILIES);
+  const CACHE_FAMILIES_KEY = "kcm_families_cache";
+
+  const [families, setFamilies] = useState<Family[]>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const cached = localStorage.getItem(CACHE_FAMILIES_KEY);
+        if (cached) return JSON.parse(cached);
+      } catch (e) {}
+    }
+    return DEFAULT_FAMILIES;
+  });
   const [loading, setLoading] = useState(false);
-  const [selectedFamily, setSelectedFamily] = useState<Family | null>(DEFAULT_FAMILIES[0]);
+  const [selectedFamily, setSelectedFamily] = useState<Family | null>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const cached = localStorage.getItem(CACHE_FAMILIES_KEY);
+        if (cached) {
+          const list = JSON.parse(cached);
+          if (Array.isArray(list) && list.length > 0) return list[0];
+        }
+      } catch (e) {}
+    }
+    return DEFAULT_FAMILIES[0];
+  });
   const [familySearchQuery, setFamilySearchQuery] = useState("");
   const [activeTabFilter, setActiveTabFilter] = useState<"ALL" | "LARGE" | "SMALL" | "UNASSIGNED">("ALL");
   const [memberSearchModal, setMemberSearchModal] = useState("");
+  const [deletedUserIds, setDeletedUserIds] = useState<Set<string>>(new Set());
   
   // Mobile responsive view toggle
   const [mobileShowDetail, setMobileShowDetail] = useState(false);
@@ -173,36 +195,40 @@ export default function FamilyManagement({ users = [] }: FamilyManagementProps) 
 
   const [editFamily, setEditFamily] = useState<Family | null>(null);
 
-  // Fetch families from API with default fallback
-  const fetchFamilies = async () => {
-    setLoading(true);
+  // Fetch families from Postgres API with silent real-time sync
+  const fetchFamilies = async (silent = false) => {
+    if (!silent) setLoading(true);
     try {
       const res = await fetch('/api/admin/families');
       const data = await res.json();
-      if (data.success && Array.isArray(data.families) && data.families.length > 0) {
+      if (data.success && Array.isArray(data.families)) {
         setFamilies(data.families);
-        if (!selectedFamily) {
-          setSelectedFamily(data.families[0]);
-        }
-      } else {
-        setFamilies(DEFAULT_FAMILIES);
-        if (!selectedFamily) {
-          setSelectedFamily(DEFAULT_FAMILIES[0]);
+        try {
+          localStorage.setItem(CACHE_FAMILIES_KEY, JSON.stringify(data.families));
+        } catch (e) {}
+        if (data.families.length > 0) {
+          setSelectedFamily(prev => {
+            if (!prev) return data.families[0];
+            const updated = data.families.find((f: Family) => f.id === prev.id);
+            return updated || data.families[0];
+          });
+        } else {
+          setSelectedFamily(null);
         }
       }
     } catch (err) {
-      console.warn("Backend API unavailable, using seed families", err);
-      setFamilies(DEFAULT_FAMILIES);
-      if (!selectedFamily) {
-        setSelectedFamily(DEFAULT_FAMILIES[0]);
-      }
+      console.warn("Backend API unavailable", err);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchFamilies();
+    fetchFamilies(true);
+    const interval = setInterval(() => {
+      fetchFamilies(true);
+    }, 10000);
+    return () => clearInterval(interval);
   }, []);
 
   // Compute unassigned believers (users not in any family members list)
@@ -215,8 +241,8 @@ export default function FamilyManagement({ users = [] }: FamilyManagementProps) 
   }, [families]);
 
   const unassignedUsers = useMemo(() => {
-    return users.filter(u => u.id && !assignedUserIds.has(u.id));
-  }, [users, assignedUserIds]);
+    return users.filter(u => u.id && !assignedUserIds.has(u.id) && !deletedUserIds.has(u.id));
+  }, [users, assignedUserIds, deletedUserIds]);
 
   // Computed Stats
   const stats = useMemo(() => {
@@ -399,19 +425,116 @@ export default function FamilyManagement({ users = [] }: FamilyManagementProps) 
     setSelectedFamily(updatedFamily);
   };
 
-  const handleRemoveFamily = async (familyId: string) => {
-    try {
-      await fetch(`/api/admin/families?id=${familyId}`, { method: 'DELETE' });
-    } catch (err) {
-      console.warn("Backend delete failed, applying locally", err);
-    }
+  const handleRemoveFamily = async (familyId: string, familyName?: string) => {
+    const confirmMsg = isTe
+      ? `మీరు '${familyName || "ఈ కుటుంబం"}' రికార్డును శాశ్వతంగా తొలగించాలనుకుంటున్నారా? ఇది తిరిగి పొందలేరు.`
+      : isHi
+      ? `क्या आप '${familyName || "इस परिवार"}' को स्थायी रूप से हटाना चाहते हैं? यह पूर्ववत नहीं किया जा सकता है।`
+      : `Are you sure you want to permanently delete '${familyName || "this family"}'? This cannot be undone.`;
 
+    if (!window.confirm(confirmMsg)) return;
+
+    // 0ms optimistic UI removal
     const remaining = families.filter(f => f.id !== familyId);
     setFamilies(remaining);
+    try {
+      localStorage.setItem(CACHE_FAMILIES_KEY, JSON.stringify(remaining));
+    } catch (e) {}
+
     if (selectedFamily?.id === familyId) {
       setSelectedFamily(remaining.length > 0 ? remaining[0] : null);
     }
     setDeletingId(null);
+
+    try {
+      const res = await fetch(`/api/admin/families?id=${encodeURIComponent(familyId)}`, { method: 'DELETE' });
+      if (!res.ok) {
+        throw new Error("Server failed to delete family");
+      }
+    } catch (err) {
+      console.error("Backend delete failed, reloading:", err);
+      fetchFamilies(true);
+      alert(isTe ? "కుటుంబ రికార్డు తొలగించడం విఫలమైంది" : isHi ? "परिवार रिकॉर्ड हटाना विफल रहा" : "Failed to permanently delete family.");
+    }
+  };
+
+  const handleRemoveMemberFromFamily = async (userId: string, memberName?: string) => {
+    if (!selectedFamily) return;
+
+    const confirmMsg = isTe
+      ? `'${memberName || "ఈ సభ్యుడిని"}' కుటుంబ జాబితా నుండి శాశ్వతంగా తొలగించాలనుకుంటున్నారా?`
+      : isHi
+      ? `क्या आप '${memberName || "इस सदस्य"}' को परिवार सूची से स्थायी रूप से हटाना चाहते हैं?`
+      : `Remove '${memberName || "this member"}' from this household roster?`;
+
+    if (!window.confirm(confirmMsg)) return;
+
+    const updatedMembers = (selectedFamily.members || []).filter(id => id !== userId);
+    const updatedFamily = { ...selectedFamily, members: updatedMembers };
+
+    // 0ms instant UI update
+    setFamilies(prev => prev.map(f => f.id === selectedFamily.id ? updatedFamily : f));
+    setSelectedFamily(updatedFamily);
+    try {
+      const nextList = families.map(f => f.id === selectedFamily.id ? updatedFamily : f);
+      localStorage.setItem(CACHE_FAMILIES_KEY, JSON.stringify(nextList));
+    } catch (e) {}
+
+    try {
+      await fetch('/api/admin/families', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: selectedFamily.id,
+          members: updatedMembers
+        })
+      });
+    } catch (err) {
+      console.error("Backend update failed:", err);
+      fetchFamilies(true);
+    }
+  };
+
+  const handleDeleteUserPermanently = async (userId: string, userName?: string) => {
+    const confirmMsg = isTe
+      ? `మీరు విశ్వాసి '${userName || "ఈ ఖాతా"}' డేటాను శాశ్వతంగా తొలగించాలనుకుంటున్నారా?`
+      : isHi
+      ? `क्या आप '${userName || "इस खाते"}' के डेटा को स्थायी रूप से हटाना चाहते हैं?`
+      : `Are you sure you want to permanently delete user '${userName || "this user"}'? This cannot be undone.`;
+
+    if (!window.confirm(confirmMsg)) return;
+
+    // 0ms instant UI removal
+    setDeletedUserIds(prev => new Set(prev).add(userId));
+
+    // Also remove from any family if present
+    setFamilies(prev => prev.map(f => ({
+      ...f,
+      members: (f.members || []).filter(id => id !== userId)
+    })));
+    if (selectedFamily) {
+      setSelectedFamily(prev => prev ? {
+        ...prev,
+        members: (prev.members || []).filter(id => id !== userId)
+      } : null);
+    }
+
+    try {
+      const res = await fetch(`/api/admin/users?id=${encodeURIComponent(userId)}`, {
+        method: 'DELETE',
+      });
+      if (!res.ok) {
+        throw new Error("Failed to delete user permanently");
+      }
+    } catch (err) {
+      console.error("Failed to delete user permanently:", err);
+      setDeletedUserIds(prev => {
+        const next = new Set(prev);
+        next.delete(userId);
+        return next;
+      });
+      alert(isTe ? "వినియోగదారుని తొలగించడం విఫలమైంది" : isHi ? "उपयोगकर्ता को हटाना विफल रहा" : "Failed to permanently delete user.");
+    }
   };
 
   const handlePrintDirectory = () => {
@@ -693,31 +816,17 @@ export default function FamilyManagement({ users = [] }: FamilyManagementProps) 
 
                       <div className="flex flex-col items-end justify-between self-stretch shrink-0">
                         
-                        {/* Delete popover state */}
-                        {deletingId === fam.id ? (
-                          <div className="flex items-center gap-1 bg-rose-50 dark:bg-rose-500/10 p-1 rounded-lg border border-rose-200 dark:border-rose-500/20" onClick={e => e.stopPropagation()}>
-                            <button 
-                              onClick={() => handleRemoveFamily(fam.id)}
-                              className="text-[9px] font-bold bg-rose-600 text-white px-2 py-0.5 rounded hover:bg-rose-700"
-                            >
-                              Confirm
-                            </button>
-                            <button 
-                              onClick={() => setDeletingId(null)}
-                              className="text-slate-400 hover:text-slate-600 p-0.5"
-                            >
-                              <X className="w-3 h-3" />
-                            </button>
-                          </div>
-                        ) : (
-                          <button 
-                            onClick={(e) => { e.stopPropagation(); setDeletingId(fam.id); }}
-                            className="text-slate-300 dark:text-gray-600 hover:text-rose-600 dark:hover:text-rose-400 transition-colors p-1"
-                            title="Delete Household Record"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        )}
+                        {/* Permanent Delete Button */}
+                        <button 
+                          onClick={(e) => { 
+                            e.stopPropagation(); 
+                            handleRemoveFamily(fam.id, fam.familyName); 
+                          }}
+                          className="text-slate-400 dark:text-gray-500 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition-all p-1 active:scale-95"
+                          title={isTe ? "కుటుంబ రికార్డును శాశ్వతంగా తొలగించండి" : isHi ? "परिवार को स्थायी रूप से हटाएं" : "Permanently Delete Household"}
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
 
                         <span className="text-[10px] font-bold text-slate-600 dark:text-gray-300 flex items-center gap-1 bg-slate-100 dark:bg-white/[0.04] px-2 py-0.5 rounded-lg border border-slate-200/60 dark:border-white/[0.04] mt-2">
                           <Users className="w-3 h-3 text-slate-400" />
@@ -949,9 +1058,9 @@ export default function FamilyManagement({ users = [] }: FamilyManagementProps) 
                           </button>
                         )}
                         <button 
-                          onClick={() => handleAddMemberToFamily(mId)}
-                          className="p-1.5 text-slate-300 dark:text-gray-600 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-xl transition-all"
-                          title="Remove from household"
+                          onClick={() => handleRemoveMemberFromFamily(mId, member.name)}
+                          className="p-1.5 text-slate-400 dark:text-gray-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-xl transition-all active:scale-95"
+                          title="Remove from household permanently"
                         >
                           <X className="w-4 h-4" />
                         </button>
@@ -1001,12 +1110,21 @@ export default function FamilyManagement({ users = [] }: FamilyManagementProps) 
                           <span className="text-xs font-bold text-slate-900 dark:text-white truncate block">{u.name}</span>
                           <span className="text-[9px] text-slate-400 truncate block">{u.email}</span>
                         </div>
-                        <button 
-                          onClick={() => handleAddMemberToFamily(u.id)}
-                          className="py-1 px-2.5 bg-slate-100 hover:bg-indigo-600 hover:text-white text-slate-700 dark:bg-white/10 dark:text-gray-200 text-[10px] font-bold rounded-lg transition-all shrink-0"
-                        >
-                          + Add
-                        </button>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <button 
+                            onClick={() => handleAddMemberToFamily(u.id)}
+                            className="py-1 px-2.5 bg-slate-100 hover:bg-indigo-600 hover:text-white text-slate-700 dark:bg-white/10 dark:text-gray-200 text-[10px] font-bold rounded-lg transition-all shrink-0 active:scale-95"
+                          >
+                            + Add
+                          </button>
+                          <button 
+                            onClick={() => handleDeleteUserPermanently(u.id, u.name)}
+                            className="p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition-all active:scale-95"
+                            title="Delete this test believer record permanently"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>

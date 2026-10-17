@@ -33,7 +33,9 @@ interface FinanceManagementProps {
   onAddDonation: (donation: any) => void;
   onDeleteDonation?: (id: string) => Promise<void>;
   onAddPledge?: (pledge: any) => Promise<void>;
+  onDeletePledge?: (id: string) => Promise<void>;
   onAddTransaction?: (transaction: any) => Promise<void>;
+  onDeleteTransaction?: (id: string) => Promise<void>;
   onOpenAddDonation?: () => void;
   activeSubTab?: "donations" | "pledges" | "transactions" | "accounts" | "config";
 }
@@ -47,7 +49,9 @@ export default function FinanceManagement({
   onAddDonation, 
   onDeleteDonation,
   onAddPledge,
+  onDeletePledge,
   onAddTransaction,
+  onDeleteTransaction,
   onOpenAddDonation,
   activeSubTab = "donations" 
 }: FinanceManagementProps) {
@@ -116,8 +120,15 @@ export default function FinanceManagement({
     }
   };
 
-  const activePledges = useMemo(() => pledgesProp, [pledgesProp]);
-  const activeTransactions = useMemo(() => transactionsProp, [transactionsProp]);
+  // Real-time optimistic deletion tracking (0ms UI latency)
+  const [deletedDonationIds, setDeletedDonationIds] = useState<Set<string>>(new Set());
+  const [deletedPledgeIds, setDeletedPledgeIds] = useState<Set<string>>(new Set());
+  const [deletedTransactionIds, setDeletedTransactionIds] = useState<Set<string>>(new Set());
+  const [deletingDonationId, setDeletingDonationId] = useState<string | null>(null);
+  const [isPurging, setIsPurging] = useState(false);
+
+  const activePledges = useMemo(() => pledgesProp.filter(p => !deletedPledgeIds.has(p.id)), [pledgesProp, deletedPledgeIds]);
+  const activeTransactions = useMemo(() => transactionsProp.filter(t => !deletedTransactionIds.has(t.id)), [transactionsProp, deletedTransactionIds]);
   const activeAccounts = useMemo(() => accountsProp, [accountsProp]);
 
   const [subView, setSubView] = useState<"donations" | "pledges" | "transactions" | "accounts" | "config">(activeSubTab);
@@ -128,6 +139,7 @@ export default function FinanceManagement({
     }
   }, [activeSubTab]);
   
+  const [isDonationOpen, setIsDonationOpen] = useState(false);
   const [isPledgeOpen, setIsPledgeOpen] = useState(false);
   const [isTransactionOpen, setIsTransactionOpen] = useState(false);
   
@@ -136,15 +148,23 @@ export default function FinanceManagement({
   const [searchQuery, setSearchQuery] = useState("");
   const [refundingId, setRefundingId] = useState<string | null>(null);
 
+  const [newDonation, setNewDonation] = useState({
+    donorName: "",
+    donorEmail: "",
+    amount: "",
+    purpose: "TITHE",
+    paymentMethod: "UPI",
+    status: "COMPLETED"
+  });
   const [newPledge, setNewPledge] = useState({ donorName: "", donorEmail: "", committedAmount: "", targetDate: "", purpose: "BUILDING" });
   const [newTx, setNewTx] = useState({ type: "OUTFLOW" as "INFLOW" | "OUTFLOW", amount: "", category: "UTILITIES", description: "", account: "General Fund" });
 
   const [amountsList] = useState([500, 1000, 2500, 5000, 10000]);
 
-  // Metrics Calculations
+  // Metrics Calculations (reacts instantaneously to deletions)
   const completedDonations = useMemo(() => {
-    return donations.filter(d => d.status === "COMPLETED");
-  }, [donations]);
+    return donations.filter(d => !deletedDonationIds.has(d.id) && d.status === "COMPLETED");
+  }, [donations, deletedDonationIds]);
 
   const totalFinancials = useMemo(() => {
     return completedDonations.reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
@@ -152,6 +172,7 @@ export default function FinanceManagement({
 
   const filteredDonations = useMemo(() => {
     return donations.filter(d => {
+      if (deletedDonationIds.has(d.id)) return false;
       const matchesSearch = 
         (d.donorName || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
         (d.donorEmail || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -164,7 +185,7 @@ export default function FinanceManagement({
       const matchesStatus = statusFilter === "ALL" || d.status === statusFilter;
       return matchesSearch && matchesPurpose && matchesStatus;
     });
-  }, [donations, searchQuery, donationFilter, statusFilter]);
+  }, [donations, deletedDonationIds, searchQuery, donationFilter, statusFilter]);
 
   const handleRefund = async (donationId: string, amount: number) => {
     const confirmMsg = isTe
@@ -194,6 +215,125 @@ export default function FinanceManagement({
     } finally {
       setRefundingId(null);
     }
+  };
+
+  // Instant 0ms optimistic permanent delete
+  const handleDeleteDonationInternal = async (id: string) => {
+    const confirmMsg = isTe
+      ? "మీరు ఖచ్చితంగా ఈ కానుక రికార్డును శాశ్వతంగా తొలగించాలనుకుంటున్నారా? ఇది తిరిగి పొందలేరు."
+      : isHi
+      ? "क्या आप वाकई इस दान रिकॉर्ड को स्थायी रूप से हटाना चाहते हैं? यह पूर्ववत नहीं किया जा सकता है।"
+      : "Are you sure you want to permanently delete this donation record? This action cannot be undone.";
+
+    if (!window.confirm(confirmMsg)) return;
+
+    // 0ms instant UI removal: row disappears right now
+    setDeletedDonationIds(prev => new Set(prev).add(id));
+    setDeletingDonationId(id);
+
+    try {
+      if (onDeleteDonation) {
+        await onDeleteDonation(id);
+      }
+    } catch (err) {
+      console.error("[FinanceManagement] Delete donation failed:", err);
+      // Revert if server failed
+      setDeletedDonationIds(prev => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+      alert(isTe ? "రికార్డు తొలగించడం విఫలమైంది" : isHi ? "रिकॉर्ड हटाना विफल रहा" : "Failed to permanently delete record.");
+    } finally {
+      setDeletingDonationId(null);
+    }
+  };
+
+  const handleDeletePledgeInternal = async (id: string) => {
+    const confirmMsg = isTe ? "ఈ వాగ్దానాన్ని శాశ్వతంగా తొలగించాలనుకుంటున్నారా?" : isHi ? "क्या आप इस वादे को स्थायी रूप से हटाना चाहते हैं?" : "Are you sure you want to permanently delete this pledge?";
+    if (!window.confirm(confirmMsg)) return;
+    setDeletedPledgeIds(prev => new Set(prev).add(id));
+    try {
+      if (onDeletePledge) await onDeletePledge(id);
+    } catch (err) {
+      setDeletedPledgeIds(prev => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+    }
+  };
+
+  const handleDeleteTransactionInternal = async (id: string) => {
+    const confirmMsg = isTe ? "ఈ లావాదేవీని శాశ్వతంగా తొలగించాలనుకుంటున్నారా?" : isHi ? "क्या आप इस लेनदेन को स्थायी रूप से हटाना चाहते हैं?" : "Are you sure you want to permanently delete this transaction?";
+    if (!window.confirm(confirmMsg)) return;
+    setDeletedTransactionIds(prev => new Set(prev).add(id));
+    try {
+      if (onDeleteTransaction) await onDeleteTransaction(id);
+    } catch (err) {
+      setDeletedTransactionIds(prev => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+    }
+  };
+
+  // Clean all fake and pending test records in one tap
+  const handlePurgeTestRecords = async () => {
+    const confirmMsg = isTe
+      ? "అన్ని పెండింగ్ మరియు డమ్మీ/టెస్ట్ కానుక రికార్డులను శాశ్వతంగా శుభ్రం చేయాలనుకుంటున్నారా?"
+      : isHi
+      ? "क्या आप सभी लंबित और परीक्षण दान रिकॉर्ड को स्थायी रूप से हटाना चाहते हैं?"
+      : "Are you sure you want to permanently purge all test and pending records?";
+
+    if (!window.confirm(confirmMsg)) return;
+
+    setIsPurging(true);
+    try {
+      const testNames = new Set([
+        'Church Member', 'Emmanuel Reddy', 'Anonymous Donor', 'Mary Sunitha',
+        'John Babu', 'Grace Priya', 'Anonymous Giver', 'Test User', 'Bunny',
+        'Rahul Gamer', 'valluri Rahul', 'Double Submit Test Donor', 'Status Query Test', 'Signature Test'
+      ]);
+      const toRemove = donations
+        .filter(d => (Number(d.amount) <= 10) || d.status === 'PENDING' || d.status === 'FAILED' || d.id?.startsWith('don_') || testNames.has(d.donorName))
+        .map(d => d.id);
+      
+      setDeletedDonationIds(prev => {
+        const next = new Set(prev);
+        toRemove.forEach(id => next.add(id));
+        return next;
+      });
+
+      const res = await fetch("/api/admin/donations?cleanAllFake=true", { method: "DELETE" });
+      const result = await res.json();
+      if (res.ok && result.success) {
+        alert(isTe ? `విజయవంతంగా ${result.deletedCount || toRemove.length} టెస్ట్ రికార్డులు తొలగించబడ్డాయి` : isHi ? `सफलतापूर्वक ${result.deletedCount || toRemove.length} परीक्षण रिकॉर्ड हटा दिए गए` : `Successfully purged ${result.deletedCount || toRemove.length} test records permanently.`);
+      }
+    } catch (err) {
+      console.error("[FinanceManagement] Purge failed:", err);
+    } finally {
+      setIsPurging(false);
+    }
+  };
+
+  const handleAddDonationSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newDonation.amount) return;
+    const added = {
+      donorName: newDonation.donorName || "Anonymous Giver",
+      donorEmail: newDonation.donorEmail || null,
+      amount: Number(newDonation.amount),
+      purpose: newDonation.purpose,
+      paymentMethod: newDonation.paymentMethod,
+      status: newDonation.status,
+    };
+    if (onAddDonation) {
+      await onAddDonation(added);
+    }
+    setNewDonation({ donorName: "", donorEmail: "", amount: "", purpose: "TITHE", paymentMethod: "UPI", status: "COMPLETED" });
+    setIsDonationOpen(false);
   };
 
   const handleAddPledge = async (e: React.FormEvent) => {
@@ -415,6 +555,15 @@ export default function FinanceManagement({
               
               <div className="flex items-center gap-2 flex-shrink-0">
                 <button 
+                  onClick={handlePurgeTestRecords}
+                  disabled={isPurging}
+                  className="flex-1 sm:flex-none py-2 px-3 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/40 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all active:scale-95 disabled:opacity-50"
+                  title="Purge pending and test records permanently"
+                >
+                  <Trash2 className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
+                  <span>{isPurging ? (isTe ? "తొలగిస్తోంది..." : isHi ? "हटा रहा है..." : "Purging...") : (isTe ? "టెస్ట్ డేటా శుభ్రం" : isHi ? "टेस्ट डेटा हटाएं" : "Clean Test Records")}</span>
+                </button>
+                <button 
                   onClick={() => window.print()} 
                   className="flex-1 sm:flex-none py-2 px-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all active:scale-95"
                 >
@@ -422,7 +571,10 @@ export default function FinanceManagement({
                   <span>{isTe ? "ప్రింట్" : isHi ? "प्रिंट" : "Print"}</span>
                 </button>
                 <button 
-                  onClick={onOpenAddDonation} 
+                  onClick={() => {
+                    if (onOpenAddDonation) onOpenAddDonation();
+                    else setIsDonationOpen(true);
+                  }} 
                   className="flex-1 sm:flex-none py-2 px-3.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-all active:scale-95 whitespace-nowrap"
                 >
                   <Plus className="w-3.5 h-3.5" />
@@ -534,13 +686,10 @@ export default function FinanceManagement({
                         )}
                         {onDeleteDonation && (
                           <button
-                            onClick={() => {
-                              if (confirm(isTe ? "మీరు ఖచ్చితంగా ఈ రికార్డును తొలగించాలనుకుంటున్నారా?" : isHi ? "क्या आप वाकई इस रिकॉर्ड को हटाना चाहते हैं?" : "Are you sure you want to delete this record?")) {
-                                onDeleteDonation(d.id);
-                              }
-                            }}
-                            className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-100 dark:hover:bg-rose-950/50 rounded-xl transition-all"
-                            title="Delete Record"
+                            onClick={() => handleDeleteDonationInternal(d.id)}
+                            disabled={deletingDonationId === d.id}
+                            className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-100 dark:hover:bg-rose-950/50 rounded-xl transition-all active:scale-95 disabled:opacity-50"
+                            title={isTe ? "శాశ్వతంగా తొలగించండి" : isHi ? "स्थायी रूप से हटाएं" : "Permanently Delete Record"}
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -634,13 +783,10 @@ export default function FinanceManagement({
                               )}
                               {onDeleteDonation && (
                                 <button
-                                  onClick={() => {
-                                    if (confirm(isTe ? "మీరు ఖచ్చితంగా ఈ రికార్డును తొలగించాలనుకుంటున్నారా?" : isHi ? "क्या आप वाकई इस रिकॉर्ड को हटाना चाहते हैं?" : "Are you sure you want to delete this record?")) {
-                                      onDeleteDonation(d.id);
-                                    }
-                                  }}
-                                  className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-100 dark:hover:bg-rose-950/50 rounded-lg transition-all active:scale-95"
-                                  title="Delete Record"
+                                  onClick={() => handleDeleteDonationInternal(d.id)}
+                                  disabled={deletingDonationId === d.id}
+                                  className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-100 dark:hover:bg-rose-950/50 rounded-lg transition-all active:scale-95 disabled:opacity-50"
+                                  title={isTe ? "శాశ్వతంగా తొలగించండి" : isHi ? "स्थायी रूप से हटाएं" : "Permanently Delete Record"}
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
                                 </button>
@@ -711,9 +857,20 @@ export default function FinanceManagement({
                     </div>
                   </div>
 
-                  <div className="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-between text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase">
-                    <span>{t.targetDate}</span>
-                    <span>{formatDate(p.targetDate)}</span>
+                  <div className="pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase">
+                    <div>
+                      <span>{t.targetDate}: </span>
+                      <span>{formatDate(p.targetDate)}</span>
+                    </div>
+                    {onDeletePledge && (
+                      <button
+                        onClick={() => handleDeletePledgeInternal(p.id)}
+                        className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-100 dark:hover:bg-rose-950/50 rounded-lg transition-all active:scale-95"
+                        title={isTe ? "వాగ్దానాన్ని శాశ్వతంగా తొలగించండి" : isHi ? "वादे को स्थायी रूप से हटाएं" : "Delete Pledge Permanently"}
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    )}
                   </div>
                 </div>
               );
@@ -799,7 +956,18 @@ export default function FinanceManagement({
 
                       <div className="flex items-center justify-between gap-2 text-[10px] text-slate-400 font-mono">
                         <span>ID: {tRow.id}</span>
-                        <span>{formatDate(tRow.date)}</span>
+                        <div className="flex items-center gap-2">
+                          <span>{formatDate(tRow.date)}</span>
+                          {onDeleteTransaction && (
+                            <button
+                              onClick={() => handleDeleteTransactionInternal(tRow.id)}
+                              className="p-1 text-slate-400 hover:text-rose-600 rounded"
+                              title="Delete Transaction Permanently"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -817,6 +985,7 @@ export default function FinanceManagement({
                         <th className="py-4 px-6">{t.txDescription}</th>
                         <th className="py-4 px-6">{t.tableAmount}</th>
                         <th className="py-4 px-6">{t.tableDate}</th>
+                        <th className="py-4 px-6 text-center">Action</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-200 dark:divide-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300">
@@ -844,6 +1013,17 @@ export default function FinanceManagement({
                             {tRow.type === "INFLOW" ? "+" : "-"}{formatCurrency(tRow.amount)}
                           </td>
                           <td className="py-4 px-6 text-xs font-semibold text-slate-600 dark:text-slate-400">{formatDate(tRow.date)}</td>
+                          <td className="py-4 px-6 text-center">
+                            {onDeleteTransaction && (
+                              <button
+                                onClick={() => handleDeleteTransactionInternal(tRow.id)}
+                                className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-100 dark:hover:bg-rose-950/50 rounded-lg transition-all active:scale-95"
+                                title="Delete Transaction Permanently"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            )}
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -929,6 +1109,105 @@ export default function FinanceManagement({
                 </span>
               ))}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─── MODAL: RECORD DONATION ─── */}
+      {isDonationOpen && (
+        <div className="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-2 sm:p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-md shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
+            <div className="p-4 sm:p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950">
+              <h3 className="font-black text-slate-900 dark:text-white text-sm sm:text-base">
+                {isTe ? "కానుక రికార్డు చేయండి" : isHi ? "दान दर्ज करें" : "Record Contribution"}
+              </h3>
+              <button 
+                onClick={() => setIsDonationOpen(false)} 
+                className="text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white p-1.5 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl"
+              >
+                ✕
+              </button>
+            </div>
+            
+            <form onSubmit={handleAddDonationSubmit} className="p-4 sm:p-6 space-y-3.5 sm:space-y-4">
+              <div>
+                <label className="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">
+                  {isTe ? "కానుకదారుని పూర్తి పేరు" : isHi ? "दाता का पूरा नाम" : "Donor Full Name"}
+                </label>
+                <input 
+                  type="text" required placeholder="e.g. Rahul Valluri" value={newDonation.donorName}
+                  onChange={(e) => setNewDonation({ ...newDonation, donorName: e.target.value })}
+                  className="w-full px-3.5 py-2 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 font-semibold"
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">
+                  {isTe ? "ఈమెయిల్ చిరునామా" : isHi ? "ईमेल पता" : "Email Address"}
+                </label>
+                <input 
+                  type="email" placeholder="e.g. rahul@email.com" value={newDonation.donorEmail}
+                  onChange={(e) => setNewDonation({ ...newDonation, donorEmail: e.target.value })}
+                  className="w-full px-3.5 py-2 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 font-semibold"
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">
+                  {isTe ? "మొత్తం (రూపాయలలో)" : isHi ? "राशि (INR)" : "Amount (INR)"}
+                </label>
+                <input 
+                  type="number" required placeholder="e.g. 1000" value={newDonation.amount} min="1"
+                  onChange={(e) => setNewDonation({ ...newDonation, amount: e.target.value })}
+                  className="w-full px-3.5 py-2 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 font-semibold font-mono"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">
+                    {t.purpose}
+                  </label>
+                  <div className="relative flex items-center">
+                    <select 
+                      value={newDonation.purpose}
+                      onChange={(e) => setNewDonation({ ...newDonation, purpose: e.target.value })}
+                      className="w-full pl-3 pr-7 py-2 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 font-bold appearance-none cursor-pointer"
+                    >
+                      <option value="TITHE">{t.tithe}</option>
+                      <option value="OFFERING">{t.offering}</option>
+                      <option value="MISSIONS">{t.missions}</option>
+                      <option value="BUILDING">{t.buildingFund}</option>
+                    </select>
+                    <ChevronDown className="absolute right-2.5 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">
+                    {t.tableMethod}
+                  </label>
+                  <div className="relative flex items-center">
+                    <select 
+                      value={newDonation.paymentMethod}
+                      onChange={(e) => setNewDonation({ ...newDonation, paymentMethod: e.target.value })}
+                      className="w-full pl-3 pr-7 py-2 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 font-bold appearance-none cursor-pointer"
+                    >
+                      <option value="UPI">UPI</option>
+                      <option value="CASH">Cash / Offline</option>
+                      <option value="BANK_TRANSFER">Bank Transfer</option>
+                      <option value="RAZORPAY">Razorpay</option>
+                    </select>
+                    <ChevronDown className="absolute right-2.5 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-2 flex gap-2.5">
+                <button type="button" onClick={() => setIsDonationOpen(false)} className="flex-1 py-2 border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl font-bold text-xs uppercase transition-colors">
+                  {isTe ? "రద్దు" : isHi ? "रद्द करें" : "Cancel"}
+                </button>
+                <button type="submit" className="flex-1 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs uppercase transition-all shadow-sm active:scale-95">
+                  {isTe ? "సేవ్ చేయండి" : isHi ? "सुरक्षित करें" : "Save Contribution"}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

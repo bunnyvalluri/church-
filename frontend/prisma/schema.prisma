@@ -834,6 +834,9 @@ model Family {
   members           String[] // List of member User IDs
   contactPhone      String
   address           String
+  anniversaryDate   String?
+  branchName        String?
+  notes             String?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 }

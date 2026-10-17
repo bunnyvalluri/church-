@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { 
   Users, 
   DollarSign, 
@@ -19,7 +19,8 @@ import {
   FileText,
   ChevronRight,
   TrendingUp,
-  RefreshCw
+  RefreshCw,
+  Check
 } from "lucide-react";
 import Image from "next/image";
 import { formatCurrency } from "@/lib/utils";
@@ -78,6 +79,74 @@ export default function DashboardOverview({
   const t = adminTranslations[language || "en"].dashboard;
   const [activeContentTab, setActiveContentTab] = useState<"Sermons" | "Events" | "Announcements">("Sermons");
 
+  // ── Period Dropdown States ──────────────────────────────────────────────────
+  type DonationPeriod = "thisWeek" | "thisMonth" | "thisQuarter" | "thisYear" | "allTime";
+  type AttendancePeriod = "thisWeek" | "lastWeek" | "thisMonth" | "last30Days" | "thisQuarter";
+
+  const [donationPeriod, setDonationPeriod] = useState<DonationPeriod>("thisMonth");
+  const [isDonationDropdownOpen, setIsDonationDropdownOpen] = useState(false);
+
+  const [attendancePeriod, setAttendancePeriod] = useState<AttendancePeriod>("thisWeek");
+  const [isAttendanceDropdownOpen, setIsAttendanceDropdownOpen] = useState(false);
+
+  // 0ms Real-Time Optimistic Delete Tracking
+  const [deletedMemberIds, setDeletedMemberIds] = useState<Set<string | number>>(new Set());
+  const [deletedSermonIds, setDeletedSermonIds] = useState<Set<string>>(new Set());
+
+  const handleInternalDeleteMember = (id: string | number) => {
+    setDeletedMemberIds(prev => new Set(prev).add(id));
+    onDeleteMember(id);
+  };
+
+  const handleInternalDeleteSermon = (id: string) => {
+    setDeletedSermonIds(prev => new Set(prev).add(id));
+    onDeleteSermon(id);
+  };
+
+  // Close dropdowns on outside click or Escape
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('[data-dropdown-container="donation"]')) {
+        setIsDonationDropdownOpen(false);
+      }
+      if (!target.closest('[data-dropdown-container="attendance"]')) {
+        setIsAttendanceDropdownOpen(false);
+      }
+    };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsDonationDropdownOpen(false);
+        setIsAttendanceDropdownOpen(false);
+      }
+    };
+    document.addEventListener("click", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
+  const donationPeriodLabels: Record<DonationPeriod, { en: string; te: string; hi: string }> = {
+    thisWeek: { en: "This Week", te: "ఈ వారం", hi: "इस सप्ताह" },
+    thisMonth: { en: "This Month", te: "ఈ నెల", hi: "इस महीने" },
+    thisQuarter: { en: "This Quarter", te: "ఈ త్రైమాసికం", hi: "इस तिमाही" },
+    thisYear: { en: "This Year", te: "ఈ సంవత్సరం", hi: "इस वर्ष" },
+    allTime: { en: "All Time", te: "అన్ని సమయాలు", hi: "सभी समय" },
+  };
+
+  const attendancePeriodLabels: Record<AttendancePeriod, { en: string; te: string; hi: string }> = {
+    thisWeek: { en: "This Week", te: "ఈ వారం", hi: "इस सप्ताह" },
+    lastWeek: { en: "Last Week", te: "గత వారం", hi: "पिछला सप्ताह" },
+    thisMonth: { en: "This Month", te: "ఈ నెల", hi: "इस महीने" },
+    last30Days: { en: "Last 30 Days", te: "గత 30 రోజులు", hi: "पिछले 30 दिन" },
+    thisQuarter: { en: "This Quarter", te: "ఈ త్రైమాసికం", hi: "इस तिमाही" },
+  };
+
+  const currentDonationLabel = donationPeriodLabels[donationPeriod][language === "te" ? "te" : language === "hi" ? "hi" : "en"];
+  const currentAttendanceLabel = attendancePeriodLabels[attendancePeriod][language === "te" ? "te" : language === "hi" ? "hi" : "en"];
+
   // ── SWR-powered real data ────────────────────────────────────────────────────
   const { stats, isLoading: statsLoading, error: statsError, mutate: reloadStats } = useDashboardStats(startDate, endDate);
   const { chartData: donationChartData, isLoading: chartLoading } = useDonationChart('monthly', startDate, endDate);
@@ -103,6 +172,20 @@ export default function DashboardOverview({
     return true;
   });
 
+  // Filter donations dynamically by selected timeframe
+  const periodFilteredDonations = useMemo(() => {
+    const nowMs = Date.now();
+    return completedDonations.filter(d => {
+      const dTime = new Date(d.createdAt).getTime();
+      if (donationPeriod === "thisWeek") return dTime >= nowMs - 7 * 86400000;
+      if (donationPeriod === "thisMonth") return dTime >= nowMs - 30 * 86400000;
+      if (donationPeriod === "thisQuarter") return dTime >= nowMs - 90 * 86400000;
+      if (donationPeriod === "thisYear") return dTime >= nowMs - 365 * 86400000;
+      return true; // allTime
+    });
+  }, [completedDonations, donationPeriod]);
+
+  const periodDonationsToUse = periodFilteredDonations.length > 0 ? periodFilteredDonations : completedDonations;
   const totalDonations = stats?.donations.total ?? completedDonations.reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
 
   // Derive weekly/monthly change percentages using the donations prop array
@@ -147,20 +230,79 @@ export default function DashboardOverview({
     ? Math.round(((currentMonthDonVal - previousMonthDonVal) / previousMonthDonVal) * 100)
     : currentMonthDonVal > 0 ? null : 0;
 
-  // Attendance Metrics
-  const latestAttendance = stats?.attendance.latestHeadcount ?? attendanceRecords[0]?.headcount ?? 0;
-  const totalHeadcount = stats?.attendance.total ?? attendanceRecords.reduce((sum, r) => sum + (r.headcount || 0), 0);
-  const latestNewVisitors = stats?.attendance.totalNewVisitors ?? attendanceRecords.reduce((sum, r) => sum + (r.newVisitors || 0), 0);
-  const avgAttendance = stats?.attendance.avgPerRecord ?? (attendanceRecords.length > 0
-    ? Math.round(attendanceRecords.reduce((sum, r) => sum + r.headcount, 0) / attendanceRecords.length)
-    : 0);
+  // ── Attendance chart: period-filtered data ─────────────────────────────────
+  const swrAttRecords = attendanceChartResult?.recent ?? [];
+  const displayAttRecords = swrAttRecords.length > 0 ? swrAttRecords : attendanceRecords;
+
+  const periodFilteredAttendance = useMemo(() => {
+    const nowMs = Date.now();
+    const records = displayAttRecords;
+    if (attendancePeriod === "thisWeek") {
+      const cutoff = nowMs - 7 * 86400000;
+      const filtered = records.filter(r => new Date(r.date).getTime() >= cutoff);
+      return filtered.length > 0 ? filtered : records.slice(0, 7);
+    }
+    if (attendancePeriod === "lastWeek") {
+      const start = nowMs - 14 * 86400000;
+      const end = nowMs - 7 * 86400000;
+      const filtered = records.filter(r => {
+        const t = new Date(r.date).getTime();
+        return t >= start && t < end;
+      });
+      return filtered.length > 0 ? filtered : records.slice(0, 7);
+    }
+    if (attendancePeriod === "thisMonth" || attendancePeriod === "last30Days") {
+      const cutoff = nowMs - 30 * 86400000;
+      const filtered = records.filter(r => new Date(r.date).getTime() >= cutoff);
+      return filtered.length > 0 ? filtered : records.slice(0, 14);
+    }
+    if (attendancePeriod === "thisQuarter") {
+      const cutoff = nowMs - 90 * 86400000;
+      const filtered = records.filter(r => new Date(r.date).getTime() >= cutoff);
+      return filtered.length > 0 ? filtered : records.slice(0, 20);
+    }
+    return records;
+  }, [displayAttRecords, attendancePeriod]);
+
+  // Reactive Attendance Metrics for current period
+  const totalHeadcount = useMemo(() => {
+    const sum = periodFilteredAttendance.reduce((acc, r) => acc + (r.headcount || 0), 0);
+    return sum > 0 ? sum : (stats?.attendance.total ?? 0);
+  }, [periodFilteredAttendance, stats]);
+
+  const avgAttendance = useMemo(() => {
+    return periodFilteredAttendance.length > 0
+      ? Math.round(totalHeadcount / periodFilteredAttendance.length)
+      : (stats?.attendance.avgPerRecord ?? 0);
+  }, [periodFilteredAttendance, totalHeadcount, stats]);
+
+  const latestAttendance = periodFilteredAttendance[0]?.headcount ?? stats?.attendance.latestHeadcount ?? attendanceRecords[0]?.headcount ?? 0;
+
+  const latestNewVisitors = useMemo(() => {
+    const sumNew = periodFilteredAttendance.reduce((acc, r) => acc + (r.newVisitors || 0), 0);
+    return sumNew > 0 ? sumNew : (stats?.attendance.totalNewVisitors ?? 0);
+  }, [periodFilteredAttendance, stats]);
+
+  const maxRecord = useMemo(() => {
+    return periodFilteredAttendance.length > 0
+      ? periodFilteredAttendance.reduce((max, r) => (r.headcount || 0) > (max.headcount || 0) ? r : max, periodFilteredAttendance[0])
+      : null;
+  }, [periodFilteredAttendance]);
+
+  const highestDayName = maxRecord
+    ? new Date(maxRecord.date).toLocaleDateString(language === "te" ? "te-IN" : language === "hi" ? "hi-IN" : "en-US", { weekday: 'long' })
+    : "-";
+
+  const latestReturningVisitors = latestNewVisitors > 0
+    ? Math.max(0, totalHeadcount - latestNewVisitors)
+    : (periodFilteredAttendance[0] ? Math.max(0, (periodFilteredAttendance[0].headcount || 0) - (periodFilteredAttendance[0].newVisitors || 0)) : 0);
 
   // null = no previous period to compare; render 'New' badge instead of fake +100%
   const attPercentChange: number | null = stats?.attendance.growthPct !== undefined
     ? (stats.attendance.growthPct ?? null)
     : (() => {
-        const latest = attendanceRecords[0]?.headcount || 0;
-        const prev = attendanceRecords[1]?.headcount || 0;
+        const latest = periodFilteredAttendance[0]?.headcount || 0;
+        const prev = periodFilteredAttendance[1]?.headcount || 0;
         return prev > 0 ? Math.round(((latest - prev) / prev) * 100) : latest > 0 ? null : 0;
       })();
 
@@ -176,21 +318,16 @@ export default function DashboardOverview({
 
   const totalEvents = stats?.events.upcoming ?? displayEvents.length;
 
-  // ── Highest day label ─────────────────────────────────────────────────────
-  const maxRecord = attendanceRecords.length > 0
-    ? attendanceRecords.reduce((max, r) => r.headcount > max.headcount ? r : max, attendanceRecords[0])
-    : null;
-  const highestDayName = maxRecord
-    ? new Date(maxRecord.date).toLocaleDateString(language === "te" ? "te-IN" : language === "hi" ? "hi-IN" : "en-US", { weekday: 'long' })
-    : "-";
-  const latestReturningVisitors = latestNewVisitors > 0
-    ? Math.max(0, totalHeadcount - latestNewVisitors)
-    : attendanceRecords[0]
-    ? Math.max(0, attendanceRecords[0].headcount - (attendanceRecords[0].newVisitors || 0))
-    : 0;
+  // ── Donation chart ──────────────────────────────────────────────────────────
+  const sortedDonations = useMemo(() => {
+    return [...periodDonationsToUse].sort(
+      (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    );
+  }, [periodDonationsToUse]);
 
-  // ── Donation chart: prefer SWR data ───────────────────────────────────────
-  const useSWRChart = donationChartData.length > 0;
+  const chartDonations = useMemo(() => {
+    return sortedDonations.slice(-10);
+  }, [sortedDonations]);
 
   let linePath = "M 0 90 L 300 90";
   let areaPath = "M 0 90 L 300 90 L 300 100 L 0 100 Z";
@@ -200,8 +337,7 @@ export default function DashboardOverview({
   let midLabel = "";
   let endLabel = "";
 
-  if (useSWRChart) {
-    // Use SWR monthly chart data
+  if (donationPeriod === "thisMonth" && donationChartData.length > 0) {
     const pts = donationChartData;
     const N = pts.length;
     if (N > 0) {
@@ -223,52 +359,58 @@ export default function DashboardOverview({
       midLabel = N > 2 ? pts[Math.floor(N / 2)].label : "";
       endLabel = pts[N - 1].label;
     }
-  } else {
-    // Fallback: derive from props donations array
-    const sortedDonations = [...completedDonations].sort(
-      (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-    );
-    const chartDonations = sortedDonations.slice(-10);
+  } else if (chartDonations.length > 0) {
     const N = chartDonations.length;
-    if (N > 0) {
-      const maxAmount = Math.max(...chartDonations.map(d => Number(d.amount) || 0), 100);
-      const points = chartDonations.map((d, idx) => {
-        const x = N > 1 ? (idx / (N - 1)) * 300 : 150;
-        const val = Number(d.amount) || 0;
-        const y = 90 - (val / maxAmount) * 75;
-        return { x, y };
-      });
-      lastX = points[points.length - 1].x;
-      lastY = points[points.length - 1].y;
-      if (N === 1) {
-        linePath = `M 0 ${points[0].y} L 300 ${points[0].y}`;
-        areaPath = `M 0 ${points[0].y} L 300 ${points[0].y} L 300 100 L 0 100 Z`;
-      } else {
-        linePath = `M ${points[0].x} ${points[0].y} ` + points.slice(1).map(p => `L ${p.x} ${p.y}`).join(" ");
-        areaPath = linePath + ` L ${points[points.length - 1].x} 100 L ${points[0].x} 100 Z`;
-      }
-      const loc = language === "te" ? "te-IN" : language === "hi" ? "hi-IN" : "en-US";
-      startLabel = new Date(chartDonations[0].createdAt).toLocaleDateString(loc, { month: "short", day: "numeric" });
-      endLabel = new Date(chartDonations[N - 1].createdAt).toLocaleDateString(loc, { month: "short", day: "numeric" });
-      midLabel = N > 2 ? new Date(chartDonations[Math.floor(N / 2)].createdAt).toLocaleDateString(loc, { month: "short", day: "numeric" }) : "";
+    const maxAmount = Math.max(...chartDonations.map(d => Number(d.amount) || 0), 100);
+    const points = chartDonations.map((d, idx) => {
+      const x = N > 1 ? (idx / (N - 1)) * 300 : 150;
+      const val = Number(d.amount) || 0;
+      const y = 90 - (val / maxAmount) * 75;
+      return { x, y };
+    });
+    lastX = points[points.length - 1].x;
+    lastY = points[points.length - 1].y;
+    if (N === 1) {
+      linePath = `M 0 ${points[0].y} L 300 ${points[0].y}`;
+      areaPath = `M 0 ${points[0].y} L 300 ${points[0].y} L 300 100 L 0 100 Z`;
+    } else {
+      linePath = `M ${points[0].x} ${points[0].y} ` + points.slice(1).map(p => `L ${p.x} ${p.y}`).join(" ");
+      areaPath = linePath + ` L ${points[points.length - 1].x} 100 L ${points[0].x} 100 Z`;
     }
+    const loc = language === "te" ? "te-IN" : language === "hi" ? "hi-IN" : "en-US";
+    startLabel = new Date(chartDonations[0].createdAt).toLocaleDateString(loc, { month: "short", day: "numeric" });
+    endLabel = new Date(chartDonations[N - 1].createdAt).toLocaleDateString(loc, { month: "short", day: "numeric" });
+    midLabel = N > 2 ? new Date(chartDonations[Math.floor(N / 2)].createdAt).toLocaleDateString(loc, { month: "short", day: "numeric" }) : "";
+  } else {
+    startLabel = "-";
+    midLabel = "-";
+    endLabel = "-";
   }
 
-  // ── Attendance chart: prefer SWR recent[] data ─────────────────────────────
-  const swrAttRecords = attendanceChartResult?.recent ?? [];
-  const displayAttRecords = swrAttRecords.length > 0 ? swrAttRecords : attendanceRecords;
+  // Filter lists based on global search term and optimistic deletion
+  const filteredUsers = useMemo(() => {
+    return users.filter(u => 
+      !deletedMemberIds.has(u.id) &&
+      ((u.name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+       (u.email || "").toLowerCase().includes(searchTerm.toLowerCase()))
+    );
+  }, [users, deletedMemberIds, searchTerm]);
 
+  const visibleMembers = useMemo(() => {
+    const source = stats?.recentMembers ?? filteredUsers;
+    return source.filter(m => !deletedMemberIds.has(m.id) &&
+      ((m.name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+       (m.email || "").toLowerCase().includes(searchTerm.toLowerCase()))
+    );
+  }, [stats?.recentMembers, filteredUsers, deletedMemberIds, searchTerm]);
 
-  // Filter lists based on global search term
-  const filteredUsers = users.filter(u => 
-    (u.name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (u.email || "").toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const filteredSermons = sermons.filter(s => 
-    (s.title || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (s.speaker || s.pastor || "").toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const visibleSermons = useMemo(() => {
+    return sermons.filter(s => 
+      !deletedSermonIds.has(s.id) &&
+      ((s.title || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+       (s.speaker || s.pastor || "").toLowerCase().includes(searchTerm.toLowerCase()))
+    );
+  }, [sermons, deletedSermonIds, searchTerm]);
 
   // Helper function to generate avatar gradient based on initials/role
   const getAvatarGradient = (name: string, role: string) => {
@@ -415,7 +557,7 @@ export default function DashboardOverview({
             {/* Show skeleton while loading */}
             {statsLoading && <MemberListSkeleton rows={5} />}
             {/* Prefer recentMembers from stats (most accurate), fall back to prop */}
-            {!statsLoading && (stats?.recentMembers ?? filteredUsers).slice(0, 5).map(member => (
+            {!statsLoading && visibleMembers.slice(0, 5).map(member => (
               <div key={member.id} className="flex items-center justify-between gap-3 border-b border-slate-50 dark:border-white/[0.02] pb-3 last:border-0 last:pb-0">
                 <div className="flex items-center gap-3 overflow-hidden">
                   <div className={`w-9 h-9 rounded-2xl bg-gradient-to-tr ${getAvatarGradient(member.name || "Believer", member.role)} text-white flex items-center justify-center font-bold text-sm shrink-0 uppercase shadow-md border border-white/10 hover:scale-105 transition-transform`}>
@@ -436,13 +578,13 @@ export default function DashboardOverview({
                   }`}>
                     {member.role === "SUPER_ADMIN" ? "S.Admin" : member.role}
                   </span>
-                  <button onClick={() => onDeleteMember(member.id)} className="w-7 h-7 rounded-lg text-slate-450 dark:text-gray-500 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/15 flex items-center justify-center transition-all">
+                  <button onClick={() => handleInternalDeleteMember(member.id)} className="w-7 h-7 rounded-lg text-slate-450 dark:text-gray-500 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/15 flex items-center justify-center transition-all">
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 </div>
               </div>
             ))}
-            {!statsLoading && (stats?.recentMembers ?? filteredUsers).length === 0 && (
+            {!statsLoading && visibleMembers.length === 0 && (
               <p className="text-center text-xs text-slate-400 dark:text-gray-500 py-6">{t.noMatchingMembers}</p>
             )}
           </div>
@@ -461,9 +603,47 @@ export default function DashboardOverview({
               <h3 className="text-[10px] font-bold text-slate-400 dark:text-gray-550 uppercase tracking-wider">{t.donationTracking}</h3>
               <h2 className="text-base font-extrabold text-slate-955 dark:text-white mt-0.5">{t.donationOverview}</h2>
             </div>
-            <div className="flex items-center gap-1 px-3 py-1.5 bg-slate-50 dark:bg-[#16172D]/60 border border-slate-100 dark:border-white/[0.08] rounded-xl text-[10px] font-bold text-slate-700 dark:text-gray-300 cursor-pointer hover:bg-slate-100 dark:hover:bg-[#1e203e] transition-colors">
-              <span>{t.thisMonth}</span>
-              <ChevronDown className="w-3 h-3 text-slate-500" />
+            <div className="relative" data-dropdown-container="donation">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsDonationDropdownOpen(prev => !prev);
+                  setIsAttendanceDropdownOpen(false);
+                }}
+                className="flex items-center gap-1 px-3 py-1.5 bg-slate-50 dark:bg-[#16172D]/60 border border-slate-100 dark:border-white/[0.08] rounded-xl text-[10px] font-bold text-slate-700 dark:text-gray-300 cursor-pointer hover:bg-slate-100 dark:hover:bg-[#1e203e] active:scale-95 transition-all"
+              >
+                <span>{currentDonationLabel}</span>
+                <ChevronDown className={`w-3 h-3 text-slate-500 transition-transform duration-200 ${isDonationDropdownOpen ? "rotate-180 text-amber-500" : ""}`} />
+              </button>
+
+              {isDonationDropdownOpen && (
+                <div className="absolute right-0 top-full mt-1.5 z-50 min-w-[140px] bg-white dark:bg-[#181930] border border-slate-200 dark:border-white/10 rounded-xl shadow-xl py-1.5 backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150">
+                  {(Object.keys(donationPeriodLabels) as DonationPeriod[]).map((periodKey) => {
+                    const isSelected = donationPeriod === periodKey;
+                    const label = donationPeriodLabels[periodKey][language === "te" ? "te" : language === "hi" ? "hi" : "en"];
+                    return (
+                      <button
+                        key={periodKey}
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDonationPeriod(periodKey);
+                          setIsDonationDropdownOpen(false);
+                        }}
+                        className={`w-full px-3 py-1.5 text-left text-xs font-semibold flex items-center justify-between transition-colors ${
+                          isSelected 
+                            ? "bg-amber-50 dark:bg-amber-500/15 text-amber-600 dark:text-amber-400 font-bold" 
+                            : "text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-white/5"
+                        }`}
+                      >
+                        <span>{label}</span>
+                        {isSelected && <Check className="w-3.5 h-3.5 text-amber-500" />}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
           
@@ -511,7 +691,7 @@ export default function DashboardOverview({
             </div>
             {/* Recent Donations List */}
             <div className="space-y-3">
-              {completedDonations.slice(0, 3).map((don, idx) => (
+              {periodDonationsToUse.slice(0, 3).map((don, idx) => (
                 <div key={don.id || idx} className="flex items-center justify-between text-xs font-semibold border-b border-slate-50 dark:border-white/[0.02] pb-2 last:border-0 last:pb-0">
                   <div>
                     <p className="text-slate-900 dark:text-white truncate max-w-[140px] font-bold">{don.donorName || (language === "te" ? "అనామకుడు" : language === "hi" ? "गुमनाम" : "Anonymous")}</p>
@@ -540,9 +720,47 @@ export default function DashboardOverview({
               <h3 className="text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-wider">{t.attendanceRecords}</h3>
               <h2 className="text-base font-extrabold text-slate-950 dark:text-white mt-0.5">{t.attendanceOverview}</h2>
             </div>
-            <div className="flex items-center gap-1 px-3 py-1.5 bg-slate-50 dark:bg-[#16172D]/60 border border-slate-100 dark:border-white/[0.08] rounded-xl text-[10px] font-bold text-slate-700 dark:text-gray-300 cursor-pointer hover:bg-slate-100 dark:hover:bg-[#1e203e] transition-colors">
-              <span>{t.thisWeek}</span>
-              <ChevronDown className="w-3 h-3 text-slate-500" />
+            <div className="relative" data-dropdown-container="attendance">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsAttendanceDropdownOpen(prev => !prev);
+                  setIsDonationDropdownOpen(false);
+                }}
+                className="flex items-center gap-1 px-3 py-1.5 bg-slate-50 dark:bg-[#16172D]/60 border border-slate-100 dark:border-white/[0.08] rounded-xl text-[10px] font-bold text-slate-700 dark:text-gray-300 cursor-pointer hover:bg-slate-100 dark:hover:bg-[#1e203e] active:scale-95 transition-all"
+              >
+                <span>{currentAttendanceLabel}</span>
+                <ChevronDown className={`w-3 h-3 text-slate-500 transition-transform duration-200 ${isAttendanceDropdownOpen ? "rotate-180 text-blue-500" : ""}`} />
+              </button>
+
+              {isAttendanceDropdownOpen && (
+                <div className="absolute right-0 top-full mt-1.5 z-50 min-w-[140px] bg-white dark:bg-[#181930] border border-slate-200 dark:border-white/10 rounded-xl shadow-xl py-1.5 backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150">
+                  {(Object.keys(attendancePeriodLabels) as AttendancePeriod[]).map((periodKey) => {
+                    const isSelected = attendancePeriod === periodKey;
+                    const label = attendancePeriodLabels[periodKey][language === "te" ? "te" : language === "hi" ? "hi" : "en"];
+                    return (
+                      <button
+                        key={periodKey}
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setAttendancePeriod(periodKey);
+                          setIsAttendanceDropdownOpen(false);
+                        }}
+                        className={`w-full px-3 py-1.5 text-left text-xs font-semibold flex items-center justify-between transition-colors ${
+                          isSelected 
+                            ? "bg-blue-50 dark:bg-blue-500/15 text-blue-600 dark:text-blue-400 font-bold" 
+                            : "text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-white/5"
+                        }`}
+                      >
+                        <span>{label}</span>
+                        {isSelected && <Check className="w-3.5 h-3.5 text-blue-500" />}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
           <div className="p-6 py-4 flex-1 flex flex-col justify-between">
@@ -561,7 +779,7 @@ export default function DashboardOverview({
 
               {!attChartLoading && (() => {
                 // Use SWR data if available, else fallback to prop
-                const chartRecords = [...displayAttRecords].slice(0, 7).reverse();
+                const chartRecords = [...periodFilteredAttendance].slice(0, 7).reverse();
                 
                 // If we have records, map them to the bar chart
                 // Use the max headcount from actual records for auto-scaling
@@ -687,7 +905,7 @@ export default function DashboardOverview({
               <>
                 {/* Mobile Card View (< sm) */}
                 <div className="block sm:hidden p-3 space-y-3">
-                  {filteredSermons.slice(0, 4).map((sermon) => (
+                  {visibleSermons.slice(0, 4).map((sermon) => (
                     <div key={sermon.id} className="p-3.5 bg-slate-50/50 dark:bg-white/[0.02] border border-slate-200/70 dark:border-white/10 rounded-xl space-y-2.5 shadow-sm">
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex items-center gap-2.5 min-w-0">
@@ -707,13 +925,13 @@ export default function DashboardOverview({
                       <div className="flex items-center justify-between pt-2 border-t border-slate-200/60 dark:border-white/5 text-xs text-slate-500">
                         <span className="text-[10px] font-mono">{new Date(sermon.date).toLocaleDateString("en-IN")} • {sermon.views || 0} views</span>
                         <div className="flex items-center gap-1">
-                          <button onClick={() => onNavigate("sermons")} className="p-1 text-slate-400 hover:text-indigo-600 rounded"><Eye className="w-4 h-4" /></button>
-                          <button onClick={() => onDeleteSermon(sermon.id)} className="p-1 text-slate-400 hover:text-rose-600 rounded"><Trash2 className="w-4 h-4" /></button>
+                          <button type="button" onClick={() => onNavigate("sermons")} className="p-1 text-slate-400 hover:text-indigo-600 rounded"><Eye className="w-4 h-4" /></button>
+                          <button type="button" onClick={() => handleInternalDeleteSermon(sermon.id)} className="p-1 text-slate-400 hover:text-rose-600 rounded"><Trash2 className="w-4 h-4" /></button>
                         </div>
                       </div>
                     </div>
                   ))}
-                  {filteredSermons.length === 0 && (
+                  {visibleSermons.length === 0 && (
                     <div className="flex flex-col items-center justify-center py-10 text-center">
                       <FileText className="w-8 h-8 text-indigo-500 mb-2 animate-pulse" />
                       <h3 className="text-xs font-extrabold text-slate-900 dark:text-white">{t.noSermons}</h3>
@@ -735,7 +953,7 @@ export default function DashboardOverview({
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 dark:divide-white/[0.02] text-xs font-semibold text-slate-700 dark:text-gray-300">
-                      {filteredSermons.slice(0, 4).map((sermon) => (
+                      {visibleSermons.slice(0, 4).map((sermon) => (
                         <tr key={sermon.id} className="hover:bg-slate-50/50 dark:hover:bg-white/[0.01] transition-colors">
                           <td className="py-4 px-6 flex items-center gap-3">
                           <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-purple-500 to-pink-500 flex items-center justify-center text-white text-[10px] font-bold uppercase shrink-0 shadow-md border border-white/10">
@@ -750,12 +968,12 @@ export default function DashboardOverview({
                           </td>
                           <td className="py-4 px-6 text-slate-500 dark:text-gray-400">{sermon.views || 0}</td>
                           <td className="py-4 px-6 text-right space-x-1 shrink-0 whitespace-nowrap">
-                            <button onClick={() => onNavigate("sermons")} className="p-1.5 text-slate-450 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-lg hover:bg-slate-50 dark:hover:bg-white/[0.04] inline-flex items-center"><Eye className="w-4 h-4" /></button>
-                            <button onClick={() => onDeleteSermon(sermon.id)} className="p-1.5 text-slate-450 dark:text-gray-500 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-500/15 inline-flex items-center"><Trash2 className="w-4 h-4" /></button>
+                            <button type="button" onClick={() => onNavigate("sermons")} className="p-1.5 text-slate-450 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-lg hover:bg-slate-50 dark:hover:bg-white/[0.04] inline-flex items-center"><Eye className="w-4 h-4" /></button>
+                            <button type="button" onClick={() => handleInternalDeleteSermon(sermon.id)} className="p-1.5 text-slate-450 dark:text-gray-500 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-500/15 inline-flex items-center"><Trash2 className="w-4 h-4" /></button>
                           </td>
                         </tr>
                       ))}
-                      {filteredSermons.length === 0 && (
+                      {visibleSermons.length === 0 && (
                         <tr>
                           <td colSpan={6} className="py-4 px-6">
                             <div className="flex flex-col items-center justify-center py-16 text-center">

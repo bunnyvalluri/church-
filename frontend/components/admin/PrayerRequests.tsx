@@ -20,6 +20,7 @@ import {
 import { formatDate } from "@/lib/utils";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { adminTranslations } from "@/components/admin/adminTranslations";
+import { useAuth } from "@/components/providers/AuthProvider";
 
 interface PrayerRequestsProps {
   users?: any[];
@@ -266,9 +267,36 @@ export default function PrayerRequests({ users = [], externalSearchQuery }: Pray
     return desc;
   };
 
-  const [prayers, setPrayers] = useState<Prayer[]>(DEFAULT_PRAYERS);
+  const { getIdToken } = useAuth();
+  const PRAYERS_CACHE_KEY = "kcm_prayer_requests_cache";
+
+  const [prayers, setPrayers] = useState<Prayer[]>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const cached = localStorage.getItem(PRAYERS_CACHE_KEY);
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+      } catch (e) {}
+    }
+    return DEFAULT_PRAYERS;
+  });
+
   const [loading, setLoading] = useState(false);
-  const [selectedPrayer, setSelectedPrayer] = useState<Prayer | null>(DEFAULT_PRAYERS[0]);
+  const [selectedPrayer, setSelectedPrayer] = useState<Prayer | null>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const cached = localStorage.getItem(PRAYERS_CACHE_KEY);
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed[0];
+        }
+      } catch (e) {}
+    }
+    return DEFAULT_PRAYERS[0];
+  });
+
   const [categoryFilter, setCategoryFilter] = useState("ALL");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [searchQuery, setSearchQuery] = useState(externalSearchQuery || "");
@@ -293,31 +321,93 @@ export default function PrayerRequests({ users = [], externalSearchQuery }: Pray
     userEmail: ""
   });
 
-  // Load backend prayers in background without blocking initial instant render
+  // Helper to synchronously update state and persistent localStorage cache
+  const updatePrayersState = (updater: (prev: Prayer[]) => Prayer[]) => {
+    setPrayers((prev) => {
+      const next = updater(prev);
+      if (typeof window !== "undefined") {
+        try {
+          localStorage.setItem(PRAYERS_CACHE_KEY, JSON.stringify(next));
+        } catch (e) {}
+      }
+      return next;
+    });
+  };
+
+  // Background real-time synchronization without blocking instant render
   useEffect(() => {
     let isMounted = true;
-    const loadAllPrayers = async () => {
+    const fetchPrayers = async () => {
       try {
-        const res = await fetch("/api/member/prayers?userId=all_admin_peek");
+        const token = await Promise.race([
+          getIdToken(),
+          new Promise<null>((resolve) => setTimeout(() => resolve(null), 80))
+        ]);
+        const headers: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
+
+        let res = await fetch("/api/admin/prayers", { headers });
+        if (!res.ok) {
+          res = await fetch("/api/member/prayers?userId=all_admin_peek", { headers });
+        }
         const data = await res.json();
         if (!isMounted) return;
-        
+
         let list = data.prayers || [];
         if (list.length > 0) {
-          const mapped = list.map((p: any) => {
-            const user = p.user || users.find(u => u.id === p.userId || u.uid === p.userId) || { name: p.donorName || "Congregation Believer", email: p.donorEmail || "believer@gmail.com" };
-            return { ...p, user, assignedPartners: p.assignedPartners || [] };
+          const mapped: Prayer[] = list.map((p: any) => {
+            const user = p.user || users.find(u => u.id === p.userId || u.uid === p.userId) || {
+              name: p.donorName || "Congregation Believer",
+              email: p.donorEmail || "believer@gmail.com"
+            };
+            return {
+              id: p.id,
+              userId: p.userId,
+              title: p.title,
+              description: p.description,
+              category: p.category,
+              isAnonymous: Boolean(p.isAnonymous),
+              status: p.status,
+              createdAt: p.createdAt,
+              user,
+              assignedPartners: p.assignedPartners || []
+            };
           });
-          setPrayers(mapped);
-          setSelectedPrayer(prev => prev || mapped[0]);
+
+          // Retain any assignedPartners stored in cache
+          if (typeof window !== "undefined") {
+            try {
+              const cached = localStorage.getItem(PRAYERS_CACHE_KEY);
+              if (cached) {
+                const parsed: Prayer[] = JSON.parse(cached);
+                const partnerMap = new Map(parsed.map(x => [x.id, x.assignedPartners || []]));
+                mapped.forEach(m => {
+                  if (partnerMap.has(m.id) && (!m.assignedPartners || m.assignedPartners.length === 0)) {
+                    m.assignedPartners = partnerMap.get(m.id);
+                  }
+                });
+              }
+            } catch (e) {}
+          }
+
+          updatePrayersState(() => mapped);
+          setSelectedPrayer((curr) => {
+            if (!curr) return mapped[0];
+            const found = mapped.find(m => m.id === curr.id);
+            return found || mapped[0];
+          });
         }
-      } catch (e) {
-        // Retain initial DEFAULT_PRAYERS
+      } catch (err) {
+        console.warn("Background prayer sync notice:", err);
       }
     };
 
-    loadAllPrayers();
-    return () => { isMounted = false; };
+    fetchPrayers();
+    // 2x Fast real-time sync polling every 10 seconds
+    const interval = setInterval(fetchPrayers, 10000);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
   }, [users]);
 
   // Calculations
@@ -344,7 +434,8 @@ export default function PrayerRequests({ users = [], externalSearchQuery }: Pray
   }, [prayers, categoryFilter, statusFilter, searchQuery]);
 
   const handleStatusChange = async (prayerId: string, newStatus: "PENDING" | "PRAYING" | "ANSWERED") => {
-    setPrayers(prev => prev.map(p => {
+    // 0ms Optimistic UI update
+    updatePrayersState(prev => prev.map(p => {
       if (p.id === prayerId) {
         const updated = { ...p, status: newStatus };
         if (selectedPrayer?.id === prayerId) {
@@ -355,12 +446,29 @@ export default function PrayerRequests({ users = [], externalSearchQuery }: Pray
       return p;
     }));
 
+    // Background server update
     try {
-      await fetch("/api/member/prayers", {
+      const token = await Promise.race([
+        getIdToken(),
+        new Promise<null>((resolve) => setTimeout(() => resolve(null), 80))
+      ]);
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
+      };
+      
+      const res = await fetch("/api/admin/prayers", {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({ id: prayerId, status: newStatus }),
       });
+      if (!res.ok) {
+        await fetch("/api/member/prayers", {
+          method: "PATCH",
+          headers,
+          body: JSON.stringify({ id: prayerId, status: newStatus }),
+        });
+      }
     } catch (err) {
       console.warn("Failed to update status on server:", err);
     }
@@ -371,7 +479,7 @@ export default function PrayerRequests({ users = [], externalSearchQuery }: Pray
     if (!selectedPrayer || !assignedPartnerInput.trim()) return;
     
     const partnerName = assignedPartnerInput.trim();
-    setPrayers(prev => prev.map(p => {
+    updatePrayersState(prev => prev.map(p => {
       if (p.id === selectedPrayer.id) {
         const currentPartners = p.assignedPartners || [];
         if (!currentPartners.includes(partnerName)) {
@@ -387,7 +495,7 @@ export default function PrayerRequests({ users = [], externalSearchQuery }: Pray
 
   const handleRemovePartner = (partnerName: string) => {
     if (!selectedPrayer) return;
-    setPrayers(prev => prev.map(p => {
+    updatePrayersState(prev => prev.map(p => {
       if (p.id === selectedPrayer.id) {
         const updated = { ...p, assignedPartners: (p.assignedPartners || []).filter(name => name !== partnerName) };
         setSelectedPrayer(updated);
@@ -399,13 +507,33 @@ export default function PrayerRequests({ users = [], externalSearchQuery }: Pray
 
   const handleDeletePrayer = async (prayerId: string) => {
     if (confirm(isTe ? "మీరు ఖచ్చితంగా ఈ ప్రార్థన అభ్యర్థనను తొలగించాలనుకుంటున్నారా?" : isHi ? "क्या आप वाकई इस प्रार्थना अनुरोध को हटाना चाहते हैं?" : "Are you sure you want to delete this prayer request?")) {
-      setPrayers(prev => prev.filter(p => p.id !== prayerId));
-      if (selectedPrayer?.id === prayerId) {
-        const remaining = prayers.filter(p => p.id !== prayerId);
-        setSelectedPrayer(remaining.length > 0 ? remaining[0] : null);
-      }
+      // 0ms Optimistic removal
+      updatePrayersState(prev => {
+        const remaining = prev.filter(p => p.id !== prayerId);
+        if (selectedPrayer?.id === prayerId) {
+          setSelectedPrayer(remaining.length > 0 ? remaining[0] : null);
+        }
+        return remaining;
+      });
+
+      // Background permanent deletion
       try {
-        await fetch(`/api/member/prayers?id=${prayerId}`, { method: "DELETE" });
+        const token = await Promise.race([
+          getIdToken(),
+          new Promise<null>((resolve) => setTimeout(() => resolve(null), 80))
+        ]);
+        const headers: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
+        
+        const res = await fetch(`/api/admin/prayers?id=${prayerId}`, {
+          method: "DELETE",
+          headers,
+        });
+        if (!res.ok) {
+          await fetch(`/api/member/prayers?id=${prayerId}`, {
+            method: "DELETE",
+            headers,
+          });
+        }
       } catch (err) {
         console.warn("Failed to delete prayer request on server:", err);
       }
@@ -414,67 +542,63 @@ export default function PrayerRequests({ users = [], externalSearchQuery }: Pray
 
   const handleCreatePrayer = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newPrayer.title) return;
+    if (!newPrayer.title.trim()) return;
 
-    let created: Prayer;
-    try {
-      const res = await fetch("/api/member/prayers", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: newPrayer.title,
-          description: newPrayer.description || "Believer prayer intercession request.",
-          category: newPrayer.category,
-          isAnonymous: newPrayer.isAnonymous,
-        }),
-      });
-      const data = await res.json();
-      if (data.success && data.prayer) {
-        created = {
-          ...data.prayer,
-          user: data.prayer.user || {
-            name: newPrayer.isAnonymous ? "Anonymous Believer" : (newPrayer.userName || "Congregation Member"),
-            email: newPrayer.userEmail || "member@kcm.org"
-          },
-          assignedPartners: []
-        };
-      } else {
-        created = {
-          id: `pr_${Date.now()}`,
-          title: newPrayer.title,
-          description: newPrayer.description || "Believer prayer intercession request.",
-          category: newPrayer.category,
-          isAnonymous: newPrayer.isAnonymous,
-          status: "PENDING",
-          createdAt: new Date().toISOString(),
-          user: {
-            name: newPrayer.isAnonymous ? "Anonymous Believer" : (newPrayer.userName || "Congregation Member"),
-            email: newPrayer.userEmail || "member@kcm.org"
-          },
-          assignedPartners: []
-        };
-      }
-    } catch (err) {
-      created = {
-        id: `pr_${Date.now()}`,
-        title: newPrayer.title,
-        description: newPrayer.description || "Believer prayer intercession request.",
-        category: newPrayer.category,
-        isAnonymous: newPrayer.isAnonymous,
-        status: "PENDING",
-        createdAt: new Date().toISOString(),
-        user: {
-          name: newPrayer.isAnonymous ? "Anonymous Believer" : (newPrayer.userName || "Congregation Member"),
-          email: newPrayer.userEmail || "member@kcm.org"
-        },
-        assignedPartners: []
-      };
-    }
+    const tempId = `pr_${Date.now()}`;
+    const optimisticPrayer: Prayer = {
+      id: tempId,
+      title: newPrayer.title.trim(),
+      description: newPrayer.description.trim() || "Believer prayer intercession request.",
+      category: newPrayer.category,
+      isAnonymous: newPrayer.isAnonymous,
+      status: "PENDING",
+      createdAt: new Date().toISOString(),
+      user: {
+        name: newPrayer.isAnonymous ? "Anonymous Believer" : (newPrayer.userName.trim() || "Congregation Member"),
+        email: newPrayer.userEmail.trim() || "member@kcm.org"
+      },
+      assignedPartners: []
+    };
 
-    setPrayers(prev => [created, ...prev]);
-    setSelectedPrayer(created);
+    // 0ms Instant UI response: closes modal instantly & updates list
+    updatePrayersState(prev => [optimisticPrayer, ...prev]);
+    setSelectedPrayer(optimisticPrayer);
     setNewPrayer({ title: "", description: "", category: "HEALTH", isAnonymous: false, userName: "", userEmail: "" });
     setIsLogModalOpen(false);
+
+    // Background server creation
+    try {
+      const token = await Promise.race([
+        getIdToken(),
+        new Promise<null>((resolve) => setTimeout(() => resolve(null), 80))
+      ]);
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
+      };
+
+      const res = await fetch("/api/admin/prayers", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          title: optimisticPrayer.title,
+          description: optimisticPrayer.description,
+          category: optimisticPrayer.category,
+          isAnonymous: optimisticPrayer.isAnonymous,
+          userName: optimisticPrayer.user?.name,
+          userEmail: optimisticPrayer.user?.email,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success && data.prayer) {
+        // Swap temp ID with real DB ID seamlessly
+        updatePrayersState(prev => prev.map(p => p.id === tempId ? { ...p, id: data.prayer.id } : p));
+        setSelectedPrayer(curr => curr?.id === tempId ? { ...curr, id: data.prayer.id } : curr);
+      }
+    } catch (err) {
+      console.warn("Failed to create prayer on server:", err);
+    }
   };
 
   const getVerseSuggestion = (category: string) => {
