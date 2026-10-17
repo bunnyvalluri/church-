@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { 
   Search, 
   Shield, 
@@ -31,6 +31,7 @@ interface MemberManagementProps {
   onDeleteMember: (id: string | number) => void;
   onAddMember: (member: any) => void;
   onOpenAddMember?: () => void;
+  initialAddModalOpen?: boolean;
 }
 
 export default function MemberManagement({
@@ -38,7 +39,8 @@ export default function MemberManagement({
   onRoleChange,
   onDeleteMember,
   onAddMember,
-  onOpenAddMember
+  onOpenAddMember,
+  initialAddModalOpen = false,
 }: MemberManagementProps) {
   const { language } = useLanguage();
   const isTe = language === "te";
@@ -53,7 +55,13 @@ export default function MemberManagement({
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
 
   // Add Member Modal State
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(initialAddModalOpen);
+
+  useEffect(() => {
+    if (initialAddModalOpen) {
+      setIsAddModalOpen(true);
+    }
+  }, [initialAddModalOpen]);
   const [newMemberForm, setNewMemberForm] = useState({
     name: "",
     email: "",

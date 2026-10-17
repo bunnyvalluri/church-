@@ -11,6 +11,16 @@ export default function MembersOverviewPage() {
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [autoOpenAdd, setAutoOpenAdd] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("action") === "add" || params.get("add") === "true") {
+        setAutoOpenAdd(true);
+      }
+    }
+  }, []);
 
   const loadData = async () => {
     setLoading(true);
@@ -95,6 +105,7 @@ export default function MembersOverviewPage() {
         onAddMember={(newMember) => {
           setUsers((prev) => [newMember, ...prev]);
         }}
+        initialAddModalOpen={autoOpenAdd}
       />
     </AdminPageTemplate>
   );

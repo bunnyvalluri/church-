@@ -87,15 +87,6 @@ const menuGroups: MenuGroup[] = [
         iconBg: "bg-rose-500/10 text-rose-500 dark:text-rose-400",
       },
       {
-        name: "OpenClaw AI Orchestrator",
-        href: "/admin/openclaw-orchestrator",
-        icon: Cpu,
-        badge: "AI 2.0",
-        color: "text-purple-500 dark:text-purple-400",
-        activeGradient: "from-purple-600 via-indigo-600 to-pink-600",
-        iconBg: "bg-purple-500/10 text-purple-500 dark:text-purple-400",
-      },
-      {
         name: "SMS Delivery Engine",
         href: "/admin/notifications/sms",
         icon: MessageSquare,
@@ -328,10 +319,10 @@ const menuGroups: MenuGroup[] = [
     title: "AI & Skill Orchestration",
     items: [
       {
-        name: "OpenClaw Orchestrator",
+        name: "OpenClaw AI Orchestrator",
         href: "/admin/openclaw-orchestrator",
         icon: Cpu,
-        badge: "PROD",
+        badge: "AI 2.0",
         color: "text-purple-500 dark:text-purple-400",
         activeGradient: "from-indigo-600 via-purple-600 to-pink-600",
         iconBg: "bg-purple-500/10 text-purple-500 dark:text-purple-400",
