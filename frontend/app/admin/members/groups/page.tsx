@@ -9,19 +9,25 @@ import { useAuth } from "@/components/providers/AuthProvider";
 export default function MemberGroupsPage() {
   const { getIdToken } = useAuth();
   const [users, setUsers] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const loadData = async () => {
+    setLoading(true);
     try {
-      const token = await getIdToken();
+      const token = await Promise.race([
+        getIdToken(),
+        new Promise<null>((resolve) => setTimeout(() => resolve(null), 50))
+      ]);
       const headers: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
-      const res = await fetch("/api/admin/dashboard-data", { headers });
+      const res = await fetch("/api/admin/users", { headers });
       const result = await res.json();
       if (res.ok && result.success) {
         setUsers(result.users || []);
       }
     } catch (err) {
-      console.error(err);
+      console.error("Failed to load members for groups:", err);
+    } finally {
+      setLoading(false);
     }
   };
 

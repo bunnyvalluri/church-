@@ -80,9 +80,9 @@ export default function AdminPortalLayout({ children }: { children: React.ReactN
         </div>
       </div>
 
-      {/* Mobile Ultra-Premium Floating Glassmorphic Bottom Dock for Admin */}
+      {/* Mobile Ultra-Premium Floating Glassmorphic Bottom Dock for Admin (Strictly mobile view only) */}
       {!isMobileSidebarOpen && (
-        <div className="lg:hidden fixed bottom-2.5 sm:bottom-4 inset-x-2.5 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 sm:w-[440px] z-40 pointer-events-auto select-none">
+        <div className="md:hidden fixed bottom-2.5 inset-x-2.5 z-40 pointer-events-auto select-none">
           <nav className="bg-white/95 dark:bg-[#0c0e1a]/95 backdrop-blur-2xl border border-slate-200/90 dark:border-white/[0.12] rounded-2xl p-1 shadow-[0_10px_30px_-5px_rgba(0,0,0,0.12),0_0_0_1px_rgba(0,0,0,0.04)] dark:shadow-[0_12px_36px_-6px_rgba(0,0,0,0.7),0_0_0_1px_rgba(255,255,255,0.06)] flex items-center justify-around gap-1 transition-all duration-200">
             {[
               { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard, color: "text-indigo-600 dark:text-indigo-400" },

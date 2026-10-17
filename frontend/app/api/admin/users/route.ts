@@ -167,29 +167,51 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: 'Self-deletion is not permitted' }, { status: 400 });
     }
 
-    // 3. Limit deletion of admins to SUPER_ADMIN
-    if ((targetUser.role === 'ADMIN' || targetUser.role === 'SUPER_ADMIN') && auth.role !== 'SUPER_ADMIN') {
+    // 3. Limit deletion of SUPER_ADMIN
+    // Only a SUPER_ADMIN can delete another SUPER_ADMIN account
+    if (targetUser.role === 'SUPER_ADMIN' && auth.role !== 'SUPER_ADMIN') {
       return NextResponse.json(
-        { error: 'Only SUPER_ADMIN can delete administrative users.' },
+        { error: 'Only SUPER_ADMIN can delete a SUPER_ADMIN account.' },
         { status: 403 }
       );
     }
 
-    // 4. Nullify userId in related Donation records to preserve financial history and avoid FK violation
-    await prisma.donation.updateMany({
-      where: { userId: targetUser.id },
-      data: { userId: null },
+    // 4. Cascade cleanup inside transaction so foreign keys never prevent permanent deletion
+    await prisma.$transaction(async (tx) => {
+      // Clean up sessions
+      await tx.session.deleteMany({ where: { userId: targetUser.id } });
+
+      // Clean up audit logs & tokens & security events
+      await tx.auditLog.deleteMany({ where: { userId: targetUser.id } });
+      await tx.deviceToken.deleteMany({ where: { userId: targetUser.id } });
+      await tx.securityEvent.deleteMany({ where: { userId: targetUser.id } });
+      await tx.emailEvent.deleteMany({ where: { userId: targetUser.id } });
+
+      // Clean up user engagement
+      await tx.prayerRequest.deleteMany({ where: { userId: targetUser.id } });
+      await tx.eventRegistration.deleteMany({ where: { userId: targetUser.id } });
+      await tx.testimonial.deleteMany({ where: { userId: targetUser.id } });
+      await tx.sermonLike.deleteMany({ where: { userId: targetUser.id } });
+      await tx.sermonComment.deleteMany({ where: { userId: targetUser.id } });
+      await tx.sermonBookmark.deleteMany({ where: { userId: targetUser.id } });
+      await tx.sermonView.deleteMany({ where: { userId: targetUser.id } });
+      await tx.sermonDownload.deleteMany({ where: { userId: targetUser.id } });
+
+      // Dissociate financial / created records
+      await tx.donation.updateMany({ where: { userId: targetUser.id }, data: { userId: null } });
+      await tx.event.updateMany({ where: { createdById: targetUser.id }, data: { createdById: null } });
+      await tx.eventMedia.updateMany({ where: { uploadedById: targetUser.id }, data: { uploadedById: null } });
+
+      // Permanently delete user from database
+      await tx.user.delete({
+        where: { id: targetUser.id },
+      });
     });
 
     // 5. Revoke all active sessions
-    await revokeAllUserSessions(targetUser.id);
+    await revokeAllUserSessions(targetUser.id).catch(() => {});
 
-    // 6. Delete the user
-    await prisma.user.delete({
-      where: { id: targetUser.id },
-    });
-
-    return NextResponse.json({ success: true, message: 'User deleted successfully' });
+    return NextResponse.json({ success: true, message: 'User permanently deleted successfully' });
   } catch (err: any) {
     console.error('[ADMIN/USERS/DELETE] Error:', err);
     return NextResponse.json(

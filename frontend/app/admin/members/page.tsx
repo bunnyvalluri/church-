@@ -68,13 +68,29 @@ export default function MembersOverviewPage() {
   };
 
   const handleDeleteMember = async (id: string | number) => {
+    if (!window.confirm("Are you sure you want to permanently delete this user? This will remove all user records permanently in real-time.")) {
+      return;
+    }
+
+    // Optimistically remove user from state for instant real-time UI response
+    const previousUsers = [...users];
+    setUsers((prev) => prev.filter((u) => u.id !== id && u.uid !== id));
+
     try {
       const token = await getIdToken();
       const headers: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
-      await fetch(`/api/admin/users?id=${id}`, { method: "DELETE", headers });
-      setUsers((prev) => prev.filter((u) => u.id !== id));
-    } catch (e) {
-      console.error(e);
+      const res = await fetch(`/api/admin/users?id=${id}`, { method: "DELETE", headers });
+      const result = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        // Revert UI if server returns an error
+        setUsers(previousUsers);
+        alert(result.error || "Failed to delete user from database.");
+      }
+    } catch (e: any) {
+      console.error("Error deleting user:", e);
+      setUsers(previousUsers);
+      alert(e?.message || "An unexpected error occurred while deleting user.");
     }
   };
 

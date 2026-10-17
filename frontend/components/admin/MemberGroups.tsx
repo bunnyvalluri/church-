@@ -25,6 +25,7 @@ import {
   ArrowLeft
 } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useAuth } from "@/components/providers/AuthProvider";
 
 interface MemberGroupsProps {
   users?: any[];
@@ -170,6 +171,9 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
     }
   ]);
 
+  const { getIdToken } = useAuth();
+  const STORAGE_KEY = "kcm_member_groups_cache";
+
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
   const [categoryFilter, setCategoryFilter] = useState<string>("ALL");
   const [groupSearchQuery, setGroupSearchQuery] = useState("");
@@ -186,6 +190,68 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
     location: ""
   });
   const [searchMemberModal, setSearchMemberModal] = useState("");
+
+  // Real-time synchronization: Load groups from cache and remote API
+  useEffect(() => {
+    let hasLoaded = false;
+    if (typeof window !== "undefined") {
+      const cached = localStorage.getItem(STORAGE_KEY);
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setGroups(parsed);
+            setSelectedGroup(parsed[0]);
+            hasLoaded = true;
+          }
+        } catch {}
+      }
+    }
+
+    (async () => {
+      try {
+        const token = await getIdToken();
+        const headers: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
+        const res = await fetch("/api/admin/groups", { headers });
+        const data = await res.json();
+        if (res.ok && data.success && Array.isArray(data.groups) && data.groups.length > 0) {
+          setGroups(data.groups);
+          if (!hasLoaded) {
+            setSelectedGroup(data.groups[0]);
+          }
+          if (typeof window !== "undefined") {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data.groups));
+          }
+        }
+      } catch (err) {
+        console.warn("Could not load groups from server:", err);
+      }
+    })();
+  }, [getIdToken]);
+
+  // Real-time update dispatcher
+  const syncGroupUpdate = async (nextGroups: Group[], action: "create" | "update" | "delete", payload?: any) => {
+    setGroups(nextGroups);
+    if (typeof window !== "undefined") {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(nextGroups));
+    }
+    try {
+      const token = await getIdToken();
+      const headers: HeadersInit = token
+        ? { "Content-Type": "application/json", Authorization: `Bearer ${token}` }
+        : { "Content-Type": "application/json" };
+
+      if (action === "create") {
+        await fetch("/api/admin/groups", { method: "POST", headers, body: JSON.stringify(payload) });
+      } else if (action === "update") {
+        await fetch("/api/admin/groups", { method: "PUT", headers, body: JSON.stringify(payload) });
+      } else if (action === "delete") {
+        await fetch(`/api/admin/groups?id=${payload.id}`, { method: "DELETE", headers });
+      }
+    } catch (e) {
+      console.warn("Failed to sync group operation with server:", e);
+    }
+  };
 
   // Computed metrics
   const totalEnrolledBelievers = useMemo(() => {
@@ -214,49 +280,56 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
     }
   };
 
-  // Handlers
+  // Real-time Handlers
   const handleCreateGroup = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newGroup.name) return;
+    if (!newGroup.name.trim()) return;
     const created: Group = {
-      id: `grp_${Date.now()}`,
-      name: newGroup.name,
-      description: newGroup.description || "Active church fellowship group.",
+      id: `grp_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+      name: newGroup.name.trim(),
+      description: newGroup.description.trim() || "Active church fellowship group.",
       category: newGroup.category,
       members: [],
-      meetingTime: newGroup.meetingTime || "Weekly Service",
-      location: newGroup.location || "Sanctuary"
+      meetingTime: newGroup.meetingTime.trim() || "Weekly Service",
+      location: newGroup.location.trim() || "Sanctuary"
     };
-    setGroups(prev => [...prev, created]);
+    const nextGroups = [created, ...groups];
     setSelectedGroup(created);
     setNewGroup({ name: "", description: "", category: "YOUTH", meetingTime: "", location: "" });
     setIsCreateOpen(false);
+    syncGroupUpdate(nextGroups, "create", created);
   };
 
   const handleAddMemberToGroup = (userId: string) => {
     if (!selectedGroup) return;
     
-    setGroups(prev => prev.map(g => {
+    let updatedGroup: Group | null = null;
+    const nextGroups = groups.map(g => {
       if (g.id === selectedGroup.id) {
         const alreadyExists = g.members.includes(userId);
         const updatedMembers = alreadyExists 
           ? g.members.filter(id => id !== userId) 
           : [...g.members, userId];
         
-        const updatedGroup = { ...g, members: updatedMembers };
-        setSelectedGroup(updatedGroup);
+        updatedGroup = { ...g, members: updatedMembers };
         return updatedGroup;
       }
       return g;
-    }));
+    });
+
+    if (updatedGroup) {
+      setSelectedGroup(updatedGroup);
+      syncGroupUpdate(nextGroups, "update", updatedGroup);
+    }
   };
 
   const handleRemoveGroup = (groupId: string) => {
-    if (confirm(isTe ? "మీరు ఖచ్చితంగా ఈ సమూహాన్ని తొలగించాలనుకుంటున్నారా?" : isHi ? "क्या आप वाकई इस समूह को हटाना चाहते हैं?" : "Are you sure you want to delete this fellowship group?")) {
-      setGroups(prev => prev.filter(g => g.id !== groupId));
+    if (confirm(isTe ? "మీరు ఖచ్చితంగా ఈ సమూహాన్ని తొలగించాలనుకుంటున్నారా?" : isHi ? "क्या आप वाकई इस समूह को हटाना चाहते हैं?" : "Are you sure you want to permanently delete this fellowship group?")) {
+      const nextGroups = groups.filter(g => g.id !== groupId);
       if (selectedGroup?.id === groupId) {
-        setSelectedGroup(null);
+        setSelectedGroup(nextGroups[0] || null);
       }
+      syncGroupUpdate(nextGroups, "delete", { id: groupId });
     }
   };
 
