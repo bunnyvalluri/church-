@@ -3,6 +3,8 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAdminOrDev } from '@/lib/authMiddleware';
 
+import { getNgoPresetById } from '@/lib/ngoPresets';
+
 /**
  * GET /api/ngo/projects/[id]
  * Returns details of a specific NGO project, including associated media.
@@ -12,6 +14,12 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    // Check preset projects first for instant resolution
+    const preset = getNgoPresetById(params.id);
+    if (preset) {
+      return NextResponse.json({ success: true, project: preset });
+    }
+
     const project = await prisma.ngoProject.findUnique({
       where: { id: params.id },
       include: {

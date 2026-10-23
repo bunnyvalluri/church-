@@ -51,6 +51,8 @@ function encodeSrc(src: string | null | undefined): string {
   }
 }
 
+import { getNgoPresetById } from "@/lib/ngoPresets";
+
 export default function NgoProjectDetailPage({
   params,
 }: {
@@ -96,120 +98,37 @@ export default function NgoProjectDetailPage({
 
   useEffect(() => {
     async function loadProjectDetails() {
+      // 1. Instant check for preset initiatives (zero latency, instant paint)
+      const staticPreset = getNgoPresetById(params.id);
+      if (staticPreset) {
+        setProject(staticPreset);
+        setLoading(false);
+        return;
+      }
+
+      // 2. Fetch dynamic projects from API
       try {
         const res = await fetch(`/api/ngo/projects/${params.id}`);
         const data = await res.json();
-        if (res.ok && data.success) {
+        if (res.ok && data.success && data.project) {
           setProject(data.project);
         } else {
-          // If preset project matches from listing fallback
-          if (params.id.startsWith("preset-")) {
-            const presets: Record<string, Project> = {
-              "preset-gandhi": {
-                id: "preset-gandhi",
-                title: "Gandhi General Hospital Support",
-                description: "Distributing nutritious milk food, basic medical supplies, and sanitary items to critical care wards and patient caretakers.",
-                details: "Every week, KCM volunteers visit Gandhi General Hospital in Hyderabad. Our primary activities include preparing and distributing fresh food packets, sanitary clothes, warm blankets, and direct financial aid to patients in cardiac, oncology, and general medicine wards. In addition to physical supplies, we offer counseling and emotional support to patient families.",
-                imageUrl: "/gandhi_hospital_support_image.png",
-                targetAmount: null,
-                raisedAmount: 0,
-                status: "ACTIVE",
-                createdAt: "2026-03-25T00:00:00.000Z",
-                media: [],
-                _count: { volunteers: 0 },
-              },
-              "preset-bethany": {
-                id: "preset-bethany",
-                title: "Bethany Samrakshana Ashramam Care",
-                description: "Supporting orphan children and elders in Bethany Ashramam with monthly groceries, school supplies, clean blankets, and care assistants.",
-                details: "Bethany Samrakshana Ashramam provides refuge to underprivileged orphan children and abandoned elders. KCM NGO services finance their primary operating costs. This includes purchasing monthly dry grocery bags (rice, wheat, pulses), school books and uniforms for the children, medical checkups for the elderly residents, and contributing toward helper salaries.",
-                imageUrl: "/bethany_ashramam_care_image.png",
-                targetAmount: null,
-                raisedAmount: 0,
-                status: "ACTIVE",
-                createdAt: "2026-04-21T00:00:00.000Z",
-                media: [],
-                _count: { volunteers: 0 },
-              },
-              "preset-disabled": {
-                id: "preset-disabled",
-                title: "Home for the Disabled Ashramam Aid",
-                description: "Assisting physical rehabilitation centers with wheelchairs, walkers, monthly provisions, and critical healthcare monitoring programs.",
-                details: "We partner with local disabled rehabilitation centers to supply mobility aids. Our support covers the purchase of high-quality wheelchairs, walkers, crutches, and orthotic accessories. We also organize monthly provisions deliveries and fund visiting healthcare nurses to manage therapy, medical needs, and daily rehabilitation audits.",
-                imageUrl: "/home_for_disabled_rehab_care.png",
-                targetAmount: null,
-                raisedAmount: 0,
-                status: "ACTIVE",
-                createdAt: "2026-06-17T00:00:00.000Z",
-                media: [],
-                _count: { volunteers: 0 },
-              },
-              "preset-charity": {
-                id: "preset-charity",
-                title: "Missionaries of Charity Bhoiguda Outreach",
-                description: "Providing wholesome nutrition, clean blankets, medical care items, and emotional comfort to residents at Missionaries of Charity, Bhoiguda.",
-                details: "KCM volunteers organize dedicated compassionate care drives at Missionaries of Charity in Secunderabad Bhoiguda. We supply wholesome meals, fresh milk, fruits, clean bedding, warm blankets, and personal care hygiene kits to destitute residents and patients under specialized care.",
-                imageUrl: "/missionaries_of_charity_bhoiguda_outreach.png",
-                targetAmount: null,
-                raisedAmount: 0,
-                status: "ACTIVE",
-                createdAt: "2026-05-25T00:00:00.000Z",
-                media: [],
-                _count: { volunteers: 0 },
-              },
-              "preset-disabled-secunderabad": {
-                id: "preset-disabled-secunderabad",
-                title: "Home for the Disabled (Secunderabad) Care",
-                description: "Delivering clothing, monthly groceries, blankets, and essential hygiene provisions to special needs individuals and elderly at Home for the Disabled, Secunderabad.",
-                details: "Regular monthly aid drives conducted at Home for the Disabled in Secunderabad. KCM distributes warm blankets, new clothing, sanitary supplies, nutritious food packages, and physical mobility devices, ensuring residents receive dignity, compassionate fellowship, and dependable support.",
-                imageUrl: "/home_for_disabled_secunderabad.jpg",
-                targetAmount: null,
-                raisedAmount: 0,
-                status: "ACTIVE",
-                createdAt: "2026-07-23T00:00:00.000Z",
-                media: [],
-                _count: { volunteers: 0 },
-              },
-              "preset-sneha-trust": {
-                id: "preset-sneha-trust",
-                title: "Sneha Charitable Trust - ICU Beds & Care Mission",
-                description: "Donating 2 ICU beds, 2.5 KV power inverter backup system, financial support cheque, and essential nutrition for children with multiple disabilities.",
-                details: "In partnership with Sneha Charitable Trust in Yalampet (Medchal District), Kingdom of Christ Ministries & NGO Society fulfills its commitment to children suffering from multiple disabilities. Bishop Kurra Kristhu Raju and society leaders personally delivered two advanced ICU beds, a 2.5 KV inverter power backup system to ensure life-saving equipment runs uninterrupted, along with financial cheque assistance and essential provisions. Over 60 children under daily care benefit directly from this mission.",
-                imageUrl: "/sneha_charitable_trust_icu_beds.jpg",
-                targetAmount: null,
-                raisedAmount: 0,
-                status: "ACTIVE",
-                createdAt: "2026-10-25T00:00:00.000Z",
-                media: [
-                  { id: "s-m-1", title: "Daivalayam Facility, 2 ICU Beds & Inverter Unit", type: "IMAGE", url: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/7.jpeg" },
-                  { id: "s-m-2", title: "2 ICU Beds Handover & Financial Support Cheque", type: "IMAGE", url: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/25.jpeg" },
-                  { id: "s-m-3", title: "Daivalayam Family Letter of Gratitude", type: "IMAGE", url: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/2.jpeg" },
-                  { id: "s-m-4", title: "St. Camillus Ashram & Trust Road Signboard", type: "IMAGE", url: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/1.jpeg" },
-                  { id: "s-m-5", title: "Telugu Newspaper Coverage Article", type: "IMAGE", url: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/3.jpeg" },
-                  { id: "s-m-6", title: "Local Media Press Report Clipping", type: "IMAGE", url: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/4.jpeg" },
-                  { id: "s-m-7", title: "Signing Cheque on Inverter Backup Unit", type: "IMAGE", url: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/24.jpeg" },
-                  { id: "s-m-8", title: "Bishop Christu Raju TV Broadcast Address", type: "IMAGE", url: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/11.jpeg" },
-                  { id: "s-m-9", title: "Bishop Endorsing Financial Aid Cheque", type: "IMAGE", url: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/28.jpeg" },
-                  { id: "s-m-10", title: "KCM Society Team, Staff & Special Children", type: "IMAGE", url: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/30.jpeg" },
-                  { id: "s-m-11", title: "Care Event Outreach Collage 1", type: "IMAGE", url: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/5.jpeg" },
-                  { id: "s-m-12", title: "Care Event Outreach Collage 2", type: "IMAGE", url: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/6.jpeg" },
-                  { id: "s-m-13", title: "High-Dependency ICU Bed Specifications", type: "IMAGE", url: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/47.jpeg" }
-                ],
-                _count: { volunteers: 52 },
-              },
-            };
-
-            const preset = presets[params.id];
-            if (preset) {
-              setProject(preset);
-              return;
-            }
+          // Double check fallback presets
+          const fallback = getNgoPresetById(params.id);
+          if (fallback) {
+            setProject(fallback);
+          } else {
+            setErrorMsg(data.error || "Project details not found.");
           }
-          setErrorMsg(data.error || "Project details not found.");
         }
       } catch (err: any) {
         console.error(err);
-        setErrorMsg("Failed to load project details.");
+        const fallback = getNgoPresetById(params.id);
+        if (fallback) {
+          setProject(fallback);
+        } else {
+          setErrorMsg("Failed to load project details.");
+        }
       } finally {
         setLoading(false);
       }
