@@ -111,12 +111,12 @@ export default function NgoProjectDetailPage({
                 description: "Distributing nutritious milk food, basic medical supplies, and sanitary items to critical care wards and patient caretakers.",
                 details: "Every week, KCM volunteers visit Gandhi General Hospital in Hyderabad. Our primary activities include preparing and distributing fresh food packets, sanitary clothes, warm blankets, and direct financial aid to patients in cardiac, oncology, and general medicine wards. In addition to physical supplies, we offer counseling and emotional support to patient families.",
                 imageUrl: "/gandhi_hospital_support_image.png",
-                targetAmount: 150000,
-                raisedAmount: 95400,
+                targetAmount: null,
+                raisedAmount: 0,
                 status: "ACTIVE",
                 createdAt: "2026-03-25T00:00:00.000Z",
                 media: [],
-                _count: { volunteers: 42 },
+                _count: { volunteers: 0 },
               },
               "preset-bethany": {
                 id: "preset-bethany",
@@ -124,12 +124,12 @@ export default function NgoProjectDetailPage({
                 description: "Supporting orphan children and elders in Bethany Ashramam with monthly groceries, school supplies, clean blankets, and care assistants.",
                 details: "Bethany Samrakshana Ashramam provides refuge to underprivileged orphan children and abandoned elders. KCM NGO services finance their primary operating costs. This includes purchasing monthly dry grocery bags (rice, wheat, pulses), school books and uniforms for the children, medical checkups for the elderly residents, and contributing toward helper salaries.",
                 imageUrl: "/bethany_ashramam_care_image.png",
-                targetAmount: 200000,
-                raisedAmount: 180000,
+                targetAmount: null,
+                raisedAmount: 0,
                 status: "ACTIVE",
                 createdAt: "2026-04-21T00:00:00.000Z",
                 media: [],
-                _count: { volunteers: 30 },
+                _count: { volunteers: 0 },
               },
               "preset-disabled": {
                 id: "preset-disabled",
@@ -137,12 +137,12 @@ export default function NgoProjectDetailPage({
                 description: "Assisting physical rehabilitation centers with wheelchairs, walkers, monthly provisions, and critical healthcare monitoring programs.",
                 details: "We partner with local disabled rehabilitation centers to supply mobility aids. Our support covers the purchase of high-quality wheelchairs, walkers, crutches, and orthotic accessories. We also organize monthly provisions deliveries and fund visiting healthcare nurses to manage therapy, medical needs, and daily rehabilitation audits.",
                 imageUrl: "/home_for_disabled_rehab_care.png",
-                targetAmount: 300000,
-                raisedAmount: 124000,
+                targetAmount: null,
+                raisedAmount: 0,
                 status: "ACTIVE",
                 createdAt: "2026-06-17T00:00:00.000Z",
                 media: [],
-                _count: { volunteers: 25 },
+                _count: { volunteers: 0 },
               },
               "preset-charity": {
                 id: "preset-charity",
@@ -150,34 +150,34 @@ export default function NgoProjectDetailPage({
                 description: "Providing wholesome nutrition, clean blankets, medical care items, and emotional comfort to residents at Missionaries of Charity, Bhoiguda.",
                 details: "KCM volunteers organize dedicated compassionate care drives at Missionaries of Charity in Secunderabad Bhoiguda. We supply wholesome meals, fresh milk, fruits, clean bedding, warm blankets, and personal care hygiene kits to destitute residents and patients under specialized care.",
                 imageUrl: "/missionaries_of_charity_bhoiguda_outreach.png",
-                targetAmount: 250000,
-                raisedAmount: 142000,
+                targetAmount: null,
+                raisedAmount: 0,
                 status: "ACTIVE",
                 createdAt: "2026-05-25T00:00:00.000Z",
                 media: [],
-                _count: { volunteers: 35 },
+                _count: { volunteers: 0 },
               },
               "preset-disabled-secunderabad": {
                 id: "preset-disabled-secunderabad",
                 title: "Home for the Disabled (Secunderabad) Care",
                 description: "Delivering clothing, monthly groceries, blankets, and essential hygiene provisions to special needs individuals and elderly at Home for the Disabled, Secunderabad.",
                 details: "Regular monthly aid drives conducted at Home for the Disabled in Secunderabad. KCM distributes warm blankets, new clothing, sanitary supplies, nutritious food packages, and physical mobility devices, ensuring residents receive dignity, compassionate fellowship, and dependable support.",
-                imageUrl: "/KCM_NGO_SERVICES/HOME_FOR_THE_DISABLED (SECUNDERABAD) [23-07-2026]/IMG-20260723-WA0001.jpg",
-                targetAmount: 350000,
-                raisedAmount: 215000,
+                imageUrl: "/home_for_disabled_secunderabad.jpg",
+                targetAmount: null,
+                raisedAmount: 0,
                 status: "ACTIVE",
                 createdAt: "2026-07-23T00:00:00.000Z",
                 media: [],
-                _count: { volunteers: 48 },
+                _count: { volunteers: 0 },
               },
               "preset-sneha-trust": {
                 id: "preset-sneha-trust",
                 title: "Sneha Charitable Trust - ICU Beds & Care Mission",
                 description: "Donating 2 ICU beds, 2.5 KV power inverter backup system, financial support cheque, and essential nutrition for children with multiple disabilities.",
                 details: "In partnership with Sneha Charitable Trust in Yalampet (Medchal District), Kingdom of Christ Ministries & NGO Society fulfills its commitment to children suffering from multiple disabilities. Bishop Kurra Kristhu Raju and society leaders personally delivered two advanced ICU beds, a 2.5 KV inverter power backup system to ensure life-saving equipment runs uninterrupted, along with financial cheque assistance and essential provisions. Over 60 children under daily care benefit directly from this mission.",
-                imageUrl: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/25.jpeg",
-                targetAmount: 300000,
-                raisedAmount: 220000,
+                imageUrl: "/sneha_charitable_trust_icu_beds.jpg",
+                targetAmount: null,
+                raisedAmount: 0,
                 status: "ACTIVE",
                 createdAt: "2026-10-25T00:00:00.000Z",
                 media: [
@@ -301,50 +301,81 @@ export default function NgoProjectDetailPage({
           </div>
         )}
 
-        {/* Progress Grid */}
-        <div className="grid md:grid-cols-3 gap-6 bg-white/80 dark:bg-slate-900 border border-slate-200 dark:border-white/5 p-6 rounded-3xl backdrop-blur-sm shadow-sm">
-          <div className="md:col-span-2 space-y-3 flex flex-col justify-center">
-            <div className="flex items-center justify-between text-xs font-semibold">
-              <span className="text-slate-500 dark:text-slate-400">{ngoT.projectsPage.fundsProgress}</span>
-              <span className="text-purple-600 dark:text-purple-300 font-bold">{percent}% {ngoT.projectsPage.completeLabel}</span>
-            </div>
-            <div className="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-red-500 to-purple-600 rounded-full"
-                style={{ width: `${percent}%` }}
-              />
-            </div>
-            <div className="flex justify-between text-xs">
-              <div>
-                <span className="text-slate-900 dark:text-white font-black text-sm">₹{raised.toLocaleString("en-IN")}</span>
-                <span className="text-slate-500 dark:text-slate-400 text-xs"> {ngoT.projectsPage.raised}</span>
+        {/* Action & Verification Card (No fake numbers) */}
+        {target > 0 ? (
+          <div className="grid md:grid-cols-3 gap-6 bg-white/80 dark:bg-slate-900 border border-slate-200 dark:border-white/5 p-6 rounded-3xl backdrop-blur-sm shadow-sm">
+            <div className="md:col-span-2 space-y-3 flex flex-col justify-center">
+              <div className="flex items-center justify-between text-xs font-semibold">
+                <span className="text-slate-500 dark:text-slate-400">{ngoT.projectsPage.fundsProgress}</span>
+                <span className="text-purple-600 dark:text-purple-300 font-bold">{percent}% {ngoT.projectsPage.completeLabel}</span>
               </div>
-              {target > 0 && (
+              <div className="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-red-500 to-purple-600 rounded-full"
+                  style={{ width: `${percent}%` }}
+                />
+              </div>
+              <div className="flex justify-between text-xs">
+                <div>
+                  <span className="text-slate-900 dark:text-white font-black text-sm">₹{raised.toLocaleString("en-IN")}</span>
+                  <span className="text-slate-500 dark:text-slate-400 text-xs"> {ngoT.projectsPage.raised}</span>
+                </div>
                 <div className="text-slate-500 dark:text-slate-400 text-xs">
                   {ngoT.projectsPage.goalTarget} <span className="text-slate-900 dark:text-white font-bold">₹{target.toLocaleString("en-IN")}</span>
                 </div>
-              )}
+              </div>
+            </div>
+
+            <div className="flex md:flex-col gap-3 justify-center border-t md:border-t-0 md:border-l border-slate-200 dark:border-white/5 pt-4 md:pt-0 md:pl-6">
+              <Link
+                href={`/ngo/donations?project=${project.id}`}
+                className="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white font-bold text-center rounded-xl text-xs transition-colors flex items-center justify-center gap-1.5 shadow-sm hover:shadow-md active:scale-95"
+              >
+                <Heart className="w-3.5 h-3.5 fill-current" />
+                {ngoT.projectsPage.supportCause}
+              </Link>
+              <Link
+                href={`/ngo/volunteers?project=${project.id}`}
+                className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-white/5 font-bold text-center rounded-xl text-xs transition-colors flex items-center justify-center gap-1.5 shadow-sm active:scale-95"
+              >
+                <Users className="w-3.5 h-3.5" />
+                {ngoT.projectsPage.applyServe}
+              </Link>
             </div>
           </div>
+        ) : (
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-6 bg-gradient-to-r from-purple-500/10 via-pink-500/5 to-slate-100/50 dark:from-slate-900/90 dark:via-purple-950/20 dark:to-slate-900/90 border border-slate-200/90 dark:border-white/10 p-6 sm:p-8 rounded-3xl shadow-sm">
+            <div className="space-y-1.5 text-left max-w-lg">
+              <div className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span>Verified Humanitarian Care Initiative</span>
+              </div>
+              <h4 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
+                Direct Field Relief & Care Sponsorship
+              </h4>
+              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                100% of your contributions go directly to patient care, critical equipment, nutrition, and essential provisions under KCM NGO Society (80G Tax-Deductible).
+              </p>
+            </div>
 
-          <div className="flex md:flex-col gap-3 justify-center border-t md:border-t-0 md:border-l border-slate-200 dark:border-white/5 pt-4 md:pt-0 md:pl-6">
-            <Link
-              href={`/ngo/donations?project=${project.id}`}
-              className="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white font-bold text-center rounded-xl text-xs transition-colors flex items-center justify-center gap-1.5 shadow-sm hover:shadow-md active:scale-95"
-            >
-              <Heart className="w-3.5 h-3.5 fill-current" />
-              {ngoT.projectsPage.supportCause}
-            </Link>
-            
-            <Link
-              href={`/ngo/volunteers?project=${project.id}`}
-              className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-white/5 font-bold text-center rounded-xl text-xs transition-colors flex items-center justify-center gap-1.5 shadow-sm active:scale-95"
-            >
-              <Users className="w-3.5 h-3.5" />
-              {ngoT.projectsPage.applyServe}
-            </Link>
+            <div className="flex flex-wrap sm:flex-nowrap gap-3 w-full sm:w-auto">
+              <Link
+                href={`/ngo/donations?project=${project.id}`}
+                className="flex-1 sm:flex-none px-6 py-3 bg-gradient-to-r from-red-500 via-pink-600 to-purple-600 hover:from-red-600 hover:to-purple-700 text-white font-bold text-center rounded-xl text-xs transition-all shadow-md shadow-purple-500/20 flex items-center justify-center gap-2 hover:scale-105 active:scale-95 whitespace-nowrap"
+              >
+                <Heart className="w-4 h-4 fill-current" />
+                <span>{ngoT.projectsPage.supportCause || "Support This Initiative"}</span>
+              </Link>
+              <Link
+                href={`/ngo/volunteers?project=${project.id}`}
+                className="flex-1 sm:flex-none px-5 py-3 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-800 dark:text-white border border-slate-200 dark:border-white/10 font-bold text-center rounded-xl text-xs transition-all flex items-center justify-center gap-2 active:scale-95 whitespace-nowrap"
+              >
+                <Users className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                <span>{ngoT.projectsPage.applyServe || "Volunteer"}</span>
+              </Link>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Details Story */}
         <div className="space-y-4">
