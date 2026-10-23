@@ -131,7 +131,7 @@ const NgoSubNav = memo(function NgoSubNav() {
         "bg-white/95 dark:bg-slate-950/95 backdrop-blur-2xl",
         "border-b border-slate-200/80 dark:border-slate-800/80",
         "shadow-[0_2px_12px_rgba(0,0,0,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)]",
-        "transition-[top,background-color,border-color,box-shadow] duration-200"
+        "transition-[background-color,border-color,box-shadow] duration-200"
       )}
     >
       <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-1.5 sm:py-2">

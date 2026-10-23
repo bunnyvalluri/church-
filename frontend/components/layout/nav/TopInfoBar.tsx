@@ -5,15 +5,12 @@ import { Phone, ChevronRight, Youtube, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface TopInfoBarProps {
-  isScrolled: boolean;
+  isScrolled?: boolean;
 }
 
 /**
  * TopInfoBar — Contact numbers + service times + social links.
- *
- * Only visible at xl+ (≥1280px).
- * Collapses via max-h transition on scroll (180ms).
- * Uses `will-change: max-height` to GPU-hint the browser.
+ * Visible at xl+ (≥1280px) in natural page flow above the sticky header.
  */
 const TopInfoBar = memo(function TopInfoBar({ isScrolled }: TopInfoBarProps) {
   const phones = [
@@ -24,14 +21,10 @@ const TopInfoBar = memo(function TopInfoBar({ isScrolled }: TopInfoBarProps) {
 
   return (
     <div
-      aria-hidden={isScrolled}
       className={cn(
-        "hidden xl:block relative overflow-hidden",
+        "hidden xl:block relative overflow-hidden h-9 w-full",
         "bg-gradient-to-r from-violet-700/90 via-purple-700/90 to-violet-700/90",
-        "text-purple-100 text-xs",
-        // Collapse transition — 200ms
-        "transition-[max-height,opacity] duration-200 ease-in-out",
-        isScrolled ? "max-h-0 opacity-0 pointer-events-none" : "max-h-9 opacity-100"
+        "text-purple-100 text-xs"
       )}
     >
       {/* Shimmer animation — GPU layer */}

@@ -68,7 +68,7 @@ const NavigationBar = memo(function NavigationBar() {
       if (ro) ro.disconnect();
       window.removeEventListener("resize", updateHeaderHeight);
     };
-  }, [isScrolled]);
+  }, []);
 
   // ── Nav items — memoized, only rebuilds when translations change ────────────
   const navItems: NavItem[] = useMemo(
@@ -93,12 +93,17 @@ const NavigationBar = memo(function NavigationBar() {
 
   // ── Scroll & Active Section Detection — Zero-Jank IntersectionObserver ────
   useEffect(() => {
-    // 1. Passive, throttled scroll threshold for navbar background blur
+    // 1. Passive, throttled scroll threshold with hysteresis deadband (prevents jitter loops)
     let ticking = false;
     const onScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
-          setIsScrolled(window.scrollY > 30);
+          const sy = window.scrollY;
+          setIsScrolled((prev) => {
+            if (!prev && sy > 50) return true;
+            if (prev && sy < 15) return false;
+            return prev;
+          });
           ticking = false;
         });
         ticking = true;
@@ -106,7 +111,7 @@ const NavigationBar = memo(function NavigationBar() {
     };
 
     window.addEventListener("scroll", onScroll, { passive: true });
-    setIsScrolled(window.scrollY > 30);
+    setIsScrolled(window.scrollY > 50);
 
     // 2. High-performance IntersectionObserver for active section highlighting
     const hashSections = navItems
@@ -171,6 +176,9 @@ const NavigationBar = memo(function NavigationBar() {
 
   return (
     <>
+      {/* ── Top info bar (in natural page flow above sticky header) ── */}
+      <TopInfoBar />
+
       <header
         ref={headerRef}
         className={cn(
@@ -182,9 +190,6 @@ const NavigationBar = memo(function NavigationBar() {
           "max-w-[100vw]"
         )}
       >
-        {/* ── Top info bar (xl+, collapses on scroll) ── */}
-        <TopInfoBar isScrolled={isScrolled} />
-
         {/* ── Main nav ── */}
         <nav
           aria-label="Main navigation"
