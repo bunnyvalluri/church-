@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Heart, Users, ChevronLeft, Calendar, Loader2, Image as ImageIcon } from "lucide-react";
+import { Heart, Users, ChevronLeft, ChevronRight, Calendar, Loader2, Image as ImageIcon, Maximize2, X } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { translations } from "@/lib/translations";
 
@@ -61,10 +61,35 @@ export default function NgoProjectDetailPage({
   const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
+  const [activeLightboxIndex, setActiveLightboxIndex] = useState<number | null>(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Keyboard navigation for lightbox
+  useEffect(() => {
+    if (activeLightboxIndex === null) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setActiveLightboxIndex(null);
+      } else if (e.key === "ArrowLeft") {
+        setActiveLightboxIndex((prev) =>
+          prev !== null && project?.media && project.media.length > 0
+            ? (prev - 1 + project.media.length) % project.media.length
+            : null
+        );
+      } else if (e.key === "ArrowRight") {
+        setActiveLightboxIndex((prev) =>
+          prev !== null && project?.media && project.media.length > 0
+            ? (prev + 1) % project.media.length
+            : null
+        );
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [activeLightboxIndex, project?.media]);
 
   const ngoT = t?.ngo || {};
   const projectsPage = ngoT.projectsPage || {};
@@ -156,12 +181,19 @@ export default function NgoProjectDetailPage({
                 status: "ACTIVE",
                 createdAt: "2026-10-25T00:00:00.000Z",
                 media: [
-                  { id: "s-m-1", title: "2 ICU Beds Handover & Financial Support", type: "IMAGE", url: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/25.jpeg" },
-                  { id: "s-m-2", title: "Sneha Charitable Trust Facility & Inverter", type: "IMAGE", url: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/7.jpeg" },
-                  { id: "s-m-3", title: "Signing Cheque with 2.5 KV Inverter Unit", type: "IMAGE", url: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/24.jpeg" },
-                  { id: "s-m-4", title: "Daivalayam Family Letter of Gratitude", type: "IMAGE", url: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/2.jpeg" },
-                  { id: "s-m-5", title: "Bishop Christu Raju TV Broadcast Address", type: "IMAGE", url: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/11.jpeg" },
-                  { id: "s-m-6", title: "KCM Society Team, Staff & Children", type: "IMAGE", url: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/30.jpeg" }
+                  { id: "s-m-1", title: "Daivalayam Facility, 2 ICU Beds & Inverter Unit", type: "IMAGE", url: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/7.jpeg" },
+                  { id: "s-m-2", title: "2 ICU Beds Handover & Financial Support Cheque", type: "IMAGE", url: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/25.jpeg" },
+                  { id: "s-m-3", title: "Daivalayam Family Letter of Gratitude", type: "IMAGE", url: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/2.jpeg" },
+                  { id: "s-m-4", title: "St. Camillus Ashram & Trust Road Signboard", type: "IMAGE", url: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/1.jpeg" },
+                  { id: "s-m-5", title: "Telugu Newspaper Coverage Article", type: "IMAGE", url: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/3.jpeg" },
+                  { id: "s-m-6", title: "Local Media Press Report Clipping", type: "IMAGE", url: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/4.jpeg" },
+                  { id: "s-m-7", title: "Signing Cheque on Inverter Backup Unit", type: "IMAGE", url: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/24.jpeg" },
+                  { id: "s-m-8", title: "Bishop Christu Raju TV Broadcast Address", type: "IMAGE", url: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/11.jpeg" },
+                  { id: "s-m-9", title: "Bishop Endorsing Financial Aid Cheque", type: "IMAGE", url: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/28.jpeg" },
+                  { id: "s-m-10", title: "KCM Society Team, Staff & Special Children", type: "IMAGE", url: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/30.jpeg" },
+                  { id: "s-m-11", title: "Care Event Outreach Collage 1", type: "IMAGE", url: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/5.jpeg" },
+                  { id: "s-m-12", title: "Care Event Outreach Collage 2", type: "IMAGE", url: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/6.jpeg" },
+                  { id: "s-m-13", title: "High-Dependency ICU Bed Specifications", type: "IMAGE", url: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/47.jpeg" }
                 ],
                 _count: { volunteers: 52 },
               },
@@ -328,32 +360,139 @@ export default function NgoProjectDetailPage({
         {/* Associated Media */}
         {project.media && project.media.length > 0 && (
           <div className="space-y-6 pt-6 border-t border-slate-200 dark:border-white/5">
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <ImageIcon className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-              {ngoT.projectsPage.mediaLog}
-            </h3>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <ImageIcon className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                {ngoT.projectsPage.mediaLog}
+              </h3>
+              <span className="text-xs font-mono text-purple-600 dark:text-purple-400 bg-purple-500/10 border border-purple-500/20 px-3 py-1 rounded-full font-semibold">
+                {project.media.length} items • Click any image to view in full size
+              </span>
+            </div>
             
-            <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {project.media.map((item) => (
+            <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-5">
+              {project.media.map((item, idx) => (
                 <div
                   key={item.id}
-                  className="relative aspect-video rounded-xl overflow-hidden border border-slate-200 dark:border-white/5 bg-white dark:bg-slate-900 group shadow-md"
+                  onClick={() => setActiveLightboxIndex(idx)}
+                  className="relative aspect-video rounded-2xl overflow-hidden border border-slate-200/90 dark:border-white/10 bg-slate-950 group shadow-md hover:shadow-2xl hover:border-purple-500/50 transition-all duration-300 cursor-pointer"
+                  title="Click to view full image"
                 >
+                  {/* Ambient blurred backdrop so portrait/document images fill the frame gorgeously without black voids */}
+                  <img
+                    src={encodeSrc(item.url)}
+                    alt=""
+                    aria-hidden="true"
+                    className="absolute inset-0 w-full h-full object-cover blur-xl opacity-35 scale-125 pointer-events-none select-none"
+                  />
+
+                  {/* Foreground image - 100% visible and uncropped! */}
                   <img
                     src={encodeSrc(item.url)}
                     alt={item.title || "Campaign media"}
-                    className="object-cover w-full h-full group-hover:scale-102 transition-transform duration-300"
+                    className="relative z-10 w-full h-full object-contain p-1.5 group-hover:scale-[1.03] transition-transform duration-300"
                     onError={(e) => {
                       e.currentTarget.src = "/ngo_outreach_drive_thumbnail.png";
                     }}
                   />
+
+                  {/* Expand icon pill on hover */}
+                  <div className="absolute top-2.5 right-2.5 z-20 px-2.5 py-1 rounded-full bg-slate-950/80 backdrop-blur-md border border-white/20 text-white text-[10px] font-semibold flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg">
+                    <Maximize2 className="w-3 h-3" />
+                    <span>Expand</span>
+                  </div>
+
+                  {/* Caption overlay */}
                   {item.title && (
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/10 to-transparent flex items-end p-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <p className="text-xs font-bold text-white">{item.title}</p>
+                    <div className="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-slate-950 via-slate-950/80 to-transparent p-3 pt-6 pointer-events-none">
+                      <p className="text-xs font-semibold text-white truncate drop-shadow-sm">{item.title}</p>
                     </div>
                   )}
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* Fullscreen Interactive Lightbox Modal */}
+        {activeLightboxIndex !== null && project.media && project.media[activeLightboxIndex] && (
+          <div
+            className="fixed inset-0 z-[2000] bg-black/95 backdrop-blur-xl flex flex-col items-center justify-between p-4 sm:p-6 animate-in fade-in duration-200"
+            onClick={() => setActiveLightboxIndex(null)}
+          >
+            {/* Top Toolbar */}
+            <div
+              className="w-full flex items-center justify-between text-white z-10"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="text-xs sm:text-sm font-medium text-slate-300">
+                <span className="font-bold text-white">{activeLightboxIndex + 1}</span> of{" "}
+                <span className="text-slate-400">{project.media.length}</span>
+                {project.media[activeLightboxIndex].title && (
+                  <span className="ml-3 hidden sm:inline text-white font-semibold">
+                    • {project.media[activeLightboxIndex].title}
+                  </span>
+                )}
+              </div>
+              <button
+                onClick={() => setActiveLightboxIndex(null)}
+                aria-label="Close image viewer"
+                className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-white transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Main Image Display with Left/Right Navigation */}
+            <div
+              className="relative flex-1 w-full flex items-center justify-center my-2 max-h-[80vh]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Previous Button */}
+              {project.media.length > 1 && (
+                <button
+                  onClick={() =>
+                    setActiveLightboxIndex(
+                      (activeLightboxIndex - 1 + project.media.length) % project.media.length
+                    )
+                  }
+                  aria-label="Previous image"
+                  className="absolute left-2 sm:left-4 z-20 w-11 h-11 rounded-full bg-slate-950/70 hover:bg-slate-900 border border-white/20 text-white flex items-center justify-center transition-transform hover:scale-110 active:scale-95 shadow-xl cursor-pointer"
+                >
+                  <ChevronLeft className="w-6 h-6" />
+                </button>
+              )}
+
+              {/* Full Image */}
+              <img
+                src={encodeSrc(project.media[activeLightboxIndex].url)}
+                alt={project.media[activeLightboxIndex].title || "Campaign media"}
+                className="max-h-[80vh] max-w-[90vw] object-contain rounded-xl shadow-2xl transition-all select-none"
+              />
+
+              {/* Next Button */}
+              {project.media.length > 1 && (
+                <button
+                  onClick={() =>
+                    setActiveLightboxIndex((activeLightboxIndex + 1) % project.media.length)
+                  }
+                  aria-label="Next image"
+                  className="absolute right-2 sm:right-4 z-20 w-11 h-11 rounded-full bg-slate-950/70 hover:bg-slate-900 border border-white/20 text-white flex items-center justify-center transition-transform hover:scale-110 active:scale-95 shadow-xl cursor-pointer"
+                >
+                  <ChevronRight className="w-6 h-6" />
+                </button>
+              )}
+            </div>
+
+            {/* Bottom Caption */}
+            <div
+              className="w-full text-center py-2 text-xs sm:text-sm text-slate-300 z-10"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <p className="font-semibold text-white drop-shadow-md">
+                {project.media[activeLightboxIndex].title}
+              </p>
+              <p className="text-[11px] text-slate-400 mt-0.5">Use Left / Right arrow keys to navigate • Esc to close</p>
             </div>
           </div>
         )}
