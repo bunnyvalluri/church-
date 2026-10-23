@@ -171,6 +171,18 @@ const YOUTUBE_ITEMS: MediaItem[] = [
     categoryLabel: "Missionaries of Charity",
     date: "25 MAY 2026"
   },
+  {
+    id: "yt-sneha-trust-1",
+    title: "Sneha Charitable Trust - ICU Beds & Care Mission",
+    description: "Official TV news broadcast covering KCM delivering two advanced ICU beds, a 2.5 KV power backup inverter, and financial cheque assistance to Sneha Charitable Trust Daivalayam facility for children with disabilities in Yalampet.",
+    source: "yt",
+    videoId: "KnpapQWbClI",
+    url: "https://www.youtube-nocookie.com/embed/KnpapQWbClI?si=J7V5Y7hZqK_sneha",
+    thumbnail: "/sneha_charitable_trust_icu_beds.jpg",
+    category: "sneha",
+    categoryLabel: "Sneha Charitable Trust",
+    date: "25 OCT 2026"
+  },
 ];
 
 const BASE_PATH = "/KCM_NGO_SERVICES/BETHANY_SAMRAKSHANA_ASHRAMAM/15-05-2026(AASHRAMAM)";
@@ -519,6 +531,31 @@ function getCategoryDisplayName(cat: string, lang: string): string {
   return cat;
 }
 
+/* ════════════════════════════ RELATED YOUTUBE HELPER ════════════════════════════ */
+function getRelatedYoutubeVideo(item: MediaItem): MediaItem | undefined {
+  if (item.category === "sneha") {
+    return YOUTUBE_ITEMS.find((y) => y.id === "yt-sneha-trust-1");
+  }
+  if (item.category === "charity") {
+    return YOUTUBE_ITEMS.find((y) => y.id === "yt-charity-bhoiguda-1");
+  }
+  if (item.category === "disabled") {
+    if (item.id.includes("sec")) {
+      return YOUTUBE_ITEMS.find((y) => y.id === "yt-disabled-secunderabad-1");
+    }
+    return YOUTUBE_ITEMS.find((y) => y.id === "yt-disabled");
+  }
+  if (item.category === "hospital") {
+    if (item.id.includes("gandhi")) return YOUTUBE_ITEMS.find((y) => y.id === "yt-gandhi");
+    if (item.id.includes("nims")) return YOUTUBE_ITEMS.find((y) => y.id === "yt-nims");
+    return YOUTUBE_ITEMS.find((y) => y.id === "yt-govt");
+  }
+  if (item.category === "ashramam") {
+    return YOUTUBE_ITEMS.find((y) => y.id === "yt-ashramam");
+  }
+  return YOUTUBE_ITEMS[0];
+}
+
 /* ════════════════════════════ LIGHTBOX COMPONENT ════════════════════════════ */
 function Lightbox({ videos, index, onClose, onPrev, onNext, onJump, lang, vT }: {
   videos: MediaItem[]; index: number;
@@ -526,11 +563,13 @@ function Lightbox({ videos, index, onClose, onPrev, onNext, onJump, lang, vT }: 
   lang: string; vT: any;
 }) {
   const [mounted, setMounted] = useState(false);
+  const [hasError, setHasError] = useState(false);
   const vRef = useRef<HTMLVideoElement>(null);
   const sRef = useRef<HTMLDivElement>(null);
   const item = videos[index];
 
   useEffect(() => { setMounted(true); }, []);
+  useEffect(() => { setHasError(false); }, [index]);
 
   useEffect(() => {
     if (!mounted) return;
@@ -554,6 +593,7 @@ function Lightbox({ videos, index, onClose, onPrev, onNext, onJump, lang, vT }: 
   if (!mounted || !item) return null;
 
   const displayTitle = getVideoTitle(item, lang);
+  const relYt = getRelatedYoutubeVideo(item);
 
   return createPortal(
     <div className="fixed inset-0 z-[999999] w-screen h-screen bg-black/98 backdrop-blur-2xl flex flex-col select-none overflow-hidden"
@@ -591,8 +631,52 @@ function Lightbox({ videos, index, onClose, onPrev, onNext, onJump, lang, vT }: 
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
             allowFullScreen
           />
+        ) : hasError ? (
+          <div className="max-w-md p-6 rounded-2xl bg-slate-900/95 border border-white/15 text-center space-y-4 shadow-2xl backdrop-blur-xl">
+            <div className="w-16 h-16 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 mx-auto shadow-lg">
+              <Film className="w-8 h-8" />
+            </div>
+            <p className="text-white font-extrabold text-base leading-snug">{displayTitle}</p>
+            <p className="text-slate-400 text-xs leading-relaxed">
+              {vT.clipStreamUnavailable || "Field recording stream is reconnecting. Watch the full HD broadcast or retry."}
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5 pt-2">
+              {relYt && (
+                <a
+                  href={`https://www.youtube.com/watch?v=${relYt.videoId}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-black text-xs shadow-xl shadow-red-600/30 transition-all hover:scale-105"
+                >
+                  <YouTubeLogoIcon className="w-4 h-4" />
+                  <span>{vT.watchInHd || "Watch in 1080p HD (YouTube)"}</span>
+                </a>
+              )}
+              <button
+                onClick={() => {
+                  setHasError(false);
+                  vRef.current?.load();
+                  vRef.current?.play().catch(() => {});
+                }}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs border border-white/15 transition-all"
+              >
+                <span>{vT.retry || "Retry Stream"}</span>
+              </button>
+            </div>
+          </div>
         ) : (
-          <video ref={vRef} src={encodeSrc(item.src)} controls autoPlay playsInline className="max-w-full max-h-full rounded-2xl shadow-2xl object-contain bg-black" />
+          <video
+            ref={vRef}
+            controls
+            autoPlay
+            playsInline
+            preload="metadata"
+            onError={() => setHasError(true)}
+            className="max-w-full max-h-full rounded-2xl shadow-2xl object-contain bg-black"
+          >
+            <source src={encodeSrc(item.src)} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
         )}
 
         {index > 0 && (
@@ -789,11 +873,16 @@ export default function NgoVideosPage() {
   // Active state
   const [activeMediaId, setActiveMediaId] = useState<string>(YOUTUBE_ITEMS[0].id);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [videoError, setVideoError] = useState<boolean>(false);
   const [filterCategory, setFilterCategory] = useState<"all" | "yt" | "mp4" | "hospital" | "ashramam" | "disabled" | "charity" | "sneha">("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [playlistTab, setPlaylistTab] = useState<"yt" | "mp4" | "all">("yt");
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [linkCopied, setLinkCopied] = useState(false);
+
+  useEffect(() => {
+    setVideoError(false);
+  }, [activeMediaId]);
 
   // Smooth scroll reference to top stage
   const playerStageRef = useRef<HTMLDivElement>(null);
@@ -943,7 +1032,11 @@ export default function NgoVideosPage() {
     fieldLog: "Field Video Log",
     youtubeDoc: "YouTube Documentary",
     noResults: "No video logs match your search query",
-    clearFilters: "Clear Filters"
+    clearFilters: "Clear Filters",
+    clipStreamUnavailable: "Field Video Stream Reconnecting",
+    watchInHd: "Watch in 1080p HD (YouTube)",
+    retry: "Retry Stream",
+    videoNotSupported: "Your browser does not support the video tag."
   };
 
   return (
@@ -1293,14 +1386,58 @@ export default function NgoVideosPage() {
                   </div>
                 )
               ) : isPlaying ? (
-                <video
-                  key={activeMedia.id}
-                  src={encodeSrc(activeMedia.src)}
-                  controls
-                  autoPlay
-                  playsInline
-                  className="absolute inset-0 w-full h-full object-contain bg-black"
-                />
+                videoError ? (
+                  <div className="absolute inset-0 bg-slate-950 flex flex-col items-center justify-center p-6 text-center z-20 select-none">
+                    <div className="w-16 h-16 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-4 shadow-xl shadow-amber-500/10">
+                      <Film className="w-8 h-8" />
+                    </div>
+                    <h4 className="text-white font-extrabold text-base sm:text-lg mb-1">
+                      {vT.clipStreamUnavailable || "Field Video Stream Reconnecting"}
+                    </h4>
+                    <p className="text-slate-400 text-xs sm:text-sm max-w-md mb-5 leading-relaxed line-clamp-2">
+                      {getVideoTitle(activeMedia, language)}
+                    </p>
+                    <div className="flex flex-wrap items-center justify-center gap-3">
+                      {getRelatedYoutubeVideo(activeMedia) && (
+                        <button
+                          onClick={() => {
+                            const rel = getRelatedYoutubeVideo(activeMedia);
+                            if (rel) {
+                              setActiveMediaId(rel.id);
+                              setIsPlaying(true);
+                              setVideoError(false);
+                            }
+                          }}
+                          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-black text-xs sm:text-sm shadow-xl shadow-red-600/30 transition-all hover:scale-105 active:scale-95"
+                        >
+                          <YouTubeLogoIcon className="w-4 h-4" />
+                          <span>{vT.watchInHd || "Watch in 1080p HD (YouTube)"}</span>
+                        </button>
+                      )}
+                      <button
+                        onClick={() => {
+                          setVideoError(false);
+                        }}
+                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm border border-white/15 transition-all"
+                      >
+                        <span>{vT.retry || "Retry Stream"}</span>
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <video
+                    key={activeMedia.id}
+                    controls
+                    autoPlay
+                    playsInline
+                    preload="metadata"
+                    onError={() => setVideoError(true)}
+                    className="absolute inset-0 w-full h-full object-contain bg-black"
+                  >
+                    <source src={encodeSrc(activeMedia.src)} type="video/mp4" />
+                    {vT.videoNotSupported || "Your browser does not support the video tag."}
+                  </video>
+                )
               ) : (
                 /* Manual Click-to-Play Poster Screen for MP4 Videos Section */
                 <div

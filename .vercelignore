@@ -38,10 +38,10 @@ reports/
 !frontend/public/KCM_NGO_SERVICES/
 !frontend/public/KCM_NGO_SERVICES/**
 
-# Ignore heavy video MP4s from deployment bundle to stay under Vercel limits
-frontend/public/KCM_NGO_SERVICES/BETHANY_SAMRAKSHANA_ASHRAMAM/**/*.mp4
-frontend/public/KCM_NGO_SERVICES/HOME_FOR_THE_DISABLED (SECUNDERABAD) [23-07-2026]/**/*.mp4
-frontend/public/KCM_NGO_SERVICES/HOME_FOR_THE_DISABLED_AASHRAMAM/**/*.mp4
-frontend/public/KCM_NGO_SERVICES/HOSPITALS/**/*.mp4
-frontend/public/KCM_NGO_SERVICES/MISSIONARIES OF CHARITY [SECUNDERABAD BHOIGUDA] 25-05-2026/**/*.mp4
+# Ignore non-web video formats
+**/*.avi
+**/*.mov
+**/*.wmv
+**/*.mkv
+
 
