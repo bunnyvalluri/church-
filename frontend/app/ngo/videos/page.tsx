@@ -707,7 +707,7 @@ function Lightbox({ videos, index, onClose, onPrev, onNext, onJump, lang, vT }: 
                 src={encodeSrc(v.thumbnail)}
                 alt=""
                 className="w-full h-full object-cover"
-                onError={(e) => { e.currentTarget.src = "/ngo_outreach_drive_thumbnail.png"; }}
+                onError={(e) => { e.currentTarget.src = "/gandhi_hospital_support_image.png"; }}
               />
               {i === index && (
                 <div className="absolute inset-0 bg-emerald-500/30 flex items-center justify-center">
@@ -751,7 +751,7 @@ const MediaCard = React.memo(function MediaCard({ item, index, onPlay, lang, vT 
           loading="lazy"
           decoding="async"
           className={`w-full h-full object-cover transition-transform duration-300 ${hovered ? "scale-105" : "scale-100"}`}
-          onError={(e) => { e.currentTarget.src = "/ngo_outreach_drive_thumbnail.png"; }}
+          onError={(e) => { e.currentTarget.src = "/gandhi_hospital_support_image.png"; }}
         />
 
         {/* Gradient Scrim */}
@@ -1347,7 +1347,7 @@ export default function NgoVideosPage() {
                       alt={activeMedia.title}
                       className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-95 transition-all duration-500 group-hover:scale-105"
                       onError={(e) => {
-                        e.currentTarget.src = "/ngo_outreach_drive_thumbnail.png";
+                        e.currentTarget.src = "/gandhi_hospital_support_image.png";
                       }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/30 pointer-events-none" />
@@ -1449,7 +1449,7 @@ export default function NgoVideosPage() {
                     alt={activeMedia.title}
                     className="absolute inset-0 w-full h-full object-cover opacity-75 group-hover:opacity-90 transition-all duration-500 group-hover:scale-105"
                     onError={(e) => {
-                      e.currentTarget.src = "/ngo_outreach_drive_thumbnail.png";
+                      e.currentTarget.src = "/gandhi_hospital_support_image.png";
                     }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/30 pointer-events-none" />

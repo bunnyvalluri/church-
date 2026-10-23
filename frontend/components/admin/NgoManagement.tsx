@@ -477,7 +477,7 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
                                 alt={proj.title}
                                 className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
                                 onError={(e) => {
-                                  e.currentTarget.src = "/ngo_outreach_drive_thumbnail.png";
+                                  e.currentTarget.src = "/gandhi_hospital_support_image.png";
                                 }}
                               />
                             ) : (

@@ -435,11 +435,27 @@ export default function NgoOverviewPage() {
             </div>
             <div id="videos" className="scroll-mt-[120px] sm:scroll-mt-[135px] md:scroll-mt-[145px] lg:scroll-mt-[165px] grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               {[
-                { label: language === "te" ? "ఆసుపత్రి వైద్య సహాయం" : language === "hi" ? "अस्पताल चिकित्सा सहायता" : "Hospital Medical Aid", sub: "Gandhi & NIMS Hospitals", image: "/ngo_outreach_drive_thumbnail.png", Ico: ImageIcon },
-                { label: language === "te" ? "ఆశ్రమ దుప్పట్ల పంపిణీ" : language === "hi" ? "आश्रम कंबल वितरण" : "Ashramam Blanket Drive", sub: "Bethany Shelter Support", image: "/bethany_ashramam_thumbnail.png", Ico: Video },
-              ].map(({ label, sub, image, Ico }, i) => (
-                <div key={i} className="rounded-2xl overflow-hidden border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-3 space-y-2 shadow-sm text-left">
-                  <div className="aspect-video rounded-xl bg-slate-900 overflow-hidden relative group">
+                {
+                  label: language === "te" ? "ఆసుపత్రి వైద్య సహాయం" : language === "hi" ? "अस्पताल चिकित्सा सहायता" : "Hospital Medical Aid",
+                  sub: "Gandhi & NIMS Hospitals",
+                  image: "/gandhi_hospital_support_image.png",
+                  href: "/ngo/projects/preset-gandhi-hospital",
+                  Ico: ImageIcon,
+                },
+                {
+                  label: language === "te" ? "ఆశ్రమ నిత్యావసర సేవ" : language === "hi" ? "आश्रम राशन एवं सहायता" : "Ashramam Care & Provisions",
+                  sub: "Bethany Shelter Support",
+                  image: "/bethany_ashramam_care_image.png",
+                  href: "/ngo/projects/preset-bethany-ashramam",
+                  Ico: Video,
+                },
+              ].map(({ label, sub, image, href, Ico }, i) => (
+                <Link
+                  key={i}
+                  href={href}
+                  className="group block rounded-2xl overflow-hidden border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-3 space-y-2 shadow-sm hover:shadow-lg hover:border-emerald-500/50 dark:hover:border-emerald-500/50 transition-all text-left"
+                >
+                  <div className="aspect-video rounded-xl bg-slate-900 overflow-hidden relative">
                     <Image
                       src={image}
                       alt={label}
@@ -452,9 +468,13 @@ export default function NgoOverviewPage() {
                       <Ico className="w-6 h-6 text-white" />
                     </div>
                   </div>
-                  <div className="text-xs font-extrabold text-slate-900 dark:text-white truncate">{label}</div>
-                  <div className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">{sub}</div>
-                </div>
+                  <div className="text-xs font-extrabold text-slate-900 dark:text-white truncate group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                    {label}
+                  </div>
+                  <div className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">
+                    {sub}
+                  </div>
+                </Link>
               ))}
             </div>
           </div>

@@ -25,14 +25,14 @@ const FEATURED_IMAGES = [
     page: `${BASE_URL}/ngo`,
     images: [
       { url: `${BASE_URL}/kcm_society_ngo.jpg`, title: "Kingdom of Christ Ministries Society NGO Community Work", caption: "KCM Society Humanitarian Outreach and Food Relief" },
-      { url: `${BASE_URL}/ngo_outreach_drive_thumbnail.png`, title: "KCM NGO Community Welfare Drive", caption: "Serving vulnerable families and children in Hyderabad" },
+      { url: `${BASE_URL}/gandhi_hospital_support_image.png`, title: "Gandhi Hospital Medical Aid and Food Distribution", caption: "Daily food packets and essential patient support at Gandhi Hospital" },
     ],
   },
   {
     page: `${BASE_URL}/ngo/projects`,
     images: [
       { url: `${BASE_URL}/bethany_ashramam_care_image.png`, title: "Bethany Samrakshana Ashramam Elderly Care Mission", caption: "Providing food, medicine, and support at Bethany Ashramam" },
-      { url: `${BASE_URL}/bethany_ashramam_thumbnail.png`, title: "Bethany Ashramam Support Project", caption: "Compassionate care and fellowship for elderly residents" },
+      { url: `${BASE_URL}/gandhi_hospital_support_image.png`, title: "Gandhi Hospital Medical Aid and Food Distribution", caption: "Daily food packets and essential patient support at Gandhi Hospital" },
       { url: `${BASE_URL}/gandhi_hospital_support_image.png`, title: "Gandhi Hospital Medical Aid and Food Distribution", caption: "Daily food packets and essential patient support at Gandhi Hospital" },
       { url: `${BASE_URL}/home_for_disabled_rehab_care.png`, title: "Home for the Disabled Rehabilitation Care Drive", caption: "Mobility aids, groceries, and emotional care for differently-abled citizens" },
       { url: `${BASE_URL}/missionaries_of_charity_bhoiguda_outreach.png`, title: "Missionaries of Charity Bhoiguda Outreach", caption: "Humanitarian service alongside Missionaries of Charity in Secunderabad" },

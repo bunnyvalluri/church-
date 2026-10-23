@@ -423,7 +423,7 @@ export default function NgoProjectDetailPage({
                     alt={item.title || "Campaign media"}
                     className="relative z-10 w-full h-full object-contain p-1.5 group-hover:scale-[1.03] transition-transform duration-300"
                     onError={(e) => {
-                      e.currentTarget.src = "/ngo_outreach_drive_thumbnail.png";
+                      e.currentTarget.src = "/gandhi_hospital_support_image.png";
                     }}
                   />
 
