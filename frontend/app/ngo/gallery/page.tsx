@@ -75,6 +75,7 @@ const loadedImagesCache = new Set<string>();
 // Category config
 const CATEGORIES = [
   { label: "All Photos", value: "ALL" },
+  { label: "Sneha Charitable Trust", value: "SNEHA-CHARITABLE-TRUST" },
   { label: "NIMS Hospital", value: "NIMS-HOSPITAL" },
   { label: "Govt Hospital", value: "GOVT-HOSPITAL" },
   { label: "Gandhi Hospital", value: "GANDHI-HOSPITAL" },
@@ -86,6 +87,7 @@ const CATEGORIES = [
 
 const CATEGORY_COLORS: Record<string, string> = {
   "ALL": "from-purple-600 to-indigo-600",
+  "SNEHA-CHARITABLE-TRUST": "from-amber-500 via-rose-500 to-pink-500",
   "NIMS-HOSPITAL": "from-blue-600 to-cyan-500",
   "GOVT-HOSPITAL": "from-emerald-600 to-teal-400",
   "GANDHI-HOSPITAL": "from-amber-500 to-orange-400",
@@ -108,6 +110,13 @@ const CATEGORY_STYLES: Record<string, {
     badgeActive: "bg-white/20 text-white font-black",
     badgeInactive: "bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 font-bold",
     dot: "bg-purple-500",
+  },
+  "SNEHA-CHARITABLE-TRUST": {
+    active: "bg-gradient-to-r from-amber-500 via-rose-500 to-pink-600 text-white border-transparent shadow-lg shadow-rose-500/25 scale-[1.02]",
+    inactive: "bg-white dark:bg-slate-900 border-amber-200 dark:border-amber-900/50 text-amber-800 dark:text-amber-300 hover:bg-amber-50/80 dark:hover:bg-amber-950/40 hover:border-amber-400",
+    badgeActive: "bg-white/20 text-white font-black",
+    badgeInactive: "bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300 font-bold",
+    dot: "bg-amber-500",
   },
   "NIMS-HOSPITAL": {
     active: "bg-gradient-to-r from-blue-600 via-cyan-600 to-teal-500 text-white border-transparent shadow-lg shadow-blue-500/25 scale-[1.02]",
@@ -758,6 +767,7 @@ export default function NgoGalleryPage() {
               const localizedLabel =
                 language === "te"
                   ? cat.value === "ALL" ? "అన్ని ఫోటోలు" :
+                    cat.value === "SNEHA-CHARITABLE-TRUST" ? "స్నేహ చారిటబుల్ ట్రస్ట్" :
                     cat.value === "NIMS-HOSPITAL" ? "నిమ్స్ హాస్పిటల్" :
                     cat.value === "GOVT-HOSPITAL" ? "ప్రభుత్వ హాస్పిటల్" :
                     cat.value === "GANDHI-HOSPITAL" ? "గాంధీ హాస్పిటల్" :
@@ -766,6 +776,7 @@ export default function NgoGalleryPage() {
                     cat.value === "MISSIONARIES-OF-CHARITY" ? "మిషనరీస్ ఆఫ్ చారిటీ" : "దివ్యాంగుల ఆశ్రమం"
                   : language === "hi"
                   ? cat.value === "ALL" ? "सभी तस्वीरें" :
+                    cat.value === "SNEHA-CHARITABLE-TRUST" ? "स्नेहा चैरिटेबल ट्रस्ट" :
                     cat.value === "NIMS-HOSPITAL" ? "निम्स अस्पताल" :
                     cat.value === "GOVT-HOSPITAL" ? "सरकारी अस्पताल" :
                     cat.value === "GANDHI-HOSPITAL" ? "गांधी अस्पताल" :
@@ -808,6 +819,7 @@ export default function NgoGalleryPage() {
               const localizedLabel =
                 language === "te"
                   ? cat.value === "ALL" ? "అన్ని ఫోటోలు" :
+                    cat.value === "SNEHA-CHARITABLE-TRUST" ? "స్నేహ చారిటబుల్ ట్రస్ట్" :
                     cat.value === "NIMS-HOSPITAL" ? "నిమ్స్ హాస్పిటల్" :
                     cat.value === "GOVT-HOSPITAL" ? "ప్రభుత్వ హాస్పిటల్" :
                     cat.value === "GANDHI-HOSPITAL" ? "గాంధీ హాస్పిటల్" :
@@ -816,6 +828,7 @@ export default function NgoGalleryPage() {
                     cat.value === "MISSIONARIES-OF-CHARITY" ? "మిషనరీస్ ఆఫ్ చారిటీ" : "దివ్యాంగుల ఆశ్రమం"
                   : language === "hi"
                   ? cat.value === "ALL" ? "सभी तस्वीरें" :
+                    cat.value === "SNEHA-CHARITABLE-TRUST" ? "स्नेहा चैरिटेबल ट्रस्ट" :
                     cat.value === "NIMS-HOSPITAL" ? "निम्स अस्पताल" :
                     cat.value === "GOVT-HOSPITAL" ? "सरकारी अस्पताल" :
                     cat.value === "GANDHI-HOSPITAL" ? "गांधी अस्पताल" :

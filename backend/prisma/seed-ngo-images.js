@@ -51,6 +51,7 @@ function formatDateStr(dateStr) {
 // Helper to scan directory recursively
 function getFilesRecursive(dir, fileList = []) {
   const files = fs.readdirSync(dir);
+  files.sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
   for (const file of files) {
     const filePath = path.join(dir, file);
     const stat = fs.statSync(filePath);
@@ -106,14 +107,18 @@ async function main() {
     let dateStr = '';
     let locationName = '';
 
-    if (filePath.includes('BETHANY_SAMRAKSHANA_ASHRAMAM')) {
+    if (filePath.includes('SNEHA CHARITABLE TRUST')) {
+      category = 'SNEHA-CHARITABLE-TRUST';
+      locationName = 'Sneha Charitable Trust (Yalampet)';
+      dateStr = '25-10-2026';
+    } else if (filePath.includes('BETHANY_SAMRAKSHANA_ASHRAMAM')) {
       category = 'ASHRAMAM';
       locationName = 'Bethany Samrakshana Ashramam';
       // Extract date from subfolder, e.g. 15-05-2026(AASHRAMAM)
       const dateMatch = filePath.match(/(\d{2}-\d{2}-\d{4})/);
       if (dateMatch) dateStr = dateMatch[1];
     } else if (filePath.includes('HOME_FOR_THE_DISABLED (SECUNDERABAD)')) {
-      category = 'DISABLED-AASHRAMAM';
+      category = 'DISABLED-SECUNDERABAD';
       locationName = 'Home for the Disabled (Secunderabad)';
       dateStr = '23-07-2026';
     } else if (filePath.includes('MISSIONARIES OF CHARITY')) {
@@ -151,7 +156,10 @@ async function main() {
     let title = '';
     let description = '';
 
-    if (category === 'GANDHI-HOSPITAL') {
+    if (category === 'SNEHA-CHARITABLE-TRUST') {
+      title = `Sneha Charitable Trust Outreach${dateLabel} - Photo ${photoNumber}`;
+      description = 'KCM and NGO Society donating two ICU beds, a 2.5 KV power inverter backup system, financial aid cheque, and nutrition support to children with multiple disabilities at Sneha Charitable Trust, Yalampet.';
+    } else if (category === 'GANDHI-HOSPITAL') {
       title = `Gandhi Hospital Food Outreach${dateLabel} - Photo ${photoNumber}`;
       description = 'KCM volunteers distributing nutritious food packets, water, and fresh bread to patients and caregivers in the emergency wards.';
     } else if (category === 'NIMS-HOSPITAL') {
@@ -166,7 +174,7 @@ async function main() {
     } else if (category === 'MISSIONARIES-OF-CHARITY') {
       title = `Missionaries of Charity Bhoiguda Outreach${dateLabel} - Photo ${photoNumber}`;
       description = 'KCM compassionate care mission providing nutrition, essential care supplies, emotional support, and meals at Missionaries of Charity, Bhoiguda.';
-    } else if (category === 'DISABLED-AASHRAMAM') {
+    } else if (category === 'DISABLED-SECUNDERABAD' || category === 'DISABLED-AASHRAMAM') {
       title = `Home for the Disabled Care${dateLabel} - Photo ${photoNumber}`;
       description = 'Providing comfort kits, warm blankets, bedsheets, wheelchairs, and physical support to residents of the Home for the Disabled.';
     } else {

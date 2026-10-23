@@ -1363,6 +1363,8 @@ export const en: Record<string, any> = {
     "filterAshramam": "Ashramam Field Clips",
     "filterHospital": "Hospital Drives",
     "filterDisabled": "Disabled Care",
+    "filterCharity": "Missionaries of Charity",
+    "filterSneha": "Sneha Charitable Trust",
     "playlistTitle": "Up Next Playlist",
     "playlistSubtitle": "Select Video to Play",
     "featuredTitle": "Featured Video Collections",

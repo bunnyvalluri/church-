@@ -145,6 +145,26 @@ export default function NgoProjectDetailPage({
                 media: [],
                 _count: { volunteers: 48 },
               },
+              "preset-sneha-trust": {
+                id: "preset-sneha-trust",
+                title: "Sneha Charitable Trust - ICU Beds & Care Mission",
+                description: "Donating 2 ICU beds, 2.5 KV power inverter backup system, financial support cheque, and essential nutrition for children with multiple disabilities.",
+                details: "In partnership with Sneha Charitable Trust in Yalampet (Medchal District), Kingdom of Christ Ministries & NGO Society fulfills its commitment to children suffering from multiple disabilities. Bishop Kurra Kristhu Raju and society leaders personally delivered two advanced ICU beds, a 2.5 KV inverter power backup system to ensure life-saving equipment runs uninterrupted, along with financial cheque assistance and essential provisions. Over 60 children under daily care benefit directly from this mission.",
+                imageUrl: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/1.jpeg",
+                targetAmount: 300000,
+                raisedAmount: 220000,
+                status: "ACTIVE",
+                createdAt: "2026-10-25T00:00:00.000Z",
+                media: [
+                  { id: "s-m-1", title: "Sneha Trust ICU Beds Handover", type: "IMAGE", url: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/1.jpeg" },
+                  { id: "s-m-2", title: "Power Inverter Backup System", type: "IMAGE", url: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/2.jpeg" },
+                  { id: "s-m-3", title: "Bishop Christu Raju with Children", type: "IMAGE", url: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/3.jpeg" },
+                  { id: "s-m-4", title: "KCM Society Leaders and Staff", type: "IMAGE", url: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/4.jpeg" },
+                  { id: "s-m-5", title: "Trust Facility and Provisions", type: "IMAGE", url: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/5.jpeg" },
+                  { id: "s-m-6", title: "Care Supplies Distribution", type: "IMAGE", url: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/6.jpeg" }
+                ],
+                _count: { volunteers: 52 },
+              },
             };
 
             const preset = presets[params.id];

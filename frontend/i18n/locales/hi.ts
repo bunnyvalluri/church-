@@ -1363,6 +1363,8 @@ export const hi: Record<string, any> = {
     "filterAshramam": "आश्रम सेवा क्लिप्स",
     "filterHospital": "अस्पताल सेवा अभियान",
     "filterDisabled": "दिव्यांग देखभाल",
+    "filterCharity": "मिशनरीज ऑफ चैरिटी",
+    "filterSneha": "स्नेहा चैरिटेबल ट्रस्ट",
     "playlistTitle": "अगली प्लेलिस्ट",
     "playlistSubtitle": "चलाने के लिए वीडियो चुनें",
     "featuredTitle": "विशेष वीडियो संग्रह",

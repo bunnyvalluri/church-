@@ -54,7 +54,7 @@ export interface MediaItem {
   url?: string;
   src?: string;
   thumbnail: string;
-  category: "hospital" | "ashramam" | "disabled" | "charity";
+  category: "hospital" | "ashramam" | "disabled" | "charity" | "sneha";
   categoryLabel: string;
   date: string;
   clipNumber?: number;
@@ -325,11 +325,30 @@ const RAW_MP4_ITEMS = [
   { id: "mp4-charity-12", title: "Missionaries of Charity – Clip 12", src: "/KCM_NGO_SERVICES/MISSIONARIES OF CHARITY [SECUNDERABAD BHOIGUDA] 25-05-2026/VID-20260825-WA0143.mp4", thumbnail: "/KCM_NGO_SERVICES/MISSIONARIES OF CHARITY [SECUNDERABAD BHOIGUDA] 25-05-2026/IMG-20260825-WA0020.jpg", category: "charity" as const, categoryLabel: "Charity Outreach Log", date: "25 MAY 2026", clipNumber: 12, source: "mp4" as const },
   { id: "mp4-charity-13", title: "Missionaries of Charity – Clip 13", src: "/KCM_NGO_SERVICES/MISSIONARIES OF CHARITY [SECUNDERABAD BHOIGUDA] 25-05-2026/VID_20260825_120539457.mp4", thumbnail: "/KCM_NGO_SERVICES/MISSIONARIES OF CHARITY [SECUNDERABAD BHOIGUDA] 25-05-2026/IMG-20260825-WA0021.jpg", category: "charity" as const, categoryLabel: "Charity Outreach Log", date: "25 MAY 2026", clipNumber: 13, source: "mp4" as const },
   { id: "mp4-charity-14", title: "Missionaries of Charity – Clip 14", src: "/KCM_NGO_SERVICES/MISSIONARIES OF CHARITY [SECUNDERABAD BHOIGUDA] 25-05-2026/VID_20260825_120640222.mp4", thumbnail: "/KCM_NGO_SERVICES/MISSIONARIES OF CHARITY [SECUNDERABAD BHOIGUDA] 25-05-2026/IMG-20260825-WA0022.jpg", category: "charity" as const, categoryLabel: "Charity Outreach Log", date: "25 MAY 2026", clipNumber: 14, source: "mp4" as const },
+
+  // Sneha Charitable Trust Yalampet Drive (15 Clips)
+  { id: "mp4-sneha-1", title: "Sneha Charitable Trust – Clip 1", src: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/sneha ngo videos/1-video.mp4", thumbnail: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/1.jpeg", category: "sneha" as const, categoryLabel: "Sneha Trust Log", date: "25 OCT 2026", clipNumber: 1, source: "mp4" as const },
+  { id: "mp4-sneha-2", title: "Sneha Charitable Trust – Clip 2", src: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/sneha ngo videos/2-video.mp4", thumbnail: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/2.jpeg", category: "sneha" as const, categoryLabel: "Sneha Trust Log", date: "25 OCT 2026", clipNumber: 2, source: "mp4" as const },
+  { id: "mp4-sneha-3", title: "Sneha Charitable Trust – Clip 3", src: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/sneha ngo videos/3-video.mp4", thumbnail: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/3.jpeg", category: "sneha" as const, categoryLabel: "Sneha Trust Log", date: "25 OCT 2026", clipNumber: 3, source: "mp4" as const },
+  { id: "mp4-sneha-4", title: "Sneha Charitable Trust – Clip 4", src: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/sneha ngo videos/4-video.mp4", thumbnail: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/4.jpeg", category: "sneha" as const, categoryLabel: "Sneha Trust Log", date: "25 OCT 2026", clipNumber: 4, source: "mp4" as const },
+  { id: "mp4-sneha-5", title: "Sneha Charitable Trust – Clip 5", src: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/sneha ngo videos/5-video.mp4", thumbnail: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/5.jpeg", category: "sneha" as const, categoryLabel: "Sneha Trust Log", date: "25 OCT 2026", clipNumber: 5, source: "mp4" as const },
+  { id: "mp4-sneha-6", title: "Sneha Charitable Trust – Clip 6", src: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/sneha ngo videos/6-video.mp4", thumbnail: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/6.jpeg", category: "sneha" as const, categoryLabel: "Sneha Trust Log", date: "25 OCT 2026", clipNumber: 6, source: "mp4" as const },
+  { id: "mp4-sneha-7", title: "Sneha Charitable Trust – Clip 7", src: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/sneha ngo videos/7-video.mp4", thumbnail: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/7.jpeg", category: "sneha" as const, categoryLabel: "Sneha Trust Log", date: "25 OCT 2026", clipNumber: 7, source: "mp4" as const },
+  { id: "mp4-sneha-8", title: "Sneha Charitable Trust – Clip 8", src: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/sneha ngo videos/8-video.mp4", thumbnail: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/8.jpeg", category: "sneha" as const, categoryLabel: "Sneha Trust Log", date: "25 OCT 2026", clipNumber: 8, source: "mp4" as const },
+  { id: "mp4-sneha-9", title: "Sneha Charitable Trust – Clip 9", src: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/sneha ngo videos/9-video.mp4", thumbnail: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/9.jpeg", category: "sneha" as const, categoryLabel: "Sneha Trust Log", date: "25 OCT 2026", clipNumber: 9, source: "mp4" as const },
+  { id: "mp4-sneha-10", title: "Sneha Charitable Trust – Clip 10", src: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/sneha ngo videos/10-video.mp4", thumbnail: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/10.jpeg", category: "sneha" as const, categoryLabel: "Sneha Trust Log", date: "25 OCT 2026", clipNumber: 10, source: "mp4" as const },
+  { id: "mp4-sneha-11", title: "Sneha Charitable Trust – Clip 11", src: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/sneha ngo videos/11-video.mp4", thumbnail: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/11.jpeg", category: "sneha" as const, categoryLabel: "Sneha Trust Log", date: "25 OCT 2026", clipNumber: 11, source: "mp4" as const },
+  { id: "mp4-sneha-12", title: "Sneha Charitable Trust – Clip 12", src: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/sneha ngo videos/12-video.mp4", thumbnail: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/12.jpeg", category: "sneha" as const, categoryLabel: "Sneha Trust Log", date: "25 OCT 2026", clipNumber: 12, source: "mp4" as const },
+  { id: "mp4-sneha-13", title: "Sneha Charitable Trust – Clip 13", src: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/sneha ngo videos/13-video.mp4", thumbnail: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/13.jpeg", category: "sneha" as const, categoryLabel: "Sneha Trust Log", date: "25 OCT 2026", clipNumber: 13, source: "mp4" as const },
+  { id: "mp4-sneha-14", title: "Sneha Charitable Trust – Clip 14", src: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/sneha ngo videos/14-video.mp4", thumbnail: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/14.jpeg", category: "sneha" as const, categoryLabel: "Sneha Trust Log", date: "25 OCT 2026", clipNumber: 14, source: "mp4" as const },
+  { id: "mp4-sneha-15", title: "Sneha Charitable Trust – Clip 15", src: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/sneha ngo videos/15-video.mp4", thumbnail: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/15.jpeg", category: "sneha" as const, categoryLabel: "Sneha Trust Log", date: "25 OCT 2026", clipNumber: 15, source: "mp4" as const },
 ];
 
 const MP4_ITEMS: MediaItem[] = RAW_MP4_ITEMS.map(item => ({
   ...item,
-  description: item.category === "disabled"
+  description: item.category === "sneha"
+    ? `Authentic field video recording captured live during KCM's Sneha Charitable Trust Yalampet care and ICU beds donation drive on ${item.date}.`
+    : item.category === "disabled"
     ? `Authentic field video recording captured live during KCM's Home for the Disabled aid and provisions distribution drive on ${item.date}.`
     : item.category === "charity"
     ? `Authentic field video recording captured live during KCM's Missionaries of Charity Bhoiguda care mission on ${item.date}.`
@@ -346,6 +365,13 @@ const VIDEO_TRANSLATIONS: Record<string, {
   title: { te: string; hi: string };
   description?: { te: string; hi: string };
 }> = {
+  "yt-sneha-trust-1": {
+    title: { te: "స్నేహ చారిటబుల్ ట్రస్ట్ దివ్యాంగ పిల్లల సంరక్షణ & ఐసీయూ బెడ్స్ సేవ", hi: "स्नेहा चैरिटेबल ट्रस्ट दिव्यांग बच्चों की देखभाल एवं आईसीयू बेड सेवा" },
+    description: {
+      te: "యాలంపేట స్నేహ చారిటబుల్ ట్రస్ట్‌లోని బహుళ వైకల్యాలు కలిగిన పిల్లల కోసం KCM అండ్ NGO సొసైటీ ఆధ్వర్యంలో రెండు ఐసీయూ బెడ్స్, 2.5 కేవీ ఇన్వర్టర్, చెక్కు అందజేత ప్రత్యక్ష వీడియో.",
+      hi: "यालमपेट स्नेहा चैरिटेबल ट्रस्ट में बहु-विकलांगता वाले बच्चों के लिए केसीएम और एनजीओ सोसाइटी द्वारा दो आईसीयू बेड, 2.5 केवी इन्वर्टर और चेक वितरण का लाइव वीडियो।"
+    }
+  },
   "yt-gandhi": {
     title: { te: "గాంధీ ఆసుపత్రి ఆహారం & సంరక్షణ సేవ", hi: "गांधी अस्पताल भोजन एवं देखभाल सेवा" },
     description: {
@@ -455,6 +481,7 @@ function getVideoDescription(item: MediaItem, lang: string): string {
   }
 
   if (lang === "te") {
+    if (item.category === "sneha") return `${item.date}న KCM స్నేహ చారిటబుల్ ట్రస్ట్ సేవా కార్యక్రమంలో ప్రత్యక్షంగా రికార్డ్ చేసిన వీడియో.`;
     if (item.category === "charity") return `${item.date}న KCM మిషనరీస్ ఆఫ్ చారిటీ భోయిగూడ సేవా కార్యక్రమంలో ప్రత్యక్షంగా రికార్డ్ చేసిన వీడియో.`;
     if (item.category === "disabled") return `${item.date}న KCM దివ్యాంగుల సంరక్షణ కార్యక్రమంలో ప్రత్యక్షంగా రికార్డ్ చేసిన వీడియో.`;
     if (item.category === "hospital") return `${item.date}న KCM ఆసుపత్రి సహాయ పంపిణీ కార్యక్రమంలో ప్రత్యక్షంగా రికార్డ్ చేసిన వీడియో.`;
@@ -462,6 +489,7 @@ function getVideoDescription(item: MediaItem, lang: string): string {
   }
 
   if (lang === "hi") {
+    if (item.category === "sneha") return `${item.date} को केसीएम स्नेहा चैरिटेबल ट्रस्ट सेवा अभियान के दौरान लाइव रिकॉर्ड किया गया वीडियो।`;
     if (item.category === "charity") return `${item.date} को केसीएम मिशनरीज ऑफ चैरिटी भोईगुड़ा सेवा अभियान के दौरान लाइव रिकॉर्ड किया गया वीडियो।`;
     if (item.category === "disabled") return `${item.date} को केसीएम दिव्यांग देखभाल सहायता अभियान के दौरान लाइव रिकॉर्ड किया गया वीडियो।`;
     if (item.category === "hospital") return `${item.date} को केसीएम अस्पताल सहायता वितरण कार्यक्रम के दौरान लाइव रिकॉर्ड किया गया वीडियो।`;
@@ -475,6 +503,7 @@ function getCategoryDisplayName(cat: string, lang: string): string {
   if (lang === "te") {
     if (cat === "hospital" || cat.includes("Hospital") || cat.includes("ఆసుపత్రి")) return "ఆసుపత్రి సేవ";
     if (cat === "ashramam" || cat.includes("Ashramam") || cat.includes("ఆశ్రమం")) return "ఆశ్రమ సేవ";
+    if (cat === "sneha" || cat.includes("Sneha") || cat.includes("స్నేహ")) return "స్నేహ చారిటబుల్ ట్రస్ట్";
     if (cat === "charity" || cat.includes("Charity") || cat.includes("చారిటీ")) return "మిషనరీస్ ఆఫ్ చారిటీ";
     if (cat === "disabled" || cat.includes("Disabled") || cat.includes("దివ్యాంగుల")) return "దివ్యాంగుల సంరక్షణ";
     return "క్షేత్ర స్థాయి లాగ్";
@@ -482,6 +511,7 @@ function getCategoryDisplayName(cat: string, lang: string): string {
   if (lang === "hi") {
     if (cat === "hospital" || cat.includes("Hospital")) return "अस्पताल सेवा";
     if (cat === "ashramam" || cat.includes("Ashramam")) return "आश्रम सेवा";
+    if (cat === "sneha" || cat.includes("Sneha") || cat.includes("स्नेहा")) return "स्नेहा चैरिटेबल ट्रस्ट";
     if (cat === "charity" || cat.includes("Charity")) return "मिशनरीज ऑफ चैरिटी";
     if (cat === "disabled" || cat.includes("Disabled")) return "दिव्यांग देखभाल";
     return "फील्ड वीडियो लॉग";
@@ -759,7 +789,7 @@ export default function NgoVideosPage() {
   // Active state
   const [activeMediaId, setActiveMediaId] = useState<string>(YOUTUBE_ITEMS[0].id);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [filterCategory, setFilterCategory] = useState<"all" | "yt" | "mp4" | "hospital" | "ashramam" | "disabled" | "charity">("all");
+  const [filterCategory, setFilterCategory] = useState<"all" | "yt" | "mp4" | "hospital" | "ashramam" | "disabled" | "charity" | "sneha">("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [playlistTab, setPlaylistTab] = useState<"yt" | "mp4" | "all">("yt");
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
@@ -811,6 +841,7 @@ export default function NgoVideosPage() {
     if (filterCategory === "ashramam") return ALL_MEDIA_DATABASE.filter(m => m.category === "ashramam");
     if (filterCategory === "disabled") return ALL_MEDIA_DATABASE.filter(m => m.category === "disabled");
     if (filterCategory === "charity") return ALL_MEDIA_DATABASE.filter(m => m.category === "charity");
+    if (filterCategory === "sneha") return ALL_MEDIA_DATABASE.filter(m => m.category === "sneha");
     if (playlistTab === "yt") return YOUTUBE_ITEMS;
     if (playlistTab === "mp4") return MP4_ITEMS;
     return ALL_MEDIA_DATABASE;
@@ -826,6 +857,7 @@ export default function NgoVideosPage() {
     else if (filterCategory === "ashramam") items = items.filter(m => m.category === "ashramam");
     else if (filterCategory === "disabled") items = items.filter(m => m.category === "disabled");
     else if (filterCategory === "charity") items = items.filter(m => m.category === "charity");
+    else if (filterCategory === "sneha") items = items.filter(m => m.category === "sneha");
 
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
@@ -836,7 +868,7 @@ export default function NgoVideosPage() {
   }, [filterCategory, searchQuery]);
 
   // Category switch handler that updates player to 1st video, updates playlist, and focuses screen
-  const handleSelectCategory = (cat: "all" | "yt" | "mp4" | "hospital" | "ashramam" | "disabled" | "charity") => {
+  const handleSelectCategory = (cat: "all" | "yt" | "mp4" | "hospital" | "ashramam" | "disabled" | "charity" | "sneha") => {
     setFilterCategory(cat);
 
     let items = ALL_MEDIA_DATABASE;
@@ -846,6 +878,7 @@ export default function NgoVideosPage() {
     else if (cat === "ashramam") items = ALL_MEDIA_DATABASE.filter(m => m.category === "ashramam");
     else if (cat === "disabled") items = ALL_MEDIA_DATABASE.filter(m => m.category === "disabled");
     else if (cat === "charity") items = ALL_MEDIA_DATABASE.filter(m => m.category === "charity");
+    else if (cat === "sneha") items = ALL_MEDIA_DATABASE.filter(m => m.category === "sneha");
 
     if (items.length > 0) {
       setActiveMediaId(items[0].id);
@@ -901,6 +934,7 @@ export default function NgoVideosPage() {
     filterHospital: "Hospital Drives",
     filterDisabled: "Disabled Care",
     filterCharity: "Missionaries of Charity",
+    filterSneha: "Sneha Charitable Trust",
     playlistTitle: "Up Next Playlist",
     playlistSubtitle: "Select Video to Play",
     featuredTitle: "Featured Video Collections",
@@ -1131,6 +1165,30 @@ export default function NgoVideosPage() {
                   filterCategory === "charity" ? "bg-white/25 text-white" : "bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400"
                 }`}>
                   {ALL_MEDIA_DATABASE.filter(m => m.category === "charity").length}
+                </span>
+              </button>
+
+              {/* 7. Sneha Charitable Trust */}
+              <button
+                onClick={() => handleSelectCategory("sneha")}
+                className={`flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-2xl font-extrabold text-xs transition-all w-full lg:w-auto ${
+                  filterCategory === "sneha"
+                    ? "bg-amber-600 text-white shadow-lg shadow-amber-600/30 ring-2 ring-amber-500/30"
+                    : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-amber-50 dark:hover:bg-slate-700/80 border border-slate-200/90 dark:border-slate-700/90 shadow-sm"
+                }`}
+              >
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className={`w-7 h-7 rounded-xl flex items-center justify-center shrink-0 ${
+                    filterCategory === "sneha" ? "bg-white/20 text-white" : "bg-amber-100 text-amber-600 dark:bg-amber-950/60 dark:text-amber-400"
+                  }`}>
+                    <Sparkles className="w-3.5 h-3.5" />
+                  </div>
+                  <span className="whitespace-nowrap">{vT.filterSneha || "Sneha Charitable Trust"}</span>
+                </div>
+                <span className={`px-2 py-0.5 rounded-full text-[11px] font-black shrink-0 ${
+                  filterCategory === "sneha" ? "bg-white/25 text-white" : "bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400"
+                }`}>
+                  {ALL_MEDIA_DATABASE.filter(m => m.category === "sneha").length}
                 </span>
               </button>
 

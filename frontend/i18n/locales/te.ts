@@ -1363,6 +1363,8 @@ export const te: Record<string, any> = {
     "filterAshramam": "ఆశ్రమ సేవా క్లిప్‌లు",
     "filterHospital": "ఆసుపత్రి సేవలు",
     "filterDisabled": "దివ్యాంగుల సంరక్షణ",
+    "filterCharity": "మిషనరీస్ ఆఫ్ చారిటీ",
+    "filterSneha": "స్నేహ చారిటబుల్ ట్రస్ట్",
     "playlistTitle": "తదుపరి వీడియోల జాబితా",
     "playlistSubtitle": "ప్లే చేయడానికి వీడియోను ఎంచుకోండి",
     "featuredTitle": "ప్రత్యేక సేవా వీడియోల సమాహారం",

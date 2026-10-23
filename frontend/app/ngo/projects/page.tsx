@@ -111,6 +111,15 @@ const PROJECT_TRANSLATIONS: Record<string, {
     },
     location: { te: "దివ్యాంగుల హోమ్, సికింద్రాబాద్", hi: "दिव्यांग गृह, सिकंदराबाद" },
     beneficiaries: { te: "200+ దివ్యాంగులు & వృద్ధులు", hi: "200+ दिव्यांग और बुजुर्ग" }
+  },
+  "preset-sneha-trust": {
+    title: { te: "స్నేహ చారిటబుల్ ట్రస్ట్ దివ్యాంగ పిల్లల సంరక్షణ సేవ", hi: "स्नेहा चैरिटेबल ट्रस्ट दिव्यांग बाल देखभाल सेवा" },
+    desc: {
+      te: "యాలంపేట స్నేహ చారిటబుల్ ట్రస్ట్‌లోని బహుళ వైకల్యాలు కలిగిన పిల్లల కోసం రెండు ఐసీయూ బెడ్స్, 2.5 కేవీ ఇన్వర్టర్, ఆర్థిక సహాయం చెక్కు మరియు పౌష్టికాహార పంపిణీ.",
+      hi: "यालमपेट स्नेहा चैरिटेबल ट्रस्ट में बहु-विकलांगता वाले बच्चों के लिए दो आईसीयू बेड, 2.5 केवी इन्वर्टर, चेक और पौष्टिक भोजन का वितरण।"
+    },
+    location: { te: "స్నేహ చారిటబుల్ ట్రస్ట్, యాలంపేట, మేడ్చల్", hi: "स्नेहा चैरिटेबल ट्रस्ट, यालमपेट, मेडचल" },
+    beneficiaries: { te: "60+ దివ్యాంగ పిల్లలు", hi: "60+ दिव्यांग बच्चे" }
   }
 };
 
@@ -198,6 +207,19 @@ export default function NgoProjectsPage() {
       beneficiaries: "200+ Special Needs & Elderly",
       createdAt: "2026-07-23T00:00:00.000Z",
     },
+    {
+      id: "preset-sneha-trust",
+      title: "Sneha Charitable Trust - Disabled Children Care",
+      description: "Donating 2 ICU beds, 2.5 KV power inverter backup system, financial support cheque, and essential nutrition for children with multiple disabilities at Sneha Charitable Trust, Yalampet.",
+      imageUrl: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/1.jpeg",
+      targetAmount: null,
+      raisedAmount: 0,
+      status: "ACTIVE",
+      category: "CHILDREN_CARE",
+      location: "Sneha Charitable Trust, Yalampet, Medchal District",
+      beneficiaries: "60+ Disabled Children",
+      createdAt: "2026-10-25T00:00:00.000Z",
+    },
   ];
 
   useEffect(() => {
@@ -261,6 +283,7 @@ export default function NgoProjectsPage() {
     const c = cat.toUpperCase();
     if (language === "te") {
       if (c === "ALL") return "అన్ని ప్రాజెక్ట్‌లు";
+      if (c === "CHILDREN_CARE") return "దివ్యాంగ పిల్లల సేవ";
       if (c === "HOSPITAL") return "ఆసుపత్రి సేవ";
       if (c === "ASHRAMAM") return "ఆశ్రమ సంరక్షణ";
       if (c === "REHABILITATION") return "దివ్యాంగుల సాయం";
@@ -269,6 +292,7 @@ export default function NgoProjectsPage() {
     }
     if (language === "hi") {
       if (c === "ALL") return "सभी परियोजनाएं";
+      if (c === "CHILDREN_CARE") return "दिव्यांग बाल सेवा";
       if (c === "HOSPITAL") return "अस्पताल राहत";
       if (c === "ASHRAMAM") return "आश्रम देखभाल";
       if (c === "REHABILITATION") return "दिव्यांग सहायता";
@@ -276,6 +300,7 @@ export default function NgoProjectsPage() {
       return cat;
     }
     if (c === "ALL") return "All Projects";
+    if (c === "CHILDREN_CARE") return "Special Children Care";
     if (c === "HOSPITAL") return "Hospital Relief";
     if (c === "ASHRAMAM") return "Ashramam Care";
     if (c === "REHABILITATION") return "Disabled Care";
@@ -302,6 +327,7 @@ export default function NgoProjectsPage() {
 
   const categoryTabs = [
     { id: "ALL", label: getCategoryLabel("ALL") },
+    { id: "CHILDREN_CARE", label: getCategoryLabel("CHILDREN_CARE") },
     { id: "HOSPITAL", label: getCategoryLabel("HOSPITAL") },
     { id: "ASHRAMAM", label: getCategoryLabel("ASHRAMAM") },
     { id: "REHABILITATION", label: getCategoryLabel("REHABILITATION") },
@@ -480,6 +506,7 @@ export default function NgoProjectsPage() {
                       {project.category && (
                         <div className="absolute bottom-3.5 left-3.5 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider text-white bg-slate-950/90 backdrop-blur-md border border-white/30 shadow-xl flex items-center gap-1.5 font-mono">
                           <span className={`w-2 h-2 rounded-full ${
+                            project.category.toUpperCase() === "CHILDREN_CARE" ? "bg-amber-400" :
                             project.category.toUpperCase() === "HOSPITAL" ? "bg-blue-400" :
                             project.category.toUpperCase() === "ASHRAMAM" ? "bg-pink-400" :
                             project.category.toUpperCase() === "CHARITY" ? "bg-teal-400" :
