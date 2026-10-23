@@ -27,8 +27,8 @@ kcm-church-infra/
 database/
 /scripts/
 backend/
-/KCM_NGO_SERVICES/
-/KCM_NGO_SERVICES
+KCM_NGO_SERVICES/
+KCM_NGO_SERVICES/**
 kcm-gallery/
 reports/
 
@@ -43,5 +43,11 @@ reports/
 **/*.mov
 **/*.wmv
 **/*.mkv
+
+# ── Files exceeding Vercel limit (placed AFTER !frontend to ensure they are ignored) ──
+**/*VID_20260825_120657614.mp4
+**/*VID_20260825_120805292.mp4
+**/*VID_20260825_120539457.mp4
+**/*VID-20260723-WA0196.mp4
 
 
