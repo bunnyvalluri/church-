@@ -13,6 +13,10 @@ browser
 **/*.mov
 **/*.wmv
 
+# ── Files exceeding Vercel 100MB limit ─────────────────────────
+**/*VID_20260825_120657614.mp4
+**/*VID_20260825_120805292.mp4
+
 # ── Infrastructure / Platform (NOT needed for Vercel frontend build) ──────────
 platform/
 k8s/
@@ -21,10 +25,14 @@ docker/
 nginx/
 kcm-church-infra/
 database/
-scripts/
+/scripts/
 backend/
-/KCM_NGO_SERVICES/
-!frontend/public/KCM_NGO_SERVICES/
+KCM_NGO_SERVICES/
+KCM_NGO_SERVICES
 kcm-gallery/
 reports/
+
+# ── Ensure frontend scripts are kept ──
+!frontend/scripts/
+!frontend/scripts/**
 

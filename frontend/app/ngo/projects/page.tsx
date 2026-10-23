@@ -211,7 +211,7 @@ export default function NgoProjectsPage() {
       id: "preset-sneha-trust",
       title: "Sneha Charitable Trust - Disabled Children Care",
       description: "Donating 2 ICU beds, 2.5 KV power inverter backup system, financial support cheque, and essential nutrition for children with multiple disabilities at Sneha Charitable Trust, Yalampet.",
-      imageUrl: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/1.jpeg",
+      imageUrl: "/KCM_NGO_SERVICES/SNEHA CHARITABLE TRUST/25.jpeg",
       targetAmount: null,
       raisedAmount: 0,
       status: "ACTIVE",
