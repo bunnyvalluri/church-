@@ -27,27 +27,22 @@ resource "helm_release" "cert_manager" {
   wait_for_jobs    = true
   timeout          = 300
 
-  set = [
-    {
-      name  = "installCRDs"
-      value = "true"
-    },
-    {
-      name  = "global.leaderElection.namespace"
-      value = "cert-manager"
-    },
-    {
-      name  = "prometheus.enabled"
-      value = "true"
-    },
-    {
-      name  = "prometheus.servicemonitor.enabled"
-      value = "true"
-    },
-    {
-      name  = "replicaCount"
-      value = "2"
-    }
+  values = [
+    yamlencode({
+      installCRDs = true
+      global = {
+        leaderElection = {
+          namespace = "cert-manager"
+        }
+      }
+      prometheus = {
+        enabled = true
+        servicemonitor = {
+          enabled = true
+        }
+      }
+      replicaCount = 2
+    })
   ]
 }
 
