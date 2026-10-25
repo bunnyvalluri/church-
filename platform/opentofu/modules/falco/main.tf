@@ -154,40 +154,36 @@ resource "helm_release" "falco" {
     file("${path.module}/../../../security/falco/helm/values-ha.yaml"),
   ]
 
-  set {
-    name  = "driver.kind"
-    value = var.falco_driver_kind
-  }
-
-  set {
-    name  = "falco.grpc.enabled"
-    value = "true"
-  }
-
-  set {
-    name  = "falco.http_output.url"
-    value = "http://falcosidekick.${kubernetes_namespace.falco.metadata[0].name}.svc.cluster.local:2801/"
-  }
-
-  set {
-    name  = "resources.requests.cpu"
-    value = var.falco_resources_cpu_request
-  }
-
-  set {
-    name  = "resources.requests.memory"
-    value = var.falco_resources_memory_request
-  }
-
-  set {
-    name  = "resources.limits.cpu"
-    value = var.falco_resources_cpu_limit
-  }
-
-  set {
-    name  = "resources.limits.memory"
-    value = var.falco_resources_memory_limit
-  }
+  set = [
+    {
+      name  = "driver.kind"
+      value = var.falco_driver_kind
+    },
+    {
+      name  = "falco.grpc.enabled"
+      value = "true"
+    },
+    {
+      name  = "falco.http_output.url"
+      value = "http://falcosidekick.${kubernetes_namespace.falco.metadata[0].name}.svc.cluster.local:2801/"
+    },
+    {
+      name  = "resources.requests.cpu"
+      value = var.falco_resources_cpu_request
+    },
+    {
+      name  = "resources.requests.memory"
+      value = var.falco_resources_memory_request
+    },
+    {
+      name  = "resources.limits.cpu"
+      value = var.falco_resources_cpu_limit
+    },
+    {
+      name  = "resources.limits.memory"
+      value = var.falco_resources_memory_limit
+    }
+  ]
 
   depends_on = [
     kubernetes_cluster_role_binding.falco,
@@ -214,25 +210,24 @@ resource "helm_release" "falcosidekick" {
     file("${path.module}/../../../security/falco/helm/values-falcosidekick.yaml"),
   ]
 
-  set {
-    name  = "config.loki.hostport"
-    value = var.loki_endpoint
-  }
-
-  set {
-    name  = "config.alertmanager.hostport"
-    value = var.alertmanager_endpoint
-  }
-
-  set {
-    name  = "config.otlp.traces.endpoint"
-    value = var.otel_endpoint
-  }
-
-  set {
-    name  = "replicaCount"
-    value = var.enable_high_availability ? 2 : 1
-  }
+  set = [
+    {
+      name  = "config.loki.hostport"
+      value = var.loki_endpoint
+    },
+    {
+      name  = "config.alertmanager.hostport"
+      value = var.alertmanager_endpoint
+    },
+    {
+      name  = "config.otlp.traces.endpoint"
+      value = var.otel_endpoint
+    },
+    {
+      name  = "replicaCount"
+      value = tostring(var.enable_high_availability ? 2 : 1)
+    }
+  ]
 
   depends_on = [
     helm_release.falco,

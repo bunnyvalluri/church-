@@ -27,26 +27,28 @@ resource "helm_release" "cert_manager" {
   wait_for_jobs    = true
   timeout          = 300
 
-  set {
-    name  = "installCRDs"
-    value = "true"
-  }
-  set {
-    name  = "global.leaderElection.namespace"
-    value = "cert-manager"
-  }
-  set {
-    name  = "prometheus.enabled"
-    value = "true"
-  }
-  set {
-    name  = "prometheus.servicemonitor.enabled"
-    value = "true"
-  }
-  set {
-    name  = "replicaCount"
-    value = "2"
-  }
+  set = [
+    {
+      name  = "installCRDs"
+      value = "true"
+    },
+    {
+      name  = "global.leaderElection.namespace"
+      value = "cert-manager"
+    },
+    {
+      name  = "prometheus.enabled"
+      value = "true"
+    },
+    {
+      name  = "prometheus.servicemonitor.enabled"
+      value = "true"
+    },
+    {
+      name  = "replicaCount"
+      value = "2"
+    }
+  ]
 }
 
 # ── Let's Encrypt ClusterIssuers ─────────────────────────────────────────────
