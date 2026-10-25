@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
     paths:
+      - ".github/workflows/falco-deploy.yml"
       - "platform/security/falco/**"
       - "kcm-church-infra/security/falco/**"
       - "platform/opentofu/modules/falco*/**"
