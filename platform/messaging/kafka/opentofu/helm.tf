@@ -5,18 +5,18 @@ resource "helm_release" "kcm_kafka" {
   dependency_update = true
   timeout    = 600
 
-  set {
-    name  = "replicaCount"
-    value = var.broker_count
-  }
-
-  set {
-    name  = "storage.size"
-    value = var.storage_size
-  }
-
-  set {
-    name  = "storage.storageClassName"
-    value = var.storage_class_name
-  }
+  set = [
+    {
+      name  = "replicaCount"
+      value = tostring(var.broker_count)
+    },
+    {
+      name  = "storage.size"
+      value = var.storage_size
+    },
+    {
+      name  = "storage.storageClassName"
+      value = var.storage_class_name
+    }
+  ]
 }

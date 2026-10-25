@@ -19,20 +19,20 @@ resource "helm_release" "nats" {
     file("${path.module}/../helm/values.yaml")
   ]
 
-  set {
-    name  = "config.cluster.replicas"
-    value = var.cluster_replicas
-  }
-
-  set {
-    name  = "config.jetstream.fileStorage.pvc.storageClassName"
-    value = var.storage_class
-  }
-
-  set {
-    name  = "config.jetstream.fileStorage.pvc.size"
-    value = var.storage_size
-  }
+  set = [
+    {
+      name  = "config.cluster.replicas"
+      value = tostring(var.cluster_replicas)
+    },
+    {
+      name  = "config.jetstream.fileStorage.pvc.storageClassName"
+      value = var.storage_class
+    },
+    {
+      name  = "config.jetstream.fileStorage.pvc.size"
+      value = var.storage_size
+    }
+  ]
 
   depends_on = [kubernetes_namespace.messaging]
 }

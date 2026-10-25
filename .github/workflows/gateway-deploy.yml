@@ -31,15 +31,18 @@ jobs:
     steps:
       - name: Check Argo CD secrets
         id: check
+        env:
+          ARGOCD_SERVER: ${{ secrets['ARGOCD_SERVER'] }}
+          ARGOCD_AUTH_TOKEN: ${{ secrets['ARGOCD_AUTH_TOKEN'] }}
         run: |
           READY=true
-          if [ -z "${{ secrets.ARGOCD_SERVER }}" ]; then
+          if [ -z "$ARGOCD_SERVER" ]; then
             echo "::warning::ARGOCD_SERVER secret is not set."
             echo "::warning::Go to: Settings → Secrets and variables → Actions → New repository secret"
             echo "::warning::Set ARGOCD_SERVER to your Argo CD server URL (e.g. argocd.kcmchurch.org)"
             READY=false
           fi
-          if [ -z "${{ secrets.ARGOCD_AUTH_TOKEN }}" ]; then
+          if [ -z "$ARGOCD_AUTH_TOKEN" ]; then
             echo "::warning::ARGOCD_AUTH_TOKEN secret is not set."
             echo "::warning::Generate one with: argocd account generate-token --account admin"
             READY=false
@@ -69,9 +72,12 @@ jobs:
           sudo mv argocd /usr/local/bin/
 
       - name: Login to Argo CD
+        env:
+          ARGOCD_SERVER: ${{ secrets['ARGOCD_SERVER'] }}
+          ARGOCD_AUTH_TOKEN: ${{ secrets['ARGOCD_AUTH_TOKEN'] }}
         run: |
-          argocd login ${{ secrets.ARGOCD_SERVER }} \
-            --auth-token ${{ secrets.ARGOCD_AUTH_TOKEN }} \
+          argocd login "$ARGOCD_SERVER" \
+            --auth-token "$ARGOCD_AUTH_TOKEN" \
             --insecure \
             --grpc-web
 

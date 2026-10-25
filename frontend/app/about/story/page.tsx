@@ -137,7 +137,7 @@ export default function OurStoryPage() {
     },
   ];
 
-  const officialDocuments = [
+  const officialDocuments = useMemo(() => [
     {
       id: "roc",
       num: "1",
@@ -312,7 +312,7 @@ export default function OurStoryPage() {
         { label: "MSME-DFO", value: "HYDERABAD (TELANGANA)", copyable: false }
       ]
     },
-  ];
+  ], [pageT]);
 
   // Keyboard navigation for document modal
   useEffect(() => {

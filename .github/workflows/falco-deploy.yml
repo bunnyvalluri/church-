@@ -28,8 +28,8 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  ARGOCD_SERVER: ${{ secrets.ARGOCD_SERVER }}
-  ARGOCD_AUTH_TOKEN: ${{ secrets.ARGOCD_AUTH_TOKEN }}
+  ARGOCD_SERVER: ${{ secrets['ARGOCD_SERVER'] }}
+  ARGOCD_AUTH_TOKEN: ${{ secrets['ARGOCD_AUTH_TOKEN'] }}
   ARGOCD_VERSION: "v2.10.0"
 
 jobs:
@@ -49,7 +49,7 @@ jobs:
         id: check
         run: |
           READY=true
-          if [ -z "${{ secrets.ARGOCD_SERVER }}" ] || [ -z "${{ secrets.ARGOCD_AUTH_TOKEN }}" ]; then
+          if [ -z "$ARGOCD_SERVER" ] || [ -z "$ARGOCD_AUTH_TOKEN" ]; then
             echo "::warning::ARGOCD_SERVER or ARGOCD_AUTH_TOKEN secret is not set."
             READY=false
           fi
@@ -217,7 +217,7 @@ jobs:
 
       - name: Configure kubectl
         run: |
-          echo "${{ secrets.KUBECONFIG_PROD }}" | base64 -d > /tmp/kubeconfig
+          echo "${{ secrets['KUBECONFIG_PROD'] }}" | base64 -d > /tmp/kubeconfig
           echo "KUBECONFIG=/tmp/kubeconfig" >> $GITHUB_ENV
 
       - name: Check Falco DaemonSet pods
