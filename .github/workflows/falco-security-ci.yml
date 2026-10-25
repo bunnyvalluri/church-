@@ -173,7 +173,7 @@ jobs:
       - name: Install OpenTofu
         uses: opentofu/setup-opentofu@v1
         with:
-          tofu_version: "1.6.0"
+          tofu_version: "1.8.0"
 
       - name: OpenTofu init — falco module
         run: |
