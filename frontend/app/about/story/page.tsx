@@ -631,7 +631,7 @@ export default function OurStoryPage() {
 
               {/* Dynamic Narrative Display Cards */}
               {activeLeaderTab === "overview" && (
-                <div className="p-7 sm:p-8 bg-white dark:bg-[#11192e] rounded-3xl border-l-4 border-purple-600 dark:border-purple-500 shadow-xl shadow-slate-900/5 dark:shadow-black/30 border border-slate-200/80 dark:border-slate-800 space-y-4 animate-fade-in">
+                <div className="p-7 sm:p-8 bg-white dark:bg-[#11192e] rounded-3xl border border-slate-200/80 dark:border-slate-800 border-l-4 border-l-purple-600 dark:border-l-purple-500 shadow-xl shadow-slate-900/5 dark:shadow-black/30 space-y-4 animate-fade-in">
                   <div className="flex items-center gap-3">
                     <div className="p-2.5 bg-purple-100 dark:bg-purple-950/60 rounded-xl text-purple-600 dark:text-purple-400">
                       <Church className="h-6 w-6" />
@@ -647,7 +647,7 @@ export default function OurStoryPage() {
               )}
 
               {activeLeaderTab === "welfare" && (
-                <div className="p-7 sm:p-8 bg-white dark:bg-[#11192e] rounded-3xl border-l-4 border-indigo-600 dark:border-indigo-500 shadow-xl shadow-slate-900/5 dark:shadow-black/30 border border-slate-200/80 dark:border-slate-800 space-y-4 animate-fade-in">
+                <div className="p-7 sm:p-8 bg-white dark:bg-[#11192e] rounded-3xl border border-slate-200/80 dark:border-slate-800 border-l-4 border-l-indigo-600 dark:border-l-indigo-500 shadow-xl shadow-slate-900/5 dark:shadow-black/30 space-y-4 animate-fade-in">
                   <div className="flex items-center gap-3">
                     <div className="p-2.5 bg-indigo-100 dark:bg-indigo-950/60 rounded-xl text-indigo-600 dark:text-indigo-400">
                       <HeartHandshake className="h-6 w-6" />
@@ -663,7 +663,7 @@ export default function OurStoryPage() {
               )}
 
               {activeLeaderTab === "marginalized" && (
-                <div className="p-7 sm:p-8 bg-white dark:bg-[#11192e] rounded-3xl border-l-4 border-emerald-600 dark:border-emerald-500 shadow-xl shadow-slate-900/5 dark:shadow-black/30 border border-slate-200/80 dark:border-slate-800 space-y-4 animate-fade-in">
+                <div className="p-7 sm:p-8 bg-white dark:bg-[#11192e] rounded-3xl border border-slate-200/80 dark:border-slate-800 border-l-4 border-l-emerald-600 dark:border-l-emerald-500 shadow-xl shadow-slate-900/5 dark:shadow-black/30 space-y-4 animate-fade-in">
                   <div className="flex items-center gap-3">
                     <div className="p-2.5 bg-emerald-100 dark:bg-emerald-950/60 rounded-xl text-emerald-600 dark:text-emerald-400">
                       <ShieldCheck className="h-6 w-6" />

@@ -254,7 +254,7 @@ export default function LocationsPage() {
                       </div>
                     </div>
                     {branch.isMain && (
-                      <span className="px-3 py-1 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300 dark:bg-amber-600 dark:text-white text-[10px] font-black border border-amber-300 dark:border-amber-500 uppercase tracking-wider shadow-xs">
+                      <span className="px-3 py-1 rounded-full bg-amber-500/15 text-amber-700 dark:bg-amber-600 dark:text-white text-[10px] font-black border border-amber-300 dark:border-amber-500 uppercase tracking-wider shadow-xs">
                         {isTelugu ? "ప్రధాన మందిరం" : isHindi ? "मुख्य Sanctuary" : "Main Hub"}
                       </span>
                     )}

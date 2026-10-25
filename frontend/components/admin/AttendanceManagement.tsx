@@ -231,7 +231,7 @@ export default function AttendanceManagement({
     if (events.length > 0 && !events.some(e => e.id === selectedEventId)) {
       setSelectedEventId(events[0].id);
     }
-  }, [events]);
+  }, [events, selectedEventId]);
 
   const handleToggleCheckin = async (eventId: string, userId: string) => {
     setEventCheckins(prev => {

@@ -993,9 +993,11 @@ export default function NgoGalleryPage() {
                 >
                   {/* Prefetch adjacent images */}
                   {filteredItems[lightboxIndex + 1] && (
+                    /* eslint-disable-next-line @next/next/no-img-element */
                     <img src={encodeSrc(filteredItems[lightboxIndex + 1].imageUrl)} className="hidden" alt="" />
                   )}
                   {filteredItems[lightboxIndex - 1] && (
+                    /* eslint-disable-next-line @next/next/no-img-element */
                     <img src={encodeSrc(filteredItems[lightboxIndex - 1].imageUrl)} className="hidden" alt="" />
                   )}
 
@@ -1295,11 +1297,13 @@ export default function NgoGalleryPage() {
                               : "border-transparent opacity-40 hover:opacity-80"
                           }`}
                         >
-                          <img
+                          <Image
                             src={encodeSrc(item.thumbnailUrl || item.imageUrl)}
                             alt=""
+                            fill
+                            sizes="44px"
                             loading="lazy"
-                            className="w-full h-full object-cover"
+                            className="object-cover"
                           />
                         </button>
                       ))}
