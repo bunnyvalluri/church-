@@ -6,11 +6,14 @@ resource "helm_release" "cloudnative_pg_operator" {
   namespace        = "cnpg-system"
   create_namespace = true
 
-  set = [
-    {
-      name  = "config.management.leaderElection"
-      value = "true"
-    }
+  values = [
+    yamlencode({
+      config = {
+        management = {
+          leaderElection = true
+        }
+      }
+    })
   ]
 }
 

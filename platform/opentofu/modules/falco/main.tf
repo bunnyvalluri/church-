@@ -148,41 +148,33 @@ resource "helm_release" "falco" {
   wait_for_jobs    = true
   timeout          = 600
 
-  # Merge base values + HA values
+  # Merge base values + HA values + dynamic overrides
   values = [
     file("${path.module}/../../../security/falco/helm/values.yaml"),
     file("${path.module}/../../../security/falco/helm/values-ha.yaml"),
-  ]
-
-  set = [
-    {
-      name  = "driver.kind"
-      value = var.falco_driver_kind
-    },
-    {
-      name  = "falco.grpc.enabled"
-      value = "true"
-    },
-    {
-      name  = "falco.http_output.url"
-      value = "http://falcosidekick.${kubernetes_namespace.falco.metadata[0].name}.svc.cluster.local:2801/"
-    },
-    {
-      name  = "resources.requests.cpu"
-      value = var.falco_resources_cpu_request
-    },
-    {
-      name  = "resources.requests.memory"
-      value = var.falco_resources_memory_request
-    },
-    {
-      name  = "resources.limits.cpu"
-      value = var.falco_resources_cpu_limit
-    },
-    {
-      name  = "resources.limits.memory"
-      value = var.falco_resources_memory_limit
-    }
+    yamlencode({
+      driver = {
+        kind = var.falco_driver_kind
+      }
+      falco = {
+        grpc = {
+          enabled = true
+        }
+        http_output = {
+          url = "http://falcosidekick.${kubernetes_namespace.falco.metadata[0].name}.svc.cluster.local:2801/"
+        }
+      }
+      resources = {
+        requests = {
+          cpu    = var.falco_resources_cpu_request
+          memory = var.falco_resources_memory_request
+        }
+        limits = {
+          cpu    = var.falco_resources_cpu_limit
+          memory = var.falco_resources_memory_limit
+        }
+      }
+    })
   ]
 
   depends_on = [
@@ -208,25 +200,22 @@ resource "helm_release" "falcosidekick" {
 
   values = [
     file("${path.module}/../../../security/falco/helm/values-falcosidekick.yaml"),
-  ]
-
-  set = [
-    {
-      name  = "config.loki.hostport"
-      value = var.loki_endpoint
-    },
-    {
-      name  = "config.alertmanager.hostport"
-      value = var.alertmanager_endpoint
-    },
-    {
-      name  = "config.otlp.traces.endpoint"
-      value = var.otel_endpoint
-    },
-    {
-      name  = "replicaCount"
-      value = tostring(var.enable_high_availability ? 2 : 1)
-    }
+    yamlencode({
+      config = {
+        loki = {
+          hostport = var.loki_endpoint
+        }
+        alertmanager = {
+          hostport = var.alertmanager_endpoint
+        }
+        otlp = {
+          traces = {
+            endpoint = var.otel_endpoint
+          }
+        }
+      }
+      replicaCount = var.enable_high_availability ? 2 : 1
+    })
   ]
 
   depends_on = [

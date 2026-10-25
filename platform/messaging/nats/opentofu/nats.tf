@@ -16,22 +16,22 @@ resource "helm_release" "nats" {
   namespace  = kubernetes_namespace.messaging.metadata[0].name
 
   values = [
-    file("${path.module}/../helm/values.yaml")
-  ]
-
-  set = [
-    {
-      name  = "config.cluster.replicas"
-      value = tostring(var.cluster_replicas)
-    },
-    {
-      name  = "config.jetstream.fileStorage.pvc.storageClassName"
-      value = var.storage_class
-    },
-    {
-      name  = "config.jetstream.fileStorage.pvc.size"
-      value = var.storage_size
-    }
+    file("${path.module}/../helm/values.yaml"),
+    yamlencode({
+      config = {
+        cluster = {
+          replicas = var.cluster_replicas
+        }
+        jetstream = {
+          fileStorage = {
+            pvc = {
+              storageClassName = var.storage_class
+              size             = var.storage_size
+            }
+          }
+        }
+      }
+    })
   ]
 
   depends_on = [kubernetes_namespace.messaging]
