@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
+import { createPortal } from "react-dom";
 import { 
   Home, 
   Users, 
@@ -50,13 +51,13 @@ export interface Family {
 const DEFAULT_FAMILIES: Family[] = [
   {
     id: "fam_001",
-    familyName: "Valluri Household",
+    familyName: "Grace Household",
     headOfHouseholdId: "user_super_admin_001",
     members: ["user_super_admin_001", "user_admin_002", "user_member_004"],
     contactPhone: "+91 96409 43777",
     address: "15-201, Vivekananda Nagar, Jeedimetla, Hyderabad",
     anniversaryDate: "2015-11-26",
-    branchName: "Shapur Nagar Sanctuary",
+    branchName: "Shapur Nagar",
     notes: "Active ministry supporters & prayer hosts"
   },
   {
@@ -89,7 +90,7 @@ const DEFAULT_FAMILIES: Family[] = [
     contactPhone: "+91 98765 12345",
     address: "Suchitra Circle, Quthbullapur, Hyderabad",
     anniversaryDate: "2021-02-14",
-    branchName: "Shapur Nagar Sanctuary",
+    branchName: "Shapur Nagar",
     notes: "New believers family"
   }
 ];
@@ -120,6 +121,7 @@ export default function FamilyManagement({ users = [] }: FamilyManagementProps) 
 
   const getFamilyNameTranslation = (name: string) => {
     switch (name) {
+      case "Grace Household": return isTe ? "కృప కుటుంబం" : isHi ? "अनुग्रह परिवार" : name;
       case "Valluri Household": return isTe ? "వల్లూరి కుటుంబం" : isHi ? "वल्लूरी घराना" : name;
       case "Raju Family": return isTe ? "రాజు కుటుంబం" : isHi ? "राजू परिवार" : name;
       case "Reddy Household": return isTe ? "రెడ్డి ఇల్లు" : isHi ? "रेड्डी घराना" : name;
@@ -176,11 +178,37 @@ export default function FamilyManagement({ users = [] }: FamilyManagementProps) 
   // Mobile responsive view toggle
   const [mobileShowDetail, setMobileShowDetail] = useState(false);
 
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   // Modals state
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isAddMemberOpen, setIsAddMemberOpen] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  // Prevent background scroll and support ESC key when any modal is open
+  useEffect(() => {
+    if (isCreateOpen || isEditOpen || isAddMemberOpen) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") {
+          setIsCreateOpen(false);
+          setIsEditOpen(false);
+          setIsAddMemberOpen(false);
+        }
+      };
+      window.addEventListener("keydown", handleKeyDown);
+      return () => {
+        document.body.style.overflow = originalOverflow;
+        window.removeEventListener("keydown", handleKeyDown);
+      };
+    }
+  }, [isCreateOpen, isEditOpen, isAddMemberOpen]);
 
   // Form states
   const [newFamily, setNewFamily] = useState({ 
@@ -188,7 +216,7 @@ export default function FamilyManagement({ users = [] }: FamilyManagementProps) 
     headId: "", 
     contactPhone: "", 
     address: "",
-    branchName: "Shapur Nagar Sanctuary",
+    branchName: "Shapur Nagar",
     anniversaryDate: "",
     notes: ""
   });
@@ -305,17 +333,18 @@ export default function FamilyManagement({ users = [] }: FamilyManagementProps) 
 
   const handleCreateFamily = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newFamily.familyName) return;
-
     const headId = newFamily.headId || (users.length > 0 ? users[0].id : "user_super_admin_001");
+    const headUser = users.find(u => u.id === headId || u.uid === headId);
+    const finalFamilyName = (newFamily.familyName || "").trim() || (headUser ? `${headUser.name.split(" ")[0]} Household` : "Household Unit");
+
     const created: Family = {
       id: `fam_${Date.now()}`,
-      familyName: newFamily.familyName,
+      familyName: finalFamilyName,
       headOfHouseholdId: headId,
       members: [headId],
       contactPhone: newFamily.contactPhone || "+91 96409 43777",
       address: newFamily.address || "Jeedimetla, Hyderabad",
-      branchName: newFamily.branchName || "Shapur Nagar Sanctuary",
+      branchName: newFamily.branchName || "Shapur Nagar",
       anniversaryDate: newFamily.anniversaryDate || "",
       notes: newFamily.notes || ""
     };
@@ -339,7 +368,7 @@ export default function FamilyManagement({ users = [] }: FamilyManagementProps) 
       setSelectedFamily(created);
     }
 
-    setNewFamily({ familyName: "", headId: "", contactPhone: "", address: "", branchName: "Shapur Nagar Sanctuary", anniversaryDate: "", notes: "" });
+    setNewFamily({ familyName: "", headId: "", contactPhone: "", address: "", branchName: "Shapur Nagar", anniversaryDate: "", notes: "" });
     setIsCreateOpen(false);
     setMobileShowDetail(true);
   };
@@ -703,7 +732,7 @@ export default function FamilyManagement({ users = [] }: FamilyManagementProps) 
             onClick={() => setIsCreateOpen(true)} 
             className="py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition-all active:scale-95 w-full md:w-auto"
           >
-            <Plus className="w-4 h-4" /> {isTe ? "+ కొత్త కుటుంబం" : isHi ? "+ नया परिवार" : "+ Setup Family Unit"}
+            <Plus className="w-4 h-4" /> {isTe ? "కొత్త కుటుంబం" : isHi ? "नया परिवार" : "Setup Family Unit"}
           </button>
         </div>
 
@@ -916,7 +945,7 @@ export default function FamilyManagement({ users = [] }: FamilyManagementProps) 
                     {selectedFamily.branchName && (
                       <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[9px] font-bold uppercase bg-slate-100 dark:bg-white/[0.06] text-slate-700 dark:text-gray-300 border border-slate-200 dark:border-white/[0.06]">
                         <Building2 className="w-3 h-3 text-slate-400" />
-                        {selectedFamily.branchName}
+                        {selectedFamily.branchName?.replace(" Sanctuary", "")}
                       </span>
                     )}
 
@@ -1160,23 +1189,47 @@ export default function FamilyManagement({ users = [] }: FamilyManagementProps) 
       </div>
 
       {/* ─── MODAL: CREATE FAMILY UNIT ─── */}
-      {isCreateOpen && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#121324] rounded-3xl w-full max-w-md shadow-2xl border border-slate-100 dark:border-white/[0.06] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="p-6 border-b border-slate-100 dark:border-white/[0.04] flex items-center justify-between bg-slate-50/50 dark:bg-white/[0.01]">
-              <h3 className="font-black text-slate-900 dark:text-white text-base flex items-center gap-2">
-                <Home className="w-5 h-5 text-indigo-500" />
-                {t.setupModalTitle}
-              </h3>
+      {isCreateOpen && mounted && typeof document !== "undefined" && createPortal(
+        <div 
+          className="fixed inset-0 z-[10005] flex items-center justify-center p-0 sm:p-4 bg-slate-950/75 backdrop-blur-md animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsCreateOpen(false);
+          }}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div 
+            className="bg-white dark:bg-[#121324] w-full h-[100dvh] sm:h-auto sm:max-h-[90vh] sm:max-w-md rounded-none sm:rounded-3xl border-0 sm:border border-slate-200 dark:border-white/[0.08] shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-150"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="p-4 sm:p-5 border-b border-slate-200 dark:border-white/[0.08] flex items-center justify-between bg-slate-50/90 dark:bg-white/[0.02] backdrop-blur-sm flex-shrink-0">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 rounded-xl">
+                  <Home className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="font-black text-slate-900 dark:text-white text-base">
+                    {t.setupModalTitle}
+                  </h3>
+                  <p className="text-[11px] font-semibold text-slate-500 dark:text-gray-400">
+                    {isTe ? "కొత్త కుటుంబ యూనిట్‌ను నమోదు చేయండి" : isHi ? "नई पारिवारिक इकाई स्थापित करें" : "Register a new household unit"}
+                  </p>
+                </div>
+              </div>
               <button 
+                type="button"
                 onClick={() => setIsCreateOpen(false)} 
-                className="text-slate-400 hover:text-slate-700 p-1.5 bg-white dark:bg-[#121324] border border-slate-200 dark:border-white/[0.08] rounded-xl"
+                className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 p-2 bg-slate-100 dark:bg-white/[0.06] hover:bg-slate-200 dark:hover:bg-white/[0.1] border border-slate-200 dark:border-white/[0.08] rounded-xl transition active:scale-95 flex-shrink-0"
+                aria-label="Close modal"
+                title="Close (Esc)"
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
             
-            <form onSubmit={handleCreateFamily} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto custom-scrollbar">
+            {/* Modal Body & Form */}
+            <form onSubmit={handleCreateFamily} className="p-4 sm:p-6 space-y-4 overflow-y-auto flex-1 pb-[max(1.5rem,env(safe-area-inset-bottom))] custom-scrollbar">
               <div>
                 <label className="block text-[10px] font-bold text-slate-450 dark:text-gray-400 uppercase mb-1.5">
                   {t.familyNameLabel} *
@@ -1184,7 +1237,7 @@ export default function FamilyManagement({ users = [] }: FamilyManagementProps) 
                 <input 
                   type="text" 
                   required 
-                  placeholder="e.g. Valluri Household" 
+                  placeholder={isTe ? "ఉదా: కుటుంబం పేరు" : isHi ? "उदा: परिवार का नाम" : "e.g. Household Name"} 
                   value={newFamily.familyName}
                   onChange={(e) => setNewFamily({ ...newFamily, familyName: e.target.value })}
                   className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/[0.08] rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/15 focus:border-indigo-500 transition-all bg-slate-50/50 dark:bg-[#16172D]/60 text-slate-900 dark:text-white placeholder-slate-400 font-semibold"
@@ -1210,31 +1263,29 @@ export default function FamilyManagement({ users = [] }: FamilyManagementProps) 
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[10px] font-bold text-slate-450 dark:text-gray-400 uppercase mb-1.5">
-                    {t.contactPhone}
-                  </label>
-                  <input 
-                    type="text" 
-                    placeholder="e.g. +91 96409 43777" 
-                    value={newFamily.contactPhone}
-                    onChange={(e) => setNewFamily({ ...newFamily, contactPhone: e.target.value })}
-                    className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/[0.08] rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/15 focus:border-indigo-500 transition-all bg-slate-50/50 dark:bg-[#16172D]/60 text-slate-900 dark:text-white placeholder-slate-400 font-semibold"
-                  />
-                </div>
+              <div>
+                <label className="block text-[10px] font-bold text-slate-450 dark:text-gray-400 uppercase mb-1.5">
+                  {t.contactPhone}
+                </label>
+                <input 
+                  type="tel" 
+                  placeholder="e.g. +91 96409 43777" 
+                  value={newFamily.contactPhone}
+                  onChange={(e) => setNewFamily({ ...newFamily, contactPhone: e.target.value })}
+                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/[0.08] rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/15 focus:border-indigo-500 transition-all bg-slate-50/50 dark:bg-[#16172D]/60 text-slate-900 dark:text-white placeholder-slate-400 font-semibold"
+                />
+              </div>
 
-                <div>
-                  <label className="block text-[10px] font-bold text-slate-450 dark:text-gray-400 uppercase mb-1.5">
-                    Anniversary Date
-                  </label>
-                  <input 
-                    type="date" 
-                    value={newFamily.anniversaryDate}
-                    onChange={(e) => setNewFamily({ ...newFamily, anniversaryDate: e.target.value })}
-                    className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/[0.08] rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/15 focus:border-indigo-500 transition-all bg-slate-50/50 dark:bg-[#16172D]/60 text-slate-900 dark:text-white font-semibold"
-                  />
-                </div>
+              <div>
+                <label className="block text-[10px] font-bold text-slate-450 dark:text-gray-400 uppercase mb-1.5">
+                  Anniversary Date
+                </label>
+                <input 
+                  type="date" 
+                  value={newFamily.anniversaryDate}
+                  onChange={(e) => setNewFamily({ ...newFamily, anniversaryDate: e.target.value })}
+                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/[0.08] rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/15 focus:border-indigo-500 transition-all bg-slate-50/50 dark:bg-[#16172D]/60 text-slate-900 dark:text-white font-semibold"
+                />
               </div>
 
               <div>
@@ -1259,7 +1310,7 @@ export default function FamilyManagement({ users = [] }: FamilyManagementProps) 
                   onChange={(e) => setNewFamily({ ...newFamily, branchName: e.target.value })}
                   className="w-full py-2.5 px-3.5 border rounded-xl text-xs font-bold text-slate-700 dark:text-gray-300 bg-slate-50 dark:bg-[#16172D]/60 border-slate-200 dark:border-white/[0.08] focus:outline-none focus:ring-2 focus:ring-indigo-500/15"
                 >
-                  <option value="Shapur Nagar Sanctuary">Shapur Nagar Sanctuary</option>
+                  <option value="Shapur Nagar">Shapur Nagar</option>
                   <option value="Subhash Nagar">Subhash Nagar</option>
                   <option value="Bahadurpally">Bahadurpally</option>
                 </select>
@@ -1278,44 +1329,69 @@ export default function FamilyManagement({ users = [] }: FamilyManagementProps) 
                 />
               </div>
 
-              <div className="pt-3 flex gap-3">
+              <div className="pt-3 sm:pt-4 flex gap-3 mt-auto">
                 <button 
                   type="button" 
                   onClick={() => setIsCreateOpen(false)} 
-                  className="flex-1 py-2.5 border border-slate-200 dark:border-white/[0.08] text-slate-500 hover:text-slate-800 dark:hover:text-white rounded-xl font-bold text-xs uppercase transition-colors"
+                  className="flex-1 py-3 border border-slate-200 dark:border-white/[0.08] text-slate-500 hover:text-slate-800 dark:hover:text-white rounded-xl font-bold text-xs uppercase transition-colors"
                 >
                   {t.cancel}
                 </button>
                 <button 
                   type="submit" 
-                  className="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs uppercase transition-all shadow-sm active:scale-95"
+                  className="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs uppercase transition-all shadow-sm active:scale-95"
                 >
                   {t.setupFamilyBtn}
                 </button>
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* ─── MODAL: EDIT FAMILY DETAILS ─── */}
-      {isEditOpen && editFamily && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#121324] rounded-3xl w-full max-w-md shadow-2xl border border-slate-100 dark:border-white/[0.06] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="p-6 border-b border-slate-100 dark:border-white/[0.04] flex items-center justify-between bg-slate-50/50 dark:bg-white/[0.01]">
-              <h3 className="font-black text-slate-900 dark:text-white text-base flex items-center gap-2">
-                <Edit3 className="w-5 h-5 text-indigo-500" />
-                Edit Family Details
-              </h3>
+      {isEditOpen && editFamily && mounted && typeof document !== "undefined" && createPortal(
+        <div 
+          className="fixed inset-0 z-[10005] flex items-center justify-center p-0 sm:p-4 bg-slate-950/75 backdrop-blur-md animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsEditOpen(false);
+          }}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div 
+            className="bg-white dark:bg-[#121324] w-full h-[100dvh] sm:h-auto sm:max-h-[90vh] sm:max-w-md rounded-none sm:rounded-3xl border-0 sm:border border-slate-200 dark:border-white/[0.08] shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-150"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="p-4 sm:p-5 border-b border-slate-200 dark:border-white/[0.08] flex items-center justify-between bg-slate-50/90 dark:bg-white/[0.02] backdrop-blur-sm flex-shrink-0">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 rounded-xl">
+                  <Edit3 className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="font-black text-slate-900 dark:text-white text-base">
+                    {isTe ? "కుటుంబ వివరాలను సవరించండి" : isHi ? "पारिवारिक विवरण संपादित करें" : "Edit Family Details"}
+                  </h3>
+                  <p className="text-[11px] font-semibold text-slate-500 dark:text-gray-400">
+                    {editFamily.familyName}
+                  </p>
+                </div>
+              </div>
               <button 
+                type="button"
                 onClick={() => setIsEditOpen(false)} 
-                className="text-slate-400 hover:text-slate-700 p-1.5 bg-white dark:bg-[#121324] border border-slate-200 dark:border-white/[0.08] rounded-xl"
+                className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 p-2 bg-slate-100 dark:bg-white/[0.06] hover:bg-slate-200 dark:hover:bg-white/[0.1] border border-slate-200 dark:border-white/[0.08] rounded-xl transition active:scale-95 flex-shrink-0"
+                aria-label="Close modal"
+                title="Close (Esc)"
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
             
-            <form onSubmit={handleUpdateFamily} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto custom-scrollbar">
+            {/* Modal Body & Form */}
+            <form onSubmit={handleUpdateFamily} className="p-4 sm:p-6 space-y-4 overflow-y-auto flex-1 pb-[max(1.5rem,env(safe-area-inset-bottom))] custom-scrollbar">
               <div>
                 <label className="block text-[10px] font-bold text-slate-450 dark:text-gray-400 uppercase mb-1.5">
                   Family Title / Name *
@@ -1377,49 +1453,70 @@ export default function FamilyManagement({ users = [] }: FamilyManagementProps) 
                 />
               </div>
 
-              <div className="pt-3 flex gap-3">
+              <div className="pt-3 sm:pt-4 flex gap-3 mt-auto">
                 <button 
                   type="button" 
                   onClick={() => setIsEditOpen(false)} 
-                  className="flex-1 py-2.5 border border-slate-200 dark:border-white/[0.08] text-slate-500 hover:text-slate-800 dark:hover:text-white rounded-xl font-bold text-xs uppercase transition-colors"
+                  className="flex-1 py-3 border border-slate-200 dark:border-white/[0.08] text-slate-500 hover:text-slate-800 dark:hover:text-white rounded-xl font-bold text-xs uppercase transition-colors"
                 >
-                  Cancel
+                  {isTe ? "రద్దు" : isHi ? "रद्द करें" : "Cancel"}
                 </button>
                 <button 
                   type="submit" 
-                  className="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs uppercase transition-all shadow-sm active:scale-95"
+                  className="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs uppercase transition-all shadow-sm active:scale-95"
                 >
-                  Save Changes
+                  {isTe ? "మార్పులను భద్రపరచండి" : isHi ? "परिवर्तन सहेजें" : "Save Changes"}
                 </button>
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* ─── MODAL: ASSIGN FAMILY MEMBERS ─── */}
-      {isAddMemberOpen && selectedFamily && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#121324] rounded-3xl w-full max-w-md shadow-2xl border border-slate-100 dark:border-white/[0.06] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="p-6 border-b border-slate-100 dark:border-white/[0.04] flex items-center justify-between bg-slate-50/50 dark:bg-white/[0.01]">
-              <div>
-                <h3 className="font-black text-slate-900 dark:text-white text-base">
-                  {t.assignMembersTitle}
-                </h3>
-                <p className="text-[10px] text-slate-400 dark:text-gray-500 font-semibold mt-0.5">
-                  {getFamilyNameTranslation(selectedFamily.familyName)}
-                </p>
+      {isAddMemberOpen && selectedFamily && mounted && typeof document !== "undefined" && createPortal(
+        <div 
+          className="fixed inset-0 z-[10005] flex items-center justify-center p-0 sm:p-4 bg-slate-950/75 backdrop-blur-md animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsAddMemberOpen(false);
+          }}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div 
+            className="bg-white dark:bg-[#121324] w-full h-[100dvh] sm:h-auto sm:max-h-[90vh] sm:max-w-md rounded-none sm:rounded-3xl border-0 sm:border border-slate-200 dark:border-white/[0.08] shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-150"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="p-4 sm:p-5 border-b border-slate-200 dark:border-white/[0.08] flex items-center justify-between bg-slate-50/90 dark:bg-white/[0.02] backdrop-blur-sm flex-shrink-0">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 rounded-xl">
+                  <Users className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="font-black text-slate-900 dark:text-white text-base">
+                    {t.assignMembersTitle}
+                  </h3>
+                  <p className="text-[11px] font-semibold text-slate-500 dark:text-gray-400 mt-0.5">
+                    {getFamilyNameTranslation(selectedFamily.familyName)}
+                  </p>
+                </div>
               </div>
               <button 
+                type="button"
                 onClick={() => setIsAddMemberOpen(false)} 
-                className="text-slate-400 hover:text-slate-700 p-1.5 bg-white dark:bg-[#121324] border border-slate-200 dark:border-white/[0.08] rounded-xl"
+                className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 p-2 bg-slate-100 dark:bg-white/[0.06] hover:bg-slate-200 dark:hover:bg-white/[0.1] border border-slate-200 dark:border-white/[0.08] rounded-xl transition active:scale-95 flex-shrink-0"
+                aria-label="Close modal"
+                title="Close (Esc)"
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
             
-            <div className="p-6 space-y-4">
-              <div className="relative">
+            {/* Modal Body */}
+            <div className="p-4 sm:p-6 space-y-4 overflow-y-auto flex-1 pb-[max(1.5rem,env(safe-area-inset-bottom))] custom-scrollbar flex flex-col">
+              <div className="relative flex-shrink-0">
                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input 
                   type="text" 
@@ -1430,7 +1527,7 @@ export default function FamilyManagement({ users = [] }: FamilyManagementProps) 
                 />
               </div>
 
-              <div className="max-h-72 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
+              <div className="flex-1 overflow-y-auto space-y-2 pr-1 custom-scrollbar min-h-48 sm:max-h-72">
                 {users
                   .filter(u => 
                     (u.name || "").toLowerCase().includes(memberSearchModal.toLowerCase()) || 
@@ -1477,18 +1574,21 @@ export default function FamilyManagement({ users = [] }: FamilyManagementProps) 
                   })}
               </div>
 
-              <div className="pt-3 border-t border-slate-100 dark:border-white/[0.04] flex justify-end">
+              <div className="pt-3 border-t border-slate-100 dark:border-white/[0.08] flex justify-end mt-auto flex-shrink-0">
                 <button 
+                  type="button"
                   onClick={() => setIsAddMemberOpen(false)} 
-                  className="py-2.5 px-6 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs uppercase tracking-wide transition-all shadow-sm active:scale-95"
+                  className="w-full sm:w-auto py-3 sm:py-2.5 px-6 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs uppercase tracking-wide transition-all shadow-sm active:scale-95 text-center"
                 >
                   {isTe ? "పూర్తయింది" : isHi ? "सहेजें" : "Done"}
                 </button>
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
+
 
     </div>
   );

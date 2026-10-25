@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
+import { createPortal } from "react-dom";
 import { 
   UserCheck, 
   Calendar, 
@@ -65,6 +66,13 @@ export default function AttendanceManagement({
 
   const { language } = useLanguage();
   const t = adminTranslations[language as keyof typeof adminTranslations] || adminTranslations.en;
+  const isTe = language === "te";
+  const isHi = language === "hi";
+
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Search & Filters State for Records
   const [searchQuery, setSearchQuery] = useState("");
@@ -86,6 +94,22 @@ export default function AttendanceManagement({
     newVisitors: 0,
     notes: "",
   });
+
+  // Body scroll lock & ESC key handling for modal
+  useEffect(() => {
+    if (isAddModalOpen) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") setIsAddModalOpen(false);
+      };
+      window.addEventListener("keydown", handleKeyDown);
+      return () => {
+        document.body.style.overflow = originalOverflow;
+        window.removeEventListener("keydown", handleKeyDown);
+      };
+    }
+  }, [isAddModalOpen]);
 
   const handleOpenAddModal = () => {
     if (onOpenAddAttendance) {
@@ -820,52 +844,85 @@ export default function AttendanceManagement({
       )}
 
       {/* ─── ADD ATTENDANCE RECORD MODAL ─── */}
-      {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#121324] border border-slate-200 dark:border-white/10 rounded-2xl p-6 w-full max-w-lg shadow-2xl space-y-5 animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-white/10 pb-4">
-              <div>
-                <h3 className="text-base font-black text-slate-900 dark:text-white">Record Service Attendance</h3>
-                <p className="text-xs text-slate-500 dark:text-gray-400 mt-0.5">Enter attendance details for worship services or prayer meetings.</p>
+      {isAddModalOpen && mounted && typeof document !== "undefined" && createPortal(
+        <div 
+          className="fixed inset-0 z-[10005] flex items-center justify-center p-0 sm:p-4 bg-slate-950/75 backdrop-blur-md animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsAddModalOpen(false);
+          }}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div 
+            className="bg-white dark:bg-slate-900 w-full h-[100dvh] sm:h-auto sm:max-h-[90vh] sm:max-w-lg rounded-none sm:rounded-3xl border-0 sm:border border-slate-200 dark:border-slate-800 shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-150"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/90 dark:bg-slate-950/80 backdrop-blur-sm flex-shrink-0">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 rounded-xl">
+                  <UserCheck className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="font-black text-slate-900 dark:text-white text-base">
+                    {isTe ? "హాజరు రికార్డు నమోదు" : isHi ? "उपस्थिति रिकॉर्ड दर्ज करें" : "Record Service Attendance"}
+                  </h3>
+                  <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                    {isTe ? "ఆరాధన కూడికల హాజరు వివరాలు" : isHi ? "प्रार्थना सभा उपस्थिति विवरण" : "Enter attendance details for worship services or prayer meetings."}
+                  </p>
+                </div>
               </div>
-              <button onClick={() => setIsAddModalOpen(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-white p-1 rounded-lg">
-                <X className="w-5 h-5" />
+              <button 
+                type="button"
+                onClick={() => setIsAddModalOpen(false)} 
+                className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 p-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-xl transition active:scale-95 flex-shrink-0"
+                aria-label="Close modal"
+                title="Close (Esc)"
+              >
+                <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleCreateAttendance} className="space-y-4 text-xs font-semibold">
+            {/* Modal Body & Form */}
+            <form onSubmit={handleCreateAttendance} className="p-4 sm:p-6 space-y-4 overflow-y-auto flex-1 pb-[max(1.5rem,env(safe-area-inset-bottom))] custom-scrollbar flex flex-col">
               <div>
-                <label className="block text-slate-700 dark:text-gray-300 font-bold mb-1">Service Date</label>
+                <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase mb-1.5">
+                  {isTe ? "ఆరాధన తేదీ" : isHi ? "सेवा तिथि" : "Service Date"} *
+                </label>
                 <input
                   type="date"
                   required
                   value={formData.date}
                   onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                  className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white font-semibold cursor-pointer"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
-                  <label className="block text-slate-700 dark:text-gray-300 font-bold mb-1">Service Program</label>
+                  <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase mb-1.5">
+                    {isTe ? "ఆరాధన కార్యక్రమం" : isHi ? "सेवा कार्यक्रम" : "Service Program"} *
+                  </label>
                   <select
                     value={formData.serviceType}
                     onChange={(e) => setFormData({ ...formData, serviceType: e.target.value })}
-                    className="w-full bg-slate-50 dark:bg-[#191a32] border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white font-semibold cursor-pointer truncate"
                   >
-                    <option value="Sunday Worship Service">Sunday Worship Service</option>
-                    <option value="Sunday Afternoon Prayer">Sunday Afternoon Prayer</option>
-                    <option value="Friday Evening Prayer">Friday Evening Prayer</option>
-                    <option value="Youth Special Fellowship">Youth Special Fellowship</option>
-                    <option value="All Night Prayer Vigil">All Night Prayer Vigil</option>
+                    <option value="Sunday Worship Service">{isTe ? "ఆదివారం ఆరాధన కూడిక" : isHi ? "रविवार आराधना सेवा" : "Sunday Worship Service"}</option>
+                    <option value="Sunday Afternoon Prayer">{isTe ? "ఆదివారం మధ్యాహ్న ప్రార్థన" : isHi ? "रविवार दोपहर प्रार्थना" : "Sunday Afternoon Prayer"}</option>
+                    <option value="Friday Evening Prayer">{isTe ? "శుక్రవారం ఉపవాస ప్రార్థన" : isHi ? "शुक्रवार शाम प्रार्थना" : "Friday Evening Prayer"}</option>
+                    <option value="Youth Special Fellowship">{isTe ? "యూత్ ప్రత్యేక కూడిక" : isHi ? "युवा विशेष संगति" : "Youth Special Fellowship"}</option>
+                    <option value="All Night Prayer Vigil">{isTe ? "రాత్రంతా ప్రార్థన (విజిల్)" : isHi ? "रात्रि जागरण प्रार्थना" : "All Night Prayer Vigil"}</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-slate-700 dark:text-gray-300 font-bold mb-1">Location</label>
+                  <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase mb-1.5">
+                    {isTe ? "చర్చి శాఖ / ప్రాంతం" : isHi ? "स्थान / शाखा" : "Location"} *
+                  </label>
                   <select
                     value={formData.location}
                     onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                    className="w-full bg-slate-50 dark:bg-[#191a32] border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white font-semibold cursor-pointer truncate"
                   >
                     <option value="Subhash Nagar Sanctuary">Subhash Nagar Sanctuary</option>
                     <option value="Shapur Location">Shapur Location</option>
@@ -874,60 +931,69 @@ export default function AttendanceManagement({
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
-                  <label className="block text-slate-700 dark:text-gray-300 font-bold mb-1">Total Headcount</label>
+                  <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase mb-1.5">
+                    {isTe ? "మొత్తం హాజరు సంఖ్య" : isHi ? "कुल उपस्थिति" : "Total Headcount"} *
+                  </label>
                   <input
                     type="number"
                     min="0"
                     required
                     value={formData.headcount}
                     onChange={(e) => setFormData({ ...formData, headcount: Number(e.target.value) })}
-                    className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white font-semibold font-mono"
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 dark:text-gray-300 font-bold mb-1">First-time Visitors</label>
+                  <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase mb-1.5">
+                    {isTe ? "మొదటిసారి వచ్చినవారు" : isHi ? "नए आगंतुक" : "First-time Visitors"}
+                  </label>
                   <input
                     type="number"
                     min="0"
                     value={formData.newVisitors}
                     onChange={(e) => setFormData({ ...formData, newVisitors: Number(e.target.value) })}
-                    className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white font-semibold font-mono"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-slate-700 dark:text-gray-300 font-bold mb-1">Notes / Highlights</label>
+                <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase mb-1.5">
+                  {isTe ? "గమనికలు / ముఖ్యాంశాలు" : isHi ? "नोट्स / मुख्य बातें" : "Notes / Highlights"}
+                </label>
                 <textarea
                   rows={2}
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  placeholder="Optional service highlights..."
-                  className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500"
+                  placeholder={isTe ? "ఆరాధన ముఖ్యాంశాలు లేదా ప్రార్థన వివరాలు..." : isHi ? "वैकल्पिक सेवा मुख्य विशेषताएं..." : "Optional service highlights..."}
+                  className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white font-semibold"
                 />
               </div>
 
-              <div className="flex justify-end gap-3 pt-3 border-t border-slate-100 dark:border-white/10">
+              <div className="pt-3 sm:pt-4 flex gap-3 mt-auto flex-shrink-0">
                 <button
                   type="button"
                   onClick={() => setIsAddModalOpen(false)}
-                  className="px-4 py-2 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 text-slate-700 dark:text-gray-300 rounded-xl font-bold transition-all"
+                  className="flex-1 py-3 border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl font-bold text-xs uppercase transition-colors"
                 >
-                  Cancel
+                  {isTe ? "రద్దు" : isHi ? "रद्द करें" : "Cancel"}
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-all disabled:opacity-50"
+                  className="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs uppercase transition-all shadow-sm active:scale-95 disabled:opacity-50"
                 >
-                  {submitting ? "Saving..." : "Save Record"}
+                  {submitting 
+                    ? (isTe ? "సేవ్ చేస్తోంది..." : isHi ? "सुरक्षित हो रहा है..." : "Saving...") 
+                    : (isTe ? "రికార్డు సేవ్ చేయండి" : isHi ? "रिकॉर्ड सुरक्षित करें" : "Save Record")}
                 </button>
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
     </div>

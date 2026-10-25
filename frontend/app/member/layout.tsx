@@ -185,8 +185,11 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const activeLink = translatedLinks.find(l => pathname.startsWith(l.href)) || translatedLinks[0];
   const isMainDashboard = pathname === "/member";
+  const activeLink = translatedLinks.find(l => pathname.startsWith(l.href));
+  const currentNav = isMainDashboard
+    ? { label: lt.dashboard, icon: Home, color: "from-purple-500 to-indigo-600" }
+    : (activeLink || { label: lt.dashboard, icon: Home, color: "from-purple-500 to-indigo-600" });
 
   if (!mounted || status === "loading" || status === "unauthenticated") {
     return (
@@ -409,16 +412,20 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
 
             {/* Breadcrumb */}
             <div className="flex items-center gap-1.5 sm:gap-2 text-sm min-w-0 flex-1">
-              <Link href="/member" className="text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors whitespace-nowrap font-medium hidden sm:block">
-                {lt.dashboard}
-              </Link>
-              <ChevronRight className="w-3.5 h-3.5 text-gray-300 dark:text-gray-600 flex-shrink-0 hidden sm:block" />
-              {activeLink && (
+              {!isMainDashboard && (
+                <>
+                  <Link href="/member" className="text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors whitespace-nowrap font-medium hidden sm:block">
+                    {lt.dashboard}
+                  </Link>
+                  <ChevronRight className="w-3.5 h-3.5 text-gray-300 dark:text-gray-600 flex-shrink-0 hidden sm:block" />
+                </>
+              )}
+              {currentNav && (
                 <div className="flex items-center gap-1.5 min-w-0">
-                  <div className={`w-6 h-6 bg-gradient-to-br ${activeLink.color} rounded-lg flex items-center justify-center flex-shrink-0`}>
-                    <activeLink.icon className="w-3 h-3 text-white" />
+                  <div className={`w-6 h-6 bg-gradient-to-br ${currentNav.color} rounded-lg flex items-center justify-center flex-shrink-0`}>
+                    <currentNav.icon className="w-3 h-3 text-white" />
                   </div>
-                  <span className="font-extrabold text-xs sm:text-sm text-gray-900 dark:text-white truncate">{activeLink.label}</span>
+                  <span className="font-extrabold text-xs sm:text-sm text-gray-900 dark:text-white truncate">{currentNav.label}</span>
                 </div>
               )}
             </div>
@@ -673,7 +680,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
           </div>
         )}
 
-        <main className="flex-1 p-2 sm:p-5 md:p-6 lg:p-8 pb-24 lg:pb-8">
+        <main className="flex-1 p-2 sm:p-5 md:p-6 lg:p-8 pb-6 sm:pb-8 lg:pb-8">
           <motion.div
             key={pathname}
             initial={{ opacity: 0, y: 8 }}
@@ -687,7 +694,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
 
         {/* Mobile Ultra-Premium Floating Glassmorphic Bottom Dock */}
         {!sidebarOpen && (
-          <div className="lg:hidden fixed bottom-2.5 sm:bottom-4 inset-x-2.5 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 sm:w-[440px] z-40 pointer-events-auto select-none">
+          <div className="lg:hidden fixed bottom-[calc(0.625rem+env(safe-area-inset-bottom,0px))] sm:bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] inset-x-2.5 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 sm:w-[440px] z-40 pointer-events-auto select-none">
             <nav className="bg-white/95 dark:bg-[#0c0e1a]/95 backdrop-blur-2xl border border-slate-200/90 dark:border-white/[0.12] rounded-2xl p-1 shadow-[0_10px_30px_-5px_rgba(0,0,0,0.12),0_0_0_1px_rgba(0,0,0,0.04)] dark:shadow-[0_12px_36px_-6px_rgba(0,0,0,0.7),0_0_0_1px_rgba(255,255,255,0.06)] flex items-center justify-around gap-1 transition-all duration-200">
               {[
                 { name: "Dashboard", href: "/member", icon: Home, color: "text-indigo-600 dark:text-indigo-400" },

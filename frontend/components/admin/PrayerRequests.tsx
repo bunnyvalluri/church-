@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
+import { createPortal } from "react-dom";
 import { 
   MessageSquare, 
   Heart, 
@@ -310,8 +311,30 @@ export default function PrayerRequests({ users = [], externalSearchQuery }: Pray
     }
   }, [externalSearchQuery]);
 
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   // Modal State
   const [isLogModalOpen, setIsLogModalOpen] = useState(false);
+
+  // Prevent background scroll and support ESC key when modal is open
+  useEffect(() => {
+    if (isLogModalOpen) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") setIsLogModalOpen(false);
+      };
+      window.addEventListener("keydown", handleKeyDown);
+      return () => {
+        document.body.style.overflow = originalOverflow;
+        window.removeEventListener("keydown", handleKeyDown);
+      };
+    }
+  }, [isLogModalOpen]);
   const [newPrayer, setNewPrayer] = useState({
     title: "",
     description: "",
@@ -1111,22 +1134,47 @@ export default function PrayerRequests({ users = [], externalSearchQuery }: Pray
       </div>
 
       {/* ─── MODAL: LOG NEW PRAYER REQUEST ─── */}
-      {isLogModalOpen && (
-        <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-md shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/60">
-              <h3 className="font-black text-slate-900 dark:text-white text-base">
-                {isTe ? "క్రొత్త ప్రార్థన అభ్యర్థన నమోదు" : isHi ? "नया प्रार्थना अनुरोध दर्ज करें" : "Log Prayer Request"}
-              </h3>
+      {isLogModalOpen && mounted && typeof document !== "undefined" && createPortal(
+        <div 
+          className="fixed inset-0 z-[10005] flex items-center justify-center p-0 sm:p-4 bg-slate-950/75 backdrop-blur-md animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsLogModalOpen(false);
+          }}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div 
+            className="bg-white dark:bg-slate-900 w-full h-[100dvh] sm:h-auto sm:max-h-[90vh] sm:max-w-md rounded-none sm:rounded-3xl border-0 sm:border border-slate-200 dark:border-slate-800 shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-150"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/90 dark:bg-slate-800/60 backdrop-blur-sm flex-shrink-0">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 rounded-xl">
+                  <Heart className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="font-black text-slate-900 dark:text-white text-base">
+                    {isTe ? "క్రొత్త ప్రార్థన అభ్యర్థన నమోదు" : isHi ? "नया प्रार्थना अनुरोध दर्ज करें" : "Log Prayer Request"}
+                  </h3>
+                  <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                    {isTe ? "వివరాలు నమోదు చేసి ప్రార్థనా విభాగానికి చేర్చండి" : isHi ? "प्रार्थना बिंदु दर्ज करें" : "Enter details for intercessory prayer"}
+                  </p>
+                </div>
+              </div>
               <button 
+                type="button"
                 onClick={() => setIsLogModalOpen(false)} 
-                className="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
+                className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 p-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-xl transition active:scale-95 flex-shrink-0"
+                aria-label="Close modal"
+                title="Close (Esc)"
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
             
-            <form onSubmit={handleCreatePrayer} className="p-6 space-y-4">
+            {/* Modal Body & Form */}
+            <form onSubmit={handleCreatePrayer} className="p-4 sm:p-6 space-y-4 overflow-y-auto flex-1 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
               <div>
                 <label className="block text-[11px] font-black text-slate-700 dark:text-slate-300 uppercase mb-1.5">
                   {isTe ? "ప్రార్థన అంశము శీర్షిక" : isHi ? "प्रार्थना शीर्षक" : "Prayer Title"} *
@@ -1189,7 +1237,7 @@ export default function PrayerRequests({ users = [], externalSearchQuery }: Pray
               </div>
 
               {!newPrayer.isAnonymous && (
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">
                       {isTe ? "విశ్వాసి పేరు" : isHi ? "विश्वासी का नाम" : "Believer Name"}
@@ -1204,7 +1252,7 @@ export default function PrayerRequests({ users = [], externalSearchQuery }: Pray
                   </div>
                   <div>
                     <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">
-                      {isTe ? "ఈమెయిల్" : isHi ? "ఈమెయిల్" : "Email"}
+                      {isTe ? "ఈమెయిల్" : isHi ? "ईमेल" : "Email"}
                     </label>
                     <input 
                       type="email" 
@@ -1217,24 +1265,25 @@ export default function PrayerRequests({ users = [], externalSearchQuery }: Pray
                 </div>
               )}
 
-              <div className="pt-3 flex gap-3">
+              <div className="pt-3 sm:pt-4 flex gap-3 mt-auto">
                 <button 
                   type="button" 
                   onClick={() => setIsLogModalOpen(false)} 
-                  className="flex-1 py-2.5 border border-slate-200 dark:border-slate-700 text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-xl font-bold text-xs uppercase transition-colors"
+                  className="flex-1 py-3 border border-slate-200 dark:border-slate-700 text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-xl font-bold text-xs uppercase transition-colors"
                 >
                   {isTe ? "రద్దు" : isHi ? "రద్దు" : "Cancel"}
                 </button>
                 <button 
                   type="submit" 
-                  className="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs uppercase transition-all shadow-md shadow-indigo-600/20 active:scale-95"
+                  className="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs uppercase transition-all shadow-md shadow-indigo-600/20 active:scale-95"
                 >
                   {isTe ? "నమోదు చేయండి" : isHi ? "दर्ज करें" : "Log Request"}
                 </button>
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
     </div>

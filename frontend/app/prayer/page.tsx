@@ -478,79 +478,70 @@ export default function PrayerPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left mb-10">
               {/* Shapur Nagar Location */}
-              <div 
-                onClick={() => {
-                  sessionStorage.setItem("pending-contact-branch", "shapur");
-                  window.location.href = "/#contact";
-                }}
-                className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-rose-400 dark:hover:border-rose-500 rounded-3xl p-6 shadow-lg hover:-translate-y-1 cursor-pointer transition-all duration-300 group/loc"
+              <Link 
+                href="/locations#shapur"
+                className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-rose-400 dark:hover:border-rose-500 rounded-3xl p-6 shadow-lg hover:-translate-y-1 cursor-pointer transition-all duration-300 group/loc block"
               >
                 <div className="flex items-center justify-between mb-3">
                   <span className="px-3.5 py-1 bg-rose-600 text-white border border-rose-500/50 rounded-full text-xs font-black shadow-sm">
                     {pageT.friday || "Friday Evening"}
                   </span>
-                  <span className="text-xs bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-100 border border-slate-300 dark:border-slate-700 px-2.5 py-1 rounded-full font-bold flex items-center gap-1">
+                  <span className="text-xs bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-100 group-hover/loc:bg-rose-50 group-hover/loc:text-rose-600 dark:group-hover/loc:bg-rose-950/40 dark:group-hover/loc:text-rose-400 border border-slate-300 dark:border-slate-700 group-hover/loc:border-rose-300 px-2.5 py-1 rounded-full font-bold flex items-center gap-1 transition-colors">
                     <MapPin className="w-3 h-3 text-rose-600 dark:text-rose-400" />
                     <span>{pageT.viewMap || "View Map"}</span>
                   </span>
                 </div>
-                <h3 className="font-extrabold text-slate-900 dark:text-white text-lg mb-1">
+                <h3 className="font-extrabold text-slate-900 dark:text-white text-lg mb-1 group-hover/loc:text-rose-600 dark:group-hover/loc:text-rose-400 transition-colors">
                   {pageT.shapurLoc || "Shapur Nagar Location"}
                 </h3>
                 <p className="text-sm text-slate-600 dark:text-slate-300 font-medium">
                   Kingdom of Christ Ministries, Shapur Nagar
                 </p>
-              </div>
+              </Link>
 
               {/* Subhash Nagar Location */}
-              <div 
-                onClick={() => {
-                  sessionStorage.setItem("pending-contact-branch", "subhash");
-                  window.location.href = "/#contact";
-                }}
-                className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-purple-400 dark:hover:border-purple-500 rounded-3xl p-6 shadow-lg hover:-translate-y-1 cursor-pointer transition-all duration-300 group/loc"
+              <Link 
+                href="/locations#subhash"
+                className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-purple-400 dark:hover:border-purple-500 rounded-3xl p-6 shadow-lg hover:-translate-y-1 cursor-pointer transition-all duration-300 group/loc block"
               >
                 <div className="flex items-center justify-between mb-3">
                   <span className="px-3.5 py-1 bg-purple-600 text-white border border-purple-500/50 rounded-full text-xs font-black shadow-sm">
                     {pageT.thursday}
                   </span>
-                  <span className="text-xs bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-100 border border-slate-300 dark:border-slate-700 px-2.5 py-1 rounded-full font-bold flex items-center gap-1">
+                  <span className="text-xs bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-100 group-hover/loc:bg-purple-50 group-hover/loc:text-purple-600 dark:group-hover/loc:bg-purple-950/40 dark:group-hover/loc:text-purple-400 border border-slate-300 dark:border-slate-700 group-hover/loc:border-purple-300 px-2.5 py-1 rounded-full font-bold flex items-center gap-1 transition-colors">
                     <MapPin className="w-3 h-3 text-purple-600 dark:text-purple-400" />
                     <span>{pageT.viewMap || "View Map"}</span>
                   </span>
                 </div>
-                <h3 className="font-extrabold text-slate-900 dark:text-white text-lg mb-1">
+                <h3 className="font-extrabold text-slate-900 dark:text-white text-lg mb-1 group-hover/loc:text-purple-600 dark:group-hover/loc:text-purple-400 transition-colors">
                   {pageT.subhashLoc || "Subhash Nagar Location"}
                 </h3>
                 <p className="text-sm text-slate-600 dark:text-slate-300 font-medium">
                   Kingdom of Christ Ministries, Subhash Nagar
                 </p>
-              </div>
+              </Link>
 
               {/* Bahadurpally Location */}
-              <div 
-                onClick={() => {
-                  sessionStorage.setItem("pending-contact-branch", "bahadur");
-                  window.location.href = "/#contact";
-                }}
-                className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-indigo-400 dark:hover:border-indigo-500 rounded-3xl p-6 shadow-lg hover:-translate-y-1 cursor-pointer transition-all duration-300 group/loc"
+              <Link 
+                href="/locations#bahadur"
+                className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-indigo-400 dark:hover:border-indigo-500 rounded-3xl p-6 shadow-lg hover:-translate-y-1 cursor-pointer transition-all duration-300 group/loc block"
               >
                 <div className="flex items-center justify-between mb-3">
                   <span className="px-3.5 py-1 bg-indigo-600 text-white border border-indigo-500/50 rounded-full text-xs font-black shadow-sm">
                     {pageT.tuesday}
                   </span>
-                  <span className="text-xs bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-100 border border-slate-300 dark:border-slate-700 px-2.5 py-1 rounded-full font-bold flex items-center gap-1">
+                  <span className="text-xs bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-100 group-hover/loc:bg-indigo-50 group-hover/loc:text-indigo-600 dark:group-hover/loc:bg-indigo-950/40 dark:group-hover/loc:text-indigo-400 border border-slate-300 dark:border-slate-700 group-hover/loc:border-indigo-300 px-2.5 py-1 rounded-full font-bold flex items-center gap-1 transition-colors">
                     <MapPin className="w-3 h-3 text-indigo-600 dark:text-indigo-400" />
                     <span>{pageT.viewMap || "View Map"}</span>
                   </span>
                 </div>
-                <h3 className="font-extrabold text-slate-900 dark:text-white text-lg mb-1">
+                <h3 className="font-extrabold text-slate-900 dark:text-white text-lg mb-1 group-hover/loc:text-indigo-600 dark:group-hover/loc:text-indigo-400 transition-colors">
                   {pageT.bahadurLoc || "Bahadurpally Location"}
                 </h3>
                 <p className="text-sm text-slate-600 dark:text-slate-300 font-medium">
                   Kingdom of Christ Ministries, Bahadurpally
                 </p>
-              </div>
+              </Link>
             </div>
 
             <Link

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { 
   Users, 
   Plus, 
@@ -190,6 +191,34 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
     location: ""
   });
   const [searchMemberModal, setSearchMemberModal] = useState("");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Lock body scroll when any modal is open
+  useEffect(() => {
+    if (isAddMemberOpen || isCreateOpen) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [isAddMemberOpen, isCreateOpen]);
+
+  // Handle ESC key to close modals
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        if (isAddMemberOpen) setIsAddMemberOpen(false);
+        if (isCreateOpen) setIsCreateOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isAddMemberOpen, isCreateOpen]);
 
   // Real-time synchronization: Load groups from cache and remote API
   useEffect(() => {
@@ -732,23 +761,37 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
 
       </div>
 
-      {/* ─── MODAL: CREATE GROUP ─── */}
-      {isCreateOpen && (
-        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200 dark:border-slate-800 animate-in fade-in zoom-in-95 duration-200">
-            <div className="p-5 sm:p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50 sticky top-0 z-10 backdrop-blur-md">
-              <h3 className="font-black text-slate-900 dark:text-white text-base">
-                {isTe ? "క్రొత్త విశ్వాస సమూహాన్ని సృష్టించండి" : isHi ? "नया विश्वासी समूह बनाएं" : "Create Believer Group"}
-              </h3>
+      {/* ─── MODAL: CREATE GROUP (PORTAL) ─── */}
+      {isCreateOpen && mounted && typeof document !== "undefined" && createPortal(
+        <div
+          className="fixed inset-0 z-[10005] flex items-center justify-center p-0 sm:p-4 bg-slate-950/75 backdrop-blur-md animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsCreateOpen(false);
+          }}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="bg-white dark:bg-slate-900 w-full h-[100dvh] sm:h-auto sm:max-h-[90vh] sm:max-w-md rounded-none sm:rounded-3xl border-0 sm:border border-slate-200 dark:border-slate-800 shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-150">
+            <div className="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/90 dark:bg-slate-800/60 backdrop-blur-sm flex-shrink-0">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 rounded-lg">
+                  <Plus className="w-4 h-4" />
+                </div>
+                <h3 className="font-black text-slate-900 dark:text-white text-base">
+                  {isTe ? "క్రొత్త విశ్వాస సమూహాన్ని సృష్టించండి" : isHi ? "नया विश्वासी समूह बनाएं" : "Create Believer Group"}
+                </h3>
+              </div>
               <button 
+                type="button"
                 onClick={() => setIsCreateOpen(false)} 
-                className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 p-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
+                className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 p-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-xl transition active:scale-95 flex-shrink-0"
+                title="Close (Esc)"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
             
-            <form onSubmit={handleCreateGroup} className="p-5 sm:p-6 space-y-4">
+            <form onSubmit={handleCreateGroup} className="p-4 sm:p-6 space-y-4 overflow-y-auto flex-1 pb-[max(1rem,env(safe-area-inset-bottom))]">
               <div>
                 <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                   {isTe ? "సమూహం పేరు" : isHi ? "समूह का नाम" : "Group Name"} *
@@ -840,32 +883,52 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
-      {/* ─── MODAL: MANAGE GROUP MEMBERS ─── */}
-      {isAddMemberOpen && selectedGroup && (
-        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200 dark:border-slate-800 animate-in fade-in zoom-in-95 duration-200">
-            <div className="p-5 sm:p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50 sticky top-0 z-10 backdrop-blur-md">
-              <div>
-                <h3 className="font-black text-slate-900 dark:text-white text-base">
-                  {isTe ? "సభ్యుల కేటాయింపు" : isHi ? "सदस्य आवंटन" : "Assign Believers"}
-                </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold mt-0.5">
-                  {getGroupNameTranslation(selectedGroup.name)}
+      {/* ─── MODAL: MANAGE GROUP MEMBERS (PORTAL) ─── */}
+      {isAddMemberOpen && selectedGroup && mounted && typeof document !== "undefined" && createPortal(
+        <div
+          className="fixed inset-0 z-[10005] flex items-center justify-center p-0 sm:p-4 bg-slate-950/75 backdrop-blur-md animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsAddMemberOpen(false);
+          }}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="assign-believers-title"
+        >
+          <div className="bg-white dark:bg-slate-900 w-full h-[100dvh] sm:h-auto sm:max-h-[85vh] sm:max-w-lg rounded-none sm:rounded-3xl border-0 sm:border border-slate-200 dark:border-slate-800 shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-150">
+            {/* Modal Header */}
+            <div className="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/90 dark:bg-slate-800/60 backdrop-blur-sm flex-shrink-0">
+              <div className="min-w-0 pr-2">
+                <div className="flex items-center gap-2">
+                  <div className="p-1.5 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 rounded-lg">
+                    <UserPlus className="w-4 h-4" />
+                  </div>
+                  <h3 id="assign-believers-title" className="font-black text-slate-900 dark:text-white text-base truncate">
+                    {isTe ? "సభ్యుల కేటాయింపు" : isHi ? "सदस्य आवंटन" : "Assign Believers"}
+                  </h3>
+                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold mt-1 truncate">
+                  {getGroupNameTranslation(selectedGroup.name)} • <span className="text-indigo-600 dark:text-indigo-400 font-bold">{selectedGroup.members.length} {isTe ? "కేటాయించబడ్డారు" : isHi ? "शामिल" : "assigned"}</span>
                 </p>
               </div>
               <button 
+                type="button"
                 onClick={() => setIsAddMemberOpen(false)} 
-                className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 p-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
+                className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 p-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-xl transition active:scale-95 flex-shrink-0"
+                title="Close (Esc)"
+                aria-label="Close"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
             
-            <div className="p-5 sm:p-6 space-y-4">
-              <div className="relative">
+            {/* Modal Body */}
+            <div className="p-3.5 sm:p-5 flex-1 min-h-0 flex flex-col gap-3 overflow-hidden">
+              {/* Search Bar */}
+              <div className="relative flex-shrink-0">
                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input 
                   type="text" 
@@ -876,7 +939,8 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
                 />
               </div>
 
-              <div className="max-h-64 sm:max-h-72 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
+              {/* Members Scrollable List */}
+              <div className="flex-1 min-h-0 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
                 {users
                   .filter(u => 
                     (u.name || "").toLowerCase().includes(searchMemberModal.toLowerCase()) || 
@@ -888,13 +952,13 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
                       <div 
                         key={member.id}
                         onClick={() => handleAddMemberToGroup(member.id)}
-                        className={`p-3 rounded-2xl border cursor-pointer flex items-center justify-between transition-all ${
+                        className={`p-3 rounded-2xl border cursor-pointer flex items-center justify-between gap-3 transition-all ${
                           isAdded 
-                            ? "bg-indigo-50 dark:bg-indigo-900/40 border-indigo-300 dark:border-indigo-700/60 shadow-sm" 
+                            ? "bg-indigo-50/90 dark:bg-indigo-900/40 border-indigo-300 dark:border-indigo-700/60 shadow-xs" 
                             : "bg-white dark:bg-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800 border-slate-200 dark:border-slate-700/60"
                         }`}
                       >
-                        <div className="flex items-center gap-3 overflow-hidden">
+                        <div className="flex items-center gap-3 min-w-0 overflow-hidden">
                           <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold text-xs uppercase shrink-0 border transition-all ${
                             isAdded 
                               ? "bg-indigo-600 border-indigo-600 text-white" 
@@ -902,13 +966,13 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
                           }`}>
                             {(member.name || "M").substring(0, 2)}
                           </div>
-                          <div className="overflow-hidden">
+                          <div className="min-w-0 overflow-hidden">
                             <h4 className="text-xs font-black text-slate-900 dark:text-white truncate">{member.name}</h4>
-                            <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5 font-medium">{member.email}</p>
+                            <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5 font-medium">{member.email}</p>
                           </div>
                         </div>
 
-                        <div className={`w-5 h-5 rounded-full flex items-center justify-center transition-all ${
+                        <div className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 transition-all ${
                           isAdded ? "bg-indigo-600 text-white" : "border border-slate-300 dark:border-slate-600"
                         }`}>
                           {isAdded && <Check className="w-3.5 h-3.5 stroke-[3]" />}
@@ -916,19 +980,33 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
                       </div>
                     );
                   })}
-              </div>
-
-              <div className="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-end">
-                <button 
-                  onClick={() => setIsAddMemberOpen(false)} 
-                  className="py-2.5 px-6 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white rounded-xl font-bold text-xs uppercase tracking-wide transition-all shadow-md shadow-indigo-500/20 active:scale-95"
-                >
-                  {isTe ? "పూర్తయింది" : isHi ? "सहेजें" : "Done"}
-                </button>
+                {users.filter(u => 
+                  (u.name || "").toLowerCase().includes(searchMemberModal.toLowerCase()) || 
+                  (u.email || "").toLowerCase().includes(searchMemberModal.toLowerCase())
+                ).length === 0 && (
+                  <div className="text-center py-8 text-slate-400 text-xs font-medium">
+                    {isTe ? "సభ్యులు కనుగొనబడలేదు" : isHi ? "कोई सदस्य नहीं मिला" : "No members found matching your search"}
+                  </div>
+                )}
               </div>
             </div>
+
+            {/* Modal Footer with Safe Area */}
+            <div className="p-3.5 sm:p-5 border-t border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-800/40 flex items-center justify-between gap-3 flex-shrink-0 pb-[max(0.875rem,env(safe-area-inset-bottom))]">
+              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
+                {selectedGroup.members.length} {isTe ? "ఎంపిక చేయబడ్డారు" : isHi ? "चयनित" : "selected"}
+              </span>
+              <button 
+                type="button"
+                onClick={() => setIsAddMemberOpen(false)} 
+                className="py-2.5 px-6 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white rounded-xl font-bold text-xs uppercase tracking-wide transition-all shadow-md shadow-indigo-500/20 active:scale-95"
+              >
+                {isTe ? "పూర్తయింది" : isHi ? "सहेजें" : "Done"}
+              </button>
+            </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
     </div>

@@ -39,7 +39,6 @@ import ThemeToggle from "@/components/ThemeToggle";
 import PaletteToggle from "@/components/PaletteToggle";
 import { motion, AnimatePresence } from "framer-motion";
 import ChurchFeedbackWidget from "@/components/ChurchFeedbackWidget";
-import MemberFooter from "@/components/layout/MemberFooter";
 
 /* ────────────────────────── Types ────────────────────────── */
 interface DashboardStats {
@@ -468,25 +467,35 @@ export default function MemberDashboard() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-2.5 sm:gap-3.5 shrink-0 w-full md:w-auto pt-2 md:pt-0">
-            <div className="flex items-center gap-3 bg-white/15 backdrop-blur-md border border-white/20 rounded-2xl p-3 sm:px-4 sm:py-3.5 min-w-0 shadow-xs">
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-amber-400/20 flex items-center justify-center shrink-0 border border-amber-300/30">
-                <Calendar className="w-4.5 h-4.5 sm:w-5 sm:h-5 text-amber-300" />
+          <div className="grid grid-cols-2 gap-2 sm:gap-3.5 shrink-0 w-full md:w-auto pt-2 md:pt-0">
+            <Link
+              href="/member/events"
+              className="flex items-center gap-2.5 sm:gap-3 bg-white/15 hover:bg-white/25 active:scale-95 backdrop-blur-md border border-white/20 rounded-2xl p-2.5 sm:px-4 sm:py-3.5 min-w-0 shadow-xs transition-all cursor-pointer"
+            >
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-amber-400/20 flex items-center justify-center shrink-0 border border-amber-300/30">
+                <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-amber-300" />
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-lg sm:text-2xl font-black text-white leading-tight">{loadingFeeds ? "..." : stats.events}</p>
-                <p className="text-[10px] sm:text-xs text-purple-100 font-bold uppercase tracking-wider mt-0.5 truncate">{dt.stats.events.label}</p>
+                <p className="text-[9.5px] sm:text-xs text-purple-100 font-extrabold uppercase tracking-normal sm:tracking-wider mt-0.5 leading-tight break-words line-clamp-2">
+                  {dt.stats.events.label}
+                </p>
               </div>
-            </div>
-            <div className="flex items-center gap-3 bg-white/15 backdrop-blur-md border border-white/20 rounded-2xl p-3 sm:px-4 sm:py-3.5 min-w-0 shadow-xs">
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-rose-400/20 flex items-center justify-center shrink-0 border border-rose-300/30">
-                <Heart className="w-4.5 h-4.5 sm:w-5 sm:h-5 text-rose-300" />
+            </Link>
+            <Link
+              href="/member/prayers"
+              className="flex items-center gap-2.5 sm:gap-3 bg-white/15 hover:bg-white/25 active:scale-95 backdrop-blur-md border border-white/20 rounded-2xl p-2.5 sm:px-4 sm:py-3.5 min-w-0 shadow-xs transition-all cursor-pointer"
+            >
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-rose-400/20 flex items-center justify-center shrink-0 border border-rose-300/30">
+                <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-rose-300" />
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-lg sm:text-2xl font-black text-white leading-tight">{loadingFeeds ? "..." : stats.prayers}</p>
-                <p className="text-[10px] sm:text-xs text-purple-100 font-bold uppercase tracking-wider mt-0.5 truncate">{dt.stats.prayers.label}</p>
+                <p className="text-[9.5px] sm:text-xs text-purple-100 font-extrabold uppercase tracking-normal sm:tracking-wider mt-0.5 leading-tight break-words line-clamp-2">
+                  {dt.stats.prayers.label}
+                </p>
               </div>
-            </div>
+            </Link>
           </div>
         </div>
       </motion.div>
@@ -582,7 +591,7 @@ export default function MemberDashboard() {
               </span>
             </div>
             <div>
-              <span className="text-[9.5px] sm:text-xs font-extrabold text-gray-500 dark:text-gray-400 uppercase tracking-wider block truncate">{label}</span>
+              <span className="text-[9.5px] sm:text-xs font-extrabold text-gray-500 dark:text-gray-400 uppercase tracking-normal sm:tracking-wider block leading-tight break-words line-clamp-2">{label}</span>
               <span className={`text-xl sm:text-2xl lg:text-3xl font-black ${iconColor} block mt-0.5 tracking-tight`}>
                 {loadingFeeds ? <span className="inline-block w-8 h-7 bg-gray-100 dark:bg-gray-800 rounded animate-pulse" /> : value}
               </span>

@@ -132,6 +132,7 @@ export default function ExecutiveDashboardPage() {
       onRefresh={loadData}
       isLoading={loading}
       searchPlaceholder="Search members, sermons, records..."
+      searchPlaceholderMobile="Search members, sermons..."
       searchValue={searchTerm}
       onSearchChange={setSearchTerm}
     >

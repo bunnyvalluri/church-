@@ -76,6 +76,17 @@ export default function OurStoryPage() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [selectedDocIndex]);
 
+  // Prevent background scrolling on body when document modal is open
+  useEffect(() => {
+    if (selectedDocIndex !== null) {
+      const prevOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = prevOverflow;
+      };
+    }
+  }, [selectedDocIndex]);
+
   // Direct hash anchor handler for #80g and legal documents
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -1180,164 +1191,172 @@ export default function OurStoryPage() {
       {/* 📄 FULL-SCREEN LIGHTBOX & STATUTORY DOCUMENT INSPECTION MODAL */}
       {selectedDoc && (
         <div 
-          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/85 backdrop-blur-md animate-fade-in"
+          className="fixed inset-0 z-[10005] flex items-center justify-center p-2.5 sm:p-4 md:p-6 bg-slate-950/85 backdrop-blur-md animate-fade-in"
           onClick={() => setSelectedDocIndex(null)}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="statutory-doc-title"
         >
           <div 
-            className="bg-white dark:bg-[#11192e] border border-slate-200 dark:border-slate-800 rounded-[2rem] max-w-5xl w-full p-4 sm:p-6 lg:p-8 shadow-2xl relative max-h-[94vh] overflow-y-auto animate-scale-in"
+            className="bg-white dark:bg-[#11192e] border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl max-w-5xl w-full shadow-2xl relative max-h-[92dvh] sm:max-h-[90vh] flex flex-col overflow-hidden animate-scale-in"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Modal Top Header Bar — fully responsive */}
-            <div className="pb-4 border-b border-slate-200 dark:border-slate-800 mb-5">
-              {/* Row 1: Icon + Title + Close */}
-              <div className="flex items-start justify-between gap-2 mb-2">
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className={`w-10 h-10 sm:w-12 sm:h-12 shrink-0 ${selectedDoc.bg} rounded-2xl flex items-center justify-center border border-slate-200/60 dark:border-slate-800 shadow-sm`}>
+            {/* Modal Top Header Bar — Pinned & Fully Responsive (Never hidden under sticky navbar) */}
+            <div className="p-3.5 sm:p-5 border-b border-slate-200/80 dark:border-slate-800/80 bg-white/95 dark:bg-[#11192e]/95 backdrop-blur-md shrink-0 z-10">
+              {/* Row 1: Icon + Title & Subtitle + Touch-Friendly Close Button */}
+              <div className="flex items-center justify-between gap-2.5 sm:gap-4">
+                <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
+                  <div className={`w-10 h-10 sm:w-12 sm:h-12 shrink-0 ${selectedDoc.bg} rounded-xl sm:rounded-2xl flex items-center justify-center border border-slate-200/60 dark:border-slate-800 shadow-xs`}>
                     {(() => {
                       const Icon = selectedDoc.icon;
                       return <Icon className={`h-5 w-5 sm:h-6 sm:w-6 ${selectedDoc.color}`} />;
                     })()}
                   </div>
                   <div className="min-w-0">
-                    <h3 className="text-base sm:text-xl font-black text-slate-900 dark:text-white leading-tight line-clamp-2">
+                    <h3 id="statutory-doc-title" className="text-sm sm:text-lg md:text-xl font-black text-slate-900 dark:text-white leading-snug truncate">
                       {selectedDoc.title}
                     </h3>
-                    <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 line-clamp-1 mt-0.5">
+                    <p className="text-[11px] sm:text-xs font-semibold text-slate-600 dark:text-slate-400 truncate mt-0.5">
                       {selectedDoc.subtitle}
                     </p>
                   </div>
                 </div>
-                {/* Close Button */}
+
+                {/* Prominent Touch-Friendly Close Button */}
                 <button
                   onClick={() => setSelectedDocIndex(null)}
-                  className="p-2 rounded-xl text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                  aria-label="Close"
+                  className="shrink-0 p-2 sm:p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white transition-all active:scale-95 shadow-xs"
+                  aria-label="Close dialog"
                 >
-                  <X className="h-6 w-6" />
+                  <X className="h-5 w-5 sm:h-6 sm:w-6" />
                 </button>
               </div>
 
-              {/* Row 2: Badge + Prev/Next Navigation */}
-              <div className="flex items-center justify-between gap-2 mt-2">
-                <span className={`text-[10px] sm:text-[11px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full border ${selectedDoc.badgeColor} max-w-[55%] line-clamp-1`}>
+              {/* Row 2: Badge + Prev/Next Document Navigation */}
+              <div className="flex items-center justify-between gap-2 mt-2.5 pt-2 border-t border-slate-100 dark:border-slate-800/60">
+                <span className={`text-[10px] sm:text-[11px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${selectedDoc.badgeColor} max-w-[55%] truncate`}>
                   {selectedDoc.badge}
                 </span>
-                <div className="flex items-center gap-1 shrink-0">
+                
+                <div className="flex items-center gap-1 shrink-0 bg-slate-100/80 dark:bg-slate-800/60 p-1 rounded-xl border border-slate-200/60 dark:border-slate-800/60">
                   <button
                     disabled={selectedDocIndex === 0}
                     onClick={() => setSelectedDocIndex(prev => (prev !== null && prev > 0 ? prev - 1 : prev))}
-                    className="p-1.5 rounded-xl text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors disabled:opacity-30 disabled:pointer-events-none flex items-center gap-1"
+                    className="px-2 py-1 rounded-lg text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-white dark:hover:bg-slate-700 transition-colors disabled:opacity-30 disabled:pointer-events-none flex items-center gap-1 text-xs font-bold"
                     title="Previous Document"
                   >
-                    <ChevronLeft className="h-4 w-4" />
-                    <span className="hidden sm:inline text-xs font-bold">Prev</span>
+                    <ChevronLeft className="h-3.5 w-3.5" />
+                    <span className="hidden min-[400px]:inline">Prev</span>
                   </button>
-                  <span className="text-xs text-slate-400 font-mono px-0.5">
+                  <span className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-mono font-bold px-1.5">
                     {(selectedDocIndex ?? 0) + 1}/{officialDocuments.length}
                   </span>
                   <button
                     disabled={selectedDocIndex === officialDocuments.length - 1}
                     onClick={() => setSelectedDocIndex(prev => (prev !== null && prev < officialDocuments.length - 1 ? prev + 1 : prev))}
-                    className="p-1.5 rounded-xl text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors disabled:opacity-30 disabled:pointer-events-none flex items-center gap-1"
+                    className="px-2 py-1 rounded-lg text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-white dark:hover:bg-slate-700 transition-colors disabled:opacity-30 disabled:pointer-events-none flex items-center gap-1 text-xs font-bold"
                     title="Next Document"
                   >
-                    <span className="hidden sm:inline text-xs font-bold">Next</span>
-                    <ChevronRight className="h-4 w-4" />
+                    <span className="hidden min-[400px]:inline">Next</span>
+                    <ChevronRight className="h-3.5 w-3.5" />
                   </button>
                 </div>
               </div>
             </div>
 
-            {/* Modal Body: Two-Column Side-by-Side Layout */}
-
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start mb-6">
-              
-              {/* Left Column: Full Document Image Viewer */}
-              <div className="lg:col-span-6 bg-slate-100 dark:bg-slate-950 rounded-2xl p-3 sm:p-4 border border-slate-200 dark:border-slate-800 flex flex-col items-center">
-                <div className="relative w-full h-[280px] sm:h-[380px] lg:h-[460px] rounded-xl overflow-hidden bg-white dark:bg-slate-900 shadow-sm">
-                  <Image
-                    src={selectedDoc.image}
-                    alt={selectedDoc.title}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 500px"
-                    className="object-contain"
-                    priority
-                  />
-                </div>
-                {/* Caption row — stacks on mobile */}
-                <div className="mt-3 flex flex-col sm:flex-row items-start sm:items-center justify-between w-full px-1 gap-1.5">
-                  <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
-                    Official Certificate Document
-                  </span>
-                  <a
-                    href={selectedDoc.image}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs font-bold text-purple-600 dark:text-purple-400 hover:underline flex items-center gap-1.5"
-                  >
-                    <span>Open High Resolution Image</span>
-                    <ExternalLink className="h-3.5 w-3.5 shrink-0" />
-                  </a>
-                </div>
-              </div>
-
-              {/* Right Column: Structured Statutory Credentials Table */}
-              <div className="lg:col-span-6 space-y-3">
-                <div className="flex items-center justify-between flex-wrap gap-2">
-                  <h4 className="text-xs font-black uppercase tracking-wider text-purple-600 dark:text-purple-400">
-                    Verified Statutory Credentials
-                  </h4>
-                  <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1 shrink-0">
-                    <CheckCircle2 className="h-3.5 w-3.5" />
-                    <span>Govt. Verified</span>
-                  </span>
+            {/* Modal Body: Scrollable, Single Unified Container (No Nested Scroll Trap on Mobile) */}
+            <div className="flex-1 overflow-y-auto p-3.5 sm:p-5 md:p-6 space-y-5 overscroll-contain">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6 items-start">
+                
+                {/* Left Column: Full Document Image Viewer */}
+                <div className="lg:col-span-6 bg-slate-100 dark:bg-slate-950 rounded-2xl p-2.5 sm:p-4 border border-slate-200 dark:border-slate-800 flex flex-col items-center">
+                  <div className="relative w-full h-[220px] min-[400px]:h-[270px] sm:h-[340px] lg:h-[440px] rounded-xl overflow-hidden bg-white dark:bg-slate-900 shadow-xs border border-slate-200/80 dark:border-slate-800">
+                    <Image
+                      src={selectedDoc.image}
+                      alt={selectedDoc.title}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 500px"
+                      className="object-contain"
+                      priority
+                    />
+                  </div>
+                  {/* Caption row */}
+                  <div className="mt-2.5 flex items-center justify-between w-full px-1 gap-2 flex-wrap">
+                    <span className="text-[11px] sm:text-xs font-bold text-slate-500 dark:text-slate-400">
+                      Official Certificate Document
+                    </span>
+                    <a
+                      href={selectedDoc.image}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[11px] sm:text-xs font-bold text-purple-600 dark:text-purple-400 hover:underline flex items-center gap-1 shrink-0"
+                    >
+                      <span>Open High Resolution Image</span>
+                      <ExternalLink className="h-3.5 w-3.5 shrink-0" />
+                    </a>
+                  </div>
                 </div>
 
-                <div className="space-y-2 max-h-[420px] overflow-y-auto pr-1">
-                  {selectedDoc.details.map((item: any, i: number) => {
-                    const isCopied = copiedKey === `${selectedDoc.id}-${i}`;
-                    return (
-                      <div 
-                        key={i}
-                        className="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-[#0c1324] border border-slate-200/80 dark:border-slate-800/80 gap-1.5"
-                      >
-                        <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                          {item.label}
-                        </span>
-                        
-                        <div className="flex items-center gap-2 sm:justify-end">
-                          <span className="text-xs sm:text-sm font-black text-slate-900 dark:text-white sm:text-right font-mono">
-                            {item.value}
+                {/* Right Column: Structured Statutory Credentials Table */}
+                <div className="lg:col-span-6 space-y-2.5">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <h4 className="text-xs font-black uppercase tracking-wider text-purple-600 dark:text-purple-400">
+                      Verified Statutory Credentials
+                    </h4>
+                    <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1 shrink-0">
+                      <CheckCircle2 className="h-3.5 w-3.5" />
+                      <span>Govt. Verified</span>
+                    </span>
+                  </div>
+
+                  {/* Flow naturally on mobile; scrollable on large desktop screens to match image height */}
+                  <div className="space-y-2 lg:max-h-[440px] lg:overflow-y-auto lg:pr-1">
+                    {selectedDoc.details.map((item: any, i: number) => {
+                      const isCopied = copiedKey === `${selectedDoc.id}-${i}`;
+                      return (
+                        <div 
+                          key={i}
+                          className="flex flex-col sm:flex-row sm:items-start justify-between p-2.5 sm:p-3 rounded-xl bg-slate-50/80 dark:bg-[#0c1324] border border-slate-200/80 dark:border-slate-800/80 gap-1.5 sm:gap-3"
+                        >
+                          <span className="text-[10px] sm:text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider shrink-0 sm:max-w-[42%]">
+                            {item.label}
                           </span>
-                          {item.copyable && (
-                            <button
-                              onClick={() => handleCopy(item.value, `${selectedDoc.id}-${i}`)}
-                              className="p-1 rounded-md text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/50 transition-colors"
-                              title="Copy to Clipboard"
-                            >
-                              {isCopied ? (
-                                <Check className="h-3.5 w-3.5 text-emerald-500" />
-                              ) : (
-                                <Copy className="h-3.5 w-3.5" />
-                              )}
-                            </button>
-                          )}
+                          
+                          <div className="flex items-center gap-2 sm:justify-end min-w-0 flex-1">
+                            <span className="text-xs sm:text-sm font-black text-slate-900 dark:text-white sm:text-right font-mono break-words min-w-0 flex-1">
+                              {item.value}
+                            </span>
+                            {item.copyable && (
+                              <button
+                                onClick={() => handleCopy(item.value, `${selectedDoc.id}-${i}`)}
+                                className="p-1.5 rounded-lg text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/50 transition-colors shrink-0 active:scale-95"
+                                title="Copy to Clipboard"
+                                aria-label={`Copy ${item.label}`}
+                              >
+                                {isCopied ? (
+                                  <Check className="h-3.5 w-3.5 text-emerald-500" />
+                                ) : (
+                                  <Copy className="h-3.5 w-3.5" />
+                                )}
+                              </button>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
 
+              </div>
             </div>
 
-            {/* Modal Footer Bar */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
+            {/* Modal Footer Bar — Pinned & Accessible */}
+            <div className="p-3 sm:p-4 border-t border-slate-200/80 dark:border-slate-800/80 bg-slate-50/90 dark:bg-[#0c1324]/90 backdrop-blur-md shrink-0 flex flex-col sm:flex-row items-center justify-between gap-2.5">
               <a
                 href={selectedDoc.image}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full sm:w-auto px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white text-xs sm:text-sm font-bold rounded-xl flex items-center justify-center gap-2 transition-colors shadow-md"
+                className="w-full sm:w-auto px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white text-xs sm:text-sm font-bold rounded-xl flex items-center justify-center gap-2 transition-all shadow-xs active:scale-98"
               >
                 <ExternalLink className="h-4 w-4" />
                 <span>Open Full Resolution Image</span>
@@ -1345,7 +1364,7 @@ export default function OurStoryPage() {
 
               <button
                 onClick={() => setSelectedDocIndex(null)}
-                className="w-full sm:w-auto px-6 py-2.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold rounded-xl hover:opacity-90 transition-opacity text-xs sm:text-sm"
+                className="w-full sm:w-auto px-6 py-2.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold rounded-xl hover:opacity-90 active:scale-98 transition-all text-xs sm:text-sm"
               >
                 {pageT.closeModal || "Close Viewer"}
               </button>

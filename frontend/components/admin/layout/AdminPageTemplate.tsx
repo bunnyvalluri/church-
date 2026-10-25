@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import AdminBreadcrumb from "./AdminBreadcrumb";
-import { Search, Filter, RefreshCw } from "lucide-react";
+import { Search, Filter, RefreshCw, X } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { adminTranslations } from "@/components/admin/adminTranslations";
 
@@ -13,6 +13,7 @@ interface AdminPageTemplateProps {
   actions?: React.ReactNode;
   filters?: React.ReactNode;
   searchPlaceholder?: string;
+  searchPlaceholderMobile?: string;
   searchValue?: string;
   onSearchChange?: (val: string) => void;
   onRefresh?: () => void;
@@ -27,6 +28,7 @@ export default function AdminPageTemplate({
   actions,
   filters,
   searchPlaceholder,
+  searchPlaceholderMobile,
   searchValue,
   onSearchChange,
   onRefresh,
@@ -36,9 +38,22 @@ export default function AdminPageTemplate({
   const { language } = useLanguage();
   const t = adminTranslations[language || "en"] as any;
 
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 640);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const displayTitle = t?.pageTitles?.[title] || title;
   const displayDescription = description ? (t?.pageDescriptions?.[description] || description) : undefined;
   const refreshLabel = t?.common?.refreshData || "Refresh Data";
+
+  const resolvedPlaceholder = isMobile
+    ? (searchPlaceholderMobile || searchPlaceholder?.replace(", records...", "...") || searchPlaceholder || "Search...")
+    : (searchPlaceholder || "Search...");
 
   return (
     <div className="space-y-6 pb-12 text-slate-900 dark:text-white">
@@ -92,14 +107,24 @@ export default function AdminPageTemplate({
           {/* Search Input */}
           {onSearchChange && (
             <div className="relative flex-1">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
               <input
                 type="text"
                 value={searchValue || ""}
                 onChange={(e) => onSearchChange(e.target.value)}
-                placeholder={searchPlaceholder || "Search..."}
-                className="w-full pl-10 pr-4 py-2 rounded-xl text-xs bg-gray-50 dark:bg-black/40 border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 transition-all"
+                placeholder={resolvedPlaceholder}
+                className="w-full pl-9 sm:pl-10 pr-8 sm:pr-9 py-2 rounded-xl text-xs bg-gray-50 dark:bg-black/40 border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 placeholder:text-[11px] sm:placeholder:text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 transition-all font-medium"
               />
+              {searchValue && (
+                <button
+                  type="button"
+                  onClick={() => onSearchChange("")}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded-full transition-colors"
+                  aria-label="Clear search"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
             </div>
           )}
 

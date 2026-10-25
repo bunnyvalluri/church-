@@ -52,7 +52,7 @@ export async function POST(req: Request) {
         contactPhone: contactPhone || '+91 96409 43777',
         address: address || 'Jeedimetla, Hyderabad',
         anniversaryDate: anniversaryDate || null,
-        branchName: branchName || 'Shapur Nagar Sanctuary',
+        branchName: branchName || 'Shapur Nagar',
         notes: notes || null,
       },
     });

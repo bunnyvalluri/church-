@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import {
   Mail,
@@ -124,6 +125,34 @@ export default function AdminEmailDeliveryPage() {
 
   // Detail Modal
   const [selectedLog, setSelectedLog] = useState<EmailLog | null>(null);
+  const [mounted, setMounted] = useState<boolean>(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Lock body scroll when any modal is open
+  useEffect(() => {
+    if (previewOpen || selectedLog) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [previewOpen, selectedLog]);
+
+  // Close modals on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        if (previewOpen) setPreviewOpen(false);
+        if (selectedLog) setSelectedLog(null);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [previewOpen, selectedLog]);
 
   // Fetch Stats
   const fetchStats = useCallback(async () => {
@@ -666,88 +695,120 @@ export default function AdminEmailDeliveryPage() {
         )}
       </div>
 
-      {/* ── LIVE TEMPLATE PREVIEW MODAL ─────────────────────────────────────── */}
-      {previewOpen && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-2 sm:p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="bg-white dark:bg-slate-900 w-full max-w-5xl h-[92vh] rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl flex flex-col overflow-hidden">
+      {/* ── LIVE TEMPLATE PREVIEW MODAL (PORTAL) ─────────────────────────────── */}
+      {previewOpen && mounted && typeof document !== "undefined" && createPortal(
+        <div
+          className="fixed inset-0 z-[10005] flex items-center justify-center p-0 sm:p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setPreviewOpen(false);
+          }}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="preview-modal-title"
+        >
+          <div className="bg-white dark:bg-slate-900 w-full h-[100dvh] sm:h-[92vh] sm:max-h-[920px] sm:max-w-5xl rounded-none sm:rounded-3xl border-0 sm:border border-slate-200 dark:border-slate-800 shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-150">
             {/* Modal Header */}
-            <div className="p-3.5 sm:p-5 border-b border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/50 dark:bg-slate-800/40">
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="p-2 bg-purple-600 text-white rounded-xl flex-shrink-0">
-                  <Eye className="w-4 h-4 sm:w-5 sm:h-5" />
-                </div>
-                <div className="min-w-0 pr-1">
-                  <h3 className="font-bold text-sm sm:text-base text-slate-900 dark:text-white">
-                    Live Template Studio & Preview
-                  </h3>
-                  <p className="text-[11px] sm:text-xs text-slate-500 truncate">
-                    Subject: <span className="font-semibold text-slate-700 dark:text-slate-300">{previewSubject}</span>
-                  </p>
-                </div>
-              </div>
-
-              {/* Template Selector & Device Toggle */}
-              <div className="flex items-center gap-2 flex-wrap">
-                <select
-                  value={previewTemplate}
-                  onChange={(e) => {
-                    setPreviewTemplate(e.target.value);
-                    loadPreview(e.target.value);
-                  }}
-                  className="flex-1 sm:flex-none px-3 py-1.5 text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-slate-900 dark:text-white cursor-pointer truncate max-w-[200px]"
-                >
-                  {TEMPLATE_LIST.map((t) => (
-                    <option key={t.id} value={t.id}>
-                      {t.label}
-                    </option>
-                  ))}
-                </select>
-
-                <div className="flex items-center bg-slate-200/80 dark:bg-slate-800 p-0.5 sm:p-1 rounded-xl">
-                  <button
-                    onClick={() => setPreviewDevice("desktop")}
-                    className={`p-1.5 rounded-lg text-xs font-bold flex items-center gap-1 transition ${
-                      previewDevice === "desktop"
-                        ? "bg-white dark:bg-slate-700 text-purple-600 dark:text-purple-300 shadow-sm"
-                        : "text-slate-500"
-                    }`}
-                  >
-                    <Monitor className="w-3.5 h-3.5" />
-                    <span className="hidden sm:inline">Desktop</span>
-                  </button>
-                  <button
-                    onClick={() => setPreviewDevice("mobile")}
-                    className={`p-1.5 rounded-lg text-xs font-bold flex items-center gap-1 transition ${
-                      previewDevice === "mobile"
-                        ? "bg-white dark:bg-slate-700 text-purple-600 dark:text-purple-300 shadow-sm"
-                        : "text-slate-500"
-                    }`}
-                  >
-                    <Smartphone className="w-3.5 h-3.5" />
-                    <span className="hidden sm:inline">Mobile</span>
-                  </button>
+            <div className="p-3 sm:p-5 border-b border-slate-200 dark:border-slate-800 bg-slate-50/90 dark:bg-slate-800/60 backdrop-blur-sm flex flex-col gap-2.5 sm:gap-3 flex-shrink-0">
+              {/* Top Row: Title + Subject + Prominent Close Button */}
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                  <div className="p-2 sm:p-2.5 bg-gradient-to-br from-purple-600 to-indigo-600 text-white rounded-xl sm:rounded-2xl shadow-sm shadow-purple-500/20 flex-shrink-0">
+                    <Eye className="w-4 h-4 sm:w-5 sm:h-5" />
+                  </div>
+                  <div className="min-w-0">
+                    <h3 id="preview-modal-title" className="font-bold text-sm sm:text-base text-slate-900 dark:text-white leading-tight">
+                      Live Template Studio & Preview
+                    </h3>
+                    <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                      Subject: <span className="font-semibold text-slate-700 dark:text-slate-200">{previewSubject || "Rendering template..."}</span>
+                    </p>
+                  </div>
                 </div>
 
                 <button
+                  type="button"
                   onClick={() => setPreviewOpen(false)}
-                  className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-lg transition"
+                  className="p-2 sm:p-2.5 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white rounded-xl bg-slate-200/60 dark:bg-slate-700/60 hover:bg-slate-200 dark:hover:bg-slate-700 transition active:scale-95 flex-shrink-0"
+                  title="Close Preview (Esc)"
+                  aria-label="Close"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
+
+              {/* Controls Row: Template Selector & Device Toggle */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3">
+                <div className="flex items-center gap-2 flex-1 min-w-0">
+                  <label htmlFor="preview-template-select" className="text-xs font-bold text-slate-500 dark:text-slate-400 whitespace-nowrap hidden sm:inline">
+                    Template:
+                  </label>
+                  <select
+                    id="preview-template-select"
+                    value={previewTemplate}
+                    onChange={(e) => {
+                      setPreviewTemplate(e.target.value);
+                      loadPreview(e.target.value);
+                    }}
+                    className="w-full sm:w-auto sm:max-w-md px-3 py-2 text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-slate-900 dark:text-white cursor-pointer shadow-xs truncate"
+                  >
+                    {TEMPLATE_LIST.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="flex items-center justify-between sm:justify-end gap-2">
+                  <div className="flex items-center bg-slate-200/80 dark:bg-slate-800 p-0.5 sm:p-1 rounded-xl">
+                    <button
+                      type="button"
+                      onClick={() => setPreviewDevice("desktop")}
+                      className={`px-2.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition ${
+                        previewDevice === "desktop"
+                          ? "bg-white dark:bg-slate-700 text-purple-600 dark:text-purple-300 shadow-sm"
+                          : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+                      }`}
+                      title="Desktop View"
+                    >
+                      <Monitor className="w-3.5 h-3.5" />
+                      <span className="text-[11px] sm:text-xs">Desktop</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPreviewDevice("mobile")}
+                      className={`px-2.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition ${
+                        previewDevice === "mobile"
+                          ? "bg-white dark:bg-slate-700 text-purple-600 dark:text-purple-300 shadow-sm"
+                          : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+                      }`}
+                      title="Mobile View"
+                    >
+                      <Smartphone className="w-3.5 h-3.5" />
+                      <span className="text-[11px] sm:text-xs">Mobile</span>
+                    </button>
+                  </div>
+
+                  <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/40 px-2 py-1 rounded-lg border border-purple-200 dark:border-purple-800/40 whitespace-nowrap">
+                    {previewDevice === "mobile" ? "380px Frame" : "640px Frame"}
+                  </span>
+                </div>
+              </div>
             </div>
 
             {/* Modal Body with Iframe */}
-            <div className="flex-1 bg-slate-100 dark:bg-slate-950/60 p-2.5 sm:p-6 overflow-y-auto flex items-center justify-center">
+            <div className="flex-1 min-h-0 bg-slate-100 dark:bg-slate-950/70 p-2 sm:p-5 flex flex-col items-center justify-start overflow-y-auto">
               {previewLoading ? (
-                <div className="flex flex-col items-center gap-3 text-slate-400">
+                <div className="my-auto flex flex-col items-center gap-3 text-slate-400 py-12">
                   <RefreshCw className="w-8 h-8 animate-spin text-purple-600" />
                   <span className="text-xs sm:text-sm font-medium">Rendering cross-client HTML template...</span>
                 </div>
               ) : (
                 <div
-                  className={`transition-all duration-300 mx-auto shadow-2xl rounded-2xl overflow-hidden border border-slate-300 dark:border-slate-800 bg-white ${
-                    previewDevice === "mobile" ? "w-full max-w-[360px] h-[550px] sm:h-[650px]" : "w-full max-w-[620px] h-full"
+                  className={`transition-all duration-300 w-full mx-auto shadow-2xl rounded-2xl overflow-hidden border border-slate-300 dark:border-slate-800 bg-white flex-1 min-h-[360px] ${
+                    previewDevice === "mobile"
+                      ? "max-w-[380px] sm:max-h-[680px]"
+                      : "max-w-[640px] sm:max-h-full"
                   }`}
                 >
                   <iframe
@@ -760,8 +821,8 @@ export default function AdminEmailDeliveryPage() {
             </div>
 
             {/* Modal Footer: Live Test Send Form */}
-            <div className="p-3 sm:p-4 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
-              <form onSubmit={handleSendTest} className="flex flex-col sm:flex-row items-center justify-between gap-2.5 sm:gap-3">
+            <div className="p-3 sm:p-4 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 pb-[max(0.75rem,env(safe-area-inset-bottom))] flex-shrink-0">
+              <form onSubmit={handleSendTest} className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-3">
                 <div className="flex items-center gap-2 w-full sm:w-auto flex-1">
                   <span className="text-xs font-bold text-slate-500 whitespace-nowrap hidden sm:inline">
                     Send Live Test:
@@ -789,7 +850,7 @@ export default function AdminEmailDeliveryPage() {
                   <button
                     type="submit"
                     disabled={testSending || !testEmail}
-                    className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 text-xs font-bold text-white bg-purple-600 hover:bg-purple-700 rounded-xl disabled:opacity-50 transition shadow-sm whitespace-nowrap"
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 text-xs font-bold text-white bg-purple-600 hover:bg-purple-700 rounded-xl disabled:opacity-50 transition shadow-sm whitespace-nowrap active:scale-95"
                   >
                     <Send className={`w-3.5 h-3.5 ${testSending ? "animate-pulse" : ""}`} />
                     <span>{testSending ? "Dispatching..." : "Send Test"}</span>
@@ -798,21 +859,31 @@ export default function AdminEmailDeliveryPage() {
               </form>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
-      {/* ── DETAILS MODAL ───────────────────────────────────────────────────── */}
-      {selectedLog && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-2 sm:p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="bg-white dark:bg-slate-900 w-full max-w-lg rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl p-4 sm:p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+      {/* ── DETAILS MODAL (PORTAL) ───────────────────────────────────────────── */}
+      {selectedLog && mounted && typeof document !== "undefined" && createPortal(
+        <div
+          className="fixed inset-0 z-[10005] flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setSelectedLog(null);
+          }}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="bg-white dark:bg-slate-900 w-full max-w-lg rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl p-4 sm:p-6 space-y-4 max-h-[90dvh] overflow-y-auto animate-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
               <h3 className="font-bold text-base sm:text-lg text-slate-900 dark:text-white flex items-center gap-2">
                 <FileText className="w-4 h-4 text-purple-600" />
                 <span>Email Delivery Audit Record</span>
               </h3>
               <button
+                type="button"
                 onClick={() => setSelectedLog(null)}
-                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1"
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                title="Close Audit (Esc)"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -881,14 +952,16 @@ export default function AdminEmailDeliveryPage() {
 
             <div className="pt-2 flex justify-end">
               <button
+                type="button"
                 onClick={() => setSelectedLog(null)}
-                className="w-full sm:w-auto px-5 py-2 text-xs font-bold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 rounded-xl transition text-center"
+                className="w-full sm:w-auto px-5 py-2.5 text-xs font-bold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl transition text-center active:scale-95"
               >
-                Close
+                Close Record
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

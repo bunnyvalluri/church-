@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { 
@@ -42,6 +42,22 @@ export default function LeadershipPage() {
 
   // Selected ministry modal
   const [selectedMinistry, setSelectedMinistry] = useState<any | null>(null);
+
+  // Prevent background scroll and support Escape key when modal is open
+  useEffect(() => {
+    if (selectedMinistry !== null) {
+      const prevOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") setSelectedMinistry(null);
+      };
+      window.addEventListener("keydown", handleKeyDown);
+      return () => {
+        document.body.style.overflow = prevOverflow;
+        window.removeEventListener("keydown", handleKeyDown);
+      };
+    }
+  }, [selectedMinistry]);
 
   // Stats Data
   const stats = [
@@ -549,15 +565,15 @@ export default function LeadershipPage() {
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
               <input
                 type="text"
-                placeholder="Search ministry or leadership department..."
+                placeholder={pageT.searchPlaceholder || (language === "te" ? "పరిచర్యలు లేదా నాయకులను శోధించండి..." : language === "hi" ? "मंत्रालयों या नेताओं को खोजें..." : "Search ministries or leaders...")}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-10 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs sm:text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500 font-semibold shadow-sm"
+                className="w-full pl-9 sm:pl-10 pr-9 sm:pr-10 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs sm:text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 placeholder:font-normal focus:outline-none focus:ring-2 focus:ring-purple-500 font-semibold shadow-sm transition-all"
               />
               {searchQuery && (
                 <button 
                   onClick={() => setSearchQuery("")}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-0.5"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -636,70 +652,84 @@ export default function LeadershipPage() {
 
       {/* 🔍 Interactive Ministry Detail Modal */}
       {selectedMinistry && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md animate-fade-in">
-          <div className="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto animate-scale-in">
-            
+        <div 
+          className="fixed inset-0 z-[10005] flex items-center justify-center p-2.5 sm:p-4 md:p-6 bg-slate-950/85 backdrop-blur-md animate-fade-in"
+          onClick={() => setSelectedMinistry(null)}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="ministry-detail-title"
+        >
+          <div 
+            className="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl max-w-lg w-full shadow-2xl overflow-hidden max-h-[92dvh] sm:max-h-[90vh] flex flex-col animate-scale-in"
+            onClick={(e) => e.stopPropagation()}
+          >
             {/* Modal Top Accent Line */}
-            <div className={`absolute top-0 left-0 right-0 h-2 bg-gradient-to-r ${selectedMinistry.accent}`} />
+            <div className={`h-1.5 bg-gradient-to-r ${selectedMinistry.accent} shrink-0`} />
 
-            {/* Close Button */}
-            <button
-              onClick={() => setSelectedMinistry(null)}
-              className="absolute top-5 right-5 p-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full text-slate-600 dark:text-slate-300 transition-colors"
-            >
-              <X className="h-5 w-5" />
-            </button>
+            {/* Modal Header */}
+            <div className="p-4 sm:p-6 pb-3 border-b border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-3 shrink-0">
+              <div className="flex items-center gap-3 min-w-0 pr-8">
+                <div className={`w-11 h-11 sm:w-12 sm:h-12 ${selectedMinistry.bgColor} rounded-xl sm:rounded-2xl flex items-center justify-center shrink-0`}>
+                  <selectedMinistry.icon className={`h-5 w-5 sm:h-6 sm:w-6 ${selectedMinistry.color}`} />
+                </div>
+                <div className="min-w-0">
+                  <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-widest text-purple-600 dark:text-purple-400 block truncate">
+                    {selectedMinistry.tag}
+                  </span>
+                  <h3 id="ministry-detail-title" className="text-lg sm:text-xl md:text-2xl font-black text-slate-900 dark:text-white truncate">
+                    {selectedMinistry.title}
+                  </h3>
+                </div>
+              </div>
 
-            {/* Header info */}
-            <div className="flex items-center gap-4 mb-6">
-              <div className={`w-14 h-14 ${selectedMinistry.bgColor} rounded-2xl flex items-center justify-center`}>
-                <selectedMinistry.icon className={`h-7 w-7 ${selectedMinistry.color}`} />
-              </div>
-              <div>
-                <span className="text-xs font-extrabold uppercase tracking-widest text-purple-600 dark:text-purple-400">
-                  {selectedMinistry.tag}
-                </span>
-                <h3 className="text-2xl font-black text-slate-900 dark:text-white">
-                  {selectedMinistry.title}
-                </h3>
-              </div>
+              {/* Close Button */}
+              <button
+                onClick={() => setSelectedMinistry(null)}
+                className="absolute top-4 right-4 sm:top-5 sm:right-5 p-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 rounded-xl text-slate-600 dark:text-slate-300 transition-all shadow-xs"
+                aria-label="Close dialog"
+              >
+                <X className="h-4 w-4 sm:h-5 sm:w-5" />
+              </button>
             </div>
 
-            <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed mb-6">
-              {selectedMinistry.desc}
-            </p>
-
-            {/* Focus Areas List */}
-            <div className="mb-6 space-y-3">
-              <h4 className="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                {pageT.modalKeyAreas || "Key Focus Areas"}
-              </h4>
-              <div className="space-y-2">
-                {selectedMinistry.focusAreas.map((area: string, i: number) => (
-                  <div key={i} className="flex items-start gap-2.5 text-sm text-slate-800 dark:text-slate-200">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500 mt-0.5 flex-shrink-0" />
-                    <span>{area}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Meeting Schedule */}
-            <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200/60 dark:border-slate-800 mb-6">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 mb-1">
-                {pageT.modalSchedule || "Schedule & Gatherings"}
-              </h4>
-              <p className="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
-                {selectedMinistry.schedule}
+            {/* Modal Body - Fluid scroll */}
+            <div className="p-4 sm:p-6 overflow-y-auto space-y-5 text-slate-700 dark:text-slate-300 flex-1 overscroll-contain">
+              <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-sm leading-relaxed">
+                {selectedMinistry.desc}
               </p>
+
+              {/* Focus Areas List */}
+              <div className="space-y-2.5">
+                <h4 className="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                  {pageT.modalKeyAreas || "Key Focus Areas"}
+                </h4>
+                <div className="space-y-2">
+                  {selectedMinistry.focusAreas.map((area: string, i: number) => (
+                    <div key={i} className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-800 dark:text-slate-200">
+                      <CheckCircle2 className="h-4 w-4 text-emerald-500 mt-0.5 flex-shrink-0" />
+                      <span>{area}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Meeting Schedule */}
+              <div className="p-3.5 sm:p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl sm:rounded-2xl border border-slate-200/60 dark:border-slate-800">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 mb-1">
+                  {pageT.modalSchedule || "Schedule & Gatherings"}
+                </h4>
+                <p className="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
+                  {selectedMinistry.schedule}
+                </p>
+              </div>
             </div>
 
-            {/* Modal Actions */}
-            <div className="flex flex-col sm:flex-row gap-3 pt-2">
+            {/* Modal Actions - Pinned Footer */}
+            <div className="p-3.5 sm:p-4 bg-slate-50 dark:bg-slate-950/80 border-t border-slate-200 dark:border-slate-800 shrink-0 flex flex-col sm:flex-row gap-2.5">
               <Link
                 href="/get-involved/volunteer"
                 onClick={() => setSelectedMinistry(null)}
-                className="flex-1 py-3 px-4 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold text-xs sm:text-sm text-center shadow-lg transition-all duration-300 flex items-center justify-center gap-2"
+                className="flex-1 py-2.5 sm:py-3 px-4 bg-purple-600 hover:bg-purple-700 active:scale-98 text-white rounded-xl font-bold text-xs sm:text-sm text-center shadow-md transition-all flex items-center justify-center gap-2"
               >
                 <span>{pageT.modalJoin || "Get Involved in this Ministry"}</span>
                 <ArrowRight className="h-4 w-4" />
@@ -707,7 +737,7 @@ export default function LeadershipPage() {
               
               <button
                 onClick={() => setSelectedMinistry(null)}
-                className="py-3 px-4 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-bold text-xs sm:text-sm transition-colors"
+                className="py-2.5 sm:py-3 px-5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-98 text-slate-700 dark:text-slate-300 rounded-xl font-bold text-xs sm:text-sm transition-all"
               >
                 {pageT.modalClose || "Close"}
               </button>

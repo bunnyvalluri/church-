@@ -69,9 +69,11 @@ export default function NgoProjectDetailPage({
     setMounted(true);
   }, []);
 
-  // Keyboard navigation for lightbox
+  // Keyboard navigation & body scroll lock for lightbox
   useEffect(() => {
     if (activeLightboxIndex === null) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setActiveLightboxIndex(null);
@@ -90,7 +92,10 @@ export default function NgoProjectDetailPage({
       }
     };
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
   }, [activeLightboxIndex, project?.media]);
 
   const ngoT = t?.ngo || {};
@@ -325,28 +330,20 @@ export default function NgoProjectDetailPage({
                 <div
                   key={item.id}
                   onClick={() => setActiveLightboxIndex(idx)}
-                  className="relative aspect-video rounded-2xl overflow-hidden border border-slate-200/90 dark:border-white/10 bg-slate-950 group shadow-md hover:shadow-2xl hover:border-purple-500/50 transition-all duration-300 cursor-pointer"
+                  className="relative aspect-[4/3] rounded-2xl overflow-hidden border border-slate-200/90 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 group shadow-md hover:shadow-2xl hover:border-purple-500/50 transition-all duration-300 cursor-pointer"
                   title="Click to view full image"
                 >
-                  {/* Ambient blurred backdrop so portrait/document images fill the frame gorgeously without black voids */}
-                  <img
-                    src={encodeSrc(item.url)}
-                    alt=""
-                    aria-hidden="true"
-                    className="absolute inset-0 w-full h-full object-cover blur-xl opacity-35 scale-125 pointer-events-none select-none"
-                  />
-
-                  {/* Foreground image - 100% visible and uncropped! */}
+                  {/* Foreground image - fills the frame cleanly with NO black side bars! */}
                   <img
                     src={encodeSrc(item.url)}
                     alt={item.title || "Campaign media"}
-                    className="relative z-10 w-full h-full object-contain p-1.5 group-hover:scale-[1.03] transition-transform duration-300"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     onError={(e) => {
                       e.currentTarget.src = "/gandhi_hospital_support_image.png";
                     }}
                   />
 
-                  {/* Expand icon pill on hover */}
+                  {/* Expand icon pill on hover / tap */}
                   <div className="absolute top-2.5 right-2.5 z-20 px-2.5 py-1 rounded-full bg-slate-950/80 backdrop-blur-md border border-white/20 text-white text-[10px] font-semibold flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg">
                     <Maximize2 className="w-3 h-3" />
                     <span>Expand</span>
@@ -354,7 +351,7 @@ export default function NgoProjectDetailPage({
 
                   {/* Caption overlay */}
                   {item.title && (
-                    <div className="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-slate-950 via-slate-950/80 to-transparent p-3 pt-6 pointer-events-none">
+                    <div className="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-slate-950 via-slate-950/70 to-transparent p-3 pt-6 pointer-events-none">
                       <p className="text-xs font-semibold text-white truncate drop-shadow-sm">{item.title}</p>
                     </div>
                   )}
@@ -367,17 +364,26 @@ export default function NgoProjectDetailPage({
         {/* Fullscreen Interactive Lightbox Modal */}
         {activeLightboxIndex !== null && project.media && project.media[activeLightboxIndex] && (
           <div
-            className="fixed inset-0 z-[2000] bg-black/95 backdrop-blur-xl flex flex-col items-center justify-between p-4 sm:p-6 animate-in fade-in duration-200"
+            className="fixed inset-0 z-[10005] bg-slate-950/90 backdrop-blur-2xl flex flex-col items-center justify-between p-3 sm:p-6 animate-in fade-in duration-200 overflow-hidden"
             onClick={() => setActiveLightboxIndex(null)}
           >
+            {/* Ambient Blurred Backdrop from image itself - eliminates black void */}
+            <img
+              src={encodeSrc(project.media[activeLightboxIndex].url)}
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 w-full h-full object-cover blur-3xl opacity-35 scale-125 pointer-events-none select-none"
+            />
+            <div className="absolute inset-0 bg-slate-950/50 backdrop-blur-sm pointer-events-none" />
+
             {/* Top Toolbar */}
             <div
-              className="w-full flex items-center justify-between text-white z-10"
+              className="w-full flex items-center justify-between text-white z-10 shrink-0"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="text-xs sm:text-sm font-medium text-slate-300">
+              <div className="text-xs sm:text-sm font-medium text-slate-200">
                 <span className="font-bold text-white">{activeLightboxIndex + 1}</span> of{" "}
-                <span className="text-slate-400">{project.media.length}</span>
+                <span className="text-slate-300">{project.media.length}</span>
                 {project.media[activeLightboxIndex].title && (
                   <span className="ml-3 hidden sm:inline text-white font-semibold">
                     • {project.media[activeLightboxIndex].title}
@@ -387,7 +393,7 @@ export default function NgoProjectDetailPage({
               <button
                 onClick={() => setActiveLightboxIndex(null)}
                 aria-label="Close image viewer"
-                className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-white transition-colors cursor-pointer"
+                className="w-11 h-11 rounded-full bg-black/40 hover:bg-black/70 border border-white/25 flex items-center justify-center text-white transition-all cursor-pointer shadow-lg active:scale-95"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -395,7 +401,7 @@ export default function NgoProjectDetailPage({
 
             {/* Main Image Display with Left/Right Navigation */}
             <div
-              className="relative flex-1 w-full flex items-center justify-center my-2 max-h-[80vh]"
+              className="relative flex-1 w-full flex items-center justify-center my-auto p-1 sm:p-4 overflow-hidden z-10"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Previous Button */}
@@ -407,7 +413,7 @@ export default function NgoProjectDetailPage({
                     )
                   }
                   aria-label="Previous image"
-                  className="absolute left-2 sm:left-4 z-20 w-11 h-11 rounded-full bg-slate-950/70 hover:bg-slate-900 border border-white/20 text-white flex items-center justify-center transition-transform hover:scale-110 active:scale-95 shadow-xl cursor-pointer"
+                  className="absolute left-2 sm:left-4 z-20 w-11 h-11 rounded-full bg-black/50 hover:bg-black/80 backdrop-blur-md border border-white/20 text-white flex items-center justify-center transition-all hover:scale-110 active:scale-95 shadow-xl cursor-pointer"
                 >
                   <ChevronLeft className="w-6 h-6" />
                 </button>
@@ -417,7 +423,7 @@ export default function NgoProjectDetailPage({
               <img
                 src={encodeSrc(project.media[activeLightboxIndex].url)}
                 alt={project.media[activeLightboxIndex].title || "Campaign media"}
-                className="max-h-[80vh] max-w-[90vw] object-contain rounded-xl shadow-2xl transition-all select-none"
+                className="max-h-[82dvh] max-w-[96vw] w-auto h-auto object-contain rounded-2xl shadow-2xl transition-all select-none border border-white/10"
               />
 
               {/* Next Button */}
@@ -427,7 +433,7 @@ export default function NgoProjectDetailPage({
                     setActiveLightboxIndex((activeLightboxIndex + 1) % project.media.length)
                   }
                   aria-label="Next image"
-                  className="absolute right-2 sm:right-4 z-20 w-11 h-11 rounded-full bg-slate-950/70 hover:bg-slate-900 border border-white/20 text-white flex items-center justify-center transition-transform hover:scale-110 active:scale-95 shadow-xl cursor-pointer"
+                  className="absolute right-2 sm:right-4 z-20 w-11 h-11 rounded-full bg-black/50 hover:bg-black/80 backdrop-blur-md border border-white/20 text-white flex items-center justify-center transition-all hover:scale-110 active:scale-95 shadow-xl cursor-pointer"
                 >
                   <ChevronRight className="w-6 h-6" />
                 </button>
@@ -436,13 +442,13 @@ export default function NgoProjectDetailPage({
 
             {/* Bottom Caption */}
             <div
-              className="w-full text-center py-2 text-xs sm:text-sm text-slate-300 z-10"
+              className="w-full text-center py-2 text-xs sm:text-sm text-slate-200 z-10 shrink-0"
               onClick={(e) => e.stopPropagation()}
             >
               <p className="font-semibold text-white drop-shadow-md">
                 {project.media[activeLightboxIndex].title}
               </p>
-              <p className="text-[11px] text-slate-400 mt-0.5">Use Left / Right arrow keys to navigate • Esc to close</p>
+              <p className="text-[11px] text-slate-300 mt-0.5">Use Left / Right arrow keys to navigate • Esc to close</p>
             </div>
           </div>
         )}

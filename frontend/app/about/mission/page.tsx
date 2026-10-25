@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import {
   Target,
@@ -39,6 +39,7 @@ export default function MissionPage() {
   // Selected item modal state
   const [selectedModalItem, setSelectedModalItem] = useState<{
     title: string;
+    subtitle?: string;
     category?: string;
     desc: string;
     verse: string;
@@ -52,6 +53,22 @@ export default function MissionPage() {
     quoteText?: string;
     quoteBorder?: string;
   } | null>(null);
+
+  // Prevent background scroll and support Escape key when modal is open
+  useEffect(() => {
+    if (selectedModalItem !== null) {
+      const prevOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") setSelectedModalItem(null);
+      };
+      window.addEventListener("keydown", handleKeyDown);
+      return () => {
+        document.body.style.overflow = prevOverflow;
+        window.removeEventListener("keydown", handleKeyDown);
+      };
+    }
+  }, [selectedModalItem]);
 
   // Stats Data
   const stats = [
@@ -689,6 +706,7 @@ export default function MissionPage() {
                     onClick={() =>
                       setSelectedModalItem({
                         title: pillar.title,
+                        subtitle: pillar.subtitle,
                         desc: pillar.desc,
                         verse: pillar.verse,
                         quote: pillar.quote,
@@ -1008,25 +1026,46 @@ export default function MissionPage() {
 
       {/* 📖 Deep Dive Detail Modal */}
       {selectedModalItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
-          <div className="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden max-h-[90vh] flex flex-col animate-scale-in">
+        <div
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setSelectedModalItem(null);
+          }}
+          className="fixed inset-0 z-[10005] flex items-center justify-center p-2.5 sm:p-4 md:p-6 bg-slate-950/85 backdrop-blur-md animate-fade-in"
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="mission-modal-title"
+            className="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden max-h-[92dvh] sm:max-h-[90vh] flex flex-col animate-scale-in"
+          >
             {/* Modal Header */}
-            <div className={`p-6 sm:p-8 bg-gradient-to-r ${selectedModalItem.accent} text-white relative`}>
+            <div className={`p-4 sm:p-6 md:p-7 bg-gradient-to-r ${selectedModalItem.accent} text-white relative shrink-0 z-10 pr-14 sm:pr-16 shadow-sm`}>
               <button
                 onClick={() => setSelectedModalItem(null)}
-                className="absolute top-6 right-6 p-2 bg-black/20 hover:bg-black/40 rounded-full text-white transition-colors"
+                aria-label="Close modal"
+                className="absolute top-3 sm:top-4 right-3 sm:right-4 p-2 sm:p-2.5 bg-black/25 hover:bg-black/40 active:scale-95 rounded-xl text-white transition-all min-h-[44px] min-w-[44px] flex items-center justify-center cursor-pointer shadow-sm"
               >
                 <X className="h-5 w-5" />
               </button>
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-bold uppercase tracking-wider mb-3">
-                <BookOpen className="h-3.5 w-3.5" />
-                <span>{selectedModalItem.verse}</span>
+
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-bold tracking-wide mb-2 sm:mb-2.5 border border-white/20 shadow-xs">
+                <BookOpen className="h-3.5 w-3.5 flex-shrink-0" />
+                <span className="truncate">{selectedModalItem.verse}</span>
               </div>
-              <h3 className="text-2xl sm:text-3xl font-black">{selectedModalItem.title}</h3>
+
+              <h3 id="mission-modal-title" className="text-xl sm:text-2xl md:text-3xl font-black text-white tracking-tight leading-tight">
+                {selectedModalItem.title}
+              </h3>
+
+              {selectedModalItem.subtitle && (
+                <p className="text-white/90 text-xs sm:text-sm font-semibold mt-1 leading-snug">
+                  {selectedModalItem.subtitle}
+                </p>
+              )}
             </div>
 
             {/* Modal Body */}
-            <div className="p-6 sm:p-8 overflow-y-auto space-y-6 text-slate-700 dark:text-slate-300 text-left">
+            <div className="p-4 sm:p-6 md:p-8 overflow-y-auto space-y-4 sm:space-y-6 text-slate-700 dark:text-slate-300 text-left flex-1 overscroll-contain">
               <div>
                 <h4 className={`text-xs font-extrabold uppercase tracking-widest ${
                   selectedModalItem.accent?.includes("purple") ? "text-purple-600 dark:text-purple-400" :
@@ -1038,49 +1077,51 @@ export default function MissionPage() {
                 } mb-2`}>
                   {language === "te" ? "పరిచర్య లక్ష్యం & ప్రాముఖ్యత" : language === "hi" ? "अवलोकन और उद्देश्य" : "Overview & Purpose"}
                 </h4>
-                <p className="text-base sm:text-lg leading-relaxed font-medium">
+                <p className="text-sm sm:text-base md:text-lg leading-relaxed font-medium">
                   {selectedModalItem.desc}
                 </p>
               </div>
 
               {selectedModalItem.quote && (
-                <div className={`p-5 ${selectedModalItem.quoteBg || 'bg-purple-50 dark:bg-purple-950/40'} rounded-2xl border ${selectedModalItem.quoteBorder || 'border-purple-200 dark:border-purple-900/50'}`}>
-                  <p className={`text-sm sm:text-base italic font-semibold ${selectedModalItem.quoteText || 'text-purple-900 dark:text-purple-200'}`}>
+                <div className={`p-4 sm:p-5 ${selectedModalItem.quoteBg || 'bg-purple-50 dark:bg-purple-950/40'} rounded-2xl border ${selectedModalItem.quoteBorder || 'border-purple-200 dark:border-purple-900/50'}`}>
+                  <p className={`text-xs sm:text-sm md:text-base italic font-semibold ${selectedModalItem.quoteText || 'text-purple-900 dark:text-purple-200'}`}>
                     "{selectedModalItem.quote}"
                   </p>
                 </div>
               )}
 
-              <div>
-                <h4 className={`text-xs font-extrabold uppercase tracking-widest ${
-                  selectedModalItem.accent?.includes("purple") ? "text-purple-600 dark:text-purple-400" :
-                  selectedModalItem.accent?.includes("indigo") ? "text-indigo-600 dark:text-indigo-400" :
-                  selectedModalItem.accent?.includes("pink") ? "text-pink-600 dark:text-pink-400" :
-                  selectedModalItem.accent?.includes("emerald") ? "text-emerald-600 dark:text-emerald-400" :
-                  selectedModalItem.accent?.includes("amber") ? "text-amber-600 dark:text-amber-400" :
-                  "text-purple-600 dark:text-purple-400"
-                } mb-3`}>
-                  {language === "te" ? "ఆచరణాత్మక జీవితం & పరిచర్య ప్రణాళిక" : language === "hi" ? "व्यावहारिक जीवन और सेवा कार्य" : "Practical Living & Ministry Action"}
-                </h4>
-                <div className="space-y-2.5">
-                  {selectedModalItem.details.map((item: string, i: number) => (
-                    <div
-                      key={i}
-                      className="flex items-center gap-3 p-3.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 rounded-xl text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200 shadow-xs"
-                    >
-                      <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
-                      <span>{item}</span>
-                    </div>
-                  ))}
+              {selectedModalItem.details && selectedModalItem.details.length > 0 && (
+                <div>
+                  <h4 className={`text-xs font-extrabold uppercase tracking-widest ${
+                    selectedModalItem.accent?.includes("purple") ? "text-purple-600 dark:text-purple-400" :
+                    selectedModalItem.accent?.includes("indigo") ? "text-indigo-600 dark:text-indigo-400" :
+                    selectedModalItem.accent?.includes("pink") ? "text-pink-600 dark:text-pink-400" :
+                    selectedModalItem.accent?.includes("emerald") ? "text-emerald-600 dark:text-emerald-400" :
+                    selectedModalItem.accent?.includes("amber") ? "text-amber-600 dark:text-amber-400" :
+                    "text-purple-600 dark:text-purple-400"
+                  } mb-3`}>
+                    {language === "te" ? "ఆచరణాత్మక జీవితం & పరిచర్య ప్రణాళిక" : language === "hi" ? "व्यावहारिक जीवन और सेवा कार्य" : "Practical Living & Ministry Action"}
+                  </h4>
+                  <div className="space-y-2.5">
+                    {selectedModalItem.details.map((item: string, i: number) => (
+                      <div
+                        key={i}
+                        className="flex items-start sm:items-center gap-3 p-3 sm:p-3.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 rounded-xl text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200 shadow-xs"
+                      >
+                        <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5 sm:mt-0" />
+                        <span className="leading-snug">{item}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
             {/* Modal Footer */}
-            <div className="p-6 bg-slate-50 dark:bg-slate-950/80 border-t border-slate-200 dark:border-slate-800 flex justify-end">
+            <div className="p-3.5 sm:p-4 bg-slate-50 dark:bg-slate-950/80 border-t border-slate-200 dark:border-slate-800 flex justify-end shrink-0 z-10">
               <button
                 onClick={() => setSelectedModalItem(null)}
-                className="px-6 py-2.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold rounded-xl text-sm hover:opacity-90 transition-opacity"
+                className="w-full sm:w-auto px-6 py-2.5 min-h-[44px] bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold rounded-xl text-sm hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center shadow-sm cursor-pointer"
               >
                 {language === "te" ? "మూసివేయి" : language === "hi" ? "बंद करें" : "Close"}
               </button>

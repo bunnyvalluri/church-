@@ -15,10 +15,8 @@ export default function MemberFooter() {
 
   return (
     <footer
-      className="w-full border-t border-gray-200/80 dark:border-white/10 bg-white/60 dark:bg-[#0a0a12]/80 backdrop-blur-md select-none transition-colors"
+      className="w-full border-t border-gray-200/80 dark:border-white/10 bg-white/60 dark:bg-[#0a0a12]/80 backdrop-blur-md select-none transition-colors pt-3.5 sm:pt-4 px-3 sm:px-6 pb-[calc(6.25rem+env(safe-area-inset-bottom,0px))] sm:pb-[calc(6.5rem+env(safe-area-inset-bottom,0px))] lg:pb-3.5"
       style={{
-        paddingTop: "0.75rem",
-        paddingBottom: "max(0.75rem, env(safe-area-inset-bottom, 0.75rem))",
         paddingLeft: "max(0.75rem, env(safe-area-inset-left, 0.75rem))",
         paddingRight: "max(0.75rem, env(safe-area-inset-right, 0.75rem))",
       }}
@@ -53,7 +51,7 @@ export default function MemberFooter() {
         </div>
 
         {/* Footer Links */}
-        <div className="flex items-center gap-3 text-[10px] sm:text-[11px] font-medium justify-center flex-shrink-0">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-[10px] sm:text-[11px] font-medium justify-center flex-shrink-0">
           <Link
             href="/privacy"
             className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors text-gray-500 dark:text-gray-400"

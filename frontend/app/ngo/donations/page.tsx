@@ -227,8 +227,11 @@ function getCauseDisplayName(cause: CauseItem, lang: string): string {
 const BRANCH_TRANSLATIONS: Record<string, { te: string; hi: string }> = {
   "Shapur Nagar (Main Central)": { te: "షాపూర్ నగర్ (ప్రధాన శాఖ)", hi: "शापूर नगर (मुख्य शाखा)" },
   "Shapur Nagar (Main)": { te: "షాపూర్ నగర్ (ప్రధాన శాఖ)", hi: "शापूर नगर (मुख्य शाखा)" },
+  "Shapur Nagar": { te: "షాపూర్ నగర్ (ప్రధాన శాఖ)", hi: "शापूर नगर (मुख्य शाखा)" },
   "Subhash Nagar Branch": { te: "సుభాష్ నగర్ శాఖ", hi: "सुभाष नगर शाखा" },
+  "Subhash Nagar": { te: "సుభాష్ నగర్ శాఖ", hi: "सुभाष नगर शाखा" },
   "Bahadurpally Branch": { te: "బహదూర్‌పల్లి శాఖ", hi: "बहादुरपल्ली शाखा" },
+  "Bahadurpally": { te: "బహదూర్‌పల్లి శాఖ", hi: "बहादुरपल्ली शाखा" },
 };
 
 function getBranchDisplayName(branch: BranchItem, lang: string): string {
@@ -1210,40 +1213,46 @@ function NgoDonationsContent() {
                   })}
                 </div>
 
-                {/* Purpose & Branch Selectors */}
-                <div className="grid grid-cols-2 gap-3 pt-1">
+                {/* Purpose & Branch Selectors - Stacked on mobile so full location names are completely visible */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
                   <div>
                     <label className="block text-xs font-black uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1">
-                      {dp.donationCause || "Donation Cause"}
+                      {dp.donationCause || "Support Category"}
                     </label>
-                    <select
-                      value={selectedCause}
-                      onChange={(e) => setSelectedCause(e.target.value)}
-                      className="w-full py-3 px-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-xs font-bold focus:outline-none focus:border-purple-500 touch-manipulation"
-                    >
-                      {causes.map((c) => (
-                        <option key={c.id} value={c.code}>
-                          {getCauseDisplayName(c, language)}
-                        </option>
-                      ))}
-                    </select>
+                    <div className="relative">
+                      <select
+                        value={selectedCause}
+                        onChange={(e) => setSelectedCause(e.target.value)}
+                        className="w-full py-3.5 pl-4 pr-10 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-sm font-semibold focus:outline-none focus:border-purple-500 touch-manipulation appearance-none cursor-pointer shadow-xs"
+                      >
+                        {causes.map((c) => (
+                          <option key={c.id} value={c.code}>
+                            {getCauseDisplayName(c, language)}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                    </div>
                   </div>
 
                   <div>
                     <label className="block text-xs font-black uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1">
-                      {dp.branch || "Branch"}
+                      {dp.branch || "Select Branch / Zone"}
                     </label>
-                    <select
-                      value={selectedBranch}
-                      onChange={(e) => setSelectedBranch(e.target.value)}
-                      className="w-full py-3 px-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-xs font-bold focus:outline-none focus:border-purple-500 touch-manipulation"
-                    >
-                      {branches.map((b) => (
-                        <option key={b.id} value={b.id}>
-                          {getBranchDisplayName(b, language)}
-                        </option>
-                      ))}
-                    </select>
+                    <div className="relative">
+                      <select
+                        value={selectedBranch}
+                        onChange={(e) => setSelectedBranch(e.target.value)}
+                        className="w-full py-3.5 pl-4 pr-10 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-sm font-semibold focus:outline-none focus:border-purple-500 touch-manipulation appearance-none cursor-pointer shadow-xs"
+                      >
+                        {branches.map((b) => (
+                          <option key={b.id} value={b.id}>
+                            {getBranchDisplayName(b, language)}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                    </div>
                   </div>
                 </div>
 

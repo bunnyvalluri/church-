@@ -238,7 +238,8 @@ export default function LocationsPage() {
             return (
               <div
                 key={branch.id}
-                className="bg-white dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-xl dark:hover:border-purple-500/30 transition-all duration-300 flex flex-col justify-between group"
+                id={branch.id}
+                className="scroll-mt-28 bg-white dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-xl dark:hover:border-purple-500/30 transition-all duration-300 flex flex-col justify-between group"
               >
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-5">

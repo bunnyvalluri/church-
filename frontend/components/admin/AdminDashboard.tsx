@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
+import { createPortal } from "react-dom";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/components/providers/LanguageProvider";
@@ -189,6 +190,29 @@ export default function AdminDashboard() {
   const [isAddEventOpen, setIsAddEventOpen] = useState(false);
   const [isAddAnnouncementOpen, setIsAddAnnouncementOpen] = useState(false);
   const [isAddAttendanceOpen, setIsAddAttendanceOpen] = useState(false);
+
+  // Prevent background scrolling when any modal is open
+  useEffect(() => {
+    if (isAddMemberOpen || isAddSermonOpen || isAddDonationOpen || isAddEventOpen || isAddAnnouncementOpen || isAddAttendanceOpen) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") {
+          setIsAddMemberOpen(false);
+          setIsAddSermonOpen(false);
+          setIsAddDonationOpen(false);
+          setIsAddEventOpen(false);
+          setIsAddAnnouncementOpen(false);
+          setIsAddAttendanceOpen(false);
+        }
+      };
+      window.addEventListener("keydown", handleKeyDown);
+      return () => {
+        document.body.style.overflow = originalOverflow;
+        window.removeEventListener("keydown", handleKeyDown);
+      };
+    }
+  }, [isAddMemberOpen, isAddSermonOpen, isAddDonationOpen, isAddEventOpen, isAddAnnouncementOpen, isAddAttendanceOpen]);
 
   // Form states
   const [newMember, setNewMember] = useState({ name: "", email: "", phone: "", role: "MEMBER" });
@@ -1706,15 +1730,29 @@ export default function AdminDashboard() {
       )}
 
       {/* ─── Modal: Add Attendance ─── */}
-      {isAddAttendanceOpen && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#121324] rounded-3xl w-full max-w-md shadow-2xl border border-slate-100 dark:border-white/[0.06] overflow-hidden animate-in fade-in zoom-in-95 duration-200 text-slate-800 dark:text-slate-100">
-            <div className="p-6 border-b border-slate-100 dark:border-white/[0.04] flex items-center justify-between bg-slate-50/50 dark:bg-white/[0.01]">
+      {isAddAttendanceOpen && mounted && typeof document !== "undefined" && createPortal(
+        <div 
+          className="fixed inset-0 bg-slate-950/75 backdrop-blur-md z-[10005] flex items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsAddAttendanceOpen(false);
+          }}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div 
+            className="bg-white dark:bg-[#121324] rounded-none sm:rounded-3xl w-full h-[100dvh] sm:h-auto sm:max-h-[90vh] sm:max-w-md shadow-2xl border-0 sm:border border-slate-100 dark:border-white/[0.06] overflow-hidden animate-in zoom-in-95 duration-200 text-slate-800 dark:text-slate-100 flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-4 sm:p-6 border-b border-slate-100 dark:border-white/[0.04] flex items-center justify-between bg-slate-50/50 dark:bg-white/[0.01] flex-shrink-0">
               <h3 className="font-extrabold text-slate-900 dark:text-white text-base">{t.attendance.recordServiceAttendance}</h3>
-              <button onClick={() => setIsAddAttendanceOpen(false)} className="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1.5 bg-white dark:bg-[#121324] border border-slate-200 dark:border-white/[0.08] rounded-lg">✕</button>
+              <button 
+                type="button" 
+                onClick={() => setIsAddAttendanceOpen(false)} 
+                className="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1.5 bg-white dark:bg-[#121324] border border-slate-200 dark:border-white/[0.08] rounded-lg transition active:scale-95"
+              >✕</button>
             </div>
             
-            <form onSubmit={submitAddAttendance} className="p-6 space-y-4">
+            <form onSubmit={submitAddAttendance} className="p-4 sm:p-6 space-y-4 overflow-y-auto flex-1 pb-[max(1.5rem,env(safe-area-inset-bottom))] custom-scrollbar flex flex-col">
               <div>
                 <label className="block text-[10px] font-bold text-slate-455 dark:text-gray-555 uppercase mb-1.5">{t.attendance.serviceDate}</label>
                 <input 
@@ -1729,7 +1767,7 @@ export default function AdminDashboard() {
                   <select 
                     value={newAttendance.serviceType}
                     onChange={(e) => setNewAttendance({ ...newAttendance, serviceType: e.target.value })}
-                    className="w-full py-2.5 pl-3.5 pr-8 border rounded-xl text-xs font-bold text-slate-700 dark:text-gray-300 bg-slate-50 dark:bg-[#16172D]/60 border-slate-200 dark:border-white/[0.08] hover:border-slate-350 dark:hover:border-white/[0.15] focus:outline-none focus:ring-2 focus:ring-indigo-500/15 focus:border-indigo-500 transition-all appearance-none cursor-pointer"
+                    className="w-full py-2.5 pl-3.5 pr-8 border rounded-xl text-xs font-bold text-slate-700 dark:text-gray-300 bg-slate-50 dark:bg-[#16172D]/60 border-slate-200 dark:border-white/[0.08] hover:border-slate-350 dark:hover:border-white/[0.15] focus:outline-none focus:ring-2 focus:ring-indigo-500/15 focus:border-indigo-500 transition-all appearance-none cursor-pointer truncate"
                   >
                     <option value="Sunday Worship Service" className="dark:bg-[#121324]">{t.attendance.sundayWorship}</option>
                     <option value="Sunday Afternoon Prayer" className="dark:bg-[#121324]">{t.attendance.sundayAfternoon}</option>
@@ -1746,7 +1784,7 @@ export default function AdminDashboard() {
                   <select 
                     value={newAttendance.location}
                     onChange={(e) => setNewAttendance({ ...newAttendance, location: e.target.value })}
-                    className="w-full py-2.5 pl-3.5 pr-8 border rounded-xl text-xs font-bold text-slate-700 dark:text-gray-300 bg-slate-50 dark:bg-[#16172D]/60 border-slate-200 dark:border-white/[0.08] hover:border-slate-350 dark:hover:border-white/[0.15] focus:outline-none focus:ring-2 focus:ring-indigo-500/15 focus:border-indigo-500 transition-all appearance-none cursor-pointer"
+                    className="w-full py-2.5 pl-3.5 pr-8 border rounded-xl text-xs font-bold text-slate-700 dark:text-gray-300 bg-slate-50 dark:bg-[#16172D]/60 border-slate-200 dark:border-white/[0.08] hover:border-slate-350 dark:hover:border-white/[0.15] focus:outline-none focus:ring-2 focus:ring-indigo-500/15 focus:border-indigo-500 transition-all appearance-none cursor-pointer truncate"
                   >
                     <option value="Subhash Nagar Sanctuary" className="dark:bg-[#121324]">{t.attendance.subhashNagar}</option>
                     <option value="Shapur Location" className="dark:bg-[#121324]">{t.attendance.shapurLoc}</option>
@@ -1755,13 +1793,13 @@ export default function AdminDashboard() {
                   <ChevronDown className="absolute right-3.5 w-4.5 h-4.5 text-slate-400 pointer-events-none" />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
                   <label className="block text-[10px] font-bold text-slate-455 dark:text-gray-555 uppercase mb-1.5">{t.attendance.totalBelievers}</label>
                   <input 
                     type="number" required placeholder="e.g. 450" value={newAttendance.headcount}
                     onChange={(e) => setNewAttendance({ ...newAttendance, headcount: e.target.value })}
-                    className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/[0.08] rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#6366F1]/15 focus:border-[#6366F1] transition-all bg-slate-50/50 dark:bg-[#16172D]/60 text-slate-900 dark:text-white placeholder-slate-400 font-semibold"
+                    className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/[0.08] rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#6366F1]/15 focus:border-[#6366F1] transition-all bg-slate-50/50 dark:bg-[#16172D]/60 text-slate-900 dark:text-white placeholder-slate-400 font-semibold font-mono"
                   />
                 </div>
                 <div>
@@ -1769,7 +1807,7 @@ export default function AdminDashboard() {
                   <input 
                     type="number" placeholder="e.g. 12" value={newAttendance.newVisitors}
                     onChange={(e) => setNewAttendance({ ...newAttendance, newVisitors: e.target.value })}
-                    className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/[0.08] rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#6366F1]/15 focus:border-[#6366F1] transition-all bg-slate-50/50 dark:bg-[#16172D]/60 text-slate-900 dark:text-white placeholder-slate-400 font-semibold"
+                    className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/[0.08] rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#6366F1]/15 focus:border-[#6366F1] transition-all bg-slate-50/50 dark:bg-[#16172D]/60 text-slate-900 dark:text-white placeholder-slate-400 font-semibold font-mono"
                   />
                 </div>
               </div>
@@ -1782,13 +1820,14 @@ export default function AdminDashboard() {
                   className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/[0.08] rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#6366F1]/15 focus:border-[#6366F1] transition-all bg-slate-50/50 dark:bg-[#16172D]/60 text-slate-900 dark:text-white placeholder-slate-400 resize-none font-semibold"
                 />
               </div>
-              <div className="pt-3 flex gap-3">
+              <div className="pt-3 sm:pt-4 flex gap-3 mt-auto flex-shrink-0">
                 <button type="button" onClick={() => setIsAddAttendanceOpen(false)} className="flex-1 py-3 border border-slate-200 dark:border-white/[0.08] text-slate-500 hover:text-slate-800 dark:hover:text-white rounded-xl font-bold text-xs uppercase tracking-wider transition-colors">{t.dashboard.cancel}</button>
-                <button type="submit" className="flex-1 py-3 bg-gradient-to-r from-blue-500 to-sky-600 hover:from-blue-650 hover:to-sky-700 text-white rounded-xl font-bold text-xs uppercase tracking-wider transition-all shadow-md shadow-blue-500/10">{t.attendance.submitLog}</button>
+                <button type="submit" className="flex-1 py-3 bg-gradient-to-r from-blue-500 to-sky-600 hover:from-blue-650 hover:to-sky-700 text-white rounded-xl font-bold text-xs uppercase tracking-wider transition-all shadow-md shadow-blue-500/10 active:scale-95">{t.attendance.submitLog}</button>
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
     </div>

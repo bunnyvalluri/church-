@@ -138,12 +138,12 @@ const reportTranslations = {
     step3Tag: "Step 3",
     step3Title: "Tell us what happened",
     problemSummaryLabel: "Problem Summary / Title",
-    problemSummaryPlaceholder: "e.g., 'Giving page donation form won't open after clicking Submit'",
+    problemSummaryPlaceholder: "e.g., Donation form won't open",
     problemSummaryHelper: "Be specific and concise",
     whatHappenedLabel: "What happened?",
     whatHappenedPlaceholder: "Please describe the steps you took, what happened, and any error message you noticed on screen...",
     whatHappenedHelper: "Include any details you remember",
-    expectedVsActualTitle: "Additional Context: Expected vs Actual Behavior (Optional)",
+    expectedVsActualTitle: "Expected vs Actual Behavior (Optional)",
     expectedLabel: "What did you expect to happen? (Optional)",
     expectedPlaceholder: "e.g. Receive confirmation email",
     actualLabel: "What actually happened instead? (Optional)",
@@ -298,12 +298,12 @@ const reportTranslations = {
     step3Tag: "దశ 3",
     step3Title: "ఏమి జరిగిందో మాకు వివరించండి",
     problemSummaryLabel: "సమస్య సారాంశం / శీర్షిక",
-    problemSummaryPlaceholder: "ఉదా: 'సమర్పించు క్లిక్ చేసిన తర్వాత విరాళం ఫారమ్ తెరవడం లేదు'",
+    problemSummaryPlaceholder: "ఉదా: విరాళం ఫారమ్ తెరవడం లేదు",
     problemSummaryHelper: "ఖచ్చితంగా మరియు క్లుప్తంగా రాయండి",
     whatHappenedLabel: "ఏమి జరిగింది?",
     whatHappenedPlaceholder: "దయచేసి మీరు చేసిన చర్యలు, ఏమి జరిగిందో మరియు స్క్రీన్‌పై కనిపించిన సందేశాన్ని వివరించండి...",
     whatHappenedHelper: "మీకు గుర్తున్న వివరాలను చేర్చండి",
-    expectedVsActualTitle: "అదనపు సందర్భం: ఆశించిన & వాస్తవ ఫలితాలు (ఐచ్ఛికం)",
+    expectedVsActualTitle: "ఆశించిన & వాస్తవ ప్రవర్తన (ఐచ్ఛికం)",
     expectedLabel: "మీరు ఏమి జరుగుతుందని ఆశించారు? (ఐచ్ఛికం)",
     expectedPlaceholder: "ఉదా: నిర్ధారణ ఇమెయిల్ అందుకోవడం",
     actualLabel: "దానికి బదులుగా వాస్తవంగా ఏమి జరిగింది? (ఐచ్ఛికం)",
@@ -458,12 +458,12 @@ const reportTranslations = {
     step3Tag: "चरण 3",
     step3Title: "हमें बताएं कि क्या हुआ",
     problemSummaryLabel: "समस्या सारांश / शीर्षक",
-    problemSummaryPlaceholder: "उदा., 'जमा करें पर क्लिक करने के बाद दान फ़ॉर्म नहीं खुल रहा है'",
+    problemSummaryPlaceholder: "उदा., दान फ़ॉर्म नहीं खुल रहा है",
     problemSummaryHelper: "विशिष्ट और संक्षिप्त रहें",
     whatHappenedLabel: "क्या हुआ?",
     whatHappenedPlaceholder: "कृपया आपके द्वारा उठाए गए कदमों, क्या हुआ और स्क्रीन पर दिखी किसी त्रुटि का वर्णन करें...",
     whatHappenedHelper: "याद रखे गए विवरण शामिल करें",
-    expectedVsActualTitle: "अतिरिक्त संदर्भ: अपेक्षित बनाम वास्तविक व्यवहार (वैकल्पिक)",
+    expectedVsActualTitle: "अपेक्षित बनाम वास्तविक व्यवहार (वैकल्पिक)",
     expectedLabel: "आप क्या होने की उम्मीद कर रहे थे? (वैकल्पिक)",
     expectedPlaceholder: "उदा. पुष्टि ईमेल प्राप्त करना",
     actualLabel: "इसके बजाय वास्तव में क्या हुआ? (वैकल्पिक)",
@@ -1254,7 +1254,7 @@ export default function MemberReportPage() {
                     placeholder={rt.problemSummaryPlaceholder}
                     maxLength={150}
                     required
-                    className="w-full px-4 py-3 rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-850/60 text-base sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-4 focus:ring-purple-500/15 focus:border-purple-500 transition-all shadow-inner"
+                    className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-850/60 text-base sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 placeholder:text-xs sm:placeholder:text-sm focus:outline-none focus:ring-4 focus:ring-purple-500/15 focus:border-purple-500 transition-all shadow-inner"
                   />
                   <div className="flex justify-between text-[11px] sm:text-xs text-slate-400 px-1">
                     <span className="truncate">{rt.problemSummaryHelper}</span>
@@ -1275,7 +1275,7 @@ export default function MemberReportPage() {
                     placeholder={rt.whatHappenedPlaceholder}
                     maxLength={3000}
                     required
-                    className="w-full px-4 py-3 rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-850/60 text-base sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-4 focus:ring-purple-500/15 focus:border-purple-500 transition-all leading-relaxed shadow-inner"
+                    className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-850/60 text-base sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 placeholder:text-xs sm:placeholder:text-sm focus:outline-none focus:ring-4 focus:ring-purple-500/15 focus:border-purple-500 transition-all leading-relaxed shadow-inner"
                   />
                   <div className="flex justify-between text-[11px] sm:text-xs text-slate-400 px-1">
                     <span className="truncate">{rt.whatHappenedHelper}</span>
@@ -1288,13 +1288,13 @@ export default function MemberReportPage() {
                   <button
                     type="button"
                     onClick={() => setShowOptionalFields(!showOptionalFields)}
-                    className="w-full flex items-center justify-between text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+                    className="w-full flex items-center justify-between gap-2 text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors text-left"
                   >
-                    <span className="flex items-center gap-2 min-w-0 pr-2">
-                      <Sparkles className="w-4 h-4 text-purple-500 shrink-0" />
-                      <span className="truncate">{rt.expectedVsActualTitle}</span>
+                    <span className="flex items-start sm:items-center gap-2 min-w-0 flex-1">
+                      <Sparkles className="w-4 h-4 text-purple-500 shrink-0 mt-0.5 sm:mt-0" />
+                      <span className="leading-snug break-words">{rt.expectedVsActualTitle}</span>
                     </span>
-                    <ChevronDown className={`w-4 h-4 shrink-0 transition-transform duration-200 ${showOptionalFields ? "rotate-180" : ""}`} />
+                    <ChevronDown className={`w-4 h-4 shrink-0 transition-transform duration-200 ml-1 ${showOptionalFields ? "rotate-180" : ""}`} />
                   </button>
 
                   {showOptionalFields && (
@@ -1310,7 +1310,7 @@ export default function MemberReportPage() {
                           onChange={(e) => setExpectedBehavior(e.target.value)}
                           placeholder={rt.expectedPlaceholder}
                           maxLength={500}
-                          className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder:text-xs sm:placeholder:text-sm"
                         />
                       </div>
                       <div className="space-y-1.5">
@@ -1324,7 +1324,7 @@ export default function MemberReportPage() {
                           onChange={(e) => setActualBehavior(e.target.value)}
                           placeholder={rt.actualPlaceholder}
                           maxLength={500}
-                          className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder:text-xs sm:placeholder:text-sm"
                         />
                       </div>
                     </div>
@@ -1404,7 +1404,7 @@ export default function MemberReportPage() {
                       <div className="p-1.5 rounded-lg bg-purple-100 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 shrink-0">
                         <Laptop className="w-4 h-4" />
                       </div>
-                      <span className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-slate-100 truncate">
+                      <span className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-slate-100 leading-tight break-words">
                         {rt.diagnosticsTitle}
                       </span>
                     </div>

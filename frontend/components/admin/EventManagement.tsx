@@ -456,8 +456,8 @@ export default function EventManagement() {
                   <input
                     value={searchQuery}
                     onChange={(e) => { setSearchQuery(e.target.value); setCursor(undefined); }}
-                    placeholder="Search title, pastor, speaker or branch..."
-                    className="w-full h-10 pl-10 pr-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-white/10 text-xs font-medium text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                    placeholder="Search title, pastor, speaker..."
+                    className="w-full h-10 pl-9 sm:pl-10 pr-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-white/10 text-xs font-medium text-slate-900 dark:text-slate-100 placeholder:text-slate-400 placeholder:text-[11px] sm:placeholder:text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
                   />
                 </div>
 

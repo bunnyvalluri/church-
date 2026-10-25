@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { 
   BookOpen, 
@@ -40,6 +40,22 @@ export default function BeliefsPage() {
 
   // Modal states for interactive deep-dive
   const [selectedDoctrine, setSelectedDoctrine] = useState<any | null>(null);
+
+  // Prevent background scroll and support Escape key when modal is open
+  useEffect(() => {
+    if (selectedDoctrine !== null) {
+      const prevOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") setSelectedDoctrine(null);
+      };
+      window.addEventListener("keydown", handleKeyDown);
+      return () => {
+        document.body.style.overflow = prevOverflow;
+        window.removeEventListener("keydown", handleKeyDown);
+      };
+    }
+  }, [selectedDoctrine]);
 
   // Stats Data
   const stats = [
@@ -234,18 +250,18 @@ export default function BeliefsPage() {
             {/* Search Input Box */}
             <div className="max-w-xl mx-auto relative animate-scale-in animate-delay-300">
               <div className="relative flex items-center">
-                <Search className="absolute left-4 h-5 w-5 text-slate-400" />
+                <Search className="absolute left-3.5 sm:left-4 h-4 w-4 sm:h-5 sm:w-5 text-slate-400" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder={language === "te" ? "సిద్ధాంతాలు, వాక్యాలు లేదా విలువలను శోధించండి..." : language === "hi" ? "सिद्धांत, वचन या मूल्य खोजें..." : (pageT.searchPlaceholder || "Search doctrines, scriptures, or values...")}
-                  className="w-full pl-12 pr-10 py-3.5 bg-white dark:bg-slate-900/90 border border-purple-200/90 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white placeholder-slate-400 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-purple-500 shadow-md transition-all font-semibold"
+                  placeholder={language === "te" ? "సిద్ధాంతాలు లేదా వాక్యాలను వెతకండి..." : language === "hi" ? "सिद्धान्त या वचन खोजें..." : (pageT.searchPlaceholder || "Search doctrines or scriptures...")}
+                  className="w-full pl-9 sm:pl-12 pr-9 sm:pr-10 py-2.5 sm:py-3.5 bg-white dark:bg-slate-900/90 border border-purple-200/90 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white placeholder-slate-400 placeholder:font-normal text-xs sm:text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-purple-500 shadow-md transition-all font-semibold"
                 />
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery("")}
-                    className="absolute right-3.5 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-full transition-colors"
+                    className="absolute right-3 sm:right-3.5 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-full transition-colors"
                   >
                     <X className="h-4 w-4" />
                   </button>
@@ -520,56 +536,72 @@ export default function BeliefsPage() {
 
       {/* 📖 Doctrinal Detail Modal */}
       {selectedDoctrine && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
-          <div className="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden max-h-[90vh] flex flex-col animate-scale-in">
-            {/* Modal Header */}
-            <div className={`p-6 sm:p-8 bg-gradient-to-r ${selectedDoctrine.accent} text-white relative`}>
+        <div 
+          className="fixed inset-0 z-[10005] flex items-center justify-center p-2.5 sm:p-4 md:p-6 bg-slate-950/85 backdrop-blur-md animate-fade-in"
+          onClick={() => setSelectedDoctrine(null)}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="doctrinal-detail-title"
+        >
+          <div 
+            className="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden max-h-[92dvh] sm:max-h-[90vh] flex flex-col animate-scale-in"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header — Pinned at top with responsive padding */}
+            <div className={`p-4 sm:p-6 bg-gradient-to-r ${selectedDoctrine.accent} text-white relative shrink-0 z-10`}>
+              <div className="pr-10">
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white/20 backdrop-blur-md rounded-full text-[11px] sm:text-xs font-bold uppercase tracking-wider mb-2">
+                  <BookOpen className="h-3.5 w-3.5" />
+                  <span>{selectedDoctrine.verse}</span>
+                </div>
+                <h3 id="doctrinal-detail-title" className="text-xl sm:text-2xl md:text-3xl font-black leading-tight">
+                  {selectedDoctrine.title}
+                </h3>
+              </div>
+
+              {/* Prominent, touch-friendly close button */}
               <button
                 onClick={() => setSelectedDoctrine(null)}
-                className="absolute top-6 right-6 p-2 bg-black/20 hover:bg-black/40 rounded-full text-white transition-colors"
+                className="absolute top-4 right-4 sm:top-5 sm:right-5 p-2 bg-black/25 hover:bg-black/40 active:scale-95 rounded-xl text-white transition-all shadow-xs"
+                aria-label="Close dialog"
               >
                 <X className="h-5 w-5" />
               </button>
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-bold uppercase tracking-wider mb-3">
-                <BookOpen className="h-3.5 w-3.5" />
-                <span>{selectedDoctrine.verse}</span>
-              </div>
-              <h3 className="text-2xl sm:text-3xl font-black">{selectedDoctrine.title}</h3>
             </div>
 
-            {/* Modal Body */}
-            <div className="p-6 sm:p-8 overflow-y-auto space-y-6 text-slate-700 dark:text-slate-300">
+            {/* Modal Body — Fluid scrolling */}
+            <div className="p-4 sm:p-6 md:p-8 overflow-y-auto space-y-5 sm:space-y-6 text-slate-700 dark:text-slate-300 overscroll-contain flex-1">
               <div>
                 <h4 className="text-xs font-extrabold uppercase tracking-widest text-purple-600 dark:text-purple-400 mb-2">
                   {pageT.modalSummary || "Doctrinal Overview"}
                 </h4>
-                <p className="text-base sm:text-lg leading-relaxed font-medium">
+                <p className="text-sm sm:text-base md:text-lg leading-relaxed font-medium">
                   {selectedDoctrine.desc}
                 </p>
               </div>
 
-              <div className="p-5 bg-purple-50 dark:bg-purple-950/40 rounded-2xl border border-purple-100 dark:border-purple-900/50">
-                <p className="text-sm sm:text-base italic font-semibold text-purple-900 dark:text-purple-200">
+              <div className="p-3.5 sm:p-5 bg-purple-50 dark:bg-purple-950/40 rounded-2xl border border-purple-100 dark:border-purple-900/50">
+                <p className="text-xs sm:text-sm md:text-base italic font-semibold text-purple-900 dark:text-purple-200">
                   "{selectedDoctrine.quote}"
                 </p>
               </div>
 
               <div>
-                <h4 className="text-xs font-extrabold uppercase tracking-widest text-purple-600 dark:text-purple-400 mb-3">
+                <h4 className="text-xs font-extrabold uppercase tracking-widest text-purple-600 dark:text-purple-400 mb-2">
                   Pastoral Explanation
                 </h4>
-                <p className="text-sm sm:text-base leading-relaxed text-slate-600 dark:text-slate-300">
+                <p className="text-xs sm:text-sm md:text-base leading-relaxed text-slate-600 dark:text-slate-300">
                   {selectedDoctrine.deep}
                 </p>
               </div>
 
               <div>
-                <h4 className="text-xs font-extrabold uppercase tracking-widest text-purple-600 dark:text-purple-400 mb-3">
+                <h4 className="text-xs font-extrabold uppercase tracking-widest text-purple-600 dark:text-purple-400 mb-2.5">
                   {pageT.modalScripture || "Key Scripture Passages"}
                 </h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {selectedDoctrine.passages.map((passage: string, i: number) => (
-                    <div key={i} className="flex items-center gap-2.5 p-3 bg-slate-100 dark:bg-slate-800/60 rounded-xl text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200">
+                    <div key={i} className="flex items-center gap-2.5 p-2.5 sm:p-3 bg-slate-100 dark:bg-slate-800/60 rounded-xl text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200">
                       <CheckCircle2 className="h-4 w-4 text-purple-600 dark:text-purple-400 flex-shrink-0" />
                       <span>{passage}</span>
                     </div>
@@ -578,11 +610,11 @@ export default function BeliefsPage() {
               </div>
             </div>
 
-            {/* Modal Footer */}
-            <div className="p-6 bg-slate-50 dark:bg-slate-950/80 border-t border-slate-200 dark:border-slate-800 flex justify-end">
+            {/* Modal Footer — Pinned & Accessible */}
+            <div className="p-3.5 sm:p-5 bg-slate-50 dark:bg-slate-950/80 border-t border-slate-200 dark:border-slate-800 shrink-0 flex justify-end">
               <button
                 onClick={() => setSelectedDoctrine(null)}
-                className="px-6 py-2.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold rounded-xl text-sm hover:opacity-90 transition-opacity"
+                className="w-full sm:w-auto px-6 py-2.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold rounded-xl text-xs sm:text-sm hover:opacity-90 active:scale-98 transition-all shadow-xs"
               >
                 {pageT.modalClose || "Close"}
               </button>

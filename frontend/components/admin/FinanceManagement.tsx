@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
+import { createPortal } from "react-dom";
 import { 
   DollarSign, 
   Heart, 
@@ -139,9 +140,35 @@ export default function FinanceManagement({
     }
   }, [activeSubTab]);
   
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const [isDonationOpen, setIsDonationOpen] = useState(false);
   const [isPledgeOpen, setIsPledgeOpen] = useState(false);
   const [isTransactionOpen, setIsTransactionOpen] = useState(false);
+
+  // Prevent background scroll and support ESC key when any modal is open
+  useEffect(() => {
+    if (isDonationOpen || isPledgeOpen || isTransactionOpen) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") {
+          setIsDonationOpen(false);
+          setIsPledgeOpen(false);
+          setIsTransactionOpen(false);
+        }
+      };
+      window.addEventListener("keydown", handleKeyDown);
+      return () => {
+        document.body.style.overflow = originalOverflow;
+        window.removeEventListener("keydown", handleKeyDown);
+      };
+    }
+  }, [isDonationOpen, isPledgeOpen, isTransactionOpen]);
   
   const [donationFilter, setDonationFilter] = useState("ALL");
   const [statusFilter, setStatusFilter] = useState("ALL");
@@ -505,7 +532,7 @@ export default function FinanceManagement({
                 placeholder={t.searchPlaceholder}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9.5 pr-8 py-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium transition-all shadow-xs"
+                className="w-full pl-10 pr-8 py-2.5 text-xs sm:text-sm bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium transition-all shadow-xs"
               />
               {searchQuery && (
                 <button
@@ -553,7 +580,7 @@ export default function FinanceManagement({
                 </div>
               </div>
               
-              <div className="flex items-center gap-2 flex-shrink-0">
+              <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full sm:w-auto flex-shrink-0">
                 <button 
                   onClick={handlePurgeTestRecords}
                   disabled={isPurging}
@@ -575,7 +602,7 @@ export default function FinanceManagement({
                     if (onOpenAddDonation) onOpenAddDonation();
                     else setIsDonationOpen(true);
                   }} 
-                  className="flex-1 sm:flex-none py-2 px-3.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-all active:scale-95 whitespace-nowrap"
+                  className="w-full sm:w-auto py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-all active:scale-95 whitespace-nowrap"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>{t.logContribution}</span>
@@ -1113,254 +1140,400 @@ export default function FinanceManagement({
         </div>
       )}
 
-      {/* ─── MODAL: RECORD DONATION ─── */}
-      {isDonationOpen && (
-        <div className="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-2 sm:p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-md shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
-            <div className="p-4 sm:p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950">
-              <h3 className="font-black text-slate-900 dark:text-white text-sm sm:text-base">
-                {isTe ? "కానుక రికార్డు చేయండి" : isHi ? "दान दर्ज करें" : "Record Contribution"}
-              </h3>
+            {/* ─── MODAL: RECORD DONATION ─── */}
+      {isDonationOpen && mounted && typeof document !== "undefined" && createPortal(
+        <div 
+          className="fixed inset-0 z-[10005] flex items-center justify-center p-0 sm:p-4 bg-slate-950/75 backdrop-blur-md animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsDonationOpen(false);
+          }}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div 
+            className="bg-white dark:bg-slate-900 w-full h-[100dvh] sm:h-auto sm:max-h-[90vh] sm:max-w-md rounded-none sm:rounded-3xl border-0 sm:border border-slate-200 dark:border-slate-800 shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-150"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/90 dark:bg-slate-950/80 backdrop-blur-sm flex-shrink-0">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 rounded-xl">
+                  <DollarSign className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="font-black text-slate-900 dark:text-white text-base">
+                    {isTe ? "కానుక రికార్డు చేయండి" : isHi ? "दान दर्ज करें" : "Record Contribution"}
+                  </h3>
+                  <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                    {isTe ? "కానుక లేదా దశమభాగం వివరాలు నమోదు చేయండి" : isHi ? "दान या भेंट विवरण दर्ज करें" : "Log offline or direct contribution"}
+                  </p>
+                </div>
+              </div>
               <button 
+                type="button"
                 onClick={() => setIsDonationOpen(false)} 
-                className="text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white p-1.5 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl"
+                className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 p-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-xl transition active:scale-95 flex-shrink-0"
+                aria-label="Close modal"
+                title="Close (Esc)"
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
             
-            <form onSubmit={handleAddDonationSubmit} className="p-4 sm:p-6 space-y-3.5 sm:space-y-4">
+            {/* Modal Body & Form */}
+            <form onSubmit={handleAddDonationSubmit} className="p-4 sm:p-6 space-y-4 overflow-y-auto flex-1 pb-[max(1.5rem,env(safe-area-inset-bottom))] custom-scrollbar flex flex-col">
               <div>
-                <label className="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">
-                  {isTe ? "కానుకదారుని పూర్తి పేరు" : isHi ? "दाता का पूरा नाम" : "Donor Full Name"}
+                <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase mb-1.5">
+                  {isTe ? "కానుకదారుని పూర్తి పేరు" : isHi ? "दाता का पूरा नाम" : "Donor Full Name"} *
                 </label>
                 <input 
-                  type="text" required placeholder="e.g. Rahul Valluri" value={newDonation.donorName}
+                  type="text" 
+                  required 
+                  placeholder={isTe ? "ఉదా: కానుకదారుని పేరు" : isHi ? "उदा: दाता का नाम" : "e.g. Full Name"} 
+                  value={newDonation.donorName}
                   onChange={(e) => setNewDonation({ ...newDonation, donorName: e.target.value })}
-                  className="w-full px-3.5 py-2 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 font-semibold"
+                  className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 font-semibold"
                 />
               </div>
+
               <div>
-                <label className="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">
+                <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase mb-1.5">
                   {isTe ? "ఈమెయిల్ చిరునామా" : isHi ? "ईमेल पता" : "Email Address"}
                 </label>
                 <input 
-                  type="email" placeholder="e.g. rahul@email.com" value={newDonation.donorEmail}
+                  type="email" 
+                  placeholder="e.g. donor@email.com" 
+                  value={newDonation.donorEmail}
                   onChange={(e) => setNewDonation({ ...newDonation, donorEmail: e.target.value })}
-                  className="w-full px-3.5 py-2 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 font-semibold"
+                  className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 font-semibold"
                 />
               </div>
+
               <div>
-                <label className="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">
-                  {isTe ? "మొత్తం (రూపాయలలో)" : isHi ? "राशि (INR)" : "Amount (INR)"}
+                <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase mb-1.5">
+                  {isTe ? "మొత్తం (రూపాయలలో)" : isHi ? "राशि (INR)" : "Amount (INR)"} *
                 </label>
                 <input 
-                  type="number" required placeholder="e.g. 1000" value={newDonation.amount} min="1"
+                  type="number" 
+                  required 
+                  placeholder="e.g. 1000" 
+                  value={newDonation.amount} 
+                  min="1"
                   onChange={(e) => setNewDonation({ ...newDonation, amount: e.target.value })}
-                  className="w-full px-3.5 py-2 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 font-semibold font-mono"
+                  className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 font-semibold font-mono"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-3">
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">
+                  <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase mb-1.5">
                     {t.purpose}
                   </label>
                   <div className="relative flex items-center">
                     <select 
                       value={newDonation.purpose}
                       onChange={(e) => setNewDonation({ ...newDonation, purpose: e.target.value })}
-                      className="w-full pl-3 pr-7 py-2 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 font-bold appearance-none cursor-pointer"
+                      className="w-full pl-3.5 pr-8 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 font-bold appearance-none cursor-pointer"
                     >
                       <option value="TITHE">{t.tithe}</option>
                       <option value="OFFERING">{t.offering}</option>
                       <option value="MISSIONS">{t.missions}</option>
                       <option value="BUILDING">{t.buildingFund}</option>
                     </select>
-                    <ChevronDown className="absolute right-2.5 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
+                    <ChevronDown className="absolute right-3 w-4 h-4 text-slate-400 pointer-events-none" />
                   </div>
                 </div>
+
                 <div>
-                  <label className="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">
+                  <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase mb-1.5">
                     {t.tableMethod}
                   </label>
                   <div className="relative flex items-center">
                     <select 
                       value={newDonation.paymentMethod}
                       onChange={(e) => setNewDonation({ ...newDonation, paymentMethod: e.target.value })}
-                      className="w-full pl-3 pr-7 py-2 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 font-bold appearance-none cursor-pointer"
+                      className="w-full pl-3.5 pr-8 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 font-bold appearance-none cursor-pointer"
                     >
                       <option value="UPI">UPI</option>
                       <option value="CASH">Cash / Offline</option>
                       <option value="BANK_TRANSFER">Bank Transfer</option>
                       <option value="RAZORPAY">Razorpay</option>
                     </select>
-                    <ChevronDown className="absolute right-2.5 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
+                    <ChevronDown className="absolute right-3 w-4 h-4 text-slate-400 pointer-events-none" />
                   </div>
                 </div>
               </div>
 
-              <div className="pt-2 flex gap-2.5">
-                <button type="button" onClick={() => setIsDonationOpen(false)} className="flex-1 py-2 border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl font-bold text-xs uppercase transition-colors">
+              <div className="pt-3 sm:pt-4 flex gap-3 mt-auto flex-shrink-0">
+                <button 
+                  type="button" 
+                  onClick={() => setIsDonationOpen(false)} 
+                  className="flex-1 py-3 border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl font-bold text-xs uppercase transition-colors"
+                >
                   {isTe ? "రద్దు" : isHi ? "रद्द करें" : "Cancel"}
                 </button>
-                <button type="submit" className="flex-1 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs uppercase transition-all shadow-sm active:scale-95">
+                <button 
+                  type="submit" 
+                  className="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs uppercase transition-all shadow-sm active:scale-95"
+                >
                   {isTe ? "సేవ్ చేయండి" : isHi ? "सुरक्षित करें" : "Save Contribution"}
                 </button>
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* ─── MODAL: RECORD PLEDGE ─── */}
-      {isPledgeOpen && (
-        <div className="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-2 sm:p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-md shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
-            <div className="p-4 sm:p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950">
-              <h3 className="font-black text-slate-900 dark:text-white text-sm sm:text-base">Record Development Pledge</h3>
+      {isPledgeOpen && mounted && typeof document !== "undefined" && createPortal(
+        <div 
+          className="fixed inset-0 z-[10005] flex items-center justify-center p-0 sm:p-4 bg-slate-950/75 backdrop-blur-md animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsPledgeOpen(false);
+          }}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div 
+            className="bg-white dark:bg-slate-900 w-full h-[100dvh] sm:h-auto sm:max-h-[90vh] sm:max-w-md rounded-none sm:rounded-3xl border-0 sm:border border-slate-200 dark:border-slate-800 shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-150"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/90 dark:bg-slate-950/80 backdrop-blur-sm flex-shrink-0">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 rounded-xl">
+                  <Heart className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="font-black text-slate-900 dark:text-white text-base">{isTe ? "అభివృద్ధి వాగ్దానాన్ని నమోదు చేయండి" : isHi ? "विकास प्रतिबद्धता दर्ज करें" : "Record Development Pledge"}</h3>
+                  <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">{isTe ? "మందిర ప్రాజెక్టుల కొరకు విశ్వాసి వాగ్దాన వివరాలు" : isHi ? "मंत्रालय परियोजना प्रतिबद्धता विवरण" : "Log ministry project commitment"}</p>
+                </div>
+              </div>
               <button 
+                type="button"
                 onClick={() => setIsPledgeOpen(false)} 
-                className="text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white p-1.5 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl"
+                className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 p-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-xl transition active:scale-95 flex-shrink-0"
+                aria-label="Close modal"
+                title="Close (Esc)"
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
             
-            <form onSubmit={handleAddPledge} className="p-4 sm:p-6 space-y-3.5 sm:space-y-4">
+            {/* Modal Body & Form */}
+            <form onSubmit={handleAddPledge} className="p-4 sm:p-6 space-y-4 overflow-y-auto flex-1 pb-[max(1.5rem,env(safe-area-inset-bottom))] custom-scrollbar flex flex-col">
               <div>
-                <label className="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Pledger Full Name</label>
+                <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase mb-1.5">{isTe ? "వాగ్దానదారుని పూర్తి పేరు" : isHi ? "प्रतिबद्धताकर्ता का पूरा नाम" : "Pledger Full Name"} *</label>
                 <input 
-                  type="text" required placeholder="e.g. Sarah Johnson" value={newPledge.donorName}
+                  type="text" 
+                  required 
+                  placeholder={isTe ? "ఉదా: వాగ్దానదారుని పేరు" : isHi ? "उदा: दानकर्ता का नाम" : "e.g. Full Name"} 
+                  value={newPledge.donorName}
                   onChange={(e) => setNewPledge({ ...newPledge, donorName: e.target.value })}
-                  className="w-full px-3.5 py-2 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 font-semibold"
+                  className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 font-semibold"
                 />
               </div>
+
               <div>
-                <label className="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Email Address</label>
+                <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase mb-1.5">{isTe ? "ఈమెయిల్ చిరునామా" : isHi ? "ईमेल पता" : "Email Address"}</label>
                 <input 
-                  type="email" placeholder="e.g. sarah@email.com" value={newPledge.donorEmail}
+                  type="email" 
+                  placeholder="e.g. pledger@email.com" 
+                  value={newPledge.donorEmail}
                   onChange={(e) => setNewPledge({ ...newPledge, donorEmail: e.target.value })}
-                  className="w-full px-3.5 py-2 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 font-semibold"
+                  className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 font-semibold"
                 />
               </div>
+
               <div>
-                <label className="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Pledged Target Amount (INR)</label>
+                <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase mb-1.5">{isTe ? "వాగ్దాన మొత్తం (రూపాయలలో)" : isHi ? "प्रतिबद्ध राशि (INR)" : "Pledged Target Amount (INR)"} *</label>
                 <input 
-                  type="number" required placeholder="e.g. 50000" value={newPledge.committedAmount}
+                  type="number" 
+                  required 
+                  placeholder="e.g. 50000" 
+                  value={newPledge.committedAmount}
                   onChange={(e) => setNewPledge({ ...newPledge, committedAmount: e.target.value })}
-                  className="w-full px-3.5 py-2 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 font-semibold"
+                  className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 font-semibold font-mono"
                 />
               </div>
+
               <div>
-                <label className="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Project Target / Purpose</label>
+                <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase mb-1.5">{isTe ? "ప్రాజెక్ట్ లక్ష్యం / ప్రయోజనం" : isHi ? "परियोजना उद्देश्य" : "Project Target / Purpose"}</label>
                 <div className="relative flex items-center">
                   <select 
                     value={newPledge.purpose}
                     onChange={(e) => setNewPledge({ ...newPledge, purpose: e.target.value })}
-                    className="w-full pl-3.5 pr-8 py-2 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 font-bold appearance-none cursor-pointer"
+                    className="w-full pl-3.5 pr-8 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 font-bold appearance-none cursor-pointer"
                   >
                     <option value="BUILDING">Building Fund Project</option>
                     <option value="MISSIONS">Rural Gospel Outreach</option>
                   </select>
-                  <ChevronDown className="absolute right-3.5 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
+                  <ChevronDown className="absolute right-3.5 w-4 h-4 text-slate-400 pointer-events-none" />
                 </div>
               </div>
 
-              <div className="pt-2 flex gap-2.5">
-                <button type="button" onClick={() => setIsPledgeOpen(false)} className="flex-1 py-2 border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl font-bold text-xs uppercase transition-colors">Cancel</button>
-                <button type="submit" className="flex-1 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs uppercase transition-all shadow-sm active:scale-95">Save Pledge</button>
+              <div className="pt-3 sm:pt-4 flex gap-3 mt-auto flex-shrink-0">
+                <button 
+                  type="button" 
+                  onClick={() => setIsPledgeOpen(false)} 
+                  className="flex-1 py-3 border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl font-bold text-xs uppercase transition-colors"
+                >
+                  {isTe ? "రద్దు" : isHi ? "रद्द करें" : "Cancel"}
+                </button>
+                <button 
+                  type="submit" 
+                  className="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs uppercase transition-all shadow-sm active:scale-95"
+                >
+                  {isTe ? "వాగ్దానం సేవ్ చేయండి" : isHi ? "प्रतिबद्धता सुरक्षित करें" : "Save Pledge"}
+                </button>
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* ─── MODAL: RECORD TRANSACTION ─── */}
-      {isTransactionOpen && (
-        <div className="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-2 sm:p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-md shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
-            <div className="p-4 sm:p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950">
-              <h3 className="font-black text-slate-900 dark:text-white text-sm sm:text-base">Record Accounting Journal Log</h3>
+      {isTransactionOpen && mounted && typeof document !== "undefined" && createPortal(
+        <div 
+          className="fixed inset-0 z-[10005] flex items-center justify-center p-0 sm:p-4 bg-slate-950/75 backdrop-blur-md animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsTransactionOpen(false);
+          }}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div 
+            className="bg-white dark:bg-slate-900 w-full h-[100dvh] sm:h-auto sm:max-h-[90vh] sm:max-w-md rounded-none sm:rounded-3xl border-0 sm:border border-slate-200 dark:border-slate-800 shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-150"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/90 dark:bg-slate-950/80 backdrop-blur-sm flex-shrink-0">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 rounded-xl">
+                  <CreditCard className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="font-black text-slate-900 dark:text-white text-base">
+                    {isTe ? "ఖాతా లావాదేవీ రికార్డు చేయండి" : isHi ? "खाता लेन-देन दर्ज करें" : "Record Accounting Journal Log"}
+                  </h3>
+                  <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                    {isTe ? "ఆదాయం మరియు వ్యయ ప్రవాహాల ట్రాకింగ్" : isHi ? "आय और व्यय का संतुलन ट्रैक करें" : "Track balance inflows & outflows"}
+                  </p>
+                </div>
+              </div>
               <button 
+                type="button"
                 onClick={() => setIsTransactionOpen(false)} 
-                className="text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white p-1.5 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl"
+                className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 p-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-xl transition active:scale-95 flex-shrink-0"
+                aria-label="Close modal"
+                title="Close (Esc)"
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
             
-            <form onSubmit={handleAddTransaction} className="p-4 sm:p-6 space-y-3.5 sm:space-y-4">
+            {/* Modal Body & Form */}
+            <form onSubmit={handleAddTransaction} className="p-4 sm:p-6 space-y-4 overflow-y-auto flex-1 pb-[max(1.5rem,env(safe-area-inset-bottom))] custom-scrollbar flex flex-col">
               <div>
-                <label className="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Transaction Flow Type</label>
+                <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase mb-1.5">
+                  {isTe ? "లావాదేవీ ప్రవాహ రకం" : isHi ? "लेन-देन का प्रकार" : "Transaction Flow Type"}
+                </label>
                 <div className="grid grid-cols-2 gap-2">
                   <button 
                     type="button" 
                     onClick={() => setNewTx({ ...newTx, type: "INFLOW" })}
-                    className={`py-2 rounded-xl font-black text-xs uppercase flex items-center justify-center gap-1.5 border transition-all ${
+                    className={`py-2.5 rounded-xl font-black text-xs uppercase flex items-center justify-center gap-1.5 border transition-all ${
                       newTx.type === "INFLOW" 
                         ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800 shadow-sm" 
                         : "bg-slate-50 dark:bg-slate-950 text-slate-500 dark:text-slate-400 border-slate-300 dark:border-slate-700"
                     }`}
                   >
-                    <ArrowUpRight className="w-4 h-4" /> Inflow (+)
+                    <ArrowUpRight className="w-4 h-4" /> {isTe ? "ఆదాయం (+)" : isHi ? "आवक (+)" : "Inflow (+)"}
                   </button>
                   <button 
                     type="button" 
                     onClick={() => setNewTx({ ...newTx, type: "OUTFLOW" })}
-                    className={`py-2 rounded-xl font-black text-xs uppercase flex items-center justify-center gap-1.5 border transition-all ${
+                    className={`py-2.5 rounded-xl font-black text-xs uppercase flex items-center justify-center gap-1.5 border transition-all ${
                       newTx.type === "OUTFLOW" 
                         ? "bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300 border-rose-300 dark:border-rose-800 shadow-sm" 
                         : "bg-slate-50 dark:bg-slate-950 text-slate-500 dark:text-slate-400 border-slate-300 dark:border-slate-700"
                     }`}
                   >
-                    <ArrowDownRight className="w-4 h-4" /> Outflow (-)
+                    <ArrowDownRight className="w-4 h-4" /> {isTe ? "వ్యయం (-)" : isHi ? "जावक (-)" : "Outflow (-)"}
                   </button>
                 </div>
               </div>
 
               <div>
-                <label className="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Amount (INR)</label>
+                <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase mb-1.5">
+                  {isTe ? "మొత్తం (రూపాయలలో)" : isHi ? "राशि (INR)" : "Amount (INR)"} *
+                </label>
                 <input 
-                  type="number" required placeholder="e.g. 4500" value={newTx.amount}
+                  type="number" 
+                  required 
+                  placeholder={isTe ? "ఉదా: 4500" : isHi ? "उदा: 4500" : "e.g. 4500"} 
+                  value={newTx.amount}
                   onChange={(e) => setNewTx({ ...newTx, amount: e.target.value })}
-                  className="w-full px-3.5 py-2 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 font-semibold"
+                  className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 font-semibold font-mono"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Account Fund</label>
+                <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase mb-1.5">
+                  {isTe ? "ఖాతా నిధి" : isHi ? "खाता निधि" : "Account Fund"}
+                </label>
                 <div className="relative flex items-center">
                   <select 
                     value={newTx.account}
                     onChange={(e) => setNewTx({ ...newTx, account: e.target.value })}
-                    className="w-full pl-3.5 pr-8 py-2 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 font-bold appearance-none cursor-pointer"
+                    className="w-full pl-3.5 pr-8 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 font-bold appearance-none cursor-pointer"
                   >
-                    <option value="General Fund">General Operating Fund</option>
-                    <option value="Building Fund">Sanctuary Building Fund</option>
-                    <option value="Missions Fund">Missions & Outreach Fund</option>
-                    <option value="Charity Fund">Charity Relief Fund</option>
+                    <option value="General Fund">{isTe ? "సాధారణ నిర్వహణ నిధి" : isHi ? "सामान्य संचालन निधि" : "General Operating Fund"}</option>
+                    <option value="Building Fund">{isTe ? "చర్చి భవన నిర్మాణ నిధి" : isHi ? "भवन निर्माण निधि" : "Sanctuary Building Fund"}</option>
+                    <option value="Missions Fund">{isTe ? "సువార్త సేవా నిధి" : isHi ? "मिशन और प्रचार निधि" : "Missions & Outreach Fund"}</option>
+                    <option value="Charity Fund">{isTe ? "సేవా సహాయ నిధి" : isHi ? "धर्मार्थ सहायता निधि" : "Charity Relief Fund"}</option>
                   </select>
-                  <ChevronDown className="absolute right-3.5 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
+                  <ChevronDown className="absolute right-3.5 w-4 h-4 text-slate-400 pointer-events-none" />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Description & Purpose</label>
+                <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase mb-1.5">
+                  {isTe ? "వివరణ మరియు ప్రయోజనం" : isHi ? "विवरण और उद्देश्य" : "Description & Purpose"} *
+                </label>
                 <input 
-                  type="text" required placeholder="e.g. Sanctuary Electricity Bill" value={newTx.description}
+                  type="text" 
+                  required 
+                  placeholder={isTe ? "ఉదా: చర్చి విద్యుత్ బిల్లు" : isHi ? "उदा: चर्च बिजली बिल" : "e.g. Sanctuary Electricity Bill"} 
+                  value={newTx.description}
                   onChange={(e) => setNewTx({ ...newTx, description: e.target.value })}
-                  className="w-full px-3.5 py-2 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 font-semibold"
+                  className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 font-semibold"
                 />
               </div>
 
-              <div className="pt-2 flex gap-2.5">
-                <button type="button" onClick={() => setIsTransactionOpen(false)} className="flex-1 py-2 border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl font-bold text-xs uppercase transition-colors">Cancel</button>
-                <button type="submit" className="flex-1 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs uppercase transition-all shadow-sm active:scale-95">Record Transaction</button>
+              <div className="pt-3 sm:pt-4 flex gap-3 mt-auto flex-shrink-0">
+                <button 
+                  type="button" 
+                  onClick={() => setIsTransactionOpen(false)} 
+                  className="flex-1 py-3 border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl font-bold text-xs uppercase transition-colors"
+                >
+                  {isTe ? "రద్దు" : isHi ? "रद्द करें" : "Cancel"}
+                </button>
+                <button 
+                  type="submit" 
+                  className="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs uppercase transition-all shadow-sm active:scale-95"
+                >
+                  {isTe ? "లావాదేవీ నమోదు చేయండి" : isHi ? "प्रविष्टि सुरक्षित करें" : "Record Transaction"}
+                </button>
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
+
 
     </div>
   );

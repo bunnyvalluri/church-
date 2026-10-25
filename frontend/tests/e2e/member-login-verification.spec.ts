@@ -1,33 +1,17 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("Member Login Verification Screen — Strict Route Isolation", () => {
-  test("shows verification screen only on /login and transitions within 3 seconds", async ({ page }) => {
+  test("renders login form directly without verification screen on /login", async ({ page }) => {
     // Navigate to /login (Member Login)
     await page.goto("/login");
 
-    // The KCM verification screen must be visible initially
+    // The verification screen must NOT be visible
     const heading = page.locator("text=Checking your browser before accessing");
-    const subHeading = page.locator("text=Member Login");
-    const emblem = page.locator('img[alt="Kingdom of Christ Ministries Emblem"]');
-    const tagline = page.locator("text=KINGDOM OF CHRIST MINISTRIES");
-
-    // Check verification elements
-    await expect(heading).toBeVisible({ timeout: 2000 });
-    await expect(subHeading).toBeVisible();
-    await expect(emblem).toBeVisible();
-    await expect(tagline).toBeVisible();
-
-    // Verify background is pure white
-    const mainBg = page.locator("main");
-    await expect(mainBg).toHaveClass(/bg-white/);
-
-    // Verify it automatically transitions to MemberLoginForm within 3000ms
-    const loginFormBtn = page.locator('button[type="submit"]');
-    await expect(loginFormBtn).toBeVisible({ timeout: 4000 });
-
-    // After transition, verification screen is gone and login form is interactive
     await expect(heading).not.toBeVisible();
+
+    // Login form is directly interactive
     await expect(page.locator('input[type="email"]')).toBeVisible();
+    await expect(page.locator('button[type="submit"]')).toBeVisible();
   });
 
   test("does NOT show verification screen on /admin/login", async ({ page }) => {
