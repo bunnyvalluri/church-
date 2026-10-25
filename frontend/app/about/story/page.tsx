@@ -64,17 +64,6 @@ export default function OurStoryPage() {
     setTimeout(() => setCopiedKey(null), 2000);
   };
 
-  // Keyboard navigation for document modal
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (selectedDocIndex === null) return;
-      if (e.key === "Escape") setSelectedDocIndex(null);
-      if (e.key === "ArrowLeft" && selectedDocIndex > 0) setSelectedDocIndex(selectedDocIndex - 1);
-      if (e.key === "ArrowRight" && selectedDocIndex < officialDocuments.length - 1) setSelectedDocIndex(selectedDocIndex + 1);
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedDocIndex]);
 
   // Prevent background scrolling on body when document modal is open
   useEffect(() => {
@@ -325,10 +314,22 @@ export default function OurStoryPage() {
     },
   ];
 
+  // Keyboard navigation for document modal
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (selectedDocIndex === null) return;
+      if (e.key === "Escape") setSelectedDocIndex(null);
+      if (e.key === "ArrowLeft" && selectedDocIndex > 0) setSelectedDocIndex(selectedDocIndex - 1);
+      if (e.key === "ArrowRight" && selectedDocIndex < officialDocuments.length - 1) setSelectedDocIndex(selectedDocIndex + 1);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedDocIndex, officialDocuments.length]);
+
   const filteredDocuments = useMemo(() => {
     if (docCategory === "all") return officialDocuments;
     return officialDocuments.filter(d => d.category === docCategory);
-  }, [docCategory]);
+  }, [docCategory, officialDocuments]);
 
   const selectedDoc = selectedDocIndex !== null ? officialDocuments[selectedDocIndex] : null;
 

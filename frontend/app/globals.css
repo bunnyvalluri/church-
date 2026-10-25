@@ -242,7 +242,7 @@
 }
 
 /* ── Graceful Fallback for browsers without backdrop-filter support ── */
-@supports not (backdrop-filter: blur(1px)) and not (-webkit-backdrop-filter: blur(1px)) {
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .glass-effect,
   .admin-modal-bg,
   .admin-card,
