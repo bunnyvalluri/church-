@@ -130,9 +130,6 @@
     position: relative;
   }
 
-  .overflow-y-auto, .overflow-x-auto, .overflow-auto {
-    -webkit-overflow-scrolling: touch;
-  }
 
   /* Performance-Optimized: SVG noise overlays cause massive paint lag on scroll.
      We removed the full-screen feTurbulence filter to ensure 60fps scrolling and fast rendering. */
@@ -861,36 +858,38 @@ html[lang="hi"] h3 {
    Premium Unified Admin Dashboard Classes
    ========================================================================== */
 
-.admin-card {
-  @apply bg-white/60 dark:bg-[#0f1021]/45 backdrop-blur-xl rounded-3xl border border-slate-200/50 dark:border-white/[0.05] shadow-[0_8px_30px_rgba(0,0,0,0.02)] transition-all duration-300;
-}
+@layer components {
+  .admin-card {
+    @apply bg-white/60 dark:bg-[#0f1021]/45 backdrop-blur-xl rounded-3xl border border-slate-200/50 dark:border-white/[0.05] shadow-[0_8px_30px_rgba(0,0,0,0.02)] transition-all duration-300;
+  }
 
-.admin-title {
-  @apply text-slate-800 dark:text-white font-black tracking-tight;
-}
+  .admin-title {
+    @apply text-slate-800 dark:text-white font-black tracking-tight;
+  }
 
-.admin-subtitle {
-  @apply text-xs text-slate-400 dark:text-gray-400 font-medium;
-}
+  .admin-subtitle {
+    @apply text-xs text-slate-400 dark:text-gray-400 font-medium;
+  }
 
-.admin-divider {
-  @apply border-slate-200/50 dark:border-white/[0.05];
-}
+  .admin-divider {
+    @apply border-slate-200/50 dark:border-white/[0.05];
+  }
 
-.admin-btn-ghost {
-  @apply bg-slate-50/50 dark:bg-white/[0.02] hover:bg-slate-100 dark:hover:bg-white/[0.05] text-slate-700 dark:text-gray-300 border border-slate-200/50 dark:border-white/[0.05] hover:border-slate-300 dark:hover:border-white/10 rounded-xl font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-[0.98];
-}
+  .admin-btn-ghost {
+    @apply bg-slate-50/50 dark:bg-white/[0.02] hover:bg-slate-100 dark:hover:bg-white/[0.05] text-slate-700 dark:text-gray-300 border border-slate-200/50 dark:border-white/[0.05] hover:border-slate-300 dark:hover:border-white/10 rounded-xl font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-[0.98];
+  }
 
-.admin-table-wrapper {
-  @apply rounded-2xl overflow-hidden border border-slate-200/40 dark:border-white/[0.04] bg-slate-50/30 dark:bg-white/[0.01];
-}
+  .admin-table-wrapper {
+    @apply rounded-2xl overflow-hidden border border-slate-200/40 dark:border-white/[0.04] bg-slate-50/30 dark:bg-white/[0.01];
+  }
 
-.admin-table-head {
-  @apply bg-slate-100/50 dark:bg-white/[0.02] border-b border-slate-200/40 dark:border-white/[0.04] text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-wider;
-}
+  .admin-table-head {
+    @apply bg-slate-100/50 dark:bg-white/[0.02] border-b border-slate-200/40 dark:border-white/[0.04] text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-wider;
+  }
 
-.admin-table-row {
-  @apply border-b border-slate-100/40 dark:border-white/[0.02] hover:bg-slate-50/50 dark:hover:bg-white/[0.01] transition-all;
+  .admin-table-row {
+    @apply border-b border-slate-100/40 dark:border-white/[0.02] hover:bg-slate-50/50 dark:hover:bg-white/[0.01] transition-all;
+  }
 }
 
 /* ==========================================

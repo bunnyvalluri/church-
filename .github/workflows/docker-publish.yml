@@ -5,6 +5,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
+  IMAGE_NAMESPACE: bunnyvalluri
 
 jobs:
   build-and-push:
@@ -27,26 +28,26 @@ jobs:
       # ==== FRONTEND ====
       - name: Build and push Frontend
         run: |
-          docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/kcm-frontend:latest -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/kcm-frontend:${{ github.sha }} -f ./docker/Dockerfile .
+          docker build -t "$REGISTRY/$IMAGE_NAMESPACE/kcm-frontend:latest" -t "$REGISTRY/$IMAGE_NAMESPACE/kcm-frontend:${{ github.sha }}" -f ./docker/Dockerfile .
           if [ "${{ github.event_name }}" != "pull_request" ]; then
-            docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/kcm-frontend:latest
-            docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/kcm-frontend:${{ github.sha }}
+            docker push "$REGISTRY/$IMAGE_NAMESPACE/kcm-frontend:latest"
+            docker push "$REGISTRY/$IMAGE_NAMESPACE/kcm-frontend:${{ github.sha }}"
           fi
 
       # ==== BACKEND ====
       - name: Build and push Backend
         run: |
-          docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/kcm-backend:latest -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/kcm-backend:${{ github.sha }} -f ./backend/Dockerfile ./backend
+          docker build -t "$REGISTRY/$IMAGE_NAMESPACE/kcm-backend:latest" -t "$REGISTRY/$IMAGE_NAMESPACE/kcm-backend:${{ github.sha }}" -f ./backend/Dockerfile ./backend
           if [ "${{ github.event_name }}" != "pull_request" ]; then
-            docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/kcm-backend:latest
-            docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/kcm-backend:${{ github.sha }}
+            docker push "$REGISTRY/$IMAGE_NAMESPACE/kcm-backend:latest"
+            docker push "$REGISTRY/$IMAGE_NAMESPACE/kcm-backend:${{ github.sha }}"
           fi
 
       # ==== NGINX ====
       - name: Build and push Nginx
         run: |
-          docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/kcm-nginx:latest -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/kcm-nginx:${{ github.sha }} -f ./nginx/Dockerfile ./nginx
+          docker build -t "$REGISTRY/$IMAGE_NAMESPACE/kcm-nginx:latest" -t "$REGISTRY/$IMAGE_NAMESPACE/kcm-nginx:${{ github.sha }}" -f ./nginx/Dockerfile ./nginx
           if [ "${{ github.event_name }}" != "pull_request" ]; then
-            docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/kcm-nginx:latest
-            docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/kcm-nginx:${{ github.sha }}
+            docker push "$REGISTRY/$IMAGE_NAMESPACE/kcm-nginx:latest"
+            docker push "$REGISTRY/$IMAGE_NAMESPACE/kcm-nginx:${{ github.sha }}"
           fi
