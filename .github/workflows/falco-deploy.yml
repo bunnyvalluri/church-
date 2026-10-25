@@ -29,8 +29,8 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  ARGOCD_SERVER: ${{ secrets['ARGOCD_SERVER'] }}
-  ARGOCD_AUTH_TOKEN: ${{ secrets['ARGOCD_AUTH_TOKEN'] }}
+  ARGOCD_SERVER: ""
+  ARGOCD_AUTH_TOKEN: ""
   ARGOCD_VERSION: "v2.10.0"
 
 jobs:
@@ -151,6 +151,8 @@ jobs:
     environment: ${{ github.event.inputs.environment || 'production' }}
     steps:
       - name: Deploy summary
+        env:
+          KUBECONFIG_PROD: ""
         run: |
           echo "================================================"
           echo "🔒 Falco Runtime Security Platform Deployed"
@@ -160,8 +162,8 @@ jobs:
           echo "ArgoCD Apps: falco, falco-kubernetes, falco-rules, falco-monitoring"
           echo "Grafana: Security dashboards available at /d/falco-*"
           echo "================================================"
-          if [ -n "${{ secrets['KUBECONFIG_PROD'] }}" ]; then
-            echo "${{ secrets['KUBECONFIG_PROD'] }}" | base64 -d > /tmp/kubeconfig
+          if [ -n "$KUBECONFIG_PROD" ]; then
+            echo "$KUBECONFIG_PROD" | base64 -d > /tmp/kubeconfig
             export KUBECONFIG=/tmp/kubeconfig
             DESIRED=$(kubectl get daemonset falco -n falco -o jsonpath='{.status.desiredNumberScheduled}' 2>/dev/null || echo 0)
             READY=$(kubectl get daemonset falco -n falco -o jsonpath='{.status.numberReady}' 2>/dev/null || echo 0)

@@ -32,8 +32,8 @@ jobs:
       - name: Check Argo CD secrets
         id: check
         env:
-          ARGOCD_SERVER: ${{ secrets['ARGOCD_SERVER'] }}
-          ARGOCD_AUTH_TOKEN: ${{ secrets['ARGOCD_AUTH_TOKEN'] }}
+          ARGOCD_SERVER: ""
+          ARGOCD_AUTH_TOKEN: ""
         run: |
           READY=true
           if [ -z "$ARGOCD_SERVER" ]; then
@@ -65,8 +65,8 @@ jobs:
 
       - name: Deploy Gateway Config
         env:
-          ARGOCD_SERVER: ${{ secrets['ARGOCD_SERVER'] }}
-          ARGOCD_AUTH_TOKEN: ${{ secrets['ARGOCD_AUTH_TOKEN'] }}
+          ARGOCD_SERVER: ""
+          ARGOCD_AUTH_TOKEN: ""
         run: |
           if [ -n "$ARGOCD_SERVER" ] && [ -n "$ARGOCD_AUTH_TOKEN" ]; then
             curl -sSL -o argocd https://github.com/argoproj/argo-cd/releases/download/v2.12.0/argocd-linux-amd64
