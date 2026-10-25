@@ -49,7 +49,7 @@ import Navbar from "@/components/layout/Navbar";
 
 export default function OurStoryPage() {
   const { language, t } = useLanguage();
-  const pageT = (t as any)?.pages?.story || {};
+  const pageT = useMemo(() => (t as any)?.pages?.story || {}, [t]);
 
   // State management
   const [selectedDocIndex, setSelectedDocIndex] = useState<number | null>(null);
