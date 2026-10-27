@@ -257,6 +257,18 @@ export default function ContactPage() {
     setTimeout(() => setCopiedKey(null), 2000);
   };
 
+  const whatsappInstantUrl = `https://wa.me/919704090069?text=${encodeURIComponent(
+    "ప్రైజ్ ది లార్డ్ పాస్టర్ గారు, నేను కింగ్‌డమ్ ఆఫ్ క్రైస్ట్ మినిస్ట్రీస్‌తో సంప్రదించాలనుకుంటున్నాను."
+  )}`;
+
+  const whatsappPastorUrl = `https://wa.me/919704090069?text=${encodeURIComponent(
+    "ప్రైజ్ ది లార్డ్ పాస్టర్ గారు, నాకు ప్రార్థన మరియు మార్గదర్శకత్వం కావాలి."
+  )}`;
+
+  const whatsappUrgentUrl = `https://wa.me/919704090069?text=${encodeURIComponent(
+    "ప్రైజ్ ది లార్డ్ పాస్టర్ గారు, నాకు అత్యవసర ప్రార్థన సహాయం కావాలి."
+  )}`;
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
@@ -391,7 +403,7 @@ export default function ContactPage() {
           {/* Quick Action Ribbon */}
           <div className="flex flex-wrap items-center gap-3 sm:gap-4 mt-6 pt-2">
             <a
-              href="https://wa.me/919704090069?text=Praise%20the%20Lord%20Pastor%20I%20would%20like%20to%20connect%20with%20Kingdom%20of%20Christ%20Ministries"
+              href={whatsappInstantUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs shadow-md shadow-emerald-500/20 transition-all hover:scale-105 active:scale-95"
@@ -647,7 +659,7 @@ export default function ContactPage() {
             {/* 3. Quick Action Buttons Grid */}
             <div className="grid grid-cols-2 gap-3">
               <a
-                href="https://wa.me/919704090069?text=Praise%20the%20Lord%20Pastor%20I%20need%20prayer%20and%20guidance"
+                href={whatsappPastorUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 p-4 rounded-2xl bg-[#25D366]/10 dark:bg-[#25D366]/15 hover:bg-[#25D366]/20 border border-[#25D366]/30 text-emerald-800 dark:text-emerald-300 font-extrabold text-xs transition-all hover:scale-[1.02] active:scale-[0.98] shadow-sm"
@@ -1085,7 +1097,7 @@ export default function ContactPage() {
                 <span>{isTe ? "హాట్‌లైన్‌కు కాల్ చేయండి" : isHi ? "तुरंत कॉल करें" : "Call Hotline Now"}</span>
               </a>
               <a
-                href="https://wa.me/919704090069?text=URGENT%20PRAYER%20REQUEST"
+                href={whatsappUrgentUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-black/30 hover:bg-black/40 text-white border border-white/20 font-black text-xs transition-all hover:scale-105 active:scale-95"
