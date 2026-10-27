@@ -90,7 +90,9 @@ export default function RolesAccessPage() {
         users={filteredUsers}
         onRoleChange={handleRoleChange}
         onDeleteMember={handleDeleteMember}
-        onAddMember={() => {}}
+        onAddMember={(newMember) => {
+          setUsers((prev) => [newMember, ...prev]);
+        }}
       />
     </AdminPageTemplate>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { 
   Search, 
   Shield, 
@@ -56,6 +57,11 @@ export default function MemberManagement({
 
   // Add Member Modal State
   const [isAddModalOpen, setIsAddModalOpen] = useState(initialAddModalOpen);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (initialAddModalOpen) {
@@ -709,22 +715,44 @@ export default function MemberManagement({
       )}
 
       {/* ─── MODAL: ADD MEMBER ─── */}
-      {isAddModalOpen && (
-        <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#121428] rounded-2xl sm:rounded-3xl w-full max-w-md shadow-2xl border border-slate-200 dark:border-white/15 overflow-hidden animate-in fade-in zoom-in-95 duration-200 text-slate-900 dark:text-white">
-            <div className="p-4 sm:p-6 border-b border-slate-100 dark:border-white/10 flex items-center justify-between bg-slate-50 dark:bg-[#1A1C36]/50">
-              <h3 className="font-black text-slate-900 dark:text-white text-sm sm:text-base">
-                {isTe ? "కొత్త సభ్యుడిని చేర్చండి" : isHi ? "नया सदस्य जोड़ें" : "Add New Member"}
-              </h3>
+      {isAddModalOpen && mounted && typeof document !== "undefined" && createPortal(
+        <div 
+          className="fixed inset-0 z-[10005] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/40 dark:bg-black/60 backdrop-blur-xs sm:backdrop-blur-sm animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsAddModalOpen(false);
+          }}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div 
+            className="bg-white dark:bg-[#121428] rounded-t-3xl sm:rounded-3xl w-full sm:max-w-md shadow-2xl border border-slate-200 dark:border-white/15 overflow-hidden animate-in slide-in-from-bottom-5 sm:zoom-in-95 duration-200 text-slate-900 dark:text-white max-h-[92vh] sm:max-h-[90vh] flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Mobile Sheet Handle Bar */}
+            <div className="sm:hidden pt-3 pb-1 flex justify-center bg-slate-50/80 dark:bg-[#1A1C36]/50">
+              <div className="w-10 h-1 rounded-full bg-slate-300 dark:bg-white/20" />
+            </div>
+
+            <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-white/10 flex items-center justify-between bg-slate-50/80 dark:bg-[#1A1C36]/50 shrink-0">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-xl bg-indigo-50 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400">
+                  <User className="w-4 h-4" />
+                </div>
+                <h3 className="font-black text-slate-900 dark:text-white text-sm sm:text-base">
+                  {isTe ? "కొత్త సభ్యుడిని చేర్చండి" : isHi ? "नया सदस्य जोड़ें" : "Add New Member"}
+                </h3>
+              </div>
               <button 
+                type="button"
                 onClick={() => setIsAddModalOpen(false)} 
                 className="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1.5 bg-white dark:bg-[#121428] border border-slate-200 dark:border-white/10 rounded-xl transition-colors"
+                aria-label="Close"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
             
-            <form onSubmit={handleAddMemberSubmit} className="p-4 sm:p-6 space-y-4">
+            <form onSubmit={handleAddMemberSubmit} className="p-4 sm:p-6 space-y-4 overflow-y-auto">
               <div>
                 <label className="block text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase mb-1.5">
                   {isTe ? "పూర్తి పేరు" : isHi ? "पूरा नाम" : "Full Name"} *
@@ -758,7 +786,7 @@ export default function MemberManagement({
                   {isTe ? "ఫోన్ నంబర్" : isHi ? "फोन नंबर" : "Phone Number"}
                 </label>
                 <input 
-                  type="text" 
+                  type="tel" 
                   placeholder="e.g. +91 9876543210" 
                   value={newMemberForm.phone}
                   onChange={(e) => setNewMemberForm({ ...newMemberForm, phone: e.target.value })}
@@ -768,7 +796,7 @@ export default function MemberManagement({
 
               <div>
                 <label className="block text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase mb-1.5">
-                  {isTe ? "హోదా" : isHi ? "भूमिका" : "Platform Role"}
+                  {isTe ? "హోదా" : isHi ? "భూమిక" : "Platform Role"}
                 </label>
                 <div className="relative flex items-center">
                   <select 
@@ -785,7 +813,7 @@ export default function MemberManagement({
                 </div>
               </div>
 
-              <div className="pt-3 flex gap-3">
+              <div className="pt-3 pb-2 sm:pb-0 flex gap-3">
                 <button 
                   type="button" 
                   onClick={() => setIsAddModalOpen(false)} 
@@ -802,7 +830,8 @@ export default function MemberManagement({
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
     </div>

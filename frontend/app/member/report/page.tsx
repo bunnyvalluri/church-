@@ -1077,51 +1077,77 @@ export default function MemberReportPage() {
             )}
 
             {/* Step Progress Stepper */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-4 sm:p-5 shadow-sm">
-              <div className="grid grid-cols-3 gap-2 sm:gap-4 text-center">
-                <div className="flex items-center gap-2 sm:gap-3 text-left">
-                  <div className="w-8 h-8 rounded-xl bg-purple-600 text-white flex items-center justify-center font-bold text-xs shadow-md shadow-purple-600/20 shrink-0">
-                    1
+            <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-2.5 sm:p-4 md:p-5 shadow-sm">
+              <div className="grid grid-cols-3 gap-1 sm:gap-4">
+                {/* Step 1 */}
+                <button
+                  type="button"
+                  onClick={() => document.getElementById("step-classification")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+                  className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-1 sm:gap-3 p-1.5 sm:p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 active:scale-95 transition-all group cursor-pointer"
+                  aria-label="Jump to Step 1: Issue Classification"
+                >
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-purple-600 text-white flex items-center justify-center font-bold text-xs shadow-md shadow-purple-600/20 shrink-0 group-hover:scale-105 transition-transform">
+                    {category ? <Check className="w-3.5 h-3.5 stroke-[3]" /> : "1"}
                   </div>
-                  <div className="min-w-0">
-                    <p className="text-xs font-extrabold text-slate-900 dark:text-white truncate">Classification</p>
-                    <p className="text-[10px] text-purple-600 dark:text-purple-400 font-semibold truncate">
-                      Select Issue Type
+                  <div className="min-w-0 w-full sm:w-auto">
+                    <p className="text-[11px] sm:text-xs font-black text-slate-900 dark:text-white leading-tight">
+                      <span className="sm:hidden">{language === "te" ? "వర్గం" : language === "hi" ? "श्रेणी" : "Type"}</span>
+                      <span className="hidden sm:inline">{language === "te" ? "వర్గీకరణ" : language === "hi" ? "वर्गीकरण" : "Classification"}</span>
+                    </p>
+                    <p className="hidden sm:block text-[10px] text-purple-600 dark:text-purple-400 font-semibold truncate leading-tight mt-0.5">
+                      {language === "te" ? "సమస్య రకం" : language === "hi" ? "समस्या प्रकार" : "Select Issue Type"}
                     </p>
                   </div>
-                </div>
+                </button>
 
-                <div className="flex items-center gap-2 sm:gap-3 text-left">
-                  <div className={`w-8 h-8 rounded-xl flex items-center justify-center font-bold text-xs shrink-0 transition-colors ${
+                {/* Step 2 */}
+                <button
+                  type="button"
+                  onClick={() => document.getElementById("step-urgency")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+                  className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-1 sm:gap-3 p-1.5 sm:p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 active:scale-95 transition-all group cursor-pointer"
+                  aria-label="Jump to Step 2: Impact / Urgency"
+                >
+                  <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center font-bold text-xs shrink-0 transition-all group-hover:scale-105 ${
                     severity
                       ? "bg-purple-600 text-white shadow-md shadow-purple-600/20"
                       : "bg-slate-100 dark:bg-slate-800 text-slate-400"
                   }`}>
-                    2
+                    {severity ? <Check className="w-3.5 h-3.5 stroke-[3]" /> : "2"}
                   </div>
-                  <div className="min-w-0">
-                    <p className="text-xs font-extrabold text-slate-900 dark:text-white truncate">Urgency</p>
-                    <p className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold truncate">
-                      Select Impact Level
+                  <div className="min-w-0 w-full sm:w-auto">
+                    <p className="text-[11px] sm:text-xs font-black text-slate-900 dark:text-white leading-tight">
+                      {language === "te" ? "తీవ్రత" : language === "hi" ? "तीव्रता" : "Urgency"}
+                    </p>
+                    <p className="hidden sm:block text-[10px] text-slate-500 dark:text-slate-400 font-semibold truncate leading-tight mt-0.5">
+                      {language === "te" ? "ప్రభావ స్థాయి" : language === "hi" ? "प्रभाव स्तर" : "Select Impact Level"}
                     </p>
                   </div>
-                </div>
+                </button>
 
-                <div className="flex items-center gap-2 sm:gap-3 text-left">
-                  <div className={`w-8 h-8 rounded-xl flex items-center justify-center font-bold text-xs shrink-0 transition-colors ${
+                {/* Step 3 */}
+                <button
+                  type="button"
+                  onClick={() => document.getElementById("step-context")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+                  className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-1 sm:gap-3 p-1.5 sm:p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 active:scale-95 transition-all group cursor-pointer"
+                  aria-label="Jump to Step 3: Context & Details"
+                >
+                  <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center font-bold text-xs shrink-0 transition-all group-hover:scale-105 ${
                     title.trim() && description.trim()
                       ? "bg-purple-600 text-white shadow-md shadow-purple-600/20"
                       : "bg-slate-100 dark:bg-slate-800 text-slate-400"
                   }`}>
-                    3
+                    {title.trim() && description.trim() ? <Check className="w-3.5 h-3.5 stroke-[3]" /> : "3"}
                   </div>
-                  <div className="min-w-0">
-                    <p className="text-xs font-extrabold text-slate-900 dark:text-white truncate">Context</p>
-                    <p className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold truncate">
-                      Summary & Telemetry
+                  <div className="min-w-0 w-full sm:w-auto">
+                    <p className="text-[11px] sm:text-xs font-black text-slate-900 dark:text-white leading-tight">
+                      <span className="sm:hidden">{language === "te" ? "వివరాలు" : language === "hi" ? "विवरण" : "Details"}</span>
+                      <span className="hidden sm:inline">{language === "te" ? "సందర్భం" : language === "hi" ? "संदर्भ" : "Context"}</span>
+                    </p>
+                    <p className="hidden sm:block text-[10px] text-slate-500 dark:text-slate-400 font-semibold truncate leading-tight mt-0.5">
+                      {language === "te" ? "సారాంశం & డేటా" : language === "hi" ? "सारांश और विवरण" : "Summary & Telemetry"}
                     </p>
                   </div>
-                </div>
+                </button>
               </div>
             </div>
 
@@ -1129,7 +1155,7 @@ export default function MemberReportPage() {
             <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-10 space-y-8 sm:space-y-10 shadow-xl shadow-slate-900/5">
               
               {/* SECTION 1: Issue Classification */}
-              <div className="space-y-4">
+              <div id="step-classification" className="space-y-4 scroll-mt-24">
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
                     <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300">
@@ -1185,7 +1211,7 @@ export default function MemberReportPage() {
               </div>
 
               {/* SECTION 2: Impact / Severity Rating */}
-              <div className="space-y-4 pt-6 border-t border-slate-100 dark:border-slate-800">
+              <div id="step-urgency" className="space-y-4 pt-6 border-t border-slate-100 dark:border-slate-800 scroll-mt-24">
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
                     <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300">
@@ -1231,7 +1257,7 @@ export default function MemberReportPage() {
               </div>
 
               {/* SECTION 3: Problem Details */}
-              <div className="space-y-5 pt-6 border-t border-slate-100 dark:border-slate-800">
+              <div id="step-context" className="space-y-5 pt-6 border-t border-slate-100 dark:border-slate-800 scroll-mt-24">
                 <div className="space-y-0.5">
                   <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300">
                     {rt.step3Tag}

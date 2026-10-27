@@ -87,7 +87,9 @@ export default function UserAccountsSettingsPage() {
         users={users}
         onRoleChange={handleRoleChange}
         onDeleteMember={handleDeleteMember}
-        onAddMember={() => {}}
+        onAddMember={(newMember) => {
+          setUsers((prev) => [newMember, ...prev]);
+        }}
       />
     </AdminPageTemplate>
   );
