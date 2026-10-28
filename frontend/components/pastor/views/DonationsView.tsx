@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
+import { createPortal } from "react-dom";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { getPastorTranslation } from "@/lib/pastorTranslations";
 import { getSharedSocket } from "@/lib/socketClient";
@@ -131,6 +132,7 @@ export default function DonationsView({ triggerToast: propTriggerToast }: Donati
   const PAGE_SIZE = 20;
 
   // Manual Record Modal State
+  const [mounted, setMounted] = useState(false);
   const [isRecordModalOpen, setIsRecordModalOpen] = useState(false);
   const [submittingRecord, setSubmittingRecord] = useState(false);
   const [recordForm, setRecordForm] = useState({
@@ -142,6 +144,26 @@ export default function DonationsView({ triggerToast: propTriggerToast }: Donati
     paymentMethod: "CASH",
     razorpayPaymentId: "",
   });
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Lock body scroll and close on Escape key when Record Giving modal is open
+  useEffect(() => {
+    if (isRecordModalOpen) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") setIsRecordModalOpen(false);
+      };
+      window.addEventListener("keydown", handleKeyDown);
+      return () => {
+        document.body.style.overflow = originalOverflow;
+        window.removeEventListener("keydown", handleKeyDown);
+      };
+    }
+  }, [isRecordModalOpen]);
 
   // Purpose & Status Translator Helpers
   const getPurposeLabel = (p: string) => {
@@ -488,30 +510,33 @@ export default function DonationsView({ triggerToast: propTriggerToast }: Donati
   return (
     <div className="space-y-4 sm:space-y-6 animate-in fade-in duration-200">
       {/* ── Local Floating Toast Notification ── */}
-      <AnimatePresence>
-        {localToast && (
-          <motion.div
-            initial={{ opacity: 0, y: -20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -20, scale: 0.95 }}
-            className={`fixed top-4 right-4 z-50 px-4 py-3 rounded-2xl shadow-xl border flex items-center gap-2.5 max-w-sm text-xs font-semibold backdrop-blur-md ${
-              localToast.type === "success"
-                ? "bg-emerald-500/90 text-white border-emerald-400"
-                : "bg-rose-500/90 text-white border-rose-400"
-            }`}
-          >
-            {localToast.type === "success" ? (
-              <Check className="w-4 h-4 shrink-0" />
-            ) : (
-              <AlertCircle className="w-4 h-4 shrink-0" />
-            )}
-            <span className="flex-1">{localToast.msg}</span>
-            <button onClick={() => setLocalToast(null)} className="opacity-70 hover:opacity-100">
-              <X className="w-3.5 h-3.5" />
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {mounted && typeof document !== "undefined" && createPortal(
+        <AnimatePresence>
+          {localToast && (
+            <motion.div
+              initial={{ opacity: 0, y: -20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -20, scale: 0.95 }}
+              className={`fixed top-4 right-4 z-[100000] px-4 py-3 rounded-2xl shadow-xl border flex items-center gap-2.5 max-w-sm text-xs font-semibold backdrop-blur-md ${
+                localToast.type === "success"
+                  ? "bg-emerald-500/90 text-white border-emerald-400"
+                  : "bg-rose-500/90 text-white border-rose-400"
+              }`}
+            >
+              {localToast.type === "success" ? (
+                <Check className="w-4 h-4 shrink-0" />
+              ) : (
+                <AlertCircle className="w-4 h-4 shrink-0" />
+              )}
+              <span className="flex-1">{localToast.msg}</span>
+              <button onClick={() => setLocalToast(null)} className="opacity-70 hover:opacity-100">
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
 
       {/* ── Top Bar: Title, Live Pulse & Quick Action Buttons ── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-white/[0.03] p-4 rounded-2xl border border-gray-100 dark:border-white/[0.08] shadow-sm">
@@ -534,44 +559,46 @@ export default function DonationsView({ triggerToast: propTriggerToast }: Donati
         </div>
 
         {/* Action Controls */}
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
           {/* Record Giving Button */}
           <button
             onClick={() => setIsRecordModalOpen(true)}
-            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition-all shadow-sm active:scale-95"
+            className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold rounded-xl transition-all shadow-md active:scale-95 shrink-0"
           >
-            <Plus className="w-3.5 h-3.5" />
+            <Plus className="w-4 h-4" />
             {t.recordGiving || "Record Giving"}
           </button>
 
-          {/* Refresh Button */}
-          <button
-            onClick={() => fetchDonations()}
-            disabled={loading || isSyncing}
-            className="p-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-200 transition-all active:scale-95 shrink-0"
-            title={t.refreshData || "Refresh"}
-          >
-            <RefreshCw className={`w-4 h-4 ${loading || isSyncing ? "animate-spin text-indigo-600" : ""}`} />
-          </button>
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            {/* Refresh Button */}
+            <button
+              onClick={() => fetchDonations()}
+              disabled={loading || isSyncing}
+              className="p-2 sm:p-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-200 transition-all active:scale-95 shrink-0"
+              title={t.refreshData || "Refresh"}
+            >
+              <RefreshCw className={`w-4 h-4 ${loading || isSyncing ? "animate-spin text-indigo-600" : ""}`} />
+            </button>
 
-          {/* Export CSV */}
-          <button
-            onClick={exportCSV}
-            className="flex items-center justify-center gap-1.5 px-3 py-2 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 text-xs font-bold rounded-xl transition-all active:scale-95"
-          >
-            <Download className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">{t.exportCSV}</span>
-            <span className="sm:hidden">CSV</span>
-          </button>
+            {/* Export CSV */}
+            <button
+              onClick={exportCSV}
+              className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 sm:py-2.5 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 text-xs font-bold rounded-xl transition-all active:scale-95"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">{t.exportCSV}</span>
+              <span className="sm:hidden">CSV</span>
+            </button>
 
-          {/* Clear Test Records */}
-          <button
-            onClick={handlePurgeFake}
-            className="px-2.5 py-2 bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/40 hover:bg-rose-100 text-xs font-bold rounded-xl transition-all active:scale-95"
-            title={t.clearTestRecords}
-          >
-            {t.clearTestRecords || "Clear Test"}
-          </button>
+            {/* Clear Test Records */}
+            <button
+              onClick={handlePurgeFake}
+              className="flex-1 sm:flex-none px-3 py-2 sm:py-2.5 bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/40 hover:bg-rose-100 text-xs font-bold rounded-xl transition-all active:scale-95 text-center"
+              title={t.clearTestRecords}
+            >
+              {t.clearTestRecords || "Clear Test"}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -1038,44 +1065,57 @@ export default function DonationsView({ triggerToast: propTriggerToast }: Donati
         </div>
       )}
 
-      {/* ── Modal: Record Offline / Sunday Giving ── */}
-      <AnimatePresence>
-        {isRecordModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="w-full max-w-lg bg-white dark:bg-[#11131a] rounded-3xl border border-gray-100 dark:border-white/10 shadow-2xl overflow-hidden"
-            >
-              {/* Modal Header */}
-              <div className="flex items-center justify-between p-4 sm:p-5 border-b border-gray-100 dark:border-white/10 bg-gray-50/50 dark:bg-white/[0.02]">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
-                    <Sparkles className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white">
-                      {t.recordGiving || "Record Giving"}
-                    </h3>
-                    <p className="text-[11px] text-gray-500 dark:text-gray-400">
-                      {t.recordGivingSubtitle || "Log offline Sunday cash, tithe, or bank transfer contributions"}
-                    </p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setIsRecordModalOpen(false)}
-                  className="p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-white rounded-xl hover:bg-gray-100 dark:hover:bg-white/5 transition-all"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
+      {/* ── Modal: Record Offline / Sunday Giving (Portaled to document.body) ── */}
+      {isRecordModalOpen && mounted && typeof document !== "undefined" && createPortal(
+        <div
+          className="fixed inset-0 z-[99999] bg-slate-950/75 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto overscroll-contain animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setIsRecordModalOpen(false);
+            }
+          }}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="record-giving-modal-title"
+        >
+          <div
+            className="w-full sm:max-w-xl bg-white dark:bg-[#0E0F24] border-t sm:border border-slate-200/90 dark:border-white/10 rounded-t-[28px] sm:rounded-3xl shadow-2xl flex flex-col max-h-[92dvh] sm:max-h-[88vh] overflow-hidden animate-in slide-in-from-bottom-8 sm:zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Sheet Pull Handle for Mobile */}
+            <div className="w-12 h-1.5 bg-slate-300 dark:bg-white/20 rounded-full mx-auto my-2.5 sm:hidden shrink-0" />
 
-              {/* Modal Form */}
-              <form onSubmit={handleRecordSubmit} className="p-4 sm:p-5 space-y-4">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between px-5 py-3.5 sm:py-4 border-b border-slate-100 dark:border-white/[0.08] bg-slate-50/70 dark:bg-white/[0.02] shrink-0">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                  <Sparkles className="w-5 h-5" />
+                </div>
+                <div className="min-w-0">
+                  <h3 id="record-giving-modal-title" className="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate">
+                    {t.recordGiving || "Record Giving"}
+                  </h3>
+                  <p className="text-[11px] sm:text-xs text-slate-500 dark:text-gray-400 truncate">
+                    {t.recordGivingSubtitle || "Log offline Sunday cash, tithe, or bank transfer contributions"}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsRecordModalOpen(false)}
+                className="p-2 -mr-1 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 active:scale-95 transition-all shrink-0"
+                aria-label="Close modal"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Form */}
+            <form onSubmit={handleRecordSubmit} className="flex-1 flex flex-col min-h-0 overflow-hidden">
+              <div className="flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-6 space-y-4 sm:space-y-4.5 overscroll-contain">
                 {/* Donor Name & Phone */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="space-y-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5">
+                  <div className="space-y-1.5">
                     <label className="text-xs font-bold text-gray-700 dark:text-gray-300">
                       {t.donorName || "Donor / Member Name"} *
                     </label>
@@ -1085,10 +1125,10 @@ export default function DonationsView({ triggerToast: propTriggerToast }: Donati
                       placeholder="e.g. Samuel Reddy"
                       value={recordForm.donorName}
                       onChange={(e) => setRecordForm({ ...recordForm, donorName: e.target.value })}
-                      className="w-full px-3 py-2 text-xs rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-white/5 text-gray-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30"
+                      className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-white/5 text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30"
                     />
                   </div>
-                  <div className="space-y-1">
+                  <div className="space-y-1.5">
                     <label className="text-xs font-bold text-gray-700 dark:text-gray-300">
                       {t.donorPhone || "Phone Number"}
                     </label>
@@ -1097,18 +1137,18 @@ export default function DonationsView({ triggerToast: propTriggerToast }: Donati
                       placeholder="e.g. 9876543210"
                       value={recordForm.donorPhone}
                       onChange={(e) => setRecordForm({ ...recordForm, donorPhone: e.target.value })}
-                      className="w-full px-3 py-2 text-xs rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-white/5 text-gray-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30"
+                      className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-white/5 text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30"
                     />
                   </div>
                 </div>
 
                 {/* Amount with Quick Chips */}
-                <div className="space-y-1.5">
+                <div className="space-y-2">
                   <label className="text-xs font-bold text-gray-700 dark:text-gray-300">
                     {t.amountINR || "Amount (₹)"} *
                   </label>
                   <div className="relative">
-                    <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                    <IndianRupee className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                     <input
                       type="number"
                       required
@@ -1117,19 +1157,19 @@ export default function DonationsView({ triggerToast: propTriggerToast }: Donati
                       placeholder="e.g. 2000"
                       value={recordForm.amount}
                       onChange={(e) => setRecordForm({ ...recordForm, amount: e.target.value })}
-                      className="w-full pl-9 pr-3 py-2 text-sm font-bold rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-white/5 text-gray-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30"
+                      className="w-full pl-10 pr-3.5 py-2.5 text-sm sm:text-base font-bold rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-white/5 text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30"
                     />
                   </div>
                   {/* Quick Chips */}
-                  <div className="flex items-center gap-1.5 flex-wrap pt-1">
+                  <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
                     {QUICK_AMOUNTS.map((amt) => (
                       <button
                         key={amt}
                         type="button"
                         onClick={() => setRecordForm({ ...recordForm, amount: String(amt) })}
-                        className={`px-2.5 py-1 text-[11px] font-bold rounded-lg border transition-all ${
+                        className={`px-3 py-1.5 text-xs font-bold rounded-xl border transition-all active:scale-95 ${
                           recordForm.amount === String(amt)
-                            ? "bg-indigo-600 text-white border-indigo-600"
+                            ? "bg-indigo-600 text-white border-indigo-600 shadow-xs"
                             : "bg-gray-50 dark:bg-white/5 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-white/10 hover:border-indigo-300"
                         }`}
                       >
@@ -1140,15 +1180,15 @@ export default function DonationsView({ triggerToast: propTriggerToast }: Donati
                 </div>
 
                 {/* Purpose & Payment Method */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="space-y-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5">
+                  <div className="space-y-1.5">
                     <label className="text-xs font-bold text-gray-700 dark:text-gray-300">
                       {t.givingPurpose || "Giving Purpose"} *
                     </label>
                     <select
                       value={recordForm.purpose}
                       onChange={(e) => setRecordForm({ ...recordForm, purpose: e.target.value })}
-                      className="w-full px-3 py-2 text-xs rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-white/5 text-gray-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30"
+                      className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-white/5 text-gray-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30"
                     >
                       <option value="TITHE">{getPurposeLabel("TITHE")}</option>
                       <option value="OFFERING">{getPurposeLabel("OFFERING")}</option>
@@ -1160,14 +1200,14 @@ export default function DonationsView({ triggerToast: propTriggerToast }: Donati
                       <option value="OTHER">{getPurposeLabel("OTHER")}</option>
                     </select>
                   </div>
-                  <div className="space-y-1">
+                  <div className="space-y-1.5">
                     <label className="text-xs font-bold text-gray-700 dark:text-gray-300">
                       {t.paymentMethod || "Payment Mode"} *
                     </label>
                     <select
                       value={recordForm.paymentMethod}
                       onChange={(e) => setRecordForm({ ...recordForm, paymentMethod: e.target.value })}
-                      className="w-full px-3 py-2 text-xs rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-white/5 text-gray-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30"
+                      className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-white/5 text-gray-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30"
                     >
                       <option value="CASH">{t.methodCash || "Cash"}</option>
                       <option value="UPI">UPI</option>
@@ -1178,7 +1218,7 @@ export default function DonationsView({ triggerToast: propTriggerToast }: Donati
                 </div>
 
                 {/* Reference / Notes */}
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   <label className="text-xs font-bold text-gray-700 dark:text-gray-300">
                     {t.notesReference || "Transaction Ref / Notes (Optional)"}
                   </label>
@@ -1187,42 +1227,43 @@ export default function DonationsView({ triggerToast: propTriggerToast }: Donati
                     placeholder="e.g. Sunday Morning Service / Cheque #1042"
                     value={recordForm.razorpayPaymentId}
                     onChange={(e) => setRecordForm({ ...recordForm, razorpayPaymentId: e.target.value })}
-                    className="w-full px-3 py-2 text-xs rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-white/5 text-gray-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30"
+                    className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-white/5 text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30"
                   />
                 </div>
+              </div>
 
-                {/* Modal Footer Buttons */}
-                <div className="flex items-center justify-end gap-2 pt-3 border-t border-gray-100 dark:border-white/10">
-                  <button
-                    type="button"
-                    onClick={() => setIsRecordModalOpen(false)}
-                    className="px-4 py-2 text-xs font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl transition-all"
-                  >
-                    {t.cancelBtn || "Cancel"}
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={submittingRecord}
-                    className="flex items-center gap-1.5 px-5 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-xs font-bold rounded-xl transition-all shadow-sm active:scale-95"
-                  >
-                    {submittingRecord ? (
-                      <>
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                        {t.savingRecord || "Recording..."}
-                      </>
-                    ) : (
-                      <>
-                        <Check className="w-3.5 h-3.5" />
-                        {t.saveRecord || "Record Contribution"}
-                      </>
-                    )}
-                  </button>
-                </div>
-              </form>
-            </motion.div>
+              {/* Modal Footer Buttons */}
+              <div className="shrink-0 px-4 py-3 sm:px-6 sm:py-4 border-t border-slate-100 dark:border-white/[0.08] bg-slate-50/90 dark:bg-[#0c0e1a]/95 backdrop-blur-md flex items-center justify-end gap-2.5 pb-[max(1rem,env(safe-area-inset-bottom))]">
+                <button
+                  type="button"
+                  onClick={() => setIsRecordModalOpen(false)}
+                  className="px-4 py-2.5 text-xs sm:text-sm font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl transition-all active:scale-95"
+                >
+                  {t.cancelBtn || "Cancel"}
+                </button>
+                <button
+                  type="submit"
+                  disabled={submittingRecord}
+                  className="flex items-center justify-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-xs sm:text-sm font-bold rounded-xl transition-all shadow-md active:scale-95"
+                >
+                  {submittingRecord ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      {t.savingRecord || "Recording..."}
+                    </>
+                  ) : (
+                    <>
+                      <Check className="w-4 h-4" />
+                      {t.saveRecord || "Record Contribution"}
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
           </div>
-        )}
-      </AnimatePresence>
+        </div>,
+        document.body
+      )}
     </div>
   );
 }

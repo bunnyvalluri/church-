@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import PastorPageHeader from "@/components/pastor/layout/PastorPageHeader";
 import { Calendar, MapPin, Clock, Users, Plus, Trash2, X, Loader2, Sparkles, Check } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
@@ -25,9 +26,30 @@ export default function PastorEventsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [dbEvents, setDbEvents] = useState<EventItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [toastMsg, setToastMsg] = useState("");
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Lock body scroll and close on Escape key when Schedule Event modal is open
+  useEffect(() => {
+    if (isModalOpen) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") setIsModalOpen(false);
+      };
+      window.addEventListener("keydown", handleKeyDown);
+      return () => {
+        document.body.style.overflow = originalOverflow;
+        window.removeEventListener("keydown", handleKeyDown);
+      };
+    }
+  }, [isModalOpen]);
 
   // New Event Form State
   const [newTitle, setNewTitle] = useState("");
@@ -336,135 +358,162 @@ export default function PastorEventsPage() {
         </div>
       )}
 
-      {/* Schedule Event Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#0E0F24] border border-slate-200 dark:border-white/10 rounded-3xl max-w-lg w-full p-6 space-y-5 shadow-2xl animate-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-white/10">
-              <div className="flex items-center gap-2.5">
-                <div className="p-2 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 rounded-xl">
+      {/* Schedule Event Modal (Portaled to document.body) */}
+      {isModalOpen && mounted && typeof document !== "undefined" && createPortal(
+        <div
+          className="fixed inset-0 z-[99999] bg-slate-950/75 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto overscroll-contain animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setIsModalOpen(false);
+            }
+          }}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="schedule-event-modal-title"
+        >
+          <div
+            className="w-full sm:max-w-xl bg-white dark:bg-[#0E0F24] border-t sm:border border-slate-200/90 dark:border-white/10 rounded-t-[28px] sm:rounded-3xl shadow-2xl flex flex-col max-h-[92dvh] sm:max-h-[88vh] overflow-hidden animate-in slide-in-from-bottom-8 sm:zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Sheet Pull Handle for Mobile */}
+            <div className="w-12 h-1.5 bg-slate-300 dark:bg-white/20 rounded-full mx-auto my-2.5 sm:hidden shrink-0" />
+
+            {/* Modal Header */}
+            <div className="flex items-center justify-between px-5 py-3.5 sm:py-4 border-b border-slate-100 dark:border-white/[0.08] bg-slate-50/70 dark:bg-white/[0.02] shrink-0">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
                   <Sparkles className="w-5 h-5" />
                 </div>
-                <div>
-                  <h2 className="text-lg font-black text-slate-900 dark:text-white">{t.scheduleModalTitle}</h2>
-                  <p className="text-xs text-slate-500 dark:text-gray-400">{t.scheduleModalSubtitle}</p>
+                <div className="min-w-0">
+                  <h2 id="schedule-event-modal-title" className="text-sm sm:text-base font-black text-slate-900 dark:text-white truncate">
+                    {t.scheduleModalTitle}
+                  </h2>
+                  <p className="text-[11px] sm:text-xs text-slate-500 dark:text-gray-400 truncate">
+                    {t.scheduleModalSubtitle}
+                  </p>
                 </div>
               </div>
               <button
+                type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-white rounded-lg"
+                className="p-2 -mr-1 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 active:scale-95 transition-all shrink-0"
+                aria-label="Close modal"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleCreateEvent} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1">
-                  {t.eventTitleLabel} *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={newTitle}
-                  onChange={(e) => setNewTitle(e.target.value)}
-                  placeholder="e.g. Grand Worship Service"
-                  className="w-full px-3.5 py-2.5 text-xs bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-none"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
+            {/* Modal Form */}
+            <form onSubmit={handleCreateEvent} className="flex-1 flex flex-col min-h-0 overflow-hidden">
+              <div className="flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-6 space-y-4 sm:space-y-4.5 overscroll-contain">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1">
-                    {t.eventCategoryLabel} *
-                  </label>
-                  <select
-                    value={newCategory}
-                    onChange={(e) => setNewCategory(e.target.value)}
-                    className="w-full px-3.5 py-2.5 text-xs bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-none"
-                  >
-                    <option value="WORSHIP">{t.catWorship}</option>
-                    <option value="PRAYER">{t.catPrayer}</option>
-                    <option value="YOUTH">{t.catYouth}</option>
-                    <option value="SPECIAL">{t.catSpecial}</option>
-                    <option value="FESTIVAL">{t.catFestival}</option>
-                    <option value="FELLOWSHIP">{t.catFellowship}</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1">
-                    {t.eventDateLabel} *
-                  </label>
-                  <input
-                    type="date"
-                    required
-                    value={newDate}
-                    onChange={(e) => setNewDate(e.target.value)}
-                    className="w-full px-3.5 py-2.5 text-xs bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-none"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1">
-                    {t.eventTimeLabel} *
+                  <label className="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1.5">
+                    {t.eventTitleLabel} *
                   </label>
                   <input
                     type="text"
                     required
-                    value={newTime}
-                    onChange={(e) => setNewTime(e.target.value)}
-                    placeholder="e.g. 10:00 AM - 01:00 PM"
-                    className="w-full px-3.5 py-2.5 text-xs bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-none"
+                    value={newTitle}
+                    onChange={(e) => setNewTitle(e.target.value)}
+                    placeholder="e.g. Grand Worship Service"
+                    className="w-full px-3.5 py-2.5 text-sm bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 rounded-xl text-slate-900 dark:text-white placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-hidden"
                   />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1.5">
+                      {t.eventCategoryLabel} *
+                    </label>
+                    <select
+                      value={newCategory}
+                      onChange={(e) => setNewCategory(e.target.value)}
+                      className="w-full px-3.5 py-2.5 text-sm bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-hidden"
+                    >
+                      <option value="WORSHIP">{t.catWorship}</option>
+                      <option value="PRAYER">{t.catPrayer}</option>
+                      <option value="YOUTH">{t.catYouth}</option>
+                      <option value="SPECIAL">{t.catSpecial}</option>
+                      <option value="FESTIVAL">{t.catFestival}</option>
+                      <option value="FELLOWSHIP">{t.catFellowship}</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1.5">
+                      {t.eventDateLabel} *
+                    </label>
+                    <input
+                      type="date"
+                      required
+                      value={newDate}
+                      onChange={(e) => setNewDate(e.target.value)}
+                      className="w-full px-3.5 py-2.5 text-sm bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-hidden"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1.5">
+                      {t.eventTimeLabel} *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={newTime}
+                      onChange={(e) => setNewTime(e.target.value)}
+                      placeholder="e.g. 10:00 AM - 01:00 PM"
+                      className="w-full px-3.5 py-2.5 text-sm bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 rounded-xl text-slate-900 dark:text-white placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-hidden"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1.5">
+                      {t.eventLocationLabel} *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={newLocation}
+                      onChange={(e) => setNewLocation(e.target.value)}
+                      placeholder="e.g. Main Sanctuary, Shapur"
+                      className="w-full px-3.5 py-2.5 text-sm bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 rounded-xl text-slate-900 dark:text-white placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-hidden"
+                    />
+                  </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1">
-                    {t.eventLocationLabel} *
+                  <label className="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1.5">
+                    {t.eventDescriptionLabel}
                   </label>
-                  <input
-                    type="text"
-                    required
-                    value={newLocation}
-                    onChange={(e) => setNewLocation(e.target.value)}
-                    placeholder="e.g. Main Sanctuary, Shapur"
-                    className="w-full px-3.5 py-2.5 text-xs bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-none"
+                  <textarea
+                    rows={3}
+                    value={newDescription}
+                    onChange={(e) => setNewDescription(e.target.value)}
+                    placeholder="Additional details or instructions..."
+                    className="w-full px-3.5 py-2.5 text-sm bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 rounded-xl text-slate-900 dark:text-white placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-hidden resize-none"
                   />
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1">
-                  {t.eventDescriptionLabel}
-                </label>
-                <textarea
-                  rows={3}
-                  value={newDescription}
-                  onChange={(e) => setNewDescription(e.target.value)}
-                  placeholder="Additional details or instructions..."
-                  className="w-full px-3.5 py-2 text-xs bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-none resize-none"
-                />
-              </div>
-
-              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100 dark:border-white/10">
+              {/* Modal Footer Buttons */}
+              <div className="shrink-0 px-4 py-3 sm:px-6 sm:py-4 border-t border-slate-100 dark:border-white/[0.08] bg-slate-50/90 dark:bg-[#0c0e1a]/95 backdrop-blur-md flex items-center justify-end gap-2.5 pb-[max(1rem,env(safe-area-inset-bottom))]">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 text-xs font-bold text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl transition-all"
+                  className="px-4 py-2.5 text-xs sm:text-sm font-bold text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl transition-all active:scale-95"
                 >
                   {t.cancelBtn}
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-5 py-2 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white rounded-xl text-xs font-extrabold shadow-md shadow-indigo-500/20 transition-all flex items-center gap-1.5"
+                  className="px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white rounded-xl text-xs sm:text-sm font-extrabold shadow-md shadow-indigo-500/20 transition-all flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50"
                 >
                   {isSubmitting ? (
                     <>
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <Loader2 className="w-4 h-4 animate-spin" />
                       <span>{t.schedulingEventBtn}</span>
                     </>
                   ) : (
@@ -477,7 +526,8 @@ export default function PastorEventsPage() {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

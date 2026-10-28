@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { 
   Heart, 
   Image as ImageIcon, 
@@ -112,6 +113,7 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
   const [volunteerStatusFilter, setVolunteerStatusFilter] = useState<string>("ALL");
 
   // Form modals / fields
+  const [mounted, setMounted] = useState(false);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [projectForm, setProjectForm] = useState({
@@ -132,6 +134,29 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
     projectId: "",
     category: "",
   });
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Lock body scroll and close on Escape key when modals are open
+  useEffect(() => {
+    if (isProjectModalOpen || isMediaModalOpen) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") {
+          setIsProjectModalOpen(false);
+          setIsMediaModalOpen(false);
+        }
+      };
+      window.addEventListener("keydown", handleKeyDown);
+      return () => {
+        document.body.style.overflow = originalOverflow;
+        window.removeEventListener("keydown", handleKeyDown);
+      };
+    }
+  }, [isProjectModalOpen, isMediaModalOpen]);
 
   const loadAllData = async () => {
     setLoading(true);
@@ -369,11 +394,11 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
       <div className="bg-white dark:bg-[#121324] border border-slate-200 dark:border-white/10 p-4 sm:p-5 rounded-2xl shadow-sm backdrop-blur-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
         
         {/* Tab Pills */}
-        <div className="p-1.5 bg-slate-100 dark:bg-[#181932] border border-slate-200 dark:border-white/10 rounded-xl flex gap-1.5 items-center w-max max-w-full overflow-x-auto select-none scrollbar-none">
+        <div className="w-full sm:w-auto p-1.5 bg-slate-100/90 dark:bg-[#181932]/90 border border-slate-200/90 dark:border-white/10 rounded-2xl flex items-center gap-1.5 overflow-x-auto select-none no-scrollbar scroll-smooth">
           {[
             { id: "projects", label: t.projectsRoster, icon: Heart },
             { id: "media", label: t.mediaLibraryLogs, icon: ImageIcon },
-            { id: "volunteers", label: `${t.volunteerRequests} ${pendingVolunteersCount > 0 ? `(${pendingVolunteersCount})` : ''}`, icon: Users },
+            { id: "volunteers", label: t.volunteerRequests, icon: Users, badge: pendingVolunteersCount },
           ].map((tab) => {
             const isActive = subView === tab.id;
             const Icon = tab.icon;
@@ -381,14 +406,19 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
               <button
                 key={tab.id}
                 onClick={() => setSubView(tab.id as any)}
-                className={`py-2 px-4 rounded-lg flex items-center gap-2 text-xs font-bold transition-all ${
+                className={`shrink-0 whitespace-nowrap py-2.5 px-3.5 sm:px-4 rounded-xl flex items-center justify-center gap-2 text-xs font-bold transition-all active:scale-95 ${
                   isActive
                     ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/25 border border-indigo-500"
                     : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/5"
                 }`}
               >
-                <Icon className="w-4 h-4" />
-                <span>{tab.label}</span>
+                <Icon className="w-4 h-4 shrink-0" />
+                <span className="whitespace-nowrap">{tab.label}</span>
+                {tab.badge !== undefined && tab.badge > 0 && (
+                  <span className="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-rose-500 text-white leading-none shrink-0">
+                    {tab.badge}
+                  </span>
+                )}
               </button>
             );
           })}
@@ -840,199 +870,243 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
         </div>
       )}
 
-      {/* ─── 4. MODALS FOR FORMS ─── */}
+      {/* ─── 4. MODALS FOR FORMS (Portaled to document.body) ─── */}
       {/* Project Modal */}
-      {isProjectModalOpen && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#121324] rounded-2xl w-full max-w-lg shadow-2xl border border-slate-200 dark:border-white/10 overflow-hidden text-slate-800 dark:text-slate-100 text-left animate-in zoom-in-95 duration-150">
-            <div className="p-5 border-b border-slate-200 dark:border-white/10 flex items-center justify-between bg-slate-50 dark:bg-white/[0.02]">
-              <h3 className="font-extrabold text-slate-900 dark:text-white text-base flex items-center gap-2">
-                <Heart className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                {editingProject ? t.updateNgoProjectModal : t.addNgoProjectModal}
+      {isProjectModalOpen && mounted && typeof document !== "undefined" && createPortal(
+        <div
+          className="fixed inset-0 z-[99999] bg-slate-950/75 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto overscroll-contain animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setIsProjectModalOpen(false);
+            }
+          }}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div
+            className="w-full sm:max-w-lg bg-white dark:bg-[#0E0F24] border-t sm:border border-slate-200/90 dark:border-white/10 rounded-t-[28px] sm:rounded-3xl shadow-2xl flex flex-col max-h-[92dvh] sm:max-h-[88vh] overflow-hidden text-slate-800 dark:text-slate-100 animate-in slide-in-from-bottom-8 sm:zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Sheet Pull Handle for Mobile */}
+            <div className="w-12 h-1.5 bg-slate-300 dark:bg-white/20 rounded-full mx-auto my-2.5 sm:hidden shrink-0" />
+
+            <div className="px-5 py-3.5 sm:py-4 border-b border-slate-100 dark:border-white/[0.08] flex items-center justify-between bg-slate-50/70 dark:bg-white/[0.02] shrink-0">
+              <h3 className="font-extrabold text-slate-900 dark:text-white text-sm sm:text-base flex items-center gap-2">
+                <Heart className="w-5 h-5 text-indigo-600 dark:text-indigo-400 shrink-0" />
+                <span>{editingProject ? t.updateNgoProjectModal : t.addNgoProjectModal}</span>
               </h3>
               <button 
+                type="button"
                 onClick={() => setIsProjectModalOpen(false)} 
-                className="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1 rounded-lg transition-colors"
+                className="p-2 -mr-1 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 active:scale-95 transition-all shrink-0"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
             
-            <form onSubmit={handleSaveProject} className="p-6 space-y-4">
-              <div>
-                <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">{t.projectTitleLabel}</label>
-                <input 
-                  type="text" required placeholder="e.g. Gandhi Hospital Food Drive" value={projectForm.title}
-                  onChange={(e) => setProjectForm({ ...projectForm, title: e.target.value })}
-                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-xs bg-slate-50 dark:bg-[#181932] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">{t.briefDescLabel}</label>
-                <input 
-                  type="text" required placeholder="e.g. Distributing grocery and medical kits." value={projectForm.description}
-                  onChange={(e) => setProjectForm({ ...projectForm, description: e.target.value })}
-                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-xs bg-slate-50 dark:bg-[#181932] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">{t.fullStoryLabel}</label>
-                <textarea 
-                  rows={3} required placeholder="Detailed story of the outreach campaign..." value={projectForm.details}
-                  onChange={(e) => setProjectForm({ ...projectForm, details: e.target.value })}
-                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-xs bg-slate-50 dark:bg-[#181932] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
+            <form onSubmit={handleSaveProject} className="flex-1 flex flex-col min-h-0 overflow-hidden">
+              <div className="flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-6 space-y-4 overscroll-contain">
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">{t.targetBudgetLabel}</label>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1.5">{t.projectTitleLabel} *</label>
                   <input 
-                    type="number" placeholder="e.g. 150000" value={projectForm.targetAmount}
-                    onChange={(e) => setProjectForm({ ...projectForm, targetAmount: e.target.value })}
-                    className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-xs bg-slate-50 dark:bg-[#181932] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold"
+                    type="text" required placeholder="e.g. Gandhi Hospital Food Drive" value={projectForm.title}
+                    onChange={(e) => setProjectForm({ ...projectForm, title: e.target.value })}
+                    className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm bg-slate-50 dark:bg-[#181932] text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold"
                   />
                 </div>
+
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">{t.projectStatusLabel}</label>
-                  <select
-                    value={projectForm.status}
-                    onChange={(e) => setProjectForm({ ...projectForm, status: e.target.value })}
-                    className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-xs bg-slate-50 dark:bg-[#181932] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold"
-                  >
-                    <option value="ACTIVE">{t.activeStatus}</option>
-                    <option value="COMPLETED">{t.completedStatusText}</option>
-                    <option value="PLANNED">{t.plannedStatus}</option>
-                  </select>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1.5">{t.briefDescLabel} *</label>
+                  <input 
+                    type="text" required placeholder="e.g. Distributing grocery and medical kits." value={projectForm.description}
+                    onChange={(e) => setProjectForm({ ...projectForm, description: e.target.value })}
+                    className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm bg-slate-50 dark:bg-[#181932] text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1.5">{t.fullStoryLabel} *</label>
+                  <textarea 
+                    rows={3} required placeholder="Detailed story of the outreach campaign..." value={projectForm.details}
+                    onChange={(e) => setProjectForm({ ...projectForm, details: e.target.value })}
+                    className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm bg-slate-50 dark:bg-[#181932] text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold resize-none"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1.5">{t.targetBudgetLabel}</label>
+                    <input 
+                      type="number" placeholder="e.g. 150000" value={projectForm.targetAmount}
+                      onChange={(e) => setProjectForm({ ...projectForm, targetAmount: e.target.value })}
+                      className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm bg-slate-50 dark:bg-[#181932] text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1.5">{t.projectStatusLabel}</label>
+                    <select
+                      value={projectForm.status}
+                      onChange={(e) => setProjectForm({ ...projectForm, status: e.target.value })}
+                      className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm bg-slate-50 dark:bg-[#181932] text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold"
+                    >
+                      <option value="ACTIVE">{t.activeStatus}</option>
+                      <option value="COMPLETED">{t.completedStatusText}</option>
+                      <option value="PLANNED">{t.plannedStatus}</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1.5">{t.coverImageUrlLabel}</label>
+                  <input 
+                    type="text" placeholder="https://images.unsplash.com/... or Cloudinary URL" value={projectForm.imageUrl}
+                    onChange={(e) => setProjectForm({ ...projectForm, imageUrl: e.target.value })}
+                    className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm bg-slate-50 dark:bg-[#181932] text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold"
+                  />
                 </div>
               </div>
 
-              <div>
-                <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">{t.coverImageUrlLabel}</label>
-                <input 
-                  type="text" placeholder="https://images.unsplash.com/... or Cloudinary URL" value={projectForm.imageUrl}
-                  onChange={(e) => setProjectForm({ ...projectForm, imageUrl: e.target.value })}
-                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-xs bg-slate-50 dark:bg-[#181932] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold"
-                />
-              </div>
-
-              <div className="flex gap-3 pt-3">
+              {/* Modal Footer Buttons */}
+              <div className="shrink-0 px-4 py-3 sm:px-6 sm:py-4 border-t border-slate-100 dark:border-white/[0.08] bg-slate-50/90 dark:bg-[#0c0e1a]/95 backdrop-blur-md flex items-center justify-end gap-2.5 pb-[max(1rem,env(safe-area-inset-bottom))]">
                 <button
-                  type="button" onClick={() => setIsProjectModalOpen(false)}
-                  className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/20 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition-all"
+                  type="button" 
+                  onClick={() => setIsProjectModalOpen(false)}
+                  className="px-4 py-2.5 text-xs sm:text-sm font-bold text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl transition-all active:scale-95"
                 >
                   {t.cancelBtn}
                 </button>
                 <button
-                  type="submit" disabled={actionLoading}
-                  className="flex-[2] py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-indigo-600/20 disabled:opacity-50"
+                  type="submit" 
+                  disabled={actionLoading}
+                  className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-xs sm:text-sm font-bold rounded-xl transition-all shadow-md active:scale-95"
                 >
                   {actionLoading ? t.savingBtn : t.saveProjectBtn}
                 </button>
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Media Modal */}
-      {isMediaModalOpen && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#121324] rounded-2xl w-full max-w-lg shadow-2xl border border-slate-200 dark:border-white/10 overflow-hidden text-slate-800 dark:text-slate-100 text-left animate-in zoom-in-95 duration-150">
-            <div className="p-5 border-b border-slate-200 dark:border-white/10 flex items-center justify-between bg-slate-50 dark:bg-white/[0.02]">
-              <h3 className="font-extrabold text-slate-900 dark:text-white text-base flex items-center gap-2">
-                <ImageIcon className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                {t.linkMediaModal}
+      {isMediaModalOpen && mounted && typeof document !== "undefined" && createPortal(
+        <div
+          className="fixed inset-0 z-[99999] bg-slate-950/75 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto overscroll-contain animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setIsMediaModalOpen(false);
+            }
+          }}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div
+            className="w-full sm:max-w-lg bg-white dark:bg-[#0E0F24] border-t sm:border border-slate-200/90 dark:border-white/10 rounded-t-[28px] sm:rounded-3xl shadow-2xl flex flex-col max-h-[92dvh] sm:max-h-[88vh] overflow-hidden text-slate-800 dark:text-slate-100 animate-in slide-in-from-bottom-8 sm:zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Sheet Pull Handle for Mobile */}
+            <div className="w-12 h-1.5 bg-slate-300 dark:bg-white/20 rounded-full mx-auto my-2.5 sm:hidden shrink-0" />
+
+            <div className="px-5 py-3.5 sm:py-4 border-b border-slate-100 dark:border-white/[0.08] flex items-center justify-between bg-slate-50/70 dark:bg-white/[0.02] shrink-0">
+              <h3 className="font-extrabold text-slate-900 dark:text-white text-sm sm:text-base flex items-center gap-2">
+                <ImageIcon className="w-5 h-5 text-indigo-600 dark:text-indigo-400 shrink-0" />
+                <span>{t.linkMediaModal}</span>
               </h3>
               <button 
+                type="button"
                 onClick={() => setIsMediaModalOpen(false)} 
-                className="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1 rounded-lg transition-colors"
+                className="p-2 -mr-1 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 active:scale-95 transition-all shrink-0"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
             
-            <form onSubmit={handleSaveMedia} className="p-6 space-y-4">
-              <div>
-                <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">{t.mediaTitleHeader}</label>
-                <input 
-                  type="text" placeholder="e.g. Distribution photo log #1" value={mediaForm.title}
-                  onChange={(e) => setMediaForm({ ...mediaForm, title: e.target.value })}
-                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-xs bg-slate-50 dark:bg-[#181932] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
+            <form onSubmit={handleSaveMedia} className="flex-1 flex flex-col min-h-0 overflow-hidden">
+              <div className="flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-6 space-y-4 overscroll-contain">
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">{t.mediaTypeLabel}</label>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1.5">{t.mediaTitleHeader}</label>
+                  <input 
+                    type="text" placeholder="e.g. Distribution photo log #1" value={mediaForm.title}
+                    onChange={(e) => setMediaForm({ ...mediaForm, title: e.target.value })}
+                    className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm bg-slate-50 dark:bg-[#181932] text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1.5">{t.mediaTypeLabel}</label>
+                    <select
+                      value={mediaForm.type}
+                      onChange={(e) => setMediaForm({ ...mediaForm, type: e.target.value })}
+                      className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm bg-slate-50 dark:bg-[#181932] text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold"
+                    >
+                      <option value="IMAGE">IMAGE</option>
+                      <option value="VIDEO_YOUTUBE">VIDEO (YOUTUBE)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1.5">{t.categoryHeader}</label>
+                    <select
+                      value={mediaForm.category}
+                      onChange={(e) => setMediaForm({ ...mediaForm, category: e.target.value })}
+                      className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm bg-slate-50 dark:bg-[#181932] text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold"
+                    >
+                      <option value="">{t.generalGalleryOption}</option>
+                      <option value="GANDHI-HOSPITAL">GANDHI HOSPITAL</option>
+                      <option value="NIMS-HOSPITAL">NIMS HOSPITAL</option>
+                      <option value="GOVT-HOSPITAL">GOVT HOSPITAL</option>
+                      <option value="ASHRAMAM">ASHRAMAMS</option>
+                      <option value="DISABLED-CARE">DISABLED CARE</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1.5">{t.associatedProjectLabel}</label>
                   <select
-                    value={mediaForm.type}
-                    onChange={(e) => setMediaForm({ ...mediaForm, type: e.target.value })}
-                    className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-xs bg-slate-50 dark:bg-[#181932] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold"
+                    value={mediaForm.projectId}
+                    onChange={(e) => setMediaForm({ ...mediaForm, projectId: e.target.value })}
+                    className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm bg-slate-50 dark:bg-[#181932] text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold"
                   >
-                    <option value="IMAGE">IMAGE</option>
-                    <option value="VIDEO_YOUTUBE">VIDEO (YOUTUBE)</option>
+                    <option value="">{t.noneIndependentOption}</option>
+                    {projects.map((proj) => (
+                      <option key={proj.id} value={proj.id}>{proj.title}</option>
+                    ))}
                   </select>
                 </div>
+
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">{t.categoryHeader}</label>
-                  <select
-                    value={mediaForm.category}
-                    onChange={(e) => setMediaForm({ ...mediaForm, category: e.target.value })}
-                    className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-xs bg-slate-50 dark:bg-[#181932] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold"
-                  >
-                    <option value="">{t.generalGalleryOption}</option>
-                    <option value="GANDHI-HOSPITAL">GANDHI HOSPITAL</option>
-                    <option value="NIMS-HOSPITAL">NIMS HOSPITAL</option>
-                    <option value="GOVT-HOSPITAL">GOVT HOSPITAL</option>
-                    <option value="ASHRAMAM">ASHRAMAMS</option>
-                    <option value="DISABLED-CARE">DISABLED CARE</option>
-                  </select>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1.5">{t.resourceLinkEmbedLabel} *</label>
+                  <input 
+                    type="text" required placeholder="Cloudinary URL or YouTube Embed Link" value={mediaForm.url}
+                    onChange={(e) => setMediaForm({ ...mediaForm, url: e.target.value })}
+                    className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm bg-slate-50 dark:bg-[#181932] text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold"
+                  />
                 </div>
               </div>
 
-              <div>
-                <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">{t.associatedProjectLabel}</label>
-                <select
-                  value={mediaForm.projectId}
-                  onChange={(e) => setMediaForm({ ...mediaForm, projectId: e.target.value })}
-                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-xs bg-slate-50 dark:bg-[#181932] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold"
-                >
-                  <option value="">{t.noneIndependentOption}</option>
-                  {projects.map((proj) => (
-                    <option key={proj.id} value={proj.id}>{proj.title}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">{t.resourceLinkEmbedLabel}</label>
-                <input 
-                  type="text" required placeholder="Cloudinary URL or YouTube Embed Link" value={mediaForm.url}
-                  onChange={(e) => setMediaForm({ ...mediaForm, url: e.target.value })}
-                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-xs bg-slate-50 dark:bg-[#181932] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold"
-                />
-              </div>
-
-              <div className="flex gap-3 pt-3">
+              {/* Modal Footer Buttons */}
+              <div className="shrink-0 px-4 py-3 sm:px-6 sm:py-4 border-t border-slate-100 dark:border-white/[0.08] bg-slate-50/90 dark:bg-[#0c0e1a]/95 backdrop-blur-md flex items-center justify-end gap-2.5 pb-[max(1rem,env(safe-area-inset-bottom))]">
                 <button
-                  type="button" onClick={() => setIsMediaModalOpen(false)}
-                  className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/20 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition-all"
+                  type="button" 
+                  onClick={() => setIsMediaModalOpen(false)}
+                  className="px-4 py-2.5 text-xs sm:text-sm font-bold text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl transition-all active:scale-95"
                 >
                   {t.cancelBtn}
                 </button>
                 <button
-                  type="submit" disabled={actionLoading}
-                  className="flex-[2] py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-indigo-600/20 disabled:opacity-50"
+                  type="submit" 
+                  disabled={actionLoading}
+                  className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-xs sm:text-sm font-bold rounded-xl transition-all shadow-md active:scale-95"
                 >
                   {actionLoading ? t.savingBtn : t.saveMediaBtn}
                 </button>
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
     </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import PastorPageHeader from "@/components/pastor/layout/PastorPageHeader";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { getPastorTranslation } from "@/lib/pastorTranslations";
@@ -77,6 +78,7 @@ export default function PastorVolunteersPage() {
   const [toast, setToast] = useState<{ msg: string; type: "success" | "error" } | null>(null);
 
   // Modal State
+  const [mounted, setMounted] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [newVolunteer, setNewVolunteer] = useState({
@@ -86,6 +88,26 @@ export default function PastorVolunteersPage() {
     ministry: "Choir & Worship",
     status: "Pending" as "Pending" | "Approved" | "Active",
   });
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Lock body scroll and close on Escape key when Register Volunteer modal is open
+  useEffect(() => {
+    if (isModalOpen) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") setIsModalOpen(false);
+      };
+      window.addEventListener("keydown", handleKeyDown);
+      return () => {
+        document.body.style.overflow = originalOverflow;
+        window.removeEventListener("keydown", handleKeyDown);
+      };
+    }
+  }, [isModalOpen]);
 
   const showToast = (msg: string, type: "success" | "error" = "success") => {
     setToast({ msg, type });
@@ -593,42 +615,55 @@ export default function PastorVolunteersPage() {
         )}
       </div>
 
-      {/* ── Modal: Register New Volunteer ── */}
-      <AnimatePresence>
-        {isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="w-full max-w-md bg-white dark:bg-[#11131a] rounded-3xl border border-gray-100 dark:border-white/10 shadow-2xl overflow-hidden"
-            >
-              {/* Header */}
-              <div className="flex items-center justify-between p-4 sm:p-5 border-b border-gray-100 dark:border-white/10 bg-gray-50/50 dark:bg-white/[0.02]">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
-                    <Sparkles className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white">
-                      {t.registerVolunteerModalTitle || "Register New Ministry Volunteer"}
-                    </h3>
-                    <p className="text-[11px] text-gray-500 dark:text-gray-400">
-                      {t.registerVolunteerModalSubtitle || "Add a church member to serve in a ministry department"}
-                    </p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setIsModalOpen(false)}
-                  className="p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-white rounded-xl hover:bg-gray-100 dark:hover:bg-white/5 transition-all"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
+      {/* ── Modal: Register New Volunteer (Portaled to document.body) ── */}
+      {isModalOpen && mounted && typeof document !== "undefined" && createPortal(
+        <div
+          className="fixed inset-0 z-[99999] bg-slate-950/75 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto overscroll-contain animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setIsModalOpen(false);
+            }
+          }}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="register-volunteer-modal-title"
+        >
+          <div
+            className="w-full sm:max-w-md bg-white dark:bg-[#0E0F24] border-t sm:border border-slate-200/90 dark:border-white/10 rounded-t-[28px] sm:rounded-3xl shadow-2xl flex flex-col max-h-[92dvh] sm:max-h-[88vh] overflow-hidden animate-in slide-in-from-bottom-8 sm:zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Sheet Pull Handle for Mobile */}
+            <div className="w-12 h-1.5 bg-slate-300 dark:bg-white/20 rounded-full mx-auto my-2.5 sm:hidden shrink-0" />
 
-              {/* Form */}
-              <form onSubmit={handleCreateVolunteer} className="p-4 sm:p-5 space-y-4">
-                <div className="space-y-1">
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-3.5 sm:py-4 border-b border-slate-100 dark:border-white/[0.08] bg-slate-50/70 dark:bg-white/[0.02] shrink-0">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                  <Sparkles className="w-5 h-5" />
+                </div>
+                <div className="min-w-0">
+                  <h3 id="register-volunteer-modal-title" className="text-sm sm:text-base font-bold text-gray-900 dark:text-white truncate">
+                    {t.registerVolunteerModalTitle || "Register New Ministry Volunteer"}
+                  </h3>
+                  <p className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 truncate">
+                    {t.registerVolunteerModalSubtitle || "Add a church member to serve in a ministry department"}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsModalOpen(false)}
+                className="p-2 -mr-1 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 active:scale-95 transition-all shrink-0"
+                aria-label="Close modal"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleCreateVolunteer} className="flex-1 flex flex-col min-h-0 overflow-hidden">
+              <div className="flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-6 space-y-4 sm:space-y-4.5 overscroll-contain">
+                <div className="space-y-1.5">
                   <label className="text-xs font-bold text-gray-700 dark:text-gray-300">
                     {t.volunteerNameLabel || "Volunteer Full Name"} *
                   </label>
@@ -638,12 +673,12 @@ export default function PastorVolunteersPage() {
                     placeholder="e.g. David Solomon"
                     value={newVolunteer.name}
                     onChange={(e) => setNewVolunteer({ ...newVolunteer, name: e.target.value })}
-                    className="w-full px-3 py-2 text-xs rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-white/5 text-gray-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30"
+                    className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-white/5 text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30"
                   />
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="space-y-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5">
+                  <div className="space-y-1.5">
                     <label className="text-xs font-bold text-gray-700 dark:text-gray-300">
                       {t.volunteerEmailLabel || "Email Address"}
                     </label>
@@ -652,11 +687,11 @@ export default function PastorVolunteersPage() {
                       placeholder="e.g. david@gmail.com"
                       value={newVolunteer.email}
                       onChange={(e) => setNewVolunteer({ ...newVolunteer, email: e.target.value })}
-                      className="w-full px-3 py-2 text-xs rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-white/5 text-gray-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30"
+                      className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-white/5 text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30"
                     />
                   </div>
 
-                  <div className="space-y-1">
+                  <div className="space-y-1.5">
                     <label className="text-xs font-bold text-gray-700 dark:text-gray-300">
                       {t.volunteerPhoneLabel || "Phone Number"}
                     </label>
@@ -665,19 +700,19 @@ export default function PastorVolunteersPage() {
                       placeholder="e.g. 9876543210"
                       value={newVolunteer.phone}
                       onChange={(e) => setNewVolunteer({ ...newVolunteer, phone: e.target.value })}
-                      className="w-full px-3 py-2 text-xs rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-white/5 text-gray-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30"
+                      className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-white/5 text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30"
                     />
                   </div>
                 </div>
 
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   <label className="text-xs font-bold text-gray-700 dark:text-gray-300">
                     {t.volunteerMinistryLabel || "Ministry Department"} *
                   </label>
                   <select
                     value={newVolunteer.ministry}
                     onChange={(e) => setNewVolunteer({ ...newVolunteer, ministry: e.target.value })}
-                    className="w-full px-3 py-2 text-xs rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-white/5 text-gray-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30"
+                    className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-white/5 text-gray-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30"
                   >
                     {MINISTRY_OPTIONS.map((m) => (
                       <option key={m} value={m}>{m}</option>
@@ -685,43 +720,45 @@ export default function PastorVolunteersPage() {
                   </select>
                 </div>
 
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   <label className="text-xs font-bold text-gray-700 dark:text-gray-300">
                     {t.statusHeader || "Initial Status"}
                   </label>
                   <select
                     value={newVolunteer.status}
                     onChange={(e) => setNewVolunteer({ ...newVolunteer, status: e.target.value as any })}
-                    className="w-full px-3 py-2 text-xs rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-white/5 text-gray-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30"
+                    className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-white/5 text-gray-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30"
                   >
                     <option value="Pending">Pending Approval</option>
                     <option value="Approved">Approved</option>
                     <option value="Active">Active</option>
                   </select>
                 </div>
+              </div>
 
-                <div className="flex items-center justify-end gap-2 pt-3 border-t border-gray-100 dark:border-white/10">
-                  <button
-                    type="button"
-                    onClick={() => setIsModalOpen(false)}
-                    className="px-4 py-2 text-xs font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl transition-all"
-                  >
-                    {t.cancelBtn || "Cancel"}
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="flex items-center gap-1.5 px-5 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-xs font-bold rounded-xl transition-all shadow-sm active:scale-95"
-                  >
-                    {isSubmitting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
-                    <span>{t.saveRecord || "Register Volunteer"}</span>
-                  </button>
-                </div>
-              </form>
-            </motion.div>
+              {/* Modal Footer Buttons */}
+              <div className="shrink-0 px-4 py-3 sm:px-6 sm:py-4 border-t border-slate-100 dark:border-white/[0.08] bg-slate-50/90 dark:bg-[#0c0e1a]/95 backdrop-blur-md flex items-center justify-end gap-2.5 pb-[max(1rem,env(safe-area-inset-bottom))]">
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="px-4 py-2.5 text-xs sm:text-sm font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl transition-all active:scale-95"
+                >
+                  {t.cancelBtn || "Cancel"}
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="flex items-center justify-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-xs sm:text-sm font-bold rounded-xl transition-all shadow-md active:scale-95"
+                >
+                  {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+                  <span>{t.addVolunteerBtn || "Register Volunteer"}</span>
+                </button>
+              </div>
+            </form>
           </div>
-        )}
-      </AnimatePresence>
+        </div>,
+        document.body
+      )}
     </div>
   );
 }
