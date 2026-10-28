@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import PastorPageHeader from "@/components/pastor/layout/PastorPageHeader";
-import { Play, Plus, Search, Filter, Clock, BookOpen, Tag, Loader2, Sparkles } from "lucide-react";
+import { Play, Plus, Search, Filter, Clock, BookOpen, Tag, Loader2, Sparkles, X } from "lucide-react";
 import SermonInlineForm from "@/components/SermonInlineForm";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { getPastorTranslation } from "@/lib/pastorTranslations";
@@ -16,6 +17,33 @@ export default function PastorSermonsPage() {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Lock background scroll when modal is open
+  useEffect(() => {
+    if (isModalOpen) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [isModalOpen]);
+
+  // Close modal on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isModalOpen) {
+        setIsModalOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isModalOpen]);
 
   const fetchSermons = async () => {
     try {
@@ -88,7 +116,7 @@ export default function PastorSermonsPage() {
           <button
             type="button"
             onClick={() => setIsModalOpen(true)}
-            className="mt-2 inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] text-white font-bold text-xs rounded-xl shadow-sm hover:from-[#5053E4] hover:to-[#7C3AED] transition-all"
+            className="mt-2 inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] text-white font-bold text-xs rounded-xl shadow-sm hover:from-[#5053E4] hover:to-[#7C3AED] transition-all cursor-pointer active:scale-95"
           >
             <Plus className="w-4 h-4" />
             <span>{t.uploadSermon}</span>
@@ -123,17 +151,58 @@ export default function PastorSermonsPage() {
         </div>
       )}
 
-      {/* Modal Upload Form */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#0E0F24] border border-slate-200 dark:border-white/10 rounded-3xl p-6 sm:p-8 max-w-xl w-full shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar">
-            <h3 className="text-lg font-black text-slate-900 dark:text-white mb-4">{t.uploadNewSermon}</h3>
-            <SermonInlineForm
-              onClose={() => setIsModalOpen(false)}
-              onSuccess={handleSermonSuccess}
-            />
+      {/* Modal Upload Form mounted to document.body to avoid parent animation/stacking/clipping issues */}
+      {isModalOpen && mounted && typeof document !== "undefined" && createPortal(
+        <div 
+          className="fixed inset-0 z-[99999] bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 md:p-6 overflow-y-auto overscroll-contain animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setIsModalOpen(false);
+            }
+          }}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="upload-sermon-modal-title"
+        >
+          <div 
+            className="bg-white dark:bg-[#0E0F24] border border-slate-200/90 dark:border-white/10 rounded-2xl sm:rounded-3xl max-w-xl w-full shadow-2xl relative my-auto max-h-[92dvh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="flex items-center justify-between px-5 py-4 sm:px-6 sm:py-4.5 border-b border-slate-100 dark:border-white/[0.08] bg-slate-50/70 dark:bg-white/[0.02] shrink-0">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-sm shrink-0">
+                  <Play className="w-4 h-4 fill-white" />
+                </div>
+                <div className="min-w-0">
+                  <h3 id="upload-sermon-modal-title" className="text-sm sm:text-base font-black text-slate-900 dark:text-white truncate">
+                    {t.uploadNewSermon}
+                  </h3>
+                  <p className="text-[10.5px] sm:text-xs text-slate-500 dark:text-gray-400 truncate">
+                    {t.sermonLibrarySubtitle || "Upload and publish Sunday messages"}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsModalOpen(false)}
+                className="p-1.5 sm:p-2 text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/10 rounded-xl transition-all active:scale-95 shrink-0 cursor-pointer"
+                aria-label="Close dialog"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Body with smooth custom scrollbar */}
+            <div className="p-4 sm:p-6 overflow-y-auto custom-thin-scrollbar flex-1">
+              <SermonInlineForm
+                onClose={() => setIsModalOpen(false)}
+                onSuccess={handleSermonSuccess}
+              />
+            </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

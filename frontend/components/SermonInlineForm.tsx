@@ -344,12 +344,12 @@ export default function SermonInlineForm({ onClose, onSuccess, isEditMode = fals
         </div>
       )}
 
-      {/* Action buttons */}
-      <div className="flex items-center gap-3 pt-2 border-t border-slate-100 dark:border-white/5">
+      {/* Action buttons sticky at bottom */}
+      <div className="flex items-center gap-3 pt-3 border-t border-slate-100 dark:border-white/10 sticky bottom-0 bg-white dark:bg-[#0E0F24] z-10 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
         <button
           type="button"
           onClick={onClose}
-          className="flex-1 px-4 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-xl transition-all border border-slate-200 dark:border-white/10 cursor-pointer"
+          className="flex-1 px-4 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-xl transition-all border border-slate-200 dark:border-white/10 cursor-pointer active:scale-95"
           disabled={isSubmitting}
         >
           Cancel
@@ -357,7 +357,7 @@ export default function SermonInlineForm({ onClose, onSuccess, isEditMode = fals
         <button
           type="submit"
           disabled={isSubmitting}
-          className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-black text-white bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 rounded-xl transition-all shadow-lg shadow-rose-500/20 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
+          className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-black text-white bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-700 hover:to-pink-700 rounded-xl transition-all shadow-md shadow-indigo-500/20 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
         >
           {isSubmitting ? (
             <>
