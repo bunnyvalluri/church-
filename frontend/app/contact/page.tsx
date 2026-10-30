@@ -632,7 +632,7 @@ export default function ContactPage() {
               </p>
 
               {/* Scripture Quote */}
-              <div className="pt-3 border-t border-slate-100 dark:border-white/10 flex items-start gap-2.5 text-xs text-slate-700 dark:text-orange-200/90 italic font-serif bg-orange-50/50 dark:bg-orange-500/5 p-3 rounded-2xl border border-orange-200/50 dark:border-orange-500/10">
+              <div className="flex items-start gap-2.5 text-xs text-slate-700 dark:text-orange-200/90 italic font-serif bg-orange-50/50 dark:bg-orange-500/5 p-3 rounded-2xl border border-orange-200/50 dark:border-orange-500/10">
                 <BookOpen className="w-4 h-4 text-[#f95700] shrink-0 not-italic mt-0.5" />
                 <span>
                   {isTe 
