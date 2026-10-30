@@ -29,10 +29,17 @@ build
 
 # Test & coverage reports
 coverage
-reports
+/health/reports
+/platform/security/trivy/reports
+frontend/tests/route-health/reports
 playwright-report
 test-results
 *.log
+
+# Source code modules and app routes (never ignore)
+!backend/src/modules/reports/**
+!frontend/src/features/reports/**
+!frontend/app/**/reports/**
 
 # Prisma local database files
 prisma/*.db

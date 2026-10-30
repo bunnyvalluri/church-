@@ -12,7 +12,6 @@ import {
   Phone,
   ShieldCheck,
   FileText,
-  Camera,
   Save,
   Check,
   AlertCircle,
@@ -24,6 +23,9 @@ import {
   Loader2,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+
+// Permanently locked official portrait for Bishop Kurra Kristhu Raju
+export const PERMANENT_PASTOR_IMAGE = "/pastor.png";
 
 export default function PastorProfilePage() {
   const { language } = useLanguage();
@@ -40,7 +42,7 @@ export default function PastorProfilePage() {
     email: "bishop.kraju@kcmchurch.org",
     phone: "+91 97040 90069",
     bio: "Bishop Kurra Kristhu Raju is the founder and Senior Pastor of Kingdom of Christ Ministries. With over 25 years of faithful ministry, his vision is to reach every soul with the Gospel of Jesus Christ.",
-    image: "/pastor.png",
+    image: PERMANENT_PASTOR_IMAGE,
   });
 
   const showToast = (msg: string, type: "success" | "error" = "success") => {
@@ -62,7 +64,7 @@ export default function PastorProfilePage() {
             email: data.profile.email || "bishop.kraju@kcmchurch.org",
             phone: data.profile.phone || "+91 97040 90069",
             bio: data.profile.bio || "",
-            image: data.profile.image || "/pastor.png",
+            image: PERMANENT_PASTOR_IMAGE,
           });
         }
       } catch (err) {
@@ -87,7 +89,10 @@ export default function PastorProfilePage() {
       const res = await fetch("/api/pastor/profile", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(profile),
+        body: JSON.stringify({
+          ...profile,
+          image: PERMANENT_PASTOR_IMAGE,
+        }),
       });
       const data = await res.json();
       if (res.ok && data.success) {
@@ -143,31 +148,26 @@ export default function PastorProfilePage() {
           {/* ── Left Column: Profile Card ── */}
           <div className="lg:col-span-1 space-y-4">
             <div className="bg-white dark:bg-white/[0.03] p-5 sm:p-6 rounded-3xl border border-gray-100 dark:border-white/[0.08] shadow-sm text-center space-y-4">
-              {/* Avatar with Camera Badge */}
+              {/* Avatar with Permanent Verified Badge */}
               <div className="relative w-24 h-24 sm:w-28 sm:h-28 mx-auto">
                 <div className="w-full h-full rounded-3xl overflow-hidden border-2 border-indigo-200 dark:border-indigo-500/30 shadow-md relative bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-950/40 dark:to-purple-950/40">
-                  {profile.image ? (
-                    <Image
-                      src={profile.image}
-                      alt={profile.name}
-                      fill
-                      sizes="112px"
-                      className="object-cover"
-                      priority
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-black text-3xl">
-                      {profile.name.charAt(0)}
-                    </div>
-                  )}
+                  <Image
+                    src={PERMANENT_PASTOR_IMAGE}
+                    alt={profile.name}
+                    fill
+                    sizes="112px"
+                    className="object-cover"
+                    priority
+                  />
                 </div>
                 <button
                   type="button"
-                  onClick={() => showToast("Photo change is simulated. Ready for upload integration.", "success")}
+                  onClick={() => showToast("Official Bishop portrait is permanent and verified.", "success")}
                   className="absolute -bottom-1.5 -right-1.5 p-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-md border-2 border-white dark:border-gray-900 transition-all active:scale-95"
-                  title="Change Photo"
+                  title="Official Bishop Portrait (Permanently Locked & Verified)"
+                  aria-label="Official Bishop Portrait (Permanently Locked & Verified)"
                 >
-                  <Camera className="w-3.5 h-3.5" />
+                  <ShieldCheck className="w-3.5 h-3.5" />
                 </button>
               </div>
 

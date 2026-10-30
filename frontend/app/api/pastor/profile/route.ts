@@ -2,6 +2,9 @@ export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+// Permanent verified official portrait for Bishop Kurra Kristhu Raju
+export const PERMANENT_PASTOR_IMAGE = "/pastor.png";
+
 // Default values if database is empty
 const defaultProfile = {
   name: "Bishop Kurra Kristhu Raju",
@@ -9,7 +12,7 @@ const defaultProfile = {
   email: "bishop.kraju@kcmchurch.org",
   phone: "+91 97040 90069",
   bio: "Bishop Kurra Kristhu Raju has been serving in ministry with unwavering dedication. His passion for souls and commitment to God's Word has transformed countless lives across Hyderabad and beyond.",
-  image: "/pastor.png"
+  image: PERMANENT_PASTOR_IMAGE,
 };
 
 export async function GET() {
@@ -18,10 +21,16 @@ export async function GET() {
     if (!pastor) {
       // Create default pastor record in DB
       pastor = await prisma.pastor.create({
-        data: defaultProfile
+        data: defaultProfile,
       });
     }
-    return NextResponse.json({ success: true, profile: pastor });
+    return NextResponse.json({
+      success: true,
+      profile: {
+        ...pastor,
+        image: PERMANENT_PASTOR_IMAGE,
+      },
+    });
   } catch (err: any) {
     console.error('[PASTOR/PROFILE/GET] Error:', err);
     return NextResponse.json(
@@ -34,7 +43,7 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { name, title, email, phone, bio, image } = body;
+    const { name, title, email, phone, bio } = body;
 
     if (!name || !title || !email || !phone) {
       return NextResponse.json({ error: 'Name, title, email, and phone are required' }, { status: 400 });
@@ -46,22 +55,29 @@ export async function POST(req: Request) {
       email,
       phone,
       bio: bio || "",
-      image: image || "/pastor.png"
+      // Permanently lock the official pastor portrait photo
+      image: PERMANENT_PASTOR_IMAGE,
     };
 
     let pastor = await prisma.pastor.findFirst();
     if (pastor) {
       pastor = await prisma.pastor.update({
         where: { id: pastor.id },
-        data: profileData
+        data: profileData,
       });
     } else {
       pastor = await prisma.pastor.create({
-        data: profileData
+        data: profileData,
       });
     }
 
-    return NextResponse.json({ success: true, profile: pastor });
+    return NextResponse.json({
+      success: true,
+      profile: {
+        ...pastor,
+        image: PERMANENT_PASTOR_IMAGE,
+      },
+    });
   } catch (err: any) {
     console.error('[PASTOR/PROFILE/POST] Error:', err);
     return NextResponse.json(
@@ -70,4 +86,3 @@ export async function POST(req: Request) {
     );
   }
 }
-
