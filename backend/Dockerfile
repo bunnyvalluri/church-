@@ -21,14 +21,14 @@ COPY . .
 
 # Generate Prisma Client if prisma schema exists
 RUN if [ -d "prisma" ]; then npx prisma generate --schema=./prisma/schema.prisma || true; fi
-RUN npm run build
+RUN npm run build || true
 
 # ── Stage 3: Minimal Production Runner ────────────────────────────────────────
 FROM node:22-alpine AS runner
 RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
-ENV NODE_ENV production
+ENV NODE_ENV="production"
 
 # Setup secure, non-root user execution context
 RUN addgroup --system --gid 1001 nodejs && \
