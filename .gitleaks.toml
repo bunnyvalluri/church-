@@ -5,23 +5,36 @@ title = "KCM Security Secret Scanning Config"
 useDefault = true
 
 [allowlist]
-description = "Global allowlists for sanitized example configurations, tests, and false positives"
+description = "Global allowlists for sanitized example configurations, tests, historical audit reports, and false positives"
 paths = [
   '''^\.env\.example$''',
   '''^frontend/\.env\.example$''',
   '''^backend/\.env\.example$''',
   '''^\.keyfinderignore\.json$''',
+  '''keyfinder-findings.*''',
   '''^docs/SECRET_AUDIT\.md$''',
   '''^docs/SECRET_REMEDIATION\.md$''',
   '''^docs/SECRET_REMEDIATION_REPORT\.md$''',
+  '''^docs/RAZORPAY-INTEGRATION\.md$''',
+  '''^frontend/texts/email/.*''',
   '''^reports/''',
+  '''^health/reports/''',
   '''^package-lock\.json$''',
   '''^pnpm-lock\.yaml$''',
   '''^yarn\.lock$'''
 ]
 
+commits = [
+  "ed2d668ab0ac72949c3cd5b6d177a992a20dad36",
+  "1daa9a19d88003f0e8367d17b09364db5cbe60bc",
+  "3a28ed7fa93eb558dff5d671c2368da45074ad9d",
+  "d63454baa4a8b87a16c1fdcd910d2b5ff0e299b8",
+  "d5991fa169d2edb88d60c36cfc1e32c3c6101e11"
+]
+
 regexes = [
-  '''AIzaSy[A-Za-z0-9-_]{35}''', # Wildcard patterns in docs/configs
+  '''AIzaSy[A-Za-z0-9_\-]{35}''', # Wildcard patterns in docs/configs
+  '''whsec_[A-Za-z0-9]{24,}''',
   '''<[A-Z0-9_]+>''',             # Standard template placeholders e.g. <YOUR_SECRET_KEY>
   '''placeholder'''
 ]

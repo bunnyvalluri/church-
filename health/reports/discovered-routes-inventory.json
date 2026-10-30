@@ -1,0 +1,1885 @@
+{
+  "timestamp": "2026-10-30T07:22:44.646Z",
+  "totalPages": 143,
+  "totalNextApis": 193,
+  "totalBackendApis": 32,
+  "totalRoutes": 368,
+  "frontendPages": [
+    {
+      "path": "/about/beliefs",
+      "type": "PAGE",
+      "file": "frontend\\app\\about\\beliefs\\page.tsx"
+    },
+    {
+      "path": "/about/leadership",
+      "type": "PAGE",
+      "file": "frontend\\app\\about\\leadership\\page.tsx"
+    },
+    {
+      "path": "/about/locations",
+      "type": "PAGE",
+      "file": "frontend\\app\\about\\locations\\page.tsx"
+    },
+    {
+      "path": "/about/ministries",
+      "type": "PAGE",
+      "file": "frontend\\app\\about\\ministries\\page.tsx"
+    },
+    {
+      "path": "/about/mission",
+      "type": "PAGE",
+      "file": "frontend\\app\\about\\mission\\page.tsx"
+    },
+    {
+      "path": "/about",
+      "type": "PAGE",
+      "file": "frontend\\app\\about\\page.tsx"
+    },
+    {
+      "path": "/about/pastor-message",
+      "type": "PAGE",
+      "file": "frontend\\app\\about\\pastor-message\\page.tsx"
+    },
+    {
+      "path": "/about/story",
+      "type": "PAGE",
+      "file": "frontend\\app\\about\\story\\page.tsx"
+    },
+    {
+      "path": "/admin/agents",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\agents\\page.tsx"
+    },
+    {
+      "path": "/admin/antigravity-workflow",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\antigravity-workflow\\page.tsx"
+    },
+    {
+      "path": "/admin/attendance/events",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\attendance\\events\\page.tsx"
+    },
+    {
+      "path": "/admin/attendance",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\attendance\\page.tsx"
+    },
+    {
+      "path": "/admin/attendance/records",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\attendance\\records\\page.tsx"
+    },
+    {
+      "path": "/admin/attendance/reports",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\attendance\\reports\\page.tsx"
+    },
+    {
+      "path": "/admin/content/announcements",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\content\\announcements\\page.tsx"
+    },
+    {
+      "path": "/admin/content/events",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\content\\events\\page.tsx"
+    },
+    {
+      "path": "/admin/content/media",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\content\\media\\page.tsx"
+    },
+    {
+      "path": "/admin/content",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\content\\page.tsx"
+    },
+    {
+      "path": "/admin/content/pages",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\content\\pages\\page.tsx"
+    },
+    {
+      "path": "/admin/content/sermons",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\content\\sermons\\page.tsx"
+    },
+    {
+      "path": "/admin/dashboard",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\dashboard\\page.tsx"
+    },
+    {
+      "path": "/admin/donations",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\donations\\page.tsx"
+    },
+    {
+      "path": "/admin/finance/accounts",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\finance\\accounts\\page.tsx"
+    },
+    {
+      "path": "/admin/finance/donations",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\finance\\donations\\page.tsx"
+    },
+    {
+      "path": "/admin/finance",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\finance\\page.tsx"
+    },
+    {
+      "path": "/admin/finance/pledges",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\finance\\pledges\\page.tsx"
+    },
+    {
+      "path": "/admin/finance/transactions",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\finance\\transactions\\page.tsx"
+    },
+    {
+      "path": "/admin/firecrawl-intelligence",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\firecrawl-intelligence\\page.tsx"
+    },
+    {
+      "path": "/admin/giving",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\giving\\page.tsx"
+    },
+    {
+      "path": "/admin/login",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\login\\page.tsx"
+    },
+    {
+      "path": "/admin/members/family-management",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\members\\family-management\\page.tsx"
+    },
+    {
+      "path": "/admin/members/groups",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\members\\groups\\page.tsx"
+    },
+    {
+      "path": "/admin/members/member",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\members\\member\\page.tsx"
+    },
+    {
+      "path": "/admin/members",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\members\\page.tsx"
+    },
+    {
+      "path": "/admin/members/prayer-requests",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\members\\prayer-requests\\page.tsx"
+    },
+    {
+      "path": "/admin/ngo/media",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\ngo\\media\\page.tsx"
+    },
+    {
+      "path": "/admin/ngo",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\ngo\\page.tsx"
+    },
+    {
+      "path": "/admin/ngo/projects",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\ngo\\projects\\page.tsx"
+    },
+    {
+      "path": "/admin/ngo/volunteers",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\ngo\\volunteers\\page.tsx"
+    },
+    {
+      "path": "/admin/notifications/email",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\notifications\\email\\page.tsx"
+    },
+    {
+      "path": "/admin/notifications/sms",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\notifications\\sms\\page.tsx"
+    },
+    {
+      "path": "/admin/notifications/sms/test",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\notifications\\sms\\test\\page.tsx"
+    },
+    {
+      "path": "/admin/openclaw-orchestrator",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\openclaw-orchestrator\\page.tsx"
+    },
+    {
+      "path": "/admin",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\page.tsx"
+    },
+    {
+      "path": "/admin/settings/general",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\settings\\general\\page.tsx"
+    },
+    {
+      "path": "/admin/settings",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\settings\\page.tsx"
+    },
+    {
+      "path": "/admin/settings/permissions",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\settings\\permissions\\page.tsx"
+    },
+    {
+      "path": "/admin/settings/roles",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\settings\\roles\\page.tsx"
+    },
+    {
+      "path": "/admin/settings/security",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\settings\\security\\page.tsx"
+    },
+    {
+      "path": "/admin/settings/users",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\settings\\users\\page.tsx"
+    },
+    {
+      "path": "/admin/support/reports",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\support\\reports\\page.tsx"
+    },
+    {
+      "path": "/admin/system-health",
+      "type": "PAGE",
+      "file": "frontend\\app\\admin\\system-health\\page.tsx"
+    },
+    {
+      "path": "/church-member",
+      "type": "PAGE",
+      "file": "frontend\\app\\church-member\\page.tsx"
+    },
+    {
+      "path": "/contact",
+      "type": "PAGE",
+      "file": "frontend\\app\\contact\\page.tsx"
+    },
+    {
+      "path": "/dashboard",
+      "type": "PAGE",
+      "file": "frontend\\app\\dashboard\\page.tsx"
+    },
+    {
+      "path": "/donations",
+      "type": "PAGE",
+      "file": "frontend\\app\\donations\\page.tsx"
+    },
+    {
+      "path": "/event-management",
+      "type": "PAGE",
+      "file": "frontend\\app\\event-management\\page.tsx"
+    },
+    {
+      "path": "/event-manager/login",
+      "type": "PAGE",
+      "file": "frontend\\app\\event-manager\\login\\page.tsx"
+    },
+    {
+      "path": "/event-manager",
+      "type": "PAGE",
+      "file": "frontend\\app\\event-manager\\page.tsx"
+    },
+    {
+      "path": "/event-manager/report",
+      "type": "PAGE",
+      "file": "frontend\\app\\event-manager\\report\\page.tsx"
+    },
+    {
+      "path": "/events",
+      "type": "PAGE",
+      "file": "frontend\\app\\events\\page.tsx"
+    },
+    {
+      "path": "/field-volunteer",
+      "type": "PAGE",
+      "file": "frontend\\app\\field-volunteer\\page.tsx"
+    },
+    {
+      "path": "/forgot-password",
+      "type": "PAGE",
+      "file": "frontend\\app\\forgot-password\\page.tsx"
+    },
+    {
+      "path": "/gallery",
+      "type": "PAGE",
+      "file": "frontend\\app\\gallery\\page.tsx"
+    },
+    {
+      "path": "/get-involved",
+      "type": "PAGE",
+      "file": "frontend\\app\\get-involved\\page.tsx"
+    },
+    {
+      "path": "/get-involved/serve",
+      "type": "PAGE",
+      "file": "frontend\\app\\get-involved\\serve\\page.tsx"
+    },
+    {
+      "path": "/get-involved/small-groups",
+      "type": "PAGE",
+      "file": "frontend\\app\\get-involved\\small-groups\\page.tsx"
+    },
+    {
+      "path": "/get-involved/volunteer",
+      "type": "PAGE",
+      "file": "frontend\\app\\get-involved\\volunteer\\page.tsx"
+    },
+    {
+      "path": "/give",
+      "type": "PAGE",
+      "file": "frontend\\app\\give\\page.tsx"
+    },
+    {
+      "path": "/give/receipt/[donationId]",
+      "type": "PAGE",
+      "file": "frontend\\app\\give\\receipt\\[donationId]\\page.tsx"
+    },
+    {
+      "path": "/locations",
+      "type": "PAGE",
+      "file": "frontend\\app\\locations\\page.tsx"
+    },
+    {
+      "path": "/locations/[slug]",
+      "type": "PAGE",
+      "file": "frontend\\app\\locations\\[slug]\\page.tsx"
+    },
+    {
+      "path": "/login",
+      "type": "PAGE",
+      "file": "frontend\\app\\login\\page.tsx"
+    },
+    {
+      "path": "/member/donations",
+      "type": "PAGE",
+      "file": "frontend\\app\\member\\donations\\page.tsx"
+    },
+    {
+      "path": "/member/events",
+      "type": "PAGE",
+      "file": "frontend\\app\\member\\events\\page.tsx"
+    },
+    {
+      "path": "/member/give",
+      "type": "PAGE",
+      "file": "frontend\\app\\member\\give\\page.tsx"
+    },
+    {
+      "path": "/member",
+      "type": "PAGE",
+      "file": "frontend\\app\\member\\page.tsx"
+    },
+    {
+      "path": "/member/prayers",
+      "type": "PAGE",
+      "file": "frontend\\app\\member\\prayers\\page.tsx"
+    },
+    {
+      "path": "/member/profile",
+      "type": "PAGE",
+      "file": "frontend\\app\\member\\profile\\page.tsx"
+    },
+    {
+      "path": "/member/report",
+      "type": "PAGE",
+      "file": "frontend\\app\\member\\report\\page.tsx"
+    },
+    {
+      "path": "/member/sermons",
+      "type": "PAGE",
+      "file": "frontend\\app\\member\\sermons\\page.tsx"
+    },
+    {
+      "path": "/member/volunteer",
+      "type": "PAGE",
+      "file": "frontend\\app\\member\\volunteer\\page.tsx"
+    },
+    {
+      "path": "/membership",
+      "type": "PAGE",
+      "file": "frontend\\app\\membership\\page.tsx"
+    },
+    {
+      "path": "/memberships/visits",
+      "type": "PAGE",
+      "file": "frontend\\app\\memberships\\visits\\page.tsx"
+    },
+    {
+      "path": "/ngo/donations",
+      "type": "PAGE",
+      "file": "frontend\\app\\ngo\\donations\\page.tsx"
+    },
+    {
+      "path": "/ngo/gallery",
+      "type": "PAGE",
+      "file": "frontend\\app\\ngo\\gallery\\page.tsx"
+    },
+    {
+      "path": "/ngo",
+      "type": "PAGE",
+      "file": "frontend\\app\\ngo\\page.tsx"
+    },
+    {
+      "path": "/ngo/projects",
+      "type": "PAGE",
+      "file": "frontend\\app\\ngo\\projects\\page.tsx"
+    },
+    {
+      "path": "/ngo/projects/[id]",
+      "type": "PAGE",
+      "file": "frontend\\app\\ngo\\projects\\[id]\\page.tsx"
+    },
+    {
+      "path": "/ngo/videos",
+      "type": "PAGE",
+      "file": "frontend\\app\\ngo\\videos\\page.tsx"
+    },
+    {
+      "path": "/ngo/volunteers",
+      "type": "PAGE",
+      "file": "frontend\\app\\ngo\\volunteers\\page.tsx"
+    },
+    {
+      "path": "/offline",
+      "type": "PAGE",
+      "file": "frontend\\app\\offline\\page.tsx"
+    },
+    {
+      "path": "/",
+      "type": "PAGE",
+      "file": "frontend\\app\\page.tsx"
+    },
+    {
+      "path": "/pastor/announcements",
+      "type": "PAGE",
+      "file": "frontend\\app\\pastor\\announcements\\page.tsx"
+    },
+    {
+      "path": "/pastor/calendar",
+      "type": "PAGE",
+      "file": "frontend\\app\\pastor\\calendar\\page.tsx"
+    },
+    {
+      "path": "/pastor/dashboard",
+      "type": "PAGE",
+      "file": "frontend\\app\\pastor\\dashboard\\page.tsx"
+    },
+    {
+      "path": "/pastor/events",
+      "type": "PAGE",
+      "file": "frontend\\app\\pastor\\events\\page.tsx"
+    },
+    {
+      "path": "/pastor/login",
+      "type": "PAGE",
+      "file": "frontend\\app\\pastor\\login\\page.tsx"
+    },
+    {
+      "path": "/pastor/main/dashboard",
+      "type": "PAGE",
+      "file": "frontend\\app\\pastor\\main\\dashboard\\page.tsx"
+    },
+    {
+      "path": "/pastor/main/donations",
+      "type": "PAGE",
+      "file": "frontend\\app\\pastor\\main\\donations\\page.tsx"
+    },
+    {
+      "path": "/pastor/main/events",
+      "type": "PAGE",
+      "file": "frontend\\app\\pastor\\main\\events\\page.tsx"
+    },
+    {
+      "path": "/pastor/main/member-requests",
+      "type": "PAGE",
+      "file": "frontend\\app\\pastor\\main\\member-requests\\page.tsx"
+    },
+    {
+      "path": "/pastor/main/messages",
+      "type": "PAGE",
+      "file": "frontend\\app\\pastor\\main\\messages\\page.tsx"
+    },
+    {
+      "path": "/pastor/main/openclaw-orchestrator",
+      "type": "PAGE",
+      "file": "frontend\\app\\pastor\\main\\openclaw-orchestrator\\page.tsx"
+    },
+    {
+      "path": "/pastor/main/prayer-requests",
+      "type": "PAGE",
+      "file": "frontend\\app\\pastor\\main\\prayer-requests\\page.tsx"
+    },
+    {
+      "path": "/pastor/main/profile",
+      "type": "PAGE",
+      "file": "frontend\\app\\pastor\\main\\profile\\page.tsx"
+    },
+    {
+      "path": "/pastor/main/sermons",
+      "type": "PAGE",
+      "file": "frontend\\app\\pastor\\main\\sermons\\page.tsx"
+    },
+    {
+      "path": "/pastor/main/volunteers",
+      "type": "PAGE",
+      "file": "frontend\\app\\pastor\\main\\volunteers\\page.tsx"
+    },
+    {
+      "path": "/pastor/main/[...slug]",
+      "type": "PAGE",
+      "file": "frontend\\app\\pastor\\main\\[...slug]\\page.tsx"
+    },
+    {
+      "path": "/pastor/media/documents",
+      "type": "PAGE",
+      "file": "frontend\\app\\pastor\\media\\documents\\page.tsx"
+    },
+    {
+      "path": "/pastor/media/gallery",
+      "type": "PAGE",
+      "file": "frontend\\app\\pastor\\media\\gallery\\page.tsx"
+    },
+    {
+      "path": "/pastor/media/videos",
+      "type": "PAGE",
+      "file": "frontend\\app\\pastor\\media\\videos\\page.tsx"
+    },
+    {
+      "path": "/pastor/members",
+      "type": "PAGE",
+      "file": "frontend\\app\\pastor\\members\\page.tsx"
+    },
+    {
+      "path": "/pastor/ministry/bible-study-groups",
+      "type": "PAGE",
+      "file": "frontend\\app\\pastor\\ministry\\bible-study-groups\\page.tsx"
+    },
+    {
+      "path": "/pastor/ministry/small-groups",
+      "type": "PAGE",
+      "file": "frontend\\app\\pastor\\ministry\\small-groups\\page.tsx"
+    },
+    {
+      "path": "/pastor/ministry/volunteers",
+      "type": "PAGE",
+      "file": "frontend\\app\\pastor\\ministry\\volunteers\\page.tsx"
+    },
+    {
+      "path": "/pastor/ngo/media",
+      "type": "PAGE",
+      "file": "frontend\\app\\pastor\\ngo\\media\\page.tsx"
+    },
+    {
+      "path": "/pastor/ngo/projects",
+      "type": "PAGE",
+      "file": "frontend\\app\\pastor\\ngo\\projects\\page.tsx"
+    },
+    {
+      "path": "/pastor/ngo/volunteers",
+      "type": "PAGE",
+      "file": "frontend\\app\\pastor\\ngo\\volunteers\\page.tsx"
+    },
+    {
+      "path": "/pastor/openclaw-orchestrator",
+      "type": "PAGE",
+      "file": "frontend\\app\\pastor\\openclaw-orchestrator\\page.tsx"
+    },
+    {
+      "path": "/pastor",
+      "type": "PAGE",
+      "file": "frontend\\app\\pastor\\page.tsx"
+    },
+    {
+      "path": "/pastor/profile",
+      "type": "PAGE",
+      "file": "frontend\\app\\pastor\\profile\\page.tsx"
+    },
+    {
+      "path": "/pastor/reports/attendance",
+      "type": "PAGE",
+      "file": "frontend\\app\\pastor\\reports\\attendance\\page.tsx"
+    },
+    {
+      "path": "/pastor/reports/finance",
+      "type": "PAGE",
+      "file": "frontend\\app\\pastor\\reports\\finance\\page.tsx"
+    },
+    {
+      "path": "/pastor/reports/growth",
+      "type": "PAGE",
+      "file": "frontend\\app\\pastor\\reports\\growth\\page.tsx"
+    },
+    {
+      "path": "/pastor/reports/members",
+      "type": "PAGE",
+      "file": "frontend\\app\\pastor\\reports\\members\\page.tsx"
+    },
+    {
+      "path": "/pastor/sermons",
+      "type": "PAGE",
+      "file": "frontend\\app\\pastor\\sermons\\page.tsx"
+    },
+    {
+      "path": "/pastor/settings/general",
+      "type": "PAGE",
+      "file": "frontend\\app\\pastor\\settings\\general\\page.tsx"
+    },
+    {
+      "path": "/pastor/settings/notifications",
+      "type": "PAGE",
+      "file": "frontend\\app\\pastor\\settings\\notifications\\page.tsx"
+    },
+    {
+      "path": "/pastor/settings/preferences",
+      "type": "PAGE",
+      "file": "frontend\\app\\pastor\\settings\\preferences\\page.tsx"
+    },
+    {
+      "path": "/pastor/settings/security",
+      "type": "PAGE",
+      "file": "frontend\\app\\pastor\\settings\\security\\page.tsx"
+    },
+    {
+      "path": "/pastor/[...slug]",
+      "type": "PAGE",
+      "file": "frontend\\app\\pastor\\[...slug]\\page.tsx"
+    },
+    {
+      "path": "/pastor-portal",
+      "type": "PAGE",
+      "file": "frontend\\app\\pastor-portal\\page.tsx"
+    },
+    {
+      "path": "/portal-select",
+      "type": "PAGE",
+      "file": "frontend\\app\\portal-select\\page.tsx"
+    },
+    {
+      "path": "/prayer",
+      "type": "PAGE",
+      "file": "frontend\\app\\prayer\\page.tsx"
+    },
+    {
+      "path": "/privacy",
+      "type": "PAGE",
+      "file": "frontend\\app\\privacy\\page.tsx"
+    },
+    {
+      "path": "/register",
+      "type": "PAGE",
+      "file": "frontend\\app\\register\\page.tsx"
+    },
+    {
+      "path": "/resources/bible-study",
+      "type": "PAGE",
+      "file": "frontend\\app\\resources\\bible-study\\page.tsx"
+    },
+    {
+      "path": "/resources/media",
+      "type": "PAGE",
+      "file": "frontend\\app\\resources\\media\\page.tsx"
+    },
+    {
+      "path": "/resources",
+      "type": "PAGE",
+      "file": "frontend\\app\\resources\\page.tsx"
+    },
+    {
+      "path": "/select-language",
+      "type": "PAGE",
+      "file": "frontend\\app\\select-language\\page.tsx"
+    },
+    {
+      "path": "/sermons",
+      "type": "PAGE",
+      "file": "frontend\\app\\sermons\\page.tsx"
+    },
+    {
+      "path": "/terms",
+      "type": "PAGE",
+      "file": "frontend\\app\\terms\\page.tsx"
+    }
+  ],
+  "frontendApis": [
+    {
+      "path": "/api/activity",
+      "type": "API",
+      "file": "frontend\\app\\api\\activity\\route.ts"
+    },
+    {
+      "path": "/api/admin/accounts",
+      "type": "API",
+      "file": "frontend\\app\\api\\admin\\accounts\\route.ts"
+    },
+    {
+      "path": "/api/admin/attendance/data",
+      "type": "API",
+      "file": "frontend\\app\\api\\admin\\attendance\\data\\route.ts"
+    },
+    {
+      "path": "/api/admin/attendance/event-checkins",
+      "type": "API",
+      "file": "frontend\\app\\api\\admin\\attendance\\event-checkins\\route.ts"
+    },
+    {
+      "path": "/api/admin/attendance",
+      "type": "API",
+      "file": "frontend\\app\\api\\admin\\attendance\\route.ts"
+    },
+    {
+      "path": "/api/admin/content/data",
+      "type": "API",
+      "file": "frontend\\app\\api\\admin\\content\\data\\route.ts"
+    },
+    {
+      "path": "/api/admin/content",
+      "type": "API",
+      "file": "frontend\\app\\api\\admin\\content\\route.ts"
+    },
+    {
+      "path": "/api/admin/dashboard-data",
+      "type": "API",
+      "file": "frontend\\app\\api\\admin\\dashboard-data\\route.ts"
+    },
+    {
+      "path": "/api/admin/donations/amounts",
+      "type": "API",
+      "file": "frontend\\app\\api\\admin\\donations\\amounts\\route.ts"
+    },
+    {
+      "path": "/api/admin/donations/analytics",
+      "type": "API",
+      "file": "frontend\\app\\api\\admin\\donations\\analytics\\route.ts"
+    },
+    {
+      "path": "/api/admin/donations/causes",
+      "type": "API",
+      "file": "frontend\\app\\api\\admin\\donations\\causes\\route.ts"
+    },
+    {
+      "path": "/api/admin/donations/config",
+      "type": "API",
+      "file": "frontend\\app\\api\\admin\\donations\\config\\route.ts"
+    },
+    {
+      "path": "/api/admin/donations/form-fields",
+      "type": "API",
+      "file": "frontend\\app\\api\\admin\\donations\\form-fields\\route.ts"
+    },
+    {
+      "path": "/api/admin/donations",
+      "type": "API",
+      "file": "frontend\\app\\api\\admin\\donations\\route.ts"
+    },
+    {
+      "path": "/api/admin/donations/stats",
+      "type": "API",
+      "file": "frontend\\app\\api\\admin\\donations\\stats\\route.ts"
+    },
+    {
+      "path": "/api/admin/families",
+      "type": "API",
+      "file": "frontend\\app\\api\\admin\\families\\route.ts"
+    },
+    {
+      "path": "/api/admin/finance/data",
+      "type": "API",
+      "file": "frontend\\app\\api\\admin\\finance\\data\\route.ts"
+    },
+    {
+      "path": "/api/admin/finance/reconcile",
+      "type": "API",
+      "file": "frontend\\app\\api\\admin\\finance\\reconcile\\route.ts"
+    },
+    {
+      "path": "/api/admin/finance",
+      "type": "API",
+      "file": "frontend\\app\\api\\admin\\finance\\route.ts"
+    },
+    {
+      "path": "/api/admin/groups",
+      "type": "API",
+      "file": "frontend\\app\\api\\admin\\groups\\route.ts"
+    },
+    {
+      "path": "/api/admin/health/detailed",
+      "type": "API",
+      "file": "frontend\\app\\api\\admin\\health\\detailed\\route.ts"
+    },
+    {
+      "path": "/api/admin/notifications/email",
+      "type": "API",
+      "file": "frontend\\app\\api\\admin\\notifications\\email\\route.ts"
+    },
+    {
+      "path": "/api/admin/notifications",
+      "type": "API",
+      "file": "frontend\\app\\api\\admin\\notifications\\route.ts"
+    },
+    {
+      "path": "/api/admin/payments/refund",
+      "type": "API",
+      "file": "frontend\\app\\api\\admin\\payments\\refund\\route.ts"
+    },
+    {
+      "path": "/api/admin/pledges",
+      "type": "API",
+      "file": "frontend\\app\\api\\admin\\pledges\\route.ts"
+    },
+    {
+      "path": "/api/admin/prayers",
+      "type": "API",
+      "file": "frontend\\app\\api\\admin\\prayers\\route.ts"
+    },
+    {
+      "path": "/api/admin/reports",
+      "type": "API",
+      "file": "frontend\\app\\api\\admin\\reports\\route.ts"
+    },
+    {
+      "path": "/api/admin/reports/[reportId]/assignment",
+      "type": "API",
+      "file": "frontend\\app\\api\\admin\\reports\\[reportId]\\assignment\\route.ts"
+    },
+    {
+      "path": "/api/admin/reports/[reportId]/notes",
+      "type": "API",
+      "file": "frontend\\app\\api\\admin\\reports\\[reportId]\\notes\\route.ts"
+    },
+    {
+      "path": "/api/admin/reports/[reportId]",
+      "type": "API",
+      "file": "frontend\\app\\api\\admin\\reports\\[reportId]\\route.ts"
+    },
+    {
+      "path": "/api/admin/reports/[reportId]/status",
+      "type": "API",
+      "file": "frontend\\app\\api\\admin\\reports\\[reportId]\\status\\route.ts"
+    },
+    {
+      "path": "/api/admin/sms",
+      "type": "API",
+      "file": "frontend\\app\\api\\admin\\sms\\route.ts"
+    },
+    {
+      "path": "/api/admin/sms/settings",
+      "type": "API",
+      "file": "frontend\\app\\api\\admin\\sms\\settings\\route.ts"
+    },
+    {
+      "path": "/api/admin/sms/stats",
+      "type": "API",
+      "file": "frontend\\app\\api\\admin\\sms\\stats\\route.ts"
+    },
+    {
+      "path": "/api/admin/sms/test",
+      "type": "API",
+      "file": "frontend\\app\\api\\admin\\sms\\test\\route.ts"
+    },
+    {
+      "path": "/api/admin/sms/[id]",
+      "type": "API",
+      "file": "frontend\\app\\api\\admin\\sms\\[id]\\route.ts"
+    },
+    {
+      "path": "/api/admin/system-health",
+      "type": "API",
+      "file": "frontend\\app\\api\\admin\\system-health\\route.ts"
+    },
+    {
+      "path": "/api/admin/transactions",
+      "type": "API",
+      "file": "frontend\\app\\api\\admin\\transactions\\route.ts"
+    },
+    {
+      "path": "/api/admin/users",
+      "type": "API",
+      "file": "frontend\\app\\api\\admin\\users\\route.ts"
+    },
+    {
+      "path": "/api/agents/[agentType]",
+      "type": "API",
+      "file": "frontend\\app\\api\\agents\\[agentType]\\route.ts"
+    },
+    {
+      "path": "/api/analytics",
+      "type": "API",
+      "file": "frontend\\app\\api\\analytics\\route.ts"
+    },
+    {
+      "path": "/api/audit-logs",
+      "type": "API",
+      "file": "frontend\\app\\api\\audit-logs\\route.ts"
+    },
+    {
+      "path": "/api/auth/firebase-health",
+      "type": "API",
+      "file": "frontend\\app\\api\\auth\\firebase-health\\route.ts"
+    },
+    {
+      "path": "/api/auth/forgot-password",
+      "type": "API",
+      "file": "frontend\\app\\api\\auth\\forgot-password\\route.ts"
+    },
+    {
+      "path": "/api/auth/google",
+      "type": "API",
+      "file": "frontend\\app\\api\\auth\\google\\route.ts"
+    },
+    {
+      "path": "/api/auth/login",
+      "type": "API",
+      "file": "frontend\\app\\api\\auth\\login\\route.ts"
+    },
+    {
+      "path": "/api/auth/register",
+      "type": "API",
+      "file": "frontend\\app\\api\\auth\\register\\route.ts"
+    },
+    {
+      "path": "/api/auth/send-email",
+      "type": "API",
+      "file": "frontend\\app\\api\\auth\\send-email\\route.ts"
+    },
+    {
+      "path": "/api/auth/session",
+      "type": "API",
+      "file": "frontend\\app\\api\\auth\\session\\route.ts"
+    },
+    {
+      "path": "/api/auth/sync",
+      "type": "API",
+      "file": "frontend\\app\\api\\auth\\sync\\route.ts"
+    },
+    {
+      "path": "/api/auth/_log",
+      "type": "API",
+      "file": "frontend\\app\\api\\auth\\_log\\route.ts"
+    },
+    {
+      "path": "/api/branch/[branchId]/events",
+      "type": "API",
+      "file": "frontend\\app\\api\\branch\\[branchId]\\events\\route.ts"
+    },
+    {
+      "path": "/api/branch/[branchId]/gallery",
+      "type": "API",
+      "file": "frontend\\app\\api\\branch\\[branchId]\\gallery\\route.ts"
+    },
+    {
+      "path": "/api/branches",
+      "type": "API",
+      "file": "frontend\\app\\api\\branches\\route.ts"
+    },
+    {
+      "path": "/api/chat",
+      "type": "API",
+      "file": "frontend\\app\\api\\chat\\route.ts"
+    },
+    {
+      "path": "/api/cms/about",
+      "type": "API",
+      "file": "frontend\\app\\api\\cms\\about\\route.ts"
+    },
+    {
+      "path": "/api/cms/contact",
+      "type": "API",
+      "file": "frontend\\app\\api\\cms\\contact\\route.ts"
+    },
+    {
+      "path": "/api/cms/footer",
+      "type": "API",
+      "file": "frontend\\app\\api\\cms\\footer\\route.ts"
+    },
+    {
+      "path": "/api/cms/hero",
+      "type": "API",
+      "file": "frontend\\app\\api\\cms\\hero\\route.ts"
+    },
+    {
+      "path": "/api/cms/navigation",
+      "type": "API",
+      "file": "frontend\\app\\api\\cms\\navigation\\route.ts"
+    },
+    {
+      "path": "/api/cms/revalidate",
+      "type": "API",
+      "file": "frontend\\app\\api\\cms\\revalidate\\route.ts"
+    },
+    {
+      "path": "/api/cms/statistics",
+      "type": "API",
+      "file": "frontend\\app\\api\\cms\\statistics\\route.ts"
+    },
+    {
+      "path": "/api/contact",
+      "type": "API",
+      "file": "frontend\\app\\api\\contact\\route.ts"
+    },
+    {
+      "path": "/api/dashboard/attendance-chart",
+      "type": "API",
+      "file": "frontend\\app\\api\\dashboard\\attendance-chart\\route.ts"
+    },
+    {
+      "path": "/api/dashboard/donations",
+      "type": "API",
+      "file": "frontend\\app\\api\\dashboard\\donations\\route.ts"
+    },
+    {
+      "path": "/api/dashboard/donations-chart",
+      "type": "API",
+      "file": "frontend\\app\\api\\dashboard\\donations-chart\\route.ts"
+    },
+    {
+      "path": "/api/dashboard/search",
+      "type": "API",
+      "file": "frontend\\app\\api\\dashboard\\search\\route.ts"
+    },
+    {
+      "path": "/api/dashboard/stats",
+      "type": "API",
+      "file": "frontend\\app\\api\\dashboard\\stats\\route.ts"
+    },
+    {
+      "path": "/api/device/register",
+      "type": "API",
+      "file": "frontend\\app\\api\\device\\register\\route.ts"
+    },
+    {
+      "path": "/api/donations/admin-notify",
+      "type": "API",
+      "file": "frontend\\app\\api\\donations\\admin-notify\\route.ts"
+    },
+    {
+      "path": "/api/donations/agent",
+      "type": "API",
+      "file": "frontend\\app\\api\\donations\\agent\\route.ts"
+    },
+    {
+      "path": "/api/donations/config",
+      "type": "API",
+      "file": "frontend\\app\\api\\donations\\config\\route.ts"
+    },
+    {
+      "path": "/api/donations/create-order",
+      "type": "API",
+      "file": "frontend\\app\\api\\donations\\create-order\\route.ts"
+    },
+    {
+      "path": "/api/donations/generate-qr",
+      "type": "API",
+      "file": "frontend\\app\\api\\donations\\generate-qr\\route.ts"
+    },
+    {
+      "path": "/api/donations/history",
+      "type": "API",
+      "file": "frontend\\app\\api\\donations\\history\\route.ts"
+    },
+    {
+      "path": "/api/donations/live-status/[sessionId]",
+      "type": "API",
+      "file": "frontend\\app\\api\\donations\\live-status\\[sessionId]\\route.ts"
+    },
+    {
+      "path": "/api/donations/purposes",
+      "type": "API",
+      "file": "frontend\\app\\api\\donations\\purposes\\route.ts"
+    },
+    {
+      "path": "/api/donations/receipt/[donationId]",
+      "type": "API",
+      "file": "frontend\\app\\api\\donations\\receipt\\[donationId]\\route.ts"
+    },
+    {
+      "path": "/api/donations/session/init",
+      "type": "API",
+      "file": "frontend\\app\\api\\donations\\session\\init\\route.ts"
+    },
+    {
+      "path": "/api/donations/session/report-blocked",
+      "type": "API",
+      "file": "frontend\\app\\api\\donations\\session\\report-blocked\\route.ts"
+    },
+    {
+      "path": "/api/donations/session",
+      "type": "API",
+      "file": "frontend\\app\\api\\donations\\session\\route.ts"
+    },
+    {
+      "path": "/api/donations/session/update",
+      "type": "API",
+      "file": "frontend\\app\\api\\donations\\session\\update\\route.ts"
+    },
+    {
+      "path": "/api/donations/session/verify",
+      "type": "API",
+      "file": "frontend\\app\\api\\donations\\session\\verify\\route.ts"
+    },
+    {
+      "path": "/api/donations/status/[sessionId]",
+      "type": "API",
+      "file": "frontend\\app\\api\\donations\\status\\[sessionId]\\route.ts"
+    },
+    {
+      "path": "/api/donations/stripe/create-intent",
+      "type": "API",
+      "file": "frontend\\app\\api\\donations\\stripe\\create-intent\\route.ts"
+    },
+    {
+      "path": "/api/donations/stripe/verify",
+      "type": "API",
+      "file": "frontend\\app\\api\\donations\\stripe\\verify\\route.ts"
+    },
+    {
+      "path": "/api/donations/stripe/webhook",
+      "type": "API",
+      "file": "frontend\\app\\api\\donations\\stripe\\webhook\\route.ts"
+    },
+    {
+      "path": "/api/donations/test-webhook",
+      "type": "API",
+      "file": "frontend\\app\\api\\donations\\test-webhook\\route.ts"
+    },
+    {
+      "path": "/api/donations/verify",
+      "type": "API",
+      "file": "frontend\\app\\api\\donations\\verify\\route.ts"
+    },
+    {
+      "path": "/api/donations/[id]",
+      "type": "API",
+      "file": "frontend\\app\\api\\donations\\[id]\\route.ts"
+    },
+    {
+      "path": "/api/event-manager/reports",
+      "type": "API",
+      "file": "frontend\\app\\api\\event-manager\\reports\\route.ts"
+    },
+    {
+      "path": "/api/event-manager/reports/[id]",
+      "type": "API",
+      "file": "frontend\\app\\api\\event-manager\\reports\\[id]\\route.ts"
+    },
+    {
+      "path": "/api/events/clear-seeded",
+      "type": "API",
+      "file": "frontend\\app\\api\\events\\clear-seeded\\route.ts"
+    },
+    {
+      "path": "/api/events/latest",
+      "type": "API",
+      "file": "frontend\\app\\api\\events\\latest\\route.ts"
+    },
+    {
+      "path": "/api/events/publish",
+      "type": "API",
+      "file": "frontend\\app\\api\\events\\publish\\route.ts"
+    },
+    {
+      "path": "/api/events/reorder",
+      "type": "API",
+      "file": "frontend\\app\\api\\events\\reorder\\route.ts"
+    },
+    {
+      "path": "/api/events",
+      "type": "API",
+      "file": "frontend\\app\\api\\events\\route.ts"
+    },
+    {
+      "path": "/api/events/upcoming",
+      "type": "API",
+      "file": "frontend\\app\\api\\events\\upcoming\\route.ts"
+    },
+    {
+      "path": "/api/events/[id]/check-in",
+      "type": "API",
+      "file": "frontend\\app\\api\\events\\[id]\\check-in\\route.ts"
+    },
+    {
+      "path": "/api/events/[id]/duplicate",
+      "type": "API",
+      "file": "frontend\\app\\api\\events\\[id]\\duplicate\\route.ts"
+    },
+    {
+      "path": "/api/events/[id]/register",
+      "type": "API",
+      "file": "frontend\\app\\api\\events\\[id]\\register\\route.ts"
+    },
+    {
+      "path": "/api/events/[id]/report",
+      "type": "API",
+      "file": "frontend\\app\\api\\events\\[id]\\report\\route.ts"
+    },
+    {
+      "path": "/api/events/[id]/restore",
+      "type": "API",
+      "file": "frontend\\app\\api\\events\\[id]\\restore\\route.ts"
+    },
+    {
+      "path": "/api/events/[id]",
+      "type": "API",
+      "file": "frontend\\app\\api\\events\\[id]\\route.ts"
+    },
+    {
+      "path": "/api/events/[id]/status",
+      "type": "API",
+      "file": "frontend\\app\\api\\events\\[id]\\status\\route.ts"
+    },
+    {
+      "path": "/api/events/[id]/upload",
+      "type": "API",
+      "file": "frontend\\app\\api\\events\\[id]\\upload\\route.ts"
+    },
+    {
+      "path": "/api/field-volunteer/branches",
+      "type": "API",
+      "file": "frontend\\app\\api\\field-volunteer\\branches\\route.ts"
+    },
+    {
+      "path": "/api/field-volunteer/report",
+      "type": "API",
+      "file": "frontend\\app\\api\\field-volunteer\\report\\route.ts"
+    },
+    {
+      "path": "/api/firecrawl/bible-study",
+      "type": "API",
+      "file": "frontend\\app\\api\\firecrawl\\bible-study\\route.ts"
+    },
+    {
+      "path": "/api/firecrawl/church-news",
+      "type": "API",
+      "file": "frontend\\app\\api\\firecrawl\\church-news\\route.ts"
+    },
+    {
+      "path": "/api/firecrawl/event-generator",
+      "type": "API",
+      "file": "frontend\\app\\api\\firecrawl\\event-generator\\route.ts"
+    },
+    {
+      "path": "/api/firecrawl/ngo-research",
+      "type": "API",
+      "file": "frontend\\app\\api\\firecrawl\\ngo-research\\route.ts"
+    },
+    {
+      "path": "/api/firecrawl/sermon-research",
+      "type": "API",
+      "file": "frontend\\app\\api\\firecrawl\\sermon-research\\route.ts"
+    },
+    {
+      "path": "/api/firecrawl/website-monitoring",
+      "type": "API",
+      "file": "frontend\\app\\api\\firecrawl\\website-monitoring\\route.ts"
+    },
+    {
+      "path": "/api/gallery",
+      "type": "API",
+      "file": "frontend\\app\\api\\gallery\\route.ts"
+    },
+    {
+      "path": "/api/health/auth",
+      "type": "API",
+      "file": "frontend\\app\\api\\health\\auth\\route.ts"
+    },
+    {
+      "path": "/api/health/database",
+      "type": "API",
+      "file": "frontend\\app\\api\\health\\database\\route.ts"
+    },
+    {
+      "path": "/api/health/dependencies",
+      "type": "API",
+      "file": "frontend\\app\\api\\health\\dependencies\\route.ts"
+    },
+    {
+      "path": "/api/health/email",
+      "type": "API",
+      "file": "frontend\\app\\api\\health\\email\\route.ts"
+    },
+    {
+      "path": "/api/health/live",
+      "type": "API",
+      "file": "frontend\\app\\api\\health\\live\\route.ts"
+    },
+    {
+      "path": "/api/health/ready",
+      "type": "API",
+      "file": "frontend\\app\\api\\health\\ready\\route.ts"
+    },
+    {
+      "path": "/api/health",
+      "type": "API",
+      "file": "frontend\\app\\api\\health\\route.ts"
+    },
+    {
+      "path": "/api/health/version",
+      "type": "API",
+      "file": "frontend\\app\\api\\health\\version\\route.ts"
+    },
+    {
+      "path": "/api/live",
+      "type": "API",
+      "file": "frontend\\app\\api\\live\\route.ts"
+    },
+    {
+      "path": "/api/member/events",
+      "type": "API",
+      "file": "frontend\\app\\api\\member\\events\\route.ts"
+    },
+    {
+      "path": "/api/member/feedback",
+      "type": "API",
+      "file": "frontend\\app\\api\\member\\feedback\\route.ts"
+    },
+    {
+      "path": "/api/member/notification-preferences",
+      "type": "API",
+      "file": "frontend\\app\\api\\member\\notification-preferences\\route.ts"
+    },
+    {
+      "path": "/api/member/prayers",
+      "type": "API",
+      "file": "frontend\\app\\api\\member\\prayers\\route.ts"
+    },
+    {
+      "path": "/api/member/profile",
+      "type": "API",
+      "file": "frontend\\app\\api\\member\\profile\\route.ts"
+    },
+    {
+      "path": "/api/member/reports",
+      "type": "API",
+      "file": "frontend\\app\\api\\member\\reports\\route.ts"
+    },
+    {
+      "path": "/api/member/reports/upload-screenshot",
+      "type": "API",
+      "file": "frontend\\app\\api\\member\\reports\\upload-screenshot\\route.ts"
+    },
+    {
+      "path": "/api/member/reports/[reportId]",
+      "type": "API",
+      "file": "frontend\\app\\api\\member\\reports\\[reportId]\\route.ts"
+    },
+    {
+      "path": "/api/ngo/campaigns",
+      "type": "API",
+      "file": "frontend\\app\\api\\ngo\\campaigns\\route.ts"
+    },
+    {
+      "path": "/api/ngo/gallery/delete",
+      "type": "API",
+      "file": "frontend\\app\\api\\ngo\\gallery\\delete\\route.ts"
+    },
+    {
+      "path": "/api/ngo/media",
+      "type": "API",
+      "file": "frontend\\app\\api\\ngo\\media\\route.ts"
+    },
+    {
+      "path": "/api/ngo/media/[id]",
+      "type": "API",
+      "file": "frontend\\app\\api\\ngo\\media\\[id]\\route.ts"
+    },
+    {
+      "path": "/api/ngo/projects",
+      "type": "API",
+      "file": "frontend\\app\\api\\ngo\\projects\\route.ts"
+    },
+    {
+      "path": "/api/ngo/projects/[id]",
+      "type": "API",
+      "file": "frontend\\app\\api\\ngo\\projects\\[id]\\route.ts"
+    },
+    {
+      "path": "/api/ngo/volunteers",
+      "type": "API",
+      "file": "frontend\\app\\api\\ngo\\volunteers\\route.ts"
+    },
+    {
+      "path": "/api/ngo/volunteers/[id]",
+      "type": "API",
+      "file": "frontend\\app\\api\\ngo\\volunteers\\[id]\\route.ts"
+    },
+    {
+      "path": "/api/notifications/history",
+      "type": "API",
+      "file": "frontend\\app\\api\\notifications\\history\\route.ts"
+    },
+    {
+      "path": "/api/notifications/send",
+      "type": "API",
+      "file": "frontend\\app\\api\\notifications\\send\\route.ts"
+    },
+    {
+      "path": "/api/openclaw/execute",
+      "type": "API",
+      "file": "frontend\\app\\api\\openclaw\\execute\\route.ts"
+    },
+    {
+      "path": "/api/openclaw/skills",
+      "type": "API",
+      "file": "frontend\\app\\api\\openclaw\\skills\\route.ts"
+    },
+    {
+      "path": "/api/pastor/announcements",
+      "type": "API",
+      "file": "frontend\\app\\api\\pastor\\announcements\\route.ts"
+    },
+    {
+      "path": "/api/pastor/bible-studies",
+      "type": "API",
+      "file": "frontend\\app\\api\\pastor\\bible-studies\\route.ts"
+    },
+    {
+      "path": "/api/pastor/church-settings",
+      "type": "API",
+      "file": "frontend\\app\\api\\pastor\\church-settings\\route.ts"
+    },
+    {
+      "path": "/api/pastor/clear-seeded-sermons",
+      "type": "API",
+      "file": "frontend\\app\\api\\pastor\\clear-seeded-sermons\\route.ts"
+    },
+    {
+      "path": "/api/pastor/events",
+      "type": "API",
+      "file": "frontend\\app\\api\\pastor\\events\\route.ts"
+    },
+    {
+      "path": "/api/pastor/member-requests",
+      "type": "API",
+      "file": "frontend\\app\\api\\pastor\\member-requests\\route.ts"
+    },
+    {
+      "path": "/api/pastor/members",
+      "type": "API",
+      "file": "frontend\\app\\api\\pastor\\members\\route.ts"
+    },
+    {
+      "path": "/api/pastor/notifications",
+      "type": "API",
+      "file": "frontend\\app\\api\\pastor\\notifications\\route.ts"
+    },
+    {
+      "path": "/api/pastor/prayer-requests",
+      "type": "API",
+      "file": "frontend\\app\\api\\pastor\\prayer-requests\\route.ts"
+    },
+    {
+      "path": "/api/pastor/profile",
+      "type": "API",
+      "file": "frontend\\app\\api\\pastor\\profile\\route.ts"
+    },
+    {
+      "path": "/api/pastor/sermons",
+      "type": "API",
+      "file": "frontend\\app\\api\\pastor\\sermons\\route.ts"
+    },
+    {
+      "path": "/api/pastor/small-groups",
+      "type": "API",
+      "file": "frontend\\app\\api\\pastor\\small-groups\\route.ts"
+    },
+    {
+      "path": "/api/pastor/volunteers",
+      "type": "API",
+      "file": "frontend\\app\\api\\pastor\\volunteers\\route.ts"
+    },
+    {
+      "path": "/api/payments/create-order",
+      "type": "API",
+      "file": "frontend\\app\\api\\payments\\create-order\\route.ts"
+    },
+    {
+      "path": "/api/payments/status/[id]",
+      "type": "API",
+      "file": "frontend\\app\\api\\payments\\status\\[id]\\route.ts"
+    },
+    {
+      "path": "/api/payments/verify",
+      "type": "API",
+      "file": "frontend\\app\\api\\payments\\verify\\route.ts"
+    },
+    {
+      "path": "/api/payments/webhook/history",
+      "type": "API",
+      "file": "frontend\\app\\api\\payments\\webhook\\history\\route.ts"
+    },
+    {
+      "path": "/api/payments/webhook",
+      "type": "API",
+      "file": "frontend\\app\\api\\payments\\webhook\\route.ts"
+    },
+    {
+      "path": "/api/payments/[id]/status",
+      "type": "API",
+      "file": "frontend\\app\\api\\payments\\[id]\\status\\route.ts"
+    },
+    {
+      "path": "/api/ready",
+      "type": "API",
+      "file": "frontend\\app\\api\\ready\\route.ts"
+    },
+    {
+      "path": "/api/receipts/[id]/pdf",
+      "type": "API",
+      "file": "frontend\\app\\api\\receipts\\[id]\\pdf\\route.ts"
+    },
+    {
+      "path": "/api/receipts/[id]",
+      "type": "API",
+      "file": "frontend\\app\\api\\receipts\\[id]\\route.ts"
+    },
+    {
+      "path": "/api/sermons/featured",
+      "type": "API",
+      "file": "frontend\\app\\api\\sermons\\featured\\route.ts"
+    },
+    {
+      "path": "/api/sermons/latest",
+      "type": "API",
+      "file": "frontend\\app\\api\\sermons\\latest\\route.ts"
+    },
+    {
+      "path": "/api/sermons",
+      "type": "API",
+      "file": "frontend\\app\\api\\sermons\\route.ts"
+    },
+    {
+      "path": "/api/sermons/[id]/bookmark",
+      "type": "API",
+      "file": "frontend\\app\\api\\sermons\\[id]\\bookmark\\route.ts"
+    },
+    {
+      "path": "/api/sermons/[id]/comment",
+      "type": "API",
+      "file": "frontend\\app\\api\\sermons\\[id]\\comment\\route.ts"
+    },
+    {
+      "path": "/api/sermons/[id]/download",
+      "type": "API",
+      "file": "frontend\\app\\api\\sermons\\[id]\\download\\route.ts"
+    },
+    {
+      "path": "/api/sermons/[id]/duplicate",
+      "type": "API",
+      "file": "frontend\\app\\api\\sermons\\[id]\\duplicate\\route.ts"
+    },
+    {
+      "path": "/api/sermons/[id]/like",
+      "type": "API",
+      "file": "frontend\\app\\api\\sermons\\[id]\\like\\route.ts"
+    },
+    {
+      "path": "/api/sermons/[id]",
+      "type": "API",
+      "file": "frontend\\app\\api\\sermons\\[id]\\route.ts"
+    },
+    {
+      "path": "/api/sermons/[id]/view",
+      "type": "API",
+      "file": "frontend\\app\\api\\sermons\\[id]\\view\\route.ts"
+    },
+    {
+      "path": "/api/services/reorder",
+      "type": "API",
+      "file": "frontend\\app\\api\\services\\reorder\\route.ts"
+    },
+    {
+      "path": "/api/services",
+      "type": "API",
+      "file": "frontend\\app\\api\\services\\route.ts"
+    },
+    {
+      "path": "/api/services/[id]",
+      "type": "API",
+      "file": "frontend\\app\\api\\services\\[id]\\route.ts"
+    },
+    {
+      "path": "/api/sync/offline",
+      "type": "API",
+      "file": "frontend\\app\\api\\sync\\offline\\route.ts"
+    },
+    {
+      "path": "/api/system-events",
+      "type": "API",
+      "file": "frontend\\app\\api\\system-events\\route.ts"
+    },
+    {
+      "path": "/api/upload/delete",
+      "type": "API",
+      "file": "frontend\\app\\api\\upload\\delete\\route.ts"
+    },
+    {
+      "path": "/api/upload/event-image",
+      "type": "API",
+      "file": "frontend\\app\\api\\upload\\event-image\\route.ts"
+    },
+    {
+      "path": "/api/upload/event-video",
+      "type": "API",
+      "file": "frontend\\app\\api\\upload\\event-video\\route.ts"
+    },
+    {
+      "path": "/api/upload/ngo-media",
+      "type": "API",
+      "file": "frontend\\app\\api\\upload\\ngo-media\\route.ts"
+    },
+    {
+      "path": "/api/upload/profile-image",
+      "type": "API",
+      "file": "frontend\\app\\api\\upload\\profile-image\\route.ts"
+    },
+    {
+      "path": "/api/upload/sermon",
+      "type": "API",
+      "file": "frontend\\app\\api\\upload\\sermon\\route.ts"
+    },
+    {
+      "path": "/api/upload/service-icon",
+      "type": "API",
+      "file": "frontend\\app\\api\\upload\\service-icon\\route.ts"
+    },
+    {
+      "path": "/api/webhooks/httpsms",
+      "type": "API",
+      "file": "frontend\\app\\api\\webhooks\\httpsms\\route.ts"
+    },
+    {
+      "path": "/api/webhooks/razorpay",
+      "type": "API",
+      "file": "frontend\\app\\api\\webhooks\\razorpay\\route.ts"
+    },
+    {
+      "path": "/api/webhooks/resend",
+      "type": "API",
+      "file": "frontend\\app\\api\\webhooks\\resend\\route.ts"
+    },
+    {
+      "path": "/image-sitemap.xml",
+      "type": "API",
+      "file": "frontend\\app\\image-sitemap.xml\\route.ts"
+    },
+    {
+      "path": "/llms.txt",
+      "type": "API",
+      "file": "frontend\\app\\llms.txt\\route.ts"
+    }
+  ],
+  "backendApis": [
+    {
+      "module": "announcements",
+      "method": "GET",
+      "path": "/api/announcements",
+      "type": "BACKEND_EXPRESS_API"
+    },
+    {
+      "module": "attendance",
+      "method": "POST",
+      "path": "/api/attendance/check-in",
+      "type": "BACKEND_EXPRESS_API"
+    },
+    {
+      "module": "auth",
+      "method": "POST",
+      "path": "/api/auth/google",
+      "type": "BACKEND_EXPRESS_API"
+    },
+    {
+      "module": "auth",
+      "method": "GET",
+      "path": "/api/auth/session",
+      "type": "BACKEND_EXPRESS_API"
+    },
+    {
+      "module": "auth",
+      "method": "POST",
+      "path": "/api/auth/logout",
+      "type": "BACKEND_EXPRESS_API"
+    },
+    {
+      "module": "branches",
+      "method": "GET",
+      "path": "/api/branches",
+      "type": "BACKEND_EXPRESS_API"
+    },
+    {
+      "module": "branches",
+      "method": "GET",
+      "path": "/api/branches/:id",
+      "type": "BACKEND_EXPRESS_API"
+    },
+    {
+      "module": "donations",
+      "method": "POST",
+      "path": "/api/donations/create-order",
+      "type": "BACKEND_EXPRESS_API"
+    },
+    {
+      "module": "donations",
+      "method": "POST",
+      "path": "/api/donations/verify",
+      "type": "BACKEND_EXPRESS_API"
+    },
+    {
+      "module": "events",
+      "method": "GET",
+      "path": "/api/events",
+      "type": "BACKEND_EXPRESS_API"
+    },
+    {
+      "module": "groups",
+      "method": "GET",
+      "path": "/api/groups",
+      "type": "BACKEND_EXPRESS_API"
+    },
+    {
+      "module": "media",
+      "method": "POST",
+      "path": "/api/media/sign-upload",
+      "type": "BACKEND_EXPRESS_API"
+    },
+    {
+      "module": "media",
+      "method": "POST",
+      "path": "/api/media/register",
+      "type": "BACKEND_EXPRESS_API"
+    },
+    {
+      "module": "members",
+      "method": "GET",
+      "path": "/api/members",
+      "type": "BACKEND_EXPRESS_API"
+    },
+    {
+      "module": "ngo",
+      "method": "GET",
+      "path": "/api/ngo/projects",
+      "type": "BACKEND_EXPRESS_API"
+    },
+    {
+      "module": "ngo",
+      "method": "GET",
+      "path": "/api/ngo/stats",
+      "type": "BACKEND_EXPRESS_API"
+    },
+    {
+      "module": "notifications",
+      "method": "POST",
+      "path": "/api/notifications/device-token",
+      "type": "BACKEND_EXPRESS_API"
+    },
+    {
+      "module": "prayers",
+      "method": "GET",
+      "path": "/api/prayers",
+      "type": "BACKEND_EXPRESS_API"
+    },
+    {
+      "module": "prayers",
+      "method": "POST",
+      "path": "/api/prayers",
+      "type": "BACKEND_EXPRESS_API"
+    },
+    {
+      "module": "sermons",
+      "method": "GET",
+      "path": "/api/sermons",
+      "type": "BACKEND_EXPRESS_API"
+    },
+    {
+      "module": "sermons",
+      "method": "GET",
+      "path": "/api/sermons/:id",
+      "type": "BACKEND_EXPRESS_API"
+    },
+    {
+      "module": "users",
+      "method": "GET",
+      "path": "/api/users/me",
+      "type": "BACKEND_EXPRESS_API"
+    },
+    {
+      "module": "users",
+      "method": "PATCH",
+      "path": "/api/users/me",
+      "type": "BACKEND_EXPRESS_API"
+    },
+    {
+      "module": "users",
+      "method": "PATCH",
+      "path": "/api/users/:id/role",
+      "type": "BACKEND_EXPRESS_API"
+    },
+    {
+      "module": "volunteers",
+      "method": "GET",
+      "path": "/api/volunteers/departments",
+      "type": "BACKEND_EXPRESS_API"
+    },
+    {
+      "module": "volunteers",
+      "method": "POST",
+      "path": "/api/volunteers/apply",
+      "type": "BACKEND_EXPRESS_API"
+    },
+    {
+      "module": "health",
+      "method": "GET",
+      "path": "/health/live",
+      "type": "BACKEND_EXPRESS_API"
+    },
+    {
+      "module": "health",
+      "method": "GET",
+      "path": "/health/ready",
+      "type": "BACKEND_EXPRESS_API"
+    },
+    {
+      "module": "health",
+      "method": "GET",
+      "path": "/health",
+      "type": "BACKEND_EXPRESS_API"
+    },
+    {
+      "module": "webhooks",
+      "method": "POST",
+      "path": "/webhooks/razorpay",
+      "type": "BACKEND_EXPRESS_API"
+    },
+    {
+      "module": "webhooks",
+      "method": "POST",
+      "path": "/webhooks/httpsms",
+      "type": "BACKEND_EXPRESS_API"
+    },
+    {
+      "module": "webhooks",
+      "method": "POST",
+      "path": "/webhooks/google",
+      "type": "BACKEND_EXPRESS_API"
+    }
+  ]
+}
