@@ -10,6 +10,7 @@ import {
   User,
   Mail,
   Phone,
+  Camera,
   ShieldCheck,
   FileText,
   Save,
@@ -162,12 +163,12 @@ export default function PastorProfilePage() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => showToast("Official Bishop portrait is permanent and verified.", "success")}
+                  onClick={() => showToast("Official Bishop portrait is permanent and locked.", "success")}
                   className="absolute -bottom-1.5 -right-1.5 p-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-md border-2 border-white dark:border-gray-900 transition-all active:scale-95"
-                  title="Official Bishop Portrait (Permanently Locked & Verified)"
-                  aria-label="Official Bishop Portrait (Permanently Locked & Verified)"
+                  title="Official Bishop Portrait (Permanently Locked)"
+                  aria-label="Official Bishop Portrait (Permanently Locked)"
                 >
-                  <ShieldCheck className="w-3.5 h-3.5" />
+                  <Camera className="w-3.5 h-3.5" />
                 </button>
               </div>
 

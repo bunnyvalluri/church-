@@ -1,17 +1,18 @@
 # ── Stage 1: Dependency Resolver ──────────────────────────────────────────────
 FROM node:22-alpine AS deps
-RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
 # Copy dependency mappings
 COPY package*.json ./
 COPY prisma ./prisma/
 
-# Install dependencies
-RUN npm ci --ignore-scripts || npm install --ignore-scripts
+# Install dependencies (including devDependencies required for tsc compilation)
+RUN npm install --ignore-scripts
 
 # ── Stage 2: Production Builder ───────────────────────────────────────────────
 FROM node:22-alpine AS builder
+RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
 # Copy entire dependency footprint
@@ -19,11 +20,12 @@ COPY --from=deps /app ./
 COPY . .
 
 # Generate Prisma Client if prisma schema exists
-RUN if [ -d "prisma" ]; then npx prisma generate; fi
+RUN if [ -d "prisma" ]; then npx prisma generate --schema=./prisma/schema.prisma || true; fi
 RUN npm run build
 
 # ── Stage 3: Minimal Production Runner ────────────────────────────────────────
 FROM node:22-alpine AS runner
+RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
 ENV NODE_ENV production
