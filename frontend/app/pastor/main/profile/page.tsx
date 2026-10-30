@@ -25,7 +25,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 
 // Permanently locked official portrait for Bishop Kurra Kristhu Raju
-export const PERMANENT_PASTOR_IMAGE = "/pastor.png";
+const PERMANENT_PASTOR_IMAGE = "/pastor.png";
 
 export default function PastorProfilePage() {
   const { language } = useLanguage();

@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
 // Permanent verified official portrait for Bishop Kurra Kristhu Raju
-export const PERMANENT_PASTOR_IMAGE = "/pastor.png";
+const PERMANENT_PASTOR_IMAGE = "/pastor.png";
 
 // Default values if database is empty
 const defaultProfile = {
