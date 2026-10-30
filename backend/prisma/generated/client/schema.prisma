@@ -9,39 +9,63 @@ datasource db {
 }
 
 model User {
-  id                 String              @id @default(cuid())
-  name               String
-  email              String              @unique
-  emailVerified      DateTime?
-  image              String?
-  profilePublicId    String?
-  password           String
-  role               UserRole            @default(MEMBER)
-  phone              String?
-  address            String?
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @updatedAt
-  donations          Donation[]
-  eventRegistrations EventRegistration[]
-  prayerRequests     PrayerRequest[]
-  testimonials       Testimonial[]
-  eventReports       EventReport[]
-  mediaReports       MediaReport[]
-  eventsCreated      Event[]             @relation("EventCreator")
-  eventMediaUploads  EventMedia[]        @relation("EventMediaUploader")
-  donationSessions   DonationSession[]
-  receipts           Receipt[]
-  notificationLogs   NotificationLog[]
-  auditLogs          AuditLog[]
-  deviceTokens       DeviceToken[]
-  eventAttendance    EventAttendance[]
-  sermonLikes        SermonLike[]
-  sermonComments     SermonComment[]
-  sermonBookmarks    SermonBookmark[]
-  sermonViews        SermonView[]
-  sermonDownloads    SermonDownload[]
+  id                      String                        @id @default(cuid())
+  name                    String
+  email                   String                        @unique
+  emailVerified           DateTime?
+  image                   String?
+  profilePublicId         String?
+  password                String
+  role                    UserRole                      @default(MEMBER)
+  phone                   String?
+  address                 String?
+  createdAt               DateTime                      @default(now())
+  updatedAt               DateTime                      @updatedAt
+  donations               Donation[]
+  eventRegistrations      EventRegistration[]
+  prayerRequests          PrayerRequest[]
+  testimonials            Testimonial[]
+  eventReports            EventReport[]
+  mediaReports            MediaReport[]
+  eventsCreated           Event[]                       @relation("EventCreator")
+  eventMediaUploads       EventMedia[]                  @relation("EventMediaUploader")
+  donationSessions        DonationSession[]
+  receipts                Receipt[]
+  notificationLogs        NotificationLog[]
+  auditLogs               AuditLog[]
+  deviceTokens            DeviceToken[]
+  eventAttendance         EventAttendance[]
+  sermonLikes             SermonLike[]
+  sermonComments          SermonComment[]
+  sermonBookmarks         SermonBookmark[]
+  sermonViews             SermonView[]
+  sermonDownloads         SermonDownload[]
+  smsMessages             SmsMessage[]
+  notificationPreferences MemberNotificationPreference?
+  smsAuditLogs            SmsAuditLog[]
+  sessions                Session[]
+  issueReports            IssueReport[]
 
   @@map("members")
+}
+
+model Session {
+  id               String    @id @default(cuid())
+  userId           String
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessionTokenHash String    @unique
+  role             UserRole  @default(MEMBER)
+  createdAt        DateTime  @default(now())
+  expiresAt        DateTime
+  lastActivityAt   DateTime  @default(now())
+  ipHash           String?
+  userAgentHash    String?
+  revokedAt        DateTime?
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@index([sessionTokenHash])
+  @@map("sessions")
 }
 
 model Event {
@@ -1010,28 +1034,34 @@ model PaymentWebhook {
 }
 
 model NotificationLog {
-  id             String        @id @default(cuid())
-  notificationId String?       @map("notification_id")
-  notification   Notification? @relation(fields: [notificationId], references: [id], onDelete: SetNull)
-  recipientId    String?       @map("recipient_id")
-  recipient      User?         @relation(fields: [recipientId], references: [id], onDelete: SetNull)
-  recipientRole  UserRole?     @map("recipient_role")
+  id                String        @id @default(cuid())
+  notificationId    String?       @map("notification_id")
+  notification      Notification? @relation(fields: [notificationId], references: [id], onDelete: SetNull)
+  recipientId       String?       @map("recipient_id")
+  recipient         User?         @relation(fields: [recipientId], references: [id], onDelete: SetNull)
+  recipientRole     UserRole?     @map("recipient_role")
   // Donation-specific tracking fields
-  donationId     String?       @map("donation_id")
-  receiptId      String?       @map("receipt_id")
-  receiptNumber  String?       @map("receipt_number")
-  channel        String // SMS | WHATSAPP | EMAIL | PUSH | ADMIN_ALERT
-  status         String        @default("PENDING") // PENDING | SENT | FAILED | RETRYING | SKIPPED
-  recipient_addr String?       @map("recipient_addr") // phone number or email address
-  retryCount     Int           @default(0) @map("retry_count")
-  deliveredAt    DateTime?     @map("delivered_at")
-  errorMessage   String?       @map("error_message")
-  sentAt         DateTime      @default(now()) @map("sent_at")
-  updatedAt      DateTime      @updatedAt @map("updated_at")
+  donationId        String?       @map("donation_id")
+  receiptId         String?       @map("receipt_id")
+  receiptNumber     String?       @map("receipt_number")
+  channel           String // SMS | WHATSAPP | EMAIL | PUSH | ADMIN_ALERT
+  status            String        @default("PENDING") // PENDING | SENT | FAILED | RETRYING | SKIPPED
+  template          String? // Template identifier (e.g. WELCOME, LOGIN_ALERT, etc.)
+  subject           String? // Subject of the notification
+  providerMessageId String?       @map("provider_message_id")
+  recipient_addr    String?       @map("recipient_addr") // phone number or email address
+  retryCount        Int           @default(0) @map("retry_count")
+  deliveredAt       DateTime?     @map("delivered_at")
+  errorMessage      String?       @map("error_message")
+  metadata          String?       @db.Text
+  sentAt            DateTime      @default(now()) @map("sent_at")
+  updatedAt         DateTime      @updatedAt @map("updated_at")
 
   @@index([notificationId])
   @@index([recipientId])
   @@index([donationId])
+  @@index([status])
+  @@index([template])
   @@map("notification_logs")
 }
 
@@ -1185,8 +1215,8 @@ model HomepageHero {
   badgeText          String   @default("We are here for you 24/7") @map("badge_text")
   ctaPrimaryText     String   @default("Join Worship") @map("cta_primary_text")
   ctaPrimaryHref     String   @default("#services") @map("cta_primary_href")
-  ctaSecondaryText   String   @default("Watch Sermons") @map("cta_secondary_text")
-  ctaSecondaryHref   String   @default("#sermons") @map("cta_secondary_href")
+  ctaSecondaryText   String   @default("Watch Gallery") @map("cta_secondary_text")
+  ctaSecondaryHref   String   @default("/gallery") @map("cta_secondary_href")
   ctaTertiaryText    String   @default("Prayer Request") @map("cta_tertiary_text")
   ctaTertiaryHref    String   @default("/prayer") @map("cta_tertiary_href")
   backgroundImageUrl String?  @map("background_image_url")
@@ -1596,4 +1626,182 @@ model AIChatLog {
   @@index([provider])
   @@index([createdAt])
   @@map("ai_chat_logs")
+}
+
+// ─── Production httpSMS Integration Models ───────────────────────────────────
+
+enum SmsStatus {
+  QUEUED
+  PROCESSING
+  SENT
+  DELIVERED
+  FAILED
+  RETRYING
+  EXPIRED
+  CANCELLED
+}
+
+enum SmsErrorCode {
+  TRANSIENT_ERROR
+  PERMANENT_ERROR
+  RATE_LIMIT_ERROR
+  AUTH_ERROR
+  INVALID_NUMBER
+  EXPIRED_MESSAGE
+  GATEWAY_OFFLINE
+  UNKNOWN
+}
+
+model SmsMessage {
+  id                    String        @id @default(cuid())
+  notificationId        String?       @map("notification_id")
+  memberId              String?       @map("member_id")
+  member                User?         @relation(fields: [memberId], references: [id], onDelete: SetNull)
+  phoneNumber           String        @map("phone_number")
+  normalizedPhoneNumber String        @map("normalized_phone_number")
+  message               String        @db.Text
+  provider              String        @default("httpsms")
+  providerMessageId     String?       @unique @map("provider_message_id")
+  idempotencyKey        String?       @unique @map("idempotency_key")
+  status                SmsStatus     @default(QUEUED)
+  attempts              Int           @default(0)
+  maxAttempts           Int           @default(3) @map("max_attempts")
+  scheduledAt           DateTime?     @map("scheduled_at")
+  sentAt                DateTime?     @map("sent_at")
+  deliveredAt           DateTime?     @map("delivered_at")
+  failedAt              DateTime?     @map("failed_at")
+  expiresAt             DateTime?     @map("expires_at")
+  failureReason         String?       @map("failure_reason")
+  errorCode             SmsErrorCode? @map("error_code")
+  metadata              Json?         @default("{}")
+  createdAt             DateTime      @default(now()) @map("created_at")
+  updatedAt             DateTime      @updatedAt @map("updated_at")
+
+  @@index([memberId])
+  @@index([status])
+  @@index([providerMessageId])
+  @@index([createdAt])
+  @@index([scheduledAt])
+  @@index([normalizedPhoneNumber])
+  @@map("sms_messages")
+}
+
+model MemberNotificationPreference {
+  id              String   @id @default(cuid())
+  userId          String   @unique @map("user_id")
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  smsEnabled      Boolean  @default(true) @map("sms_enabled")
+  emailEnabled    Boolean  @default(true) @map("email_enabled")
+  pushEnabled     Boolean  @default(true) @map("push_enabled")
+  events          Boolean  @default(true)
+  sundayService   Boolean  @default(true) @map("sunday_service")
+  prayerMeetings  Boolean  @default(true) @map("prayer_meetings")
+  sermons         Boolean  @default(true)
+  specialPrograms Boolean  @default(true) @map("special_programs")
+  donations       Boolean  @default(true)
+  emergencyAlerts Boolean  @default(true) @map("emergency_alerts")
+  youthPrograms   Boolean  @default(true) @map("youth_programs")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("member_notification_preferences")
+}
+
+model SmsAuditLog {
+  id             String    @id @default(cuid())
+  userId         String?   @map("user_id")
+  user           User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  role           UserRole?
+  action         String // SMS_SENT | SMS_BROADCAST_CREATED | SMS_RETRY | SMS_CANCELLED | SMS_WEBHOOK_RECEIVED | SMS_PROVIDER_ERROR
+  recipientCount Int       @default(1) @map("recipient_count")
+  template       String?
+  provider       String    @default("httpsms")
+  ipAddress      String?   @map("ip_address")
+  userAgent      String?   @map("user_agent")
+  status         String    @default("SUCCESS") // SUCCESS | FAILURE | SKIPPED
+  metadata       Json?     @default("{}")
+  createdAt      DateTime  @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("sms_audit_logs")
+}
+
+enum IssueCategory {
+  SOMETHING_IS_BROKEN
+  PAGE_NOT_LOADING
+  LOGIN_ACCOUNT
+  MOBILE_RESPONSIVE
+  WEBSITE_DISPLAY
+  NETWORK_CONNECTION
+  BUG_UNEXPECTED
+  SUGGESTION
+  OTHER
+}
+
+enum IssueSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum IssueStatus {
+  OPEN
+  INVESTIGATING
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+  DUPLICATE
+}
+
+model IssueReport {
+  id                    String        @id @default(cuid())
+  reportId              String        @unique @map("report_id")
+  userId                String        @map("user_id")
+  user                  User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category              IssueCategory
+  title                 String
+  description           String        @db.Text
+  expectedBehavior      String?       @map("expected_behavior") @db.Text
+  actualBehavior        String?       @map("actual_behavior") @db.Text
+  severity              IssueSeverity @default(MEDIUM)
+  status                IssueStatus   @default(OPEN)
+  pageUrl               String?       @map("page_url") @db.Text
+  pagePath              String?       @map("page_path")
+  pageTitle             String?       @map("page_title")
+  referrer              String?       @db.Text
+  browser               String?
+  browserVersion        String?       @map("browser_version")
+  operatingSystem       String?       @map("operating_system")
+  deviceType            String?       @map("device_type")
+  viewportWidth         Int?          @map("viewport_width")
+  viewportHeight        Int?          @map("viewport_height")
+  screenWidth           Int?          @map("screen_width")
+  screenHeight          Int?          @map("screen_height")
+  timezone              String?
+  language              String?
+  onlineStatus          Boolean?      @map("online_status")
+  connectionType        String?       @map("connection_type")
+  appVersion            String?       @map("app_version")
+  errorType             String?       @map("error_type")
+  errorMessageSanitized String?       @map("error_message_sanitized") @db.Text
+  errorStackSanitized   String?       @map("error_stack_sanitized") @db.Text
+  correlationId         String?       @map("correlation_id")
+  screenshotUrl         String?       @map("screenshot_url") @db.Text
+  internalNotes         String?       @map("internal_notes") @db.Text
+  assignedTo            String?       @map("assigned_to")
+  createdAt             DateTime      @default(now()) @map("created_at")
+  updatedAt             DateTime      @updatedAt @map("updated_at")
+  resolvedAt            DateTime?     @map("resolved_at")
+  resolvedBy            String?       @map("resolved_by")
+
+  @@index([userId])
+  @@index([status])
+  @@index([severity])
+  @@index([category])
+  @@index([createdAt])
+  @@index([correlationId])
+  @@map("issue_reports")
 }

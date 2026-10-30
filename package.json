@@ -13,8 +13,10 @@
     "start": "npm run start -w frontend",
     "lint": "npm run lint -w frontend",
     "typecheck": "npm run typecheck -w frontend",
+    "typecheck:backend": "npm run typecheck -w backend",
     "i18n:check": "npm run i18n:check -w frontend",
     "test": "npm run test -w frontend",
+    "test:backend": "npm run test -w backend",
     "test:e2e": "npm run test:e2e -w frontend",
     "test:health": "npm run test:health -w frontend",
     "test:rbac": "npm run test:rbac -w frontend",
@@ -38,7 +40,10 @@
     "docker:prod:down": "docker compose -f docker/docker-compose.prod.yml down",
     "k8s:apply": "kubectl apply -k k8s/",
     "k8s:delete": "kubectl delete -k k8s/",
-    "k8s:status": "kubectl get all -n kcm-system"
+    "k8s:status": "kubectl get all -n kcm-system",
+    "build:backend": "npm run build -w backend",
+    "start:backend": "npm run start:modular -w backend",
+    "test:route-health": "npm run test:route-health -w frontend"
   },
   "devDependencies": {
     "concurrently": "^10.0.5"

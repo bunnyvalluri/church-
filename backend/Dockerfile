@@ -20,6 +20,7 @@ COPY . .
 
 # Generate Prisma Client if prisma schema exists
 RUN if [ -d "prisma" ]; then npx prisma generate; fi
+RUN npm run build
 
 # ── Stage 3: Minimal Production Runner ────────────────────────────────────────
 FROM node:22-alpine AS runner

@@ -15,6 +15,17 @@ require('dotenv').config({ path: path.join(__dirname, '.env'), override: true })
 // Load root .env as fallback for shared vars (DATABASE_URL, API keys, etc.)
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
+// Delegate to modern modular backend when enabled
+if (process.env.USE_MODULAR_BACKEND === 'true') {
+  try {
+    const { startServer } = require('./dist/bootstrap/server.js');
+    startServer();
+    return;
+  } catch (err) {
+    console.warn('[SERVER] Modular backend handoff failed, falling back to companion server:', err.message);
+  }
+}
+
 const app = express();
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));

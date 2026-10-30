@@ -9,7 +9,6 @@ import { BranchProvider } from "./BranchProvider";
 import RealtimePopupProvider from "./RealtimePopupProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
     () =>
@@ -28,6 +27,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <ThemeProvider
         attribute="class"
         defaultTheme="light"
+        forcedTheme="light"
         enableSystem={false}
         disableTransitionOnChange
         storageKey="kcm-theme"

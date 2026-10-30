@@ -413,6 +413,11 @@ export type MemberNotificationPreference = $Result.DefaultSelection<Prisma.$Memb
  * 
  */
 export type SmsAuditLog = $Result.DefaultSelection<Prisma.$SmsAuditLogPayload>
+/**
+ * Model IssueReport
+ * 
+ */
+export type IssueReport = $Result.DefaultSelection<Prisma.$IssueReportPayload>
 
 /**
  * Enums
@@ -592,6 +597,43 @@ export const SmsErrorCode: {
 
 export type SmsErrorCode = (typeof SmsErrorCode)[keyof typeof SmsErrorCode]
 
+
+export const IssueCategory: {
+  SOMETHING_IS_BROKEN: 'SOMETHING_IS_BROKEN',
+  PAGE_NOT_LOADING: 'PAGE_NOT_LOADING',
+  LOGIN_ACCOUNT: 'LOGIN_ACCOUNT',
+  MOBILE_RESPONSIVE: 'MOBILE_RESPONSIVE',
+  WEBSITE_DISPLAY: 'WEBSITE_DISPLAY',
+  NETWORK_CONNECTION: 'NETWORK_CONNECTION',
+  BUG_UNEXPECTED: 'BUG_UNEXPECTED',
+  SUGGESTION: 'SUGGESTION',
+  OTHER: 'OTHER'
+};
+
+export type IssueCategory = (typeof IssueCategory)[keyof typeof IssueCategory]
+
+
+export const IssueSeverity: {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH',
+  CRITICAL: 'CRITICAL'
+};
+
+export type IssueSeverity = (typeof IssueSeverity)[keyof typeof IssueSeverity]
+
+
+export const IssueStatus: {
+  OPEN: 'OPEN',
+  INVESTIGATING: 'INVESTIGATING',
+  IN_PROGRESS: 'IN_PROGRESS',
+  RESOLVED: 'RESOLVED',
+  CLOSED: 'CLOSED',
+  DUPLICATE: 'DUPLICATE'
+};
+
+export type IssueStatus = (typeof IssueStatus)[keyof typeof IssueStatus]
+
 }
 
 export type UserRole = $Enums.UserRole
@@ -657,6 +699,18 @@ export const SmsStatus: typeof $Enums.SmsStatus
 export type SmsErrorCode = $Enums.SmsErrorCode
 
 export const SmsErrorCode: typeof $Enums.SmsErrorCode
+
+export type IssueCategory = $Enums.IssueCategory
+
+export const IssueCategory: typeof $Enums.IssueCategory
+
+export type IssueSeverity = $Enums.IssueSeverity
+
+export const IssueSeverity: typeof $Enums.IssueSeverity
+
+export type IssueStatus = $Enums.IssueStatus
+
+export const IssueStatus: typeof $Enums.IssueStatus
 
 /**
  * ##  Prisma Client ʲˢ
@@ -1580,6 +1634,16 @@ export class PrismaClient<
     * ```
     */
   get smsAuditLog(): Prisma.SmsAuditLogDelegate<ExtArgs>;
+
+  /**
+   * `prisma.issueReport`: Exposes CRUD operations for the **IssueReport** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more IssueReports
+    * const issueReports = await prisma.issueReport.findMany()
+    * ```
+    */
+  get issueReport(): Prisma.IssueReportDelegate<ExtArgs>;
 }
 
 export namespace Prisma {
@@ -2100,7 +2164,8 @@ export namespace Prisma {
     AIChatLog: 'AIChatLog',
     SmsMessage: 'SmsMessage',
     MemberNotificationPreference: 'MemberNotificationPreference',
-    SmsAuditLog: 'SmsAuditLog'
+    SmsAuditLog: 'SmsAuditLog',
+    IssueReport: 'IssueReport'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -2116,7 +2181,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "user" | "session" | "event" | "eventMedia" | "eventImage" | "eventVideo" | "eventRegistration" | "sermon" | "sermonMedia" | "sermonAudio" | "sermonNotes" | "sermonView" | "sermonLike" | "sermonComment" | "sermonDownload" | "sermonBookmark" | "prayerRequest" | "donation" | "announcement" | "testimonial" | "ministry" | "pastor" | "gallery" | "contactMessage" | "notification" | "churchSettings" | "memberRequest" | "smallGroup" | "volunteer" | "bibleStudy" | "attendanceRecord" | "pledge" | "transaction" | "account" | "ngoProject" | "ngoMedia" | "ngoVolunteer" | "branch" | "eventReport" | "mediaReport" | "family" | "churchFeedback" | "givingHeroConfig" | "donationPurpose" | "donationAmount" | "donationFormField" | "donationSession" | "paymentTransaction" | "receipt" | "paymentWebhook" | "notificationLog" | "auditLog" | "deviceToken" | "churchService" | "eventCategory" | "eventAttendance" | "eventNotification" | "homepageHero" | "siteStatistic" | "siteContact" | "footerConfig" | "navigationItem" | "aboutConfig" | "donationAgentEvent" | "donationRetryJob" | "agentReachTask" | "agentReachSource" | "churchNewsArticle" | "firecrawlScrapeJob" | "sermonResearchSummary" | "churchNewsItem" | "bibleStudyResource" | "eventContentGenLog" | "ngoOpportunity" | "websiteMonitorTarget" | "websiteMonitorLog" | "aIChatLog" | "smsMessage" | "memberNotificationPreference" | "smsAuditLog"
+      modelProps: "user" | "session" | "event" | "eventMedia" | "eventImage" | "eventVideo" | "eventRegistration" | "sermon" | "sermonMedia" | "sermonAudio" | "sermonNotes" | "sermonView" | "sermonLike" | "sermonComment" | "sermonDownload" | "sermonBookmark" | "prayerRequest" | "donation" | "announcement" | "testimonial" | "ministry" | "pastor" | "gallery" | "contactMessage" | "notification" | "churchSettings" | "memberRequest" | "smallGroup" | "volunteer" | "bibleStudy" | "attendanceRecord" | "pledge" | "transaction" | "account" | "ngoProject" | "ngoMedia" | "ngoVolunteer" | "branch" | "eventReport" | "mediaReport" | "family" | "churchFeedback" | "givingHeroConfig" | "donationPurpose" | "donationAmount" | "donationFormField" | "donationSession" | "paymentTransaction" | "receipt" | "paymentWebhook" | "notificationLog" | "auditLog" | "deviceToken" | "churchService" | "eventCategory" | "eventAttendance" | "eventNotification" | "homepageHero" | "siteStatistic" | "siteContact" | "footerConfig" | "navigationItem" | "aboutConfig" | "donationAgentEvent" | "donationRetryJob" | "agentReachTask" | "agentReachSource" | "churchNewsArticle" | "firecrawlScrapeJob" | "sermonResearchSummary" | "churchNewsItem" | "bibleStudyResource" | "eventContentGenLog" | "ngoOpportunity" | "websiteMonitorTarget" | "websiteMonitorLog" | "aIChatLog" | "smsMessage" | "memberNotificationPreference" | "smsAuditLog" | "issueReport"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -7720,6 +7785,76 @@ export namespace Prisma {
           }
         }
       }
+      IssueReport: {
+        payload: Prisma.$IssueReportPayload<ExtArgs>
+        fields: Prisma.IssueReportFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.IssueReportFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$IssueReportPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.IssueReportFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$IssueReportPayload>
+          }
+          findFirst: {
+            args: Prisma.IssueReportFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$IssueReportPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.IssueReportFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$IssueReportPayload>
+          }
+          findMany: {
+            args: Prisma.IssueReportFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$IssueReportPayload>[]
+          }
+          create: {
+            args: Prisma.IssueReportCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$IssueReportPayload>
+          }
+          createMany: {
+            args: Prisma.IssueReportCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.IssueReportCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$IssueReportPayload>[]
+          }
+          delete: {
+            args: Prisma.IssueReportDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$IssueReportPayload>
+          }
+          update: {
+            args: Prisma.IssueReportUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$IssueReportPayload>
+          }
+          deleteMany: {
+            args: Prisma.IssueReportDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.IssueReportUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.IssueReportUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$IssueReportPayload>
+          }
+          aggregate: {
+            args: Prisma.IssueReportAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateIssueReport>
+          }
+          groupBy: {
+            args: Prisma.IssueReportGroupByArgs<ExtArgs>
+            result: $Utils.Optional<IssueReportGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.IssueReportCountArgs<ExtArgs>
+            result: $Utils.Optional<IssueReportCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -7903,6 +8038,7 @@ export namespace Prisma {
     smsMessages: number
     smsAuditLogs: number
     sessions: number
+    issueReports: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -7928,6 +8064,7 @@ export namespace Prisma {
     smsMessages?: boolean | UserCountOutputTypeCountSmsMessagesArgs
     smsAuditLogs?: boolean | UserCountOutputTypeCountSmsAuditLogsArgs
     sessions?: boolean | UserCountOutputTypeCountSessionsArgs
+    issueReports?: boolean | UserCountOutputTypeCountIssueReportsArgs
   }
 
   // Custom InputTypes
@@ -8093,6 +8230,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountSessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SessionWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountIssueReportsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: IssueReportWhereInput
   }
 
 
@@ -8873,6 +9017,7 @@ export namespace Prisma {
     notificationPreferences?: boolean | User$notificationPreferencesArgs<ExtArgs>
     smsAuditLogs?: boolean | User$smsAuditLogsArgs<ExtArgs>
     sessions?: boolean | User$sessionsArgs<ExtArgs>
+    issueReports?: boolean | User$issueReportsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -8930,6 +9075,7 @@ export namespace Prisma {
     notificationPreferences?: boolean | User$notificationPreferencesArgs<ExtArgs>
     smsAuditLogs?: boolean | User$smsAuditLogsArgs<ExtArgs>
     sessions?: boolean | User$sessionsArgs<ExtArgs>
+    issueReports?: boolean | User$issueReportsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -8960,6 +9106,7 @@ export namespace Prisma {
       notificationPreferences: Prisma.$MemberNotificationPreferencePayload<ExtArgs> | null
       smsAuditLogs: Prisma.$SmsAuditLogPayload<ExtArgs>[]
       sessions: Prisma.$SessionPayload<ExtArgs>[]
+      issueReports: Prisma.$IssueReportPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -9361,6 +9508,7 @@ export namespace Prisma {
     notificationPreferences<T extends User$notificationPreferencesArgs<ExtArgs> = {}>(args?: Subset<T, User$notificationPreferencesArgs<ExtArgs>>): Prisma__MemberNotificationPreferenceClient<$Result.GetResult<Prisma.$MemberNotificationPreferencePayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     smsAuditLogs<T extends User$smsAuditLogsArgs<ExtArgs> = {}>(args?: Subset<T, User$smsAuditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SmsAuditLogPayload<ExtArgs>, T, "findMany"> | Null>
     sessions<T extends User$sessionsArgs<ExtArgs> = {}>(args?: Subset<T, User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany"> | Null>
+    issueReports<T extends User$issueReportsArgs<ExtArgs> = {}>(args?: Subset<T, User$issueReportsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$IssueReportPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -10168,6 +10316,26 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: SessionScalarFieldEnum | SessionScalarFieldEnum[]
+  }
+
+  /**
+   * User.issueReports
+   */
+  export type User$issueReportsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the IssueReport
+     */
+    select?: IssueReportSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: IssueReportInclude<ExtArgs> | null
+    where?: IssueReportWhereInput
+    orderBy?: IssueReportOrderByWithRelationInput | IssueReportOrderByWithRelationInput[]
+    cursor?: IssueReportWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: IssueReportScalarFieldEnum | IssueReportScalarFieldEnum[]
   }
 
   /**
@@ -60577,10 +60745,14 @@ export namespace Prisma {
     receiptNumber: string | null
     channel: string | null
     status: string | null
+    template: string | null
+    subject: string | null
+    providerMessageId: string | null
     recipient_addr: string | null
     retryCount: number | null
     deliveredAt: Date | null
     errorMessage: string | null
+    metadata: string | null
     sentAt: Date | null
     updatedAt: Date | null
   }
@@ -60595,10 +60767,14 @@ export namespace Prisma {
     receiptNumber: string | null
     channel: string | null
     status: string | null
+    template: string | null
+    subject: string | null
+    providerMessageId: string | null
     recipient_addr: string | null
     retryCount: number | null
     deliveredAt: Date | null
     errorMessage: string | null
+    metadata: string | null
     sentAt: Date | null
     updatedAt: Date | null
   }
@@ -60613,10 +60789,14 @@ export namespace Prisma {
     receiptNumber: number
     channel: number
     status: number
+    template: number
+    subject: number
+    providerMessageId: number
     recipient_addr: number
     retryCount: number
     deliveredAt: number
     errorMessage: number
+    metadata: number
     sentAt: number
     updatedAt: number
     _all: number
@@ -60641,10 +60821,14 @@ export namespace Prisma {
     receiptNumber?: true
     channel?: true
     status?: true
+    template?: true
+    subject?: true
+    providerMessageId?: true
     recipient_addr?: true
     retryCount?: true
     deliveredAt?: true
     errorMessage?: true
+    metadata?: true
     sentAt?: true
     updatedAt?: true
   }
@@ -60659,10 +60843,14 @@ export namespace Prisma {
     receiptNumber?: true
     channel?: true
     status?: true
+    template?: true
+    subject?: true
+    providerMessageId?: true
     recipient_addr?: true
     retryCount?: true
     deliveredAt?: true
     errorMessage?: true
+    metadata?: true
     sentAt?: true
     updatedAt?: true
   }
@@ -60677,10 +60865,14 @@ export namespace Prisma {
     receiptNumber?: true
     channel?: true
     status?: true
+    template?: true
+    subject?: true
+    providerMessageId?: true
     recipient_addr?: true
     retryCount?: true
     deliveredAt?: true
     errorMessage?: true
+    metadata?: true
     sentAt?: true
     updatedAt?: true
     _all?: true
@@ -60782,10 +60974,14 @@ export namespace Prisma {
     receiptNumber: string | null
     channel: string
     status: string
+    template: string | null
+    subject: string | null
+    providerMessageId: string | null
     recipient_addr: string | null
     retryCount: number
     deliveredAt: Date | null
     errorMessage: string | null
+    metadata: string | null
     sentAt: Date
     updatedAt: Date
     _count: NotificationLogCountAggregateOutputType | null
@@ -60819,10 +61015,14 @@ export namespace Prisma {
     receiptNumber?: boolean
     channel?: boolean
     status?: boolean
+    template?: boolean
+    subject?: boolean
+    providerMessageId?: boolean
     recipient_addr?: boolean
     retryCount?: boolean
     deliveredAt?: boolean
     errorMessage?: boolean
+    metadata?: boolean
     sentAt?: boolean
     updatedAt?: boolean
     notification?: boolean | NotificationLog$notificationArgs<ExtArgs>
@@ -60839,10 +61039,14 @@ export namespace Prisma {
     receiptNumber?: boolean
     channel?: boolean
     status?: boolean
+    template?: boolean
+    subject?: boolean
+    providerMessageId?: boolean
     recipient_addr?: boolean
     retryCount?: boolean
     deliveredAt?: boolean
     errorMessage?: boolean
+    metadata?: boolean
     sentAt?: boolean
     updatedAt?: boolean
     notification?: boolean | NotificationLog$notificationArgs<ExtArgs>
@@ -60859,10 +61063,14 @@ export namespace Prisma {
     receiptNumber?: boolean
     channel?: boolean
     status?: boolean
+    template?: boolean
+    subject?: boolean
+    providerMessageId?: boolean
     recipient_addr?: boolean
     retryCount?: boolean
     deliveredAt?: boolean
     errorMessage?: boolean
+    metadata?: boolean
     sentAt?: boolean
     updatedAt?: boolean
   }
@@ -60892,10 +61100,14 @@ export namespace Prisma {
       receiptNumber: string | null
       channel: string
       status: string
+      template: string | null
+      subject: string | null
+      providerMessageId: string | null
       recipient_addr: string | null
       retryCount: number
       deliveredAt: Date | null
       errorMessage: string | null
+      metadata: string | null
       sentAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["notificationLog"]>
@@ -61302,10 +61514,14 @@ export namespace Prisma {
     readonly receiptNumber: FieldRef<"NotificationLog", 'String'>
     readonly channel: FieldRef<"NotificationLog", 'String'>
     readonly status: FieldRef<"NotificationLog", 'String'>
+    readonly template: FieldRef<"NotificationLog", 'String'>
+    readonly subject: FieldRef<"NotificationLog", 'String'>
+    readonly providerMessageId: FieldRef<"NotificationLog", 'String'>
     readonly recipient_addr: FieldRef<"NotificationLog", 'String'>
     readonly retryCount: FieldRef<"NotificationLog", 'Int'>
     readonly deliveredAt: FieldRef<"NotificationLog", 'DateTime'>
     readonly errorMessage: FieldRef<"NotificationLog", 'String'>
+    readonly metadata: FieldRef<"NotificationLog", 'String'>
     readonly sentAt: FieldRef<"NotificationLog", 'DateTime'>
     readonly updatedAt: FieldRef<"NotificationLog", 'DateTime'>
   }
@@ -90792,6 +91008,1381 @@ export namespace Prisma {
 
 
   /**
+   * Model IssueReport
+   */
+
+  export type AggregateIssueReport = {
+    _count: IssueReportCountAggregateOutputType | null
+    _avg: IssueReportAvgAggregateOutputType | null
+    _sum: IssueReportSumAggregateOutputType | null
+    _min: IssueReportMinAggregateOutputType | null
+    _max: IssueReportMaxAggregateOutputType | null
+  }
+
+  export type IssueReportAvgAggregateOutputType = {
+    viewportWidth: number | null
+    viewportHeight: number | null
+    screenWidth: number | null
+    screenHeight: number | null
+  }
+
+  export type IssueReportSumAggregateOutputType = {
+    viewportWidth: number | null
+    viewportHeight: number | null
+    screenWidth: number | null
+    screenHeight: number | null
+  }
+
+  export type IssueReportMinAggregateOutputType = {
+    id: string | null
+    reportId: string | null
+    userId: string | null
+    category: $Enums.IssueCategory | null
+    title: string | null
+    description: string | null
+    expectedBehavior: string | null
+    actualBehavior: string | null
+    severity: $Enums.IssueSeverity | null
+    status: $Enums.IssueStatus | null
+    pageUrl: string | null
+    pagePath: string | null
+    pageTitle: string | null
+    referrer: string | null
+    browser: string | null
+    browserVersion: string | null
+    operatingSystem: string | null
+    deviceType: string | null
+    viewportWidth: number | null
+    viewportHeight: number | null
+    screenWidth: number | null
+    screenHeight: number | null
+    timezone: string | null
+    language: string | null
+    onlineStatus: boolean | null
+    connectionType: string | null
+    appVersion: string | null
+    errorType: string | null
+    errorMessageSanitized: string | null
+    errorStackSanitized: string | null
+    correlationId: string | null
+    screenshotUrl: string | null
+    internalNotes: string | null
+    assignedTo: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    resolvedAt: Date | null
+    resolvedBy: string | null
+  }
+
+  export type IssueReportMaxAggregateOutputType = {
+    id: string | null
+    reportId: string | null
+    userId: string | null
+    category: $Enums.IssueCategory | null
+    title: string | null
+    description: string | null
+    expectedBehavior: string | null
+    actualBehavior: string | null
+    severity: $Enums.IssueSeverity | null
+    status: $Enums.IssueStatus | null
+    pageUrl: string | null
+    pagePath: string | null
+    pageTitle: string | null
+    referrer: string | null
+    browser: string | null
+    browserVersion: string | null
+    operatingSystem: string | null
+    deviceType: string | null
+    viewportWidth: number | null
+    viewportHeight: number | null
+    screenWidth: number | null
+    screenHeight: number | null
+    timezone: string | null
+    language: string | null
+    onlineStatus: boolean | null
+    connectionType: string | null
+    appVersion: string | null
+    errorType: string | null
+    errorMessageSanitized: string | null
+    errorStackSanitized: string | null
+    correlationId: string | null
+    screenshotUrl: string | null
+    internalNotes: string | null
+    assignedTo: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    resolvedAt: Date | null
+    resolvedBy: string | null
+  }
+
+  export type IssueReportCountAggregateOutputType = {
+    id: number
+    reportId: number
+    userId: number
+    category: number
+    title: number
+    description: number
+    expectedBehavior: number
+    actualBehavior: number
+    severity: number
+    status: number
+    pageUrl: number
+    pagePath: number
+    pageTitle: number
+    referrer: number
+    browser: number
+    browserVersion: number
+    operatingSystem: number
+    deviceType: number
+    viewportWidth: number
+    viewportHeight: number
+    screenWidth: number
+    screenHeight: number
+    timezone: number
+    language: number
+    onlineStatus: number
+    connectionType: number
+    appVersion: number
+    errorType: number
+    errorMessageSanitized: number
+    errorStackSanitized: number
+    correlationId: number
+    screenshotUrl: number
+    internalNotes: number
+    assignedTo: number
+    createdAt: number
+    updatedAt: number
+    resolvedAt: number
+    resolvedBy: number
+    _all: number
+  }
+
+
+  export type IssueReportAvgAggregateInputType = {
+    viewportWidth?: true
+    viewportHeight?: true
+    screenWidth?: true
+    screenHeight?: true
+  }
+
+  export type IssueReportSumAggregateInputType = {
+    viewportWidth?: true
+    viewportHeight?: true
+    screenWidth?: true
+    screenHeight?: true
+  }
+
+  export type IssueReportMinAggregateInputType = {
+    id?: true
+    reportId?: true
+    userId?: true
+    category?: true
+    title?: true
+    description?: true
+    expectedBehavior?: true
+    actualBehavior?: true
+    severity?: true
+    status?: true
+    pageUrl?: true
+    pagePath?: true
+    pageTitle?: true
+    referrer?: true
+    browser?: true
+    browserVersion?: true
+    operatingSystem?: true
+    deviceType?: true
+    viewportWidth?: true
+    viewportHeight?: true
+    screenWidth?: true
+    screenHeight?: true
+    timezone?: true
+    language?: true
+    onlineStatus?: true
+    connectionType?: true
+    appVersion?: true
+    errorType?: true
+    errorMessageSanitized?: true
+    errorStackSanitized?: true
+    correlationId?: true
+    screenshotUrl?: true
+    internalNotes?: true
+    assignedTo?: true
+    createdAt?: true
+    updatedAt?: true
+    resolvedAt?: true
+    resolvedBy?: true
+  }
+
+  export type IssueReportMaxAggregateInputType = {
+    id?: true
+    reportId?: true
+    userId?: true
+    category?: true
+    title?: true
+    description?: true
+    expectedBehavior?: true
+    actualBehavior?: true
+    severity?: true
+    status?: true
+    pageUrl?: true
+    pagePath?: true
+    pageTitle?: true
+    referrer?: true
+    browser?: true
+    browserVersion?: true
+    operatingSystem?: true
+    deviceType?: true
+    viewportWidth?: true
+    viewportHeight?: true
+    screenWidth?: true
+    screenHeight?: true
+    timezone?: true
+    language?: true
+    onlineStatus?: true
+    connectionType?: true
+    appVersion?: true
+    errorType?: true
+    errorMessageSanitized?: true
+    errorStackSanitized?: true
+    correlationId?: true
+    screenshotUrl?: true
+    internalNotes?: true
+    assignedTo?: true
+    createdAt?: true
+    updatedAt?: true
+    resolvedAt?: true
+    resolvedBy?: true
+  }
+
+  export type IssueReportCountAggregateInputType = {
+    id?: true
+    reportId?: true
+    userId?: true
+    category?: true
+    title?: true
+    description?: true
+    expectedBehavior?: true
+    actualBehavior?: true
+    severity?: true
+    status?: true
+    pageUrl?: true
+    pagePath?: true
+    pageTitle?: true
+    referrer?: true
+    browser?: true
+    browserVersion?: true
+    operatingSystem?: true
+    deviceType?: true
+    viewportWidth?: true
+    viewportHeight?: true
+    screenWidth?: true
+    screenHeight?: true
+    timezone?: true
+    language?: true
+    onlineStatus?: true
+    connectionType?: true
+    appVersion?: true
+    errorType?: true
+    errorMessageSanitized?: true
+    errorStackSanitized?: true
+    correlationId?: true
+    screenshotUrl?: true
+    internalNotes?: true
+    assignedTo?: true
+    createdAt?: true
+    updatedAt?: true
+    resolvedAt?: true
+    resolvedBy?: true
+    _all?: true
+  }
+
+  export type IssueReportAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which IssueReport to aggregate.
+     */
+    where?: IssueReportWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of IssueReports to fetch.
+     */
+    orderBy?: IssueReportOrderByWithRelationInput | IssueReportOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: IssueReportWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` IssueReports from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` IssueReports.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned IssueReports
+    **/
+    _count?: true | IssueReportCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: IssueReportAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: IssueReportSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: IssueReportMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: IssueReportMaxAggregateInputType
+  }
+
+  export type GetIssueReportAggregateType<T extends IssueReportAggregateArgs> = {
+        [P in keyof T & keyof AggregateIssueReport]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateIssueReport[P]>
+      : GetScalarType<T[P], AggregateIssueReport[P]>
+  }
+
+
+
+
+  export type IssueReportGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: IssueReportWhereInput
+    orderBy?: IssueReportOrderByWithAggregationInput | IssueReportOrderByWithAggregationInput[]
+    by: IssueReportScalarFieldEnum[] | IssueReportScalarFieldEnum
+    having?: IssueReportScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: IssueReportCountAggregateInputType | true
+    _avg?: IssueReportAvgAggregateInputType
+    _sum?: IssueReportSumAggregateInputType
+    _min?: IssueReportMinAggregateInputType
+    _max?: IssueReportMaxAggregateInputType
+  }
+
+  export type IssueReportGroupByOutputType = {
+    id: string
+    reportId: string
+    userId: string
+    category: $Enums.IssueCategory
+    title: string
+    description: string
+    expectedBehavior: string | null
+    actualBehavior: string | null
+    severity: $Enums.IssueSeverity
+    status: $Enums.IssueStatus
+    pageUrl: string | null
+    pagePath: string | null
+    pageTitle: string | null
+    referrer: string | null
+    browser: string | null
+    browserVersion: string | null
+    operatingSystem: string | null
+    deviceType: string | null
+    viewportWidth: number | null
+    viewportHeight: number | null
+    screenWidth: number | null
+    screenHeight: number | null
+    timezone: string | null
+    language: string | null
+    onlineStatus: boolean | null
+    connectionType: string | null
+    appVersion: string | null
+    errorType: string | null
+    errorMessageSanitized: string | null
+    errorStackSanitized: string | null
+    correlationId: string | null
+    screenshotUrl: string | null
+    internalNotes: string | null
+    assignedTo: string | null
+    createdAt: Date
+    updatedAt: Date
+    resolvedAt: Date | null
+    resolvedBy: string | null
+    _count: IssueReportCountAggregateOutputType | null
+    _avg: IssueReportAvgAggregateOutputType | null
+    _sum: IssueReportSumAggregateOutputType | null
+    _min: IssueReportMinAggregateOutputType | null
+    _max: IssueReportMaxAggregateOutputType | null
+  }
+
+  type GetIssueReportGroupByPayload<T extends IssueReportGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<IssueReportGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof IssueReportGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], IssueReportGroupByOutputType[P]>
+            : GetScalarType<T[P], IssueReportGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type IssueReportSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    reportId?: boolean
+    userId?: boolean
+    category?: boolean
+    title?: boolean
+    description?: boolean
+    expectedBehavior?: boolean
+    actualBehavior?: boolean
+    severity?: boolean
+    status?: boolean
+    pageUrl?: boolean
+    pagePath?: boolean
+    pageTitle?: boolean
+    referrer?: boolean
+    browser?: boolean
+    browserVersion?: boolean
+    operatingSystem?: boolean
+    deviceType?: boolean
+    viewportWidth?: boolean
+    viewportHeight?: boolean
+    screenWidth?: boolean
+    screenHeight?: boolean
+    timezone?: boolean
+    language?: boolean
+    onlineStatus?: boolean
+    connectionType?: boolean
+    appVersion?: boolean
+    errorType?: boolean
+    errorMessageSanitized?: boolean
+    errorStackSanitized?: boolean
+    correlationId?: boolean
+    screenshotUrl?: boolean
+    internalNotes?: boolean
+    assignedTo?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    resolvedAt?: boolean
+    resolvedBy?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["issueReport"]>
+
+  export type IssueReportSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    reportId?: boolean
+    userId?: boolean
+    category?: boolean
+    title?: boolean
+    description?: boolean
+    expectedBehavior?: boolean
+    actualBehavior?: boolean
+    severity?: boolean
+    status?: boolean
+    pageUrl?: boolean
+    pagePath?: boolean
+    pageTitle?: boolean
+    referrer?: boolean
+    browser?: boolean
+    browserVersion?: boolean
+    operatingSystem?: boolean
+    deviceType?: boolean
+    viewportWidth?: boolean
+    viewportHeight?: boolean
+    screenWidth?: boolean
+    screenHeight?: boolean
+    timezone?: boolean
+    language?: boolean
+    onlineStatus?: boolean
+    connectionType?: boolean
+    appVersion?: boolean
+    errorType?: boolean
+    errorMessageSanitized?: boolean
+    errorStackSanitized?: boolean
+    correlationId?: boolean
+    screenshotUrl?: boolean
+    internalNotes?: boolean
+    assignedTo?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    resolvedAt?: boolean
+    resolvedBy?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["issueReport"]>
+
+  export type IssueReportSelectScalar = {
+    id?: boolean
+    reportId?: boolean
+    userId?: boolean
+    category?: boolean
+    title?: boolean
+    description?: boolean
+    expectedBehavior?: boolean
+    actualBehavior?: boolean
+    severity?: boolean
+    status?: boolean
+    pageUrl?: boolean
+    pagePath?: boolean
+    pageTitle?: boolean
+    referrer?: boolean
+    browser?: boolean
+    browserVersion?: boolean
+    operatingSystem?: boolean
+    deviceType?: boolean
+    viewportWidth?: boolean
+    viewportHeight?: boolean
+    screenWidth?: boolean
+    screenHeight?: boolean
+    timezone?: boolean
+    language?: boolean
+    onlineStatus?: boolean
+    connectionType?: boolean
+    appVersion?: boolean
+    errorType?: boolean
+    errorMessageSanitized?: boolean
+    errorStackSanitized?: boolean
+    correlationId?: boolean
+    screenshotUrl?: boolean
+    internalNotes?: boolean
+    assignedTo?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    resolvedAt?: boolean
+    resolvedBy?: boolean
+  }
+
+  export type IssueReportInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type IssueReportIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $IssueReportPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "IssueReport"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      reportId: string
+      userId: string
+      category: $Enums.IssueCategory
+      title: string
+      description: string
+      expectedBehavior: string | null
+      actualBehavior: string | null
+      severity: $Enums.IssueSeverity
+      status: $Enums.IssueStatus
+      pageUrl: string | null
+      pagePath: string | null
+      pageTitle: string | null
+      referrer: string | null
+      browser: string | null
+      browserVersion: string | null
+      operatingSystem: string | null
+      deviceType: string | null
+      viewportWidth: number | null
+      viewportHeight: number | null
+      screenWidth: number | null
+      screenHeight: number | null
+      timezone: string | null
+      language: string | null
+      onlineStatus: boolean | null
+      connectionType: string | null
+      appVersion: string | null
+      errorType: string | null
+      errorMessageSanitized: string | null
+      errorStackSanitized: string | null
+      correlationId: string | null
+      screenshotUrl: string | null
+      internalNotes: string | null
+      assignedTo: string | null
+      createdAt: Date
+      updatedAt: Date
+      resolvedAt: Date | null
+      resolvedBy: string | null
+    }, ExtArgs["result"]["issueReport"]>
+    composites: {}
+  }
+
+  type IssueReportGetPayload<S extends boolean | null | undefined | IssueReportDefaultArgs> = $Result.GetResult<Prisma.$IssueReportPayload, S>
+
+  type IssueReportCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<IssueReportFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: IssueReportCountAggregateInputType | true
+    }
+
+  export interface IssueReportDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['IssueReport'], meta: { name: 'IssueReport' } }
+    /**
+     * Find zero or one IssueReport that matches the filter.
+     * @param {IssueReportFindUniqueArgs} args - Arguments to find a IssueReport
+     * @example
+     * // Get one IssueReport
+     * const issueReport = await prisma.issueReport.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends IssueReportFindUniqueArgs>(args: SelectSubset<T, IssueReportFindUniqueArgs<ExtArgs>>): Prisma__IssueReportClient<$Result.GetResult<Prisma.$IssueReportPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one IssueReport that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {IssueReportFindUniqueOrThrowArgs} args - Arguments to find a IssueReport
+     * @example
+     * // Get one IssueReport
+     * const issueReport = await prisma.issueReport.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends IssueReportFindUniqueOrThrowArgs>(args: SelectSubset<T, IssueReportFindUniqueOrThrowArgs<ExtArgs>>): Prisma__IssueReportClient<$Result.GetResult<Prisma.$IssueReportPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first IssueReport that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {IssueReportFindFirstArgs} args - Arguments to find a IssueReport
+     * @example
+     * // Get one IssueReport
+     * const issueReport = await prisma.issueReport.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends IssueReportFindFirstArgs>(args?: SelectSubset<T, IssueReportFindFirstArgs<ExtArgs>>): Prisma__IssueReportClient<$Result.GetResult<Prisma.$IssueReportPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first IssueReport that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {IssueReportFindFirstOrThrowArgs} args - Arguments to find a IssueReport
+     * @example
+     * // Get one IssueReport
+     * const issueReport = await prisma.issueReport.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends IssueReportFindFirstOrThrowArgs>(args?: SelectSubset<T, IssueReportFindFirstOrThrowArgs<ExtArgs>>): Prisma__IssueReportClient<$Result.GetResult<Prisma.$IssueReportPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more IssueReports that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {IssueReportFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all IssueReports
+     * const issueReports = await prisma.issueReport.findMany()
+     * 
+     * // Get first 10 IssueReports
+     * const issueReports = await prisma.issueReport.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const issueReportWithIdOnly = await prisma.issueReport.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends IssueReportFindManyArgs>(args?: SelectSubset<T, IssueReportFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$IssueReportPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a IssueReport.
+     * @param {IssueReportCreateArgs} args - Arguments to create a IssueReport.
+     * @example
+     * // Create one IssueReport
+     * const IssueReport = await prisma.issueReport.create({
+     *   data: {
+     *     // ... data to create a IssueReport
+     *   }
+     * })
+     * 
+     */
+    create<T extends IssueReportCreateArgs>(args: SelectSubset<T, IssueReportCreateArgs<ExtArgs>>): Prisma__IssueReportClient<$Result.GetResult<Prisma.$IssueReportPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many IssueReports.
+     * @param {IssueReportCreateManyArgs} args - Arguments to create many IssueReports.
+     * @example
+     * // Create many IssueReports
+     * const issueReport = await prisma.issueReport.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends IssueReportCreateManyArgs>(args?: SelectSubset<T, IssueReportCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many IssueReports and returns the data saved in the database.
+     * @param {IssueReportCreateManyAndReturnArgs} args - Arguments to create many IssueReports.
+     * @example
+     * // Create many IssueReports
+     * const issueReport = await prisma.issueReport.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many IssueReports and only return the `id`
+     * const issueReportWithIdOnly = await prisma.issueReport.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends IssueReportCreateManyAndReturnArgs>(args?: SelectSubset<T, IssueReportCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$IssueReportPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a IssueReport.
+     * @param {IssueReportDeleteArgs} args - Arguments to delete one IssueReport.
+     * @example
+     * // Delete one IssueReport
+     * const IssueReport = await prisma.issueReport.delete({
+     *   where: {
+     *     // ... filter to delete one IssueReport
+     *   }
+     * })
+     * 
+     */
+    delete<T extends IssueReportDeleteArgs>(args: SelectSubset<T, IssueReportDeleteArgs<ExtArgs>>): Prisma__IssueReportClient<$Result.GetResult<Prisma.$IssueReportPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one IssueReport.
+     * @param {IssueReportUpdateArgs} args - Arguments to update one IssueReport.
+     * @example
+     * // Update one IssueReport
+     * const issueReport = await prisma.issueReport.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends IssueReportUpdateArgs>(args: SelectSubset<T, IssueReportUpdateArgs<ExtArgs>>): Prisma__IssueReportClient<$Result.GetResult<Prisma.$IssueReportPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more IssueReports.
+     * @param {IssueReportDeleteManyArgs} args - Arguments to filter IssueReports to delete.
+     * @example
+     * // Delete a few IssueReports
+     * const { count } = await prisma.issueReport.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends IssueReportDeleteManyArgs>(args?: SelectSubset<T, IssueReportDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more IssueReports.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {IssueReportUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many IssueReports
+     * const issueReport = await prisma.issueReport.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends IssueReportUpdateManyArgs>(args: SelectSubset<T, IssueReportUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one IssueReport.
+     * @param {IssueReportUpsertArgs} args - Arguments to update or create a IssueReport.
+     * @example
+     * // Update or create a IssueReport
+     * const issueReport = await prisma.issueReport.upsert({
+     *   create: {
+     *     // ... data to create a IssueReport
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the IssueReport we want to update
+     *   }
+     * })
+     */
+    upsert<T extends IssueReportUpsertArgs>(args: SelectSubset<T, IssueReportUpsertArgs<ExtArgs>>): Prisma__IssueReportClient<$Result.GetResult<Prisma.$IssueReportPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of IssueReports.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {IssueReportCountArgs} args - Arguments to filter IssueReports to count.
+     * @example
+     * // Count the number of IssueReports
+     * const count = await prisma.issueReport.count({
+     *   where: {
+     *     // ... the filter for the IssueReports we want to count
+     *   }
+     * })
+    **/
+    count<T extends IssueReportCountArgs>(
+      args?: Subset<T, IssueReportCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], IssueReportCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a IssueReport.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {IssueReportAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends IssueReportAggregateArgs>(args: Subset<T, IssueReportAggregateArgs>): Prisma.PrismaPromise<GetIssueReportAggregateType<T>>
+
+    /**
+     * Group by IssueReport.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {IssueReportGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends IssueReportGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: IssueReportGroupByArgs['orderBy'] }
+        : { orderBy?: IssueReportGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, IssueReportGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetIssueReportGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the IssueReport model
+   */
+  readonly fields: IssueReportFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for IssueReport.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__IssueReportClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the IssueReport model
+   */ 
+  interface IssueReportFieldRefs {
+    readonly id: FieldRef<"IssueReport", 'String'>
+    readonly reportId: FieldRef<"IssueReport", 'String'>
+    readonly userId: FieldRef<"IssueReport", 'String'>
+    readonly category: FieldRef<"IssueReport", 'IssueCategory'>
+    readonly title: FieldRef<"IssueReport", 'String'>
+    readonly description: FieldRef<"IssueReport", 'String'>
+    readonly expectedBehavior: FieldRef<"IssueReport", 'String'>
+    readonly actualBehavior: FieldRef<"IssueReport", 'String'>
+    readonly severity: FieldRef<"IssueReport", 'IssueSeverity'>
+    readonly status: FieldRef<"IssueReport", 'IssueStatus'>
+    readonly pageUrl: FieldRef<"IssueReport", 'String'>
+    readonly pagePath: FieldRef<"IssueReport", 'String'>
+    readonly pageTitle: FieldRef<"IssueReport", 'String'>
+    readonly referrer: FieldRef<"IssueReport", 'String'>
+    readonly browser: FieldRef<"IssueReport", 'String'>
+    readonly browserVersion: FieldRef<"IssueReport", 'String'>
+    readonly operatingSystem: FieldRef<"IssueReport", 'String'>
+    readonly deviceType: FieldRef<"IssueReport", 'String'>
+    readonly viewportWidth: FieldRef<"IssueReport", 'Int'>
+    readonly viewportHeight: FieldRef<"IssueReport", 'Int'>
+    readonly screenWidth: FieldRef<"IssueReport", 'Int'>
+    readonly screenHeight: FieldRef<"IssueReport", 'Int'>
+    readonly timezone: FieldRef<"IssueReport", 'String'>
+    readonly language: FieldRef<"IssueReport", 'String'>
+    readonly onlineStatus: FieldRef<"IssueReport", 'Boolean'>
+    readonly connectionType: FieldRef<"IssueReport", 'String'>
+    readonly appVersion: FieldRef<"IssueReport", 'String'>
+    readonly errorType: FieldRef<"IssueReport", 'String'>
+    readonly errorMessageSanitized: FieldRef<"IssueReport", 'String'>
+    readonly errorStackSanitized: FieldRef<"IssueReport", 'String'>
+    readonly correlationId: FieldRef<"IssueReport", 'String'>
+    readonly screenshotUrl: FieldRef<"IssueReport", 'String'>
+    readonly internalNotes: FieldRef<"IssueReport", 'String'>
+    readonly assignedTo: FieldRef<"IssueReport", 'String'>
+    readonly createdAt: FieldRef<"IssueReport", 'DateTime'>
+    readonly updatedAt: FieldRef<"IssueReport", 'DateTime'>
+    readonly resolvedAt: FieldRef<"IssueReport", 'DateTime'>
+    readonly resolvedBy: FieldRef<"IssueReport", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * IssueReport findUnique
+   */
+  export type IssueReportFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the IssueReport
+     */
+    select?: IssueReportSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: IssueReportInclude<ExtArgs> | null
+    /**
+     * Filter, which IssueReport to fetch.
+     */
+    where: IssueReportWhereUniqueInput
+  }
+
+  /**
+   * IssueReport findUniqueOrThrow
+   */
+  export type IssueReportFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the IssueReport
+     */
+    select?: IssueReportSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: IssueReportInclude<ExtArgs> | null
+    /**
+     * Filter, which IssueReport to fetch.
+     */
+    where: IssueReportWhereUniqueInput
+  }
+
+  /**
+   * IssueReport findFirst
+   */
+  export type IssueReportFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the IssueReport
+     */
+    select?: IssueReportSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: IssueReportInclude<ExtArgs> | null
+    /**
+     * Filter, which IssueReport to fetch.
+     */
+    where?: IssueReportWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of IssueReports to fetch.
+     */
+    orderBy?: IssueReportOrderByWithRelationInput | IssueReportOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for IssueReports.
+     */
+    cursor?: IssueReportWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` IssueReports from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` IssueReports.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of IssueReports.
+     */
+    distinct?: IssueReportScalarFieldEnum | IssueReportScalarFieldEnum[]
+  }
+
+  /**
+   * IssueReport findFirstOrThrow
+   */
+  export type IssueReportFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the IssueReport
+     */
+    select?: IssueReportSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: IssueReportInclude<ExtArgs> | null
+    /**
+     * Filter, which IssueReport to fetch.
+     */
+    where?: IssueReportWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of IssueReports to fetch.
+     */
+    orderBy?: IssueReportOrderByWithRelationInput | IssueReportOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for IssueReports.
+     */
+    cursor?: IssueReportWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` IssueReports from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` IssueReports.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of IssueReports.
+     */
+    distinct?: IssueReportScalarFieldEnum | IssueReportScalarFieldEnum[]
+  }
+
+  /**
+   * IssueReport findMany
+   */
+  export type IssueReportFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the IssueReport
+     */
+    select?: IssueReportSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: IssueReportInclude<ExtArgs> | null
+    /**
+     * Filter, which IssueReports to fetch.
+     */
+    where?: IssueReportWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of IssueReports to fetch.
+     */
+    orderBy?: IssueReportOrderByWithRelationInput | IssueReportOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing IssueReports.
+     */
+    cursor?: IssueReportWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` IssueReports from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` IssueReports.
+     */
+    skip?: number
+    distinct?: IssueReportScalarFieldEnum | IssueReportScalarFieldEnum[]
+  }
+
+  /**
+   * IssueReport create
+   */
+  export type IssueReportCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the IssueReport
+     */
+    select?: IssueReportSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: IssueReportInclude<ExtArgs> | null
+    /**
+     * The data needed to create a IssueReport.
+     */
+    data: XOR<IssueReportCreateInput, IssueReportUncheckedCreateInput>
+  }
+
+  /**
+   * IssueReport createMany
+   */
+  export type IssueReportCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many IssueReports.
+     */
+    data: IssueReportCreateManyInput | IssueReportCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * IssueReport createManyAndReturn
+   */
+  export type IssueReportCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the IssueReport
+     */
+    select?: IssueReportSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many IssueReports.
+     */
+    data: IssueReportCreateManyInput | IssueReportCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: IssueReportIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * IssueReport update
+   */
+  export type IssueReportUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the IssueReport
+     */
+    select?: IssueReportSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: IssueReportInclude<ExtArgs> | null
+    /**
+     * The data needed to update a IssueReport.
+     */
+    data: XOR<IssueReportUpdateInput, IssueReportUncheckedUpdateInput>
+    /**
+     * Choose, which IssueReport to update.
+     */
+    where: IssueReportWhereUniqueInput
+  }
+
+  /**
+   * IssueReport updateMany
+   */
+  export type IssueReportUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update IssueReports.
+     */
+    data: XOR<IssueReportUpdateManyMutationInput, IssueReportUncheckedUpdateManyInput>
+    /**
+     * Filter which IssueReports to update
+     */
+    where?: IssueReportWhereInput
+  }
+
+  /**
+   * IssueReport upsert
+   */
+  export type IssueReportUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the IssueReport
+     */
+    select?: IssueReportSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: IssueReportInclude<ExtArgs> | null
+    /**
+     * The filter to search for the IssueReport to update in case it exists.
+     */
+    where: IssueReportWhereUniqueInput
+    /**
+     * In case the IssueReport found by the `where` argument doesn't exist, create a new IssueReport with this data.
+     */
+    create: XOR<IssueReportCreateInput, IssueReportUncheckedCreateInput>
+    /**
+     * In case the IssueReport was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<IssueReportUpdateInput, IssueReportUncheckedUpdateInput>
+  }
+
+  /**
+   * IssueReport delete
+   */
+  export type IssueReportDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the IssueReport
+     */
+    select?: IssueReportSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: IssueReportInclude<ExtArgs> | null
+    /**
+     * Filter which IssueReport to delete.
+     */
+    where: IssueReportWhereUniqueInput
+  }
+
+  /**
+   * IssueReport deleteMany
+   */
+  export type IssueReportDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which IssueReports to delete
+     */
+    where?: IssueReportWhereInput
+  }
+
+  /**
+   * IssueReport without action
+   */
+  export type IssueReportDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the IssueReport
+     */
+    select?: IssueReportSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: IssueReportInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -91689,10 +93280,14 @@ export namespace Prisma {
     receiptNumber: 'receiptNumber',
     channel: 'channel',
     status: 'status',
+    template: 'template',
+    subject: 'subject',
+    providerMessageId: 'providerMessageId',
     recipient_addr: 'recipient_addr',
     retryCount: 'retryCount',
     deliveredAt: 'deliveredAt',
     errorMessage: 'errorMessage',
+    metadata: 'metadata',
     sentAt: 'sentAt',
     updatedAt: 'updatedAt'
   };
@@ -92240,6 +93835,50 @@ export namespace Prisma {
   export type SmsAuditLogScalarFieldEnum = (typeof SmsAuditLogScalarFieldEnum)[keyof typeof SmsAuditLogScalarFieldEnum]
 
 
+  export const IssueReportScalarFieldEnum: {
+    id: 'id',
+    reportId: 'reportId',
+    userId: 'userId',
+    category: 'category',
+    title: 'title',
+    description: 'description',
+    expectedBehavior: 'expectedBehavior',
+    actualBehavior: 'actualBehavior',
+    severity: 'severity',
+    status: 'status',
+    pageUrl: 'pageUrl',
+    pagePath: 'pagePath',
+    pageTitle: 'pageTitle',
+    referrer: 'referrer',
+    browser: 'browser',
+    browserVersion: 'browserVersion',
+    operatingSystem: 'operatingSystem',
+    deviceType: 'deviceType',
+    viewportWidth: 'viewportWidth',
+    viewportHeight: 'viewportHeight',
+    screenWidth: 'screenWidth',
+    screenHeight: 'screenHeight',
+    timezone: 'timezone',
+    language: 'language',
+    onlineStatus: 'onlineStatus',
+    connectionType: 'connectionType',
+    appVersion: 'appVersion',
+    errorType: 'errorType',
+    errorMessageSanitized: 'errorMessageSanitized',
+    errorStackSanitized: 'errorStackSanitized',
+    correlationId: 'correlationId',
+    screenshotUrl: 'screenshotUrl',
+    internalNotes: 'internalNotes',
+    assignedTo: 'assignedTo',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    resolvedAt: 'resolvedAt',
+    resolvedBy: 'resolvedBy'
+  };
+
+  export type IssueReportScalarFieldEnum = (typeof IssueReportScalarFieldEnum)[keyof typeof IssueReportScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -92585,6 +94224,48 @@ export namespace Prisma {
    */
   export type ListEnumSmsErrorCodeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SmsErrorCode[]'>
     
+
+
+  /**
+   * Reference to a field of type 'IssueCategory'
+   */
+  export type EnumIssueCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'IssueCategory'>
+    
+
+
+  /**
+   * Reference to a field of type 'IssueCategory[]'
+   */
+  export type ListEnumIssueCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'IssueCategory[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'IssueSeverity'
+   */
+  export type EnumIssueSeverityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'IssueSeverity'>
+    
+
+
+  /**
+   * Reference to a field of type 'IssueSeverity[]'
+   */
+  export type ListEnumIssueSeverityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'IssueSeverity[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'IssueStatus'
+   */
+  export type EnumIssueStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'IssueStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'IssueStatus[]'
+   */
+  export type ListEnumIssueStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'IssueStatus[]'>
+    
   /**
    * Deep Input Types
    */
@@ -92629,6 +94310,7 @@ export namespace Prisma {
     notificationPreferences?: XOR<MemberNotificationPreferenceNullableRelationFilter, MemberNotificationPreferenceWhereInput> | null
     smsAuditLogs?: SmsAuditLogListRelationFilter
     sessions?: SessionListRelationFilter
+    issueReports?: IssueReportListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -92667,6 +94349,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceOrderByWithRelationInput
     smsAuditLogs?: SmsAuditLogOrderByRelationAggregateInput
     sessions?: SessionOrderByRelationAggregateInput
+    issueReports?: IssueReportOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -92708,6 +94391,7 @@ export namespace Prisma {
     notificationPreferences?: XOR<MemberNotificationPreferenceNullableRelationFilter, MemberNotificationPreferenceWhereInput> | null
     smsAuditLogs?: SmsAuditLogListRelationFilter
     sessions?: SessionListRelationFilter
+    issueReports?: IssueReportListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -97162,10 +98846,14 @@ export namespace Prisma {
     receiptNumber?: StringNullableFilter<"NotificationLog"> | string | null
     channel?: StringFilter<"NotificationLog"> | string
     status?: StringFilter<"NotificationLog"> | string
+    template?: StringNullableFilter<"NotificationLog"> | string | null
+    subject?: StringNullableFilter<"NotificationLog"> | string | null
+    providerMessageId?: StringNullableFilter<"NotificationLog"> | string | null
     recipient_addr?: StringNullableFilter<"NotificationLog"> | string | null
     retryCount?: IntFilter<"NotificationLog"> | number
     deliveredAt?: DateTimeNullableFilter<"NotificationLog"> | Date | string | null
     errorMessage?: StringNullableFilter<"NotificationLog"> | string | null
+    metadata?: StringNullableFilter<"NotificationLog"> | string | null
     sentAt?: DateTimeFilter<"NotificationLog"> | Date | string
     updatedAt?: DateTimeFilter<"NotificationLog"> | Date | string
     notification?: XOR<NotificationNullableRelationFilter, NotificationWhereInput> | null
@@ -97182,10 +98870,14 @@ export namespace Prisma {
     receiptNumber?: SortOrderInput | SortOrder
     channel?: SortOrder
     status?: SortOrder
+    template?: SortOrderInput | SortOrder
+    subject?: SortOrderInput | SortOrder
+    providerMessageId?: SortOrderInput | SortOrder
     recipient_addr?: SortOrderInput | SortOrder
     retryCount?: SortOrder
     deliveredAt?: SortOrderInput | SortOrder
     errorMessage?: SortOrderInput | SortOrder
+    metadata?: SortOrderInput | SortOrder
     sentAt?: SortOrder
     updatedAt?: SortOrder
     notification?: NotificationOrderByWithRelationInput
@@ -97205,10 +98897,14 @@ export namespace Prisma {
     receiptNumber?: StringNullableFilter<"NotificationLog"> | string | null
     channel?: StringFilter<"NotificationLog"> | string
     status?: StringFilter<"NotificationLog"> | string
+    template?: StringNullableFilter<"NotificationLog"> | string | null
+    subject?: StringNullableFilter<"NotificationLog"> | string | null
+    providerMessageId?: StringNullableFilter<"NotificationLog"> | string | null
     recipient_addr?: StringNullableFilter<"NotificationLog"> | string | null
     retryCount?: IntFilter<"NotificationLog"> | number
     deliveredAt?: DateTimeNullableFilter<"NotificationLog"> | Date | string | null
     errorMessage?: StringNullableFilter<"NotificationLog"> | string | null
+    metadata?: StringNullableFilter<"NotificationLog"> | string | null
     sentAt?: DateTimeFilter<"NotificationLog"> | Date | string
     updatedAt?: DateTimeFilter<"NotificationLog"> | Date | string
     notification?: XOR<NotificationNullableRelationFilter, NotificationWhereInput> | null
@@ -97225,10 +98921,14 @@ export namespace Prisma {
     receiptNumber?: SortOrderInput | SortOrder
     channel?: SortOrder
     status?: SortOrder
+    template?: SortOrderInput | SortOrder
+    subject?: SortOrderInput | SortOrder
+    providerMessageId?: SortOrderInput | SortOrder
     recipient_addr?: SortOrderInput | SortOrder
     retryCount?: SortOrder
     deliveredAt?: SortOrderInput | SortOrder
     errorMessage?: SortOrderInput | SortOrder
+    metadata?: SortOrderInput | SortOrder
     sentAt?: SortOrder
     updatedAt?: SortOrder
     _count?: NotificationLogCountOrderByAggregateInput
@@ -97251,10 +98951,14 @@ export namespace Prisma {
     receiptNumber?: StringNullableWithAggregatesFilter<"NotificationLog"> | string | null
     channel?: StringWithAggregatesFilter<"NotificationLog"> | string
     status?: StringWithAggregatesFilter<"NotificationLog"> | string
+    template?: StringNullableWithAggregatesFilter<"NotificationLog"> | string | null
+    subject?: StringNullableWithAggregatesFilter<"NotificationLog"> | string | null
+    providerMessageId?: StringNullableWithAggregatesFilter<"NotificationLog"> | string | null
     recipient_addr?: StringNullableWithAggregatesFilter<"NotificationLog"> | string | null
     retryCount?: IntWithAggregatesFilter<"NotificationLog"> | number
     deliveredAt?: DateTimeNullableWithAggregatesFilter<"NotificationLog"> | Date | string | null
     errorMessage?: StringNullableWithAggregatesFilter<"NotificationLog"> | string | null
+    metadata?: StringNullableWithAggregatesFilter<"NotificationLog"> | string | null
     sentAt?: DateTimeWithAggregatesFilter<"NotificationLog"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"NotificationLog"> | Date | string
   }
@@ -99930,6 +101634,228 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"SmsAuditLog"> | Date | string
   }
 
+  export type IssueReportWhereInput = {
+    AND?: IssueReportWhereInput | IssueReportWhereInput[]
+    OR?: IssueReportWhereInput[]
+    NOT?: IssueReportWhereInput | IssueReportWhereInput[]
+    id?: StringFilter<"IssueReport"> | string
+    reportId?: StringFilter<"IssueReport"> | string
+    userId?: StringFilter<"IssueReport"> | string
+    category?: EnumIssueCategoryFilter<"IssueReport"> | $Enums.IssueCategory
+    title?: StringFilter<"IssueReport"> | string
+    description?: StringFilter<"IssueReport"> | string
+    expectedBehavior?: StringNullableFilter<"IssueReport"> | string | null
+    actualBehavior?: StringNullableFilter<"IssueReport"> | string | null
+    severity?: EnumIssueSeverityFilter<"IssueReport"> | $Enums.IssueSeverity
+    status?: EnumIssueStatusFilter<"IssueReport"> | $Enums.IssueStatus
+    pageUrl?: StringNullableFilter<"IssueReport"> | string | null
+    pagePath?: StringNullableFilter<"IssueReport"> | string | null
+    pageTitle?: StringNullableFilter<"IssueReport"> | string | null
+    referrer?: StringNullableFilter<"IssueReport"> | string | null
+    browser?: StringNullableFilter<"IssueReport"> | string | null
+    browserVersion?: StringNullableFilter<"IssueReport"> | string | null
+    operatingSystem?: StringNullableFilter<"IssueReport"> | string | null
+    deviceType?: StringNullableFilter<"IssueReport"> | string | null
+    viewportWidth?: IntNullableFilter<"IssueReport"> | number | null
+    viewportHeight?: IntNullableFilter<"IssueReport"> | number | null
+    screenWidth?: IntNullableFilter<"IssueReport"> | number | null
+    screenHeight?: IntNullableFilter<"IssueReport"> | number | null
+    timezone?: StringNullableFilter<"IssueReport"> | string | null
+    language?: StringNullableFilter<"IssueReport"> | string | null
+    onlineStatus?: BoolNullableFilter<"IssueReport"> | boolean | null
+    connectionType?: StringNullableFilter<"IssueReport"> | string | null
+    appVersion?: StringNullableFilter<"IssueReport"> | string | null
+    errorType?: StringNullableFilter<"IssueReport"> | string | null
+    errorMessageSanitized?: StringNullableFilter<"IssueReport"> | string | null
+    errorStackSanitized?: StringNullableFilter<"IssueReport"> | string | null
+    correlationId?: StringNullableFilter<"IssueReport"> | string | null
+    screenshotUrl?: StringNullableFilter<"IssueReport"> | string | null
+    internalNotes?: StringNullableFilter<"IssueReport"> | string | null
+    assignedTo?: StringNullableFilter<"IssueReport"> | string | null
+    createdAt?: DateTimeFilter<"IssueReport"> | Date | string
+    updatedAt?: DateTimeFilter<"IssueReport"> | Date | string
+    resolvedAt?: DateTimeNullableFilter<"IssueReport"> | Date | string | null
+    resolvedBy?: StringNullableFilter<"IssueReport"> | string | null
+    user?: XOR<UserRelationFilter, UserWhereInput>
+  }
+
+  export type IssueReportOrderByWithRelationInput = {
+    id?: SortOrder
+    reportId?: SortOrder
+    userId?: SortOrder
+    category?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    expectedBehavior?: SortOrderInput | SortOrder
+    actualBehavior?: SortOrderInput | SortOrder
+    severity?: SortOrder
+    status?: SortOrder
+    pageUrl?: SortOrderInput | SortOrder
+    pagePath?: SortOrderInput | SortOrder
+    pageTitle?: SortOrderInput | SortOrder
+    referrer?: SortOrderInput | SortOrder
+    browser?: SortOrderInput | SortOrder
+    browserVersion?: SortOrderInput | SortOrder
+    operatingSystem?: SortOrderInput | SortOrder
+    deviceType?: SortOrderInput | SortOrder
+    viewportWidth?: SortOrderInput | SortOrder
+    viewportHeight?: SortOrderInput | SortOrder
+    screenWidth?: SortOrderInput | SortOrder
+    screenHeight?: SortOrderInput | SortOrder
+    timezone?: SortOrderInput | SortOrder
+    language?: SortOrderInput | SortOrder
+    onlineStatus?: SortOrderInput | SortOrder
+    connectionType?: SortOrderInput | SortOrder
+    appVersion?: SortOrderInput | SortOrder
+    errorType?: SortOrderInput | SortOrder
+    errorMessageSanitized?: SortOrderInput | SortOrder
+    errorStackSanitized?: SortOrderInput | SortOrder
+    correlationId?: SortOrderInput | SortOrder
+    screenshotUrl?: SortOrderInput | SortOrder
+    internalNotes?: SortOrderInput | SortOrder
+    assignedTo?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    resolvedAt?: SortOrderInput | SortOrder
+    resolvedBy?: SortOrderInput | SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type IssueReportWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    reportId?: string
+    AND?: IssueReportWhereInput | IssueReportWhereInput[]
+    OR?: IssueReportWhereInput[]
+    NOT?: IssueReportWhereInput | IssueReportWhereInput[]
+    userId?: StringFilter<"IssueReport"> | string
+    category?: EnumIssueCategoryFilter<"IssueReport"> | $Enums.IssueCategory
+    title?: StringFilter<"IssueReport"> | string
+    description?: StringFilter<"IssueReport"> | string
+    expectedBehavior?: StringNullableFilter<"IssueReport"> | string | null
+    actualBehavior?: StringNullableFilter<"IssueReport"> | string | null
+    severity?: EnumIssueSeverityFilter<"IssueReport"> | $Enums.IssueSeverity
+    status?: EnumIssueStatusFilter<"IssueReport"> | $Enums.IssueStatus
+    pageUrl?: StringNullableFilter<"IssueReport"> | string | null
+    pagePath?: StringNullableFilter<"IssueReport"> | string | null
+    pageTitle?: StringNullableFilter<"IssueReport"> | string | null
+    referrer?: StringNullableFilter<"IssueReport"> | string | null
+    browser?: StringNullableFilter<"IssueReport"> | string | null
+    browserVersion?: StringNullableFilter<"IssueReport"> | string | null
+    operatingSystem?: StringNullableFilter<"IssueReport"> | string | null
+    deviceType?: StringNullableFilter<"IssueReport"> | string | null
+    viewportWidth?: IntNullableFilter<"IssueReport"> | number | null
+    viewportHeight?: IntNullableFilter<"IssueReport"> | number | null
+    screenWidth?: IntNullableFilter<"IssueReport"> | number | null
+    screenHeight?: IntNullableFilter<"IssueReport"> | number | null
+    timezone?: StringNullableFilter<"IssueReport"> | string | null
+    language?: StringNullableFilter<"IssueReport"> | string | null
+    onlineStatus?: BoolNullableFilter<"IssueReport"> | boolean | null
+    connectionType?: StringNullableFilter<"IssueReport"> | string | null
+    appVersion?: StringNullableFilter<"IssueReport"> | string | null
+    errorType?: StringNullableFilter<"IssueReport"> | string | null
+    errorMessageSanitized?: StringNullableFilter<"IssueReport"> | string | null
+    errorStackSanitized?: StringNullableFilter<"IssueReport"> | string | null
+    correlationId?: StringNullableFilter<"IssueReport"> | string | null
+    screenshotUrl?: StringNullableFilter<"IssueReport"> | string | null
+    internalNotes?: StringNullableFilter<"IssueReport"> | string | null
+    assignedTo?: StringNullableFilter<"IssueReport"> | string | null
+    createdAt?: DateTimeFilter<"IssueReport"> | Date | string
+    updatedAt?: DateTimeFilter<"IssueReport"> | Date | string
+    resolvedAt?: DateTimeNullableFilter<"IssueReport"> | Date | string | null
+    resolvedBy?: StringNullableFilter<"IssueReport"> | string | null
+    user?: XOR<UserRelationFilter, UserWhereInput>
+  }, "id" | "reportId">
+
+  export type IssueReportOrderByWithAggregationInput = {
+    id?: SortOrder
+    reportId?: SortOrder
+    userId?: SortOrder
+    category?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    expectedBehavior?: SortOrderInput | SortOrder
+    actualBehavior?: SortOrderInput | SortOrder
+    severity?: SortOrder
+    status?: SortOrder
+    pageUrl?: SortOrderInput | SortOrder
+    pagePath?: SortOrderInput | SortOrder
+    pageTitle?: SortOrderInput | SortOrder
+    referrer?: SortOrderInput | SortOrder
+    browser?: SortOrderInput | SortOrder
+    browserVersion?: SortOrderInput | SortOrder
+    operatingSystem?: SortOrderInput | SortOrder
+    deviceType?: SortOrderInput | SortOrder
+    viewportWidth?: SortOrderInput | SortOrder
+    viewportHeight?: SortOrderInput | SortOrder
+    screenWidth?: SortOrderInput | SortOrder
+    screenHeight?: SortOrderInput | SortOrder
+    timezone?: SortOrderInput | SortOrder
+    language?: SortOrderInput | SortOrder
+    onlineStatus?: SortOrderInput | SortOrder
+    connectionType?: SortOrderInput | SortOrder
+    appVersion?: SortOrderInput | SortOrder
+    errorType?: SortOrderInput | SortOrder
+    errorMessageSanitized?: SortOrderInput | SortOrder
+    errorStackSanitized?: SortOrderInput | SortOrder
+    correlationId?: SortOrderInput | SortOrder
+    screenshotUrl?: SortOrderInput | SortOrder
+    internalNotes?: SortOrderInput | SortOrder
+    assignedTo?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    resolvedAt?: SortOrderInput | SortOrder
+    resolvedBy?: SortOrderInput | SortOrder
+    _count?: IssueReportCountOrderByAggregateInput
+    _avg?: IssueReportAvgOrderByAggregateInput
+    _max?: IssueReportMaxOrderByAggregateInput
+    _min?: IssueReportMinOrderByAggregateInput
+    _sum?: IssueReportSumOrderByAggregateInput
+  }
+
+  export type IssueReportScalarWhereWithAggregatesInput = {
+    AND?: IssueReportScalarWhereWithAggregatesInput | IssueReportScalarWhereWithAggregatesInput[]
+    OR?: IssueReportScalarWhereWithAggregatesInput[]
+    NOT?: IssueReportScalarWhereWithAggregatesInput | IssueReportScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"IssueReport"> | string
+    reportId?: StringWithAggregatesFilter<"IssueReport"> | string
+    userId?: StringWithAggregatesFilter<"IssueReport"> | string
+    category?: EnumIssueCategoryWithAggregatesFilter<"IssueReport"> | $Enums.IssueCategory
+    title?: StringWithAggregatesFilter<"IssueReport"> | string
+    description?: StringWithAggregatesFilter<"IssueReport"> | string
+    expectedBehavior?: StringNullableWithAggregatesFilter<"IssueReport"> | string | null
+    actualBehavior?: StringNullableWithAggregatesFilter<"IssueReport"> | string | null
+    severity?: EnumIssueSeverityWithAggregatesFilter<"IssueReport"> | $Enums.IssueSeverity
+    status?: EnumIssueStatusWithAggregatesFilter<"IssueReport"> | $Enums.IssueStatus
+    pageUrl?: StringNullableWithAggregatesFilter<"IssueReport"> | string | null
+    pagePath?: StringNullableWithAggregatesFilter<"IssueReport"> | string | null
+    pageTitle?: StringNullableWithAggregatesFilter<"IssueReport"> | string | null
+    referrer?: StringNullableWithAggregatesFilter<"IssueReport"> | string | null
+    browser?: StringNullableWithAggregatesFilter<"IssueReport"> | string | null
+    browserVersion?: StringNullableWithAggregatesFilter<"IssueReport"> | string | null
+    operatingSystem?: StringNullableWithAggregatesFilter<"IssueReport"> | string | null
+    deviceType?: StringNullableWithAggregatesFilter<"IssueReport"> | string | null
+    viewportWidth?: IntNullableWithAggregatesFilter<"IssueReport"> | number | null
+    viewportHeight?: IntNullableWithAggregatesFilter<"IssueReport"> | number | null
+    screenWidth?: IntNullableWithAggregatesFilter<"IssueReport"> | number | null
+    screenHeight?: IntNullableWithAggregatesFilter<"IssueReport"> | number | null
+    timezone?: StringNullableWithAggregatesFilter<"IssueReport"> | string | null
+    language?: StringNullableWithAggregatesFilter<"IssueReport"> | string | null
+    onlineStatus?: BoolNullableWithAggregatesFilter<"IssueReport"> | boolean | null
+    connectionType?: StringNullableWithAggregatesFilter<"IssueReport"> | string | null
+    appVersion?: StringNullableWithAggregatesFilter<"IssueReport"> | string | null
+    errorType?: StringNullableWithAggregatesFilter<"IssueReport"> | string | null
+    errorMessageSanitized?: StringNullableWithAggregatesFilter<"IssueReport"> | string | null
+    errorStackSanitized?: StringNullableWithAggregatesFilter<"IssueReport"> | string | null
+    correlationId?: StringNullableWithAggregatesFilter<"IssueReport"> | string | null
+    screenshotUrl?: StringNullableWithAggregatesFilter<"IssueReport"> | string | null
+    internalNotes?: StringNullableWithAggregatesFilter<"IssueReport"> | string | null
+    assignedTo?: StringNullableWithAggregatesFilter<"IssueReport"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"IssueReport"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"IssueReport"> | Date | string
+    resolvedAt?: DateTimeNullableWithAggregatesFilter<"IssueReport"> | Date | string | null
+    resolvedBy?: StringNullableWithAggregatesFilter<"IssueReport"> | string | null
+  }
+
   export type UserCreateInput = {
     id?: string
     name: string
@@ -99966,6 +101892,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -100004,6 +101931,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -100042,6 +101970,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -100080,6 +102009,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -105183,10 +107113,14 @@ export namespace Prisma {
     receiptNumber?: string | null
     channel: string
     status?: string
+    template?: string | null
+    subject?: string | null
+    providerMessageId?: string | null
     recipient_addr?: string | null
     retryCount?: number
     deliveredAt?: Date | string | null
     errorMessage?: string | null
+    metadata?: string | null
     sentAt?: Date | string
     updatedAt?: Date | string
     notification?: NotificationCreateNestedOneWithoutNotificationLogsInput
@@ -105203,10 +107137,14 @@ export namespace Prisma {
     receiptNumber?: string | null
     channel: string
     status?: string
+    template?: string | null
+    subject?: string | null
+    providerMessageId?: string | null
     recipient_addr?: string | null
     retryCount?: number
     deliveredAt?: Date | string | null
     errorMessage?: string | null
+    metadata?: string | null
     sentAt?: Date | string
     updatedAt?: Date | string
   }
@@ -105219,10 +107157,14 @@ export namespace Prisma {
     receiptNumber?: NullableStringFieldUpdateOperationsInput | string | null
     channel?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    template?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     recipient_addr?: NullableStringFieldUpdateOperationsInput | string | null
     retryCount?: IntFieldUpdateOperationsInput | number
     deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableStringFieldUpdateOperationsInput | string | null
     sentAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     notification?: NotificationUpdateOneWithoutNotificationLogsNestedInput
@@ -105239,10 +107181,14 @@ export namespace Prisma {
     receiptNumber?: NullableStringFieldUpdateOperationsInput | string | null
     channel?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    template?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     recipient_addr?: NullableStringFieldUpdateOperationsInput | string | null
     retryCount?: IntFieldUpdateOperationsInput | number
     deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableStringFieldUpdateOperationsInput | string | null
     sentAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -105257,10 +107203,14 @@ export namespace Prisma {
     receiptNumber?: string | null
     channel: string
     status?: string
+    template?: string | null
+    subject?: string | null
+    providerMessageId?: string | null
     recipient_addr?: string | null
     retryCount?: number
     deliveredAt?: Date | string | null
     errorMessage?: string | null
+    metadata?: string | null
     sentAt?: Date | string
     updatedAt?: Date | string
   }
@@ -105273,10 +107223,14 @@ export namespace Prisma {
     receiptNumber?: NullableStringFieldUpdateOperationsInput | string | null
     channel?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    template?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     recipient_addr?: NullableStringFieldUpdateOperationsInput | string | null
     retryCount?: IntFieldUpdateOperationsInput | number
     deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableStringFieldUpdateOperationsInput | string | null
     sentAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -105291,10 +107245,14 @@ export namespace Prisma {
     receiptNumber?: NullableStringFieldUpdateOperationsInput | string | null
     channel?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    template?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     recipient_addr?: NullableStringFieldUpdateOperationsInput | string | null
     retryCount?: IntFieldUpdateOperationsInput | number
     deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableStringFieldUpdateOperationsInput | string | null
     sentAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -108466,6 +110424,292 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type IssueReportCreateInput = {
+    id?: string
+    reportId: string
+    category: $Enums.IssueCategory
+    title: string
+    description: string
+    expectedBehavior?: string | null
+    actualBehavior?: string | null
+    severity?: $Enums.IssueSeverity
+    status?: $Enums.IssueStatus
+    pageUrl?: string | null
+    pagePath?: string | null
+    pageTitle?: string | null
+    referrer?: string | null
+    browser?: string | null
+    browserVersion?: string | null
+    operatingSystem?: string | null
+    deviceType?: string | null
+    viewportWidth?: number | null
+    viewportHeight?: number | null
+    screenWidth?: number | null
+    screenHeight?: number | null
+    timezone?: string | null
+    language?: string | null
+    onlineStatus?: boolean | null
+    connectionType?: string | null
+    appVersion?: string | null
+    errorType?: string | null
+    errorMessageSanitized?: string | null
+    errorStackSanitized?: string | null
+    correlationId?: string | null
+    screenshotUrl?: string | null
+    internalNotes?: string | null
+    assignedTo?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    resolvedAt?: Date | string | null
+    resolvedBy?: string | null
+    user: UserCreateNestedOneWithoutIssueReportsInput
+  }
+
+  export type IssueReportUncheckedCreateInput = {
+    id?: string
+    reportId: string
+    userId: string
+    category: $Enums.IssueCategory
+    title: string
+    description: string
+    expectedBehavior?: string | null
+    actualBehavior?: string | null
+    severity?: $Enums.IssueSeverity
+    status?: $Enums.IssueStatus
+    pageUrl?: string | null
+    pagePath?: string | null
+    pageTitle?: string | null
+    referrer?: string | null
+    browser?: string | null
+    browserVersion?: string | null
+    operatingSystem?: string | null
+    deviceType?: string | null
+    viewportWidth?: number | null
+    viewportHeight?: number | null
+    screenWidth?: number | null
+    screenHeight?: number | null
+    timezone?: string | null
+    language?: string | null
+    onlineStatus?: boolean | null
+    connectionType?: string | null
+    appVersion?: string | null
+    errorType?: string | null
+    errorMessageSanitized?: string | null
+    errorStackSanitized?: string | null
+    correlationId?: string | null
+    screenshotUrl?: string | null
+    internalNotes?: string | null
+    assignedTo?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    resolvedAt?: Date | string | null
+    resolvedBy?: string | null
+  }
+
+  export type IssueReportUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reportId?: StringFieldUpdateOperationsInput | string
+    category?: EnumIssueCategoryFieldUpdateOperationsInput | $Enums.IssueCategory
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    expectedBehavior?: NullableStringFieldUpdateOperationsInput | string | null
+    actualBehavior?: NullableStringFieldUpdateOperationsInput | string | null
+    severity?: EnumIssueSeverityFieldUpdateOperationsInput | $Enums.IssueSeverity
+    status?: EnumIssueStatusFieldUpdateOperationsInput | $Enums.IssueStatus
+    pageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    pagePath?: NullableStringFieldUpdateOperationsInput | string | null
+    pageTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    referrer?: NullableStringFieldUpdateOperationsInput | string | null
+    browser?: NullableStringFieldUpdateOperationsInput | string | null
+    browserVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    operatingSystem?: NullableStringFieldUpdateOperationsInput | string | null
+    deviceType?: NullableStringFieldUpdateOperationsInput | string | null
+    viewportWidth?: NullableIntFieldUpdateOperationsInput | number | null
+    viewportHeight?: NullableIntFieldUpdateOperationsInput | number | null
+    screenWidth?: NullableIntFieldUpdateOperationsInput | number | null
+    screenHeight?: NullableIntFieldUpdateOperationsInput | number | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    language?: NullableStringFieldUpdateOperationsInput | string | null
+    onlineStatus?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    connectionType?: NullableStringFieldUpdateOperationsInput | string | null
+    appVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    errorType?: NullableStringFieldUpdateOperationsInput | string | null
+    errorMessageSanitized?: NullableStringFieldUpdateOperationsInput | string | null
+    errorStackSanitized?: NullableStringFieldUpdateOperationsInput | string | null
+    correlationId?: NullableStringFieldUpdateOperationsInput | string | null
+    screenshotUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    internalNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resolvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    user?: UserUpdateOneRequiredWithoutIssueReportsNestedInput
+  }
+
+  export type IssueReportUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reportId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    category?: EnumIssueCategoryFieldUpdateOperationsInput | $Enums.IssueCategory
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    expectedBehavior?: NullableStringFieldUpdateOperationsInput | string | null
+    actualBehavior?: NullableStringFieldUpdateOperationsInput | string | null
+    severity?: EnumIssueSeverityFieldUpdateOperationsInput | $Enums.IssueSeverity
+    status?: EnumIssueStatusFieldUpdateOperationsInput | $Enums.IssueStatus
+    pageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    pagePath?: NullableStringFieldUpdateOperationsInput | string | null
+    pageTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    referrer?: NullableStringFieldUpdateOperationsInput | string | null
+    browser?: NullableStringFieldUpdateOperationsInput | string | null
+    browserVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    operatingSystem?: NullableStringFieldUpdateOperationsInput | string | null
+    deviceType?: NullableStringFieldUpdateOperationsInput | string | null
+    viewportWidth?: NullableIntFieldUpdateOperationsInput | number | null
+    viewportHeight?: NullableIntFieldUpdateOperationsInput | number | null
+    screenWidth?: NullableIntFieldUpdateOperationsInput | number | null
+    screenHeight?: NullableIntFieldUpdateOperationsInput | number | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    language?: NullableStringFieldUpdateOperationsInput | string | null
+    onlineStatus?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    connectionType?: NullableStringFieldUpdateOperationsInput | string | null
+    appVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    errorType?: NullableStringFieldUpdateOperationsInput | string | null
+    errorMessageSanitized?: NullableStringFieldUpdateOperationsInput | string | null
+    errorStackSanitized?: NullableStringFieldUpdateOperationsInput | string | null
+    correlationId?: NullableStringFieldUpdateOperationsInput | string | null
+    screenshotUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    internalNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resolvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type IssueReportCreateManyInput = {
+    id?: string
+    reportId: string
+    userId: string
+    category: $Enums.IssueCategory
+    title: string
+    description: string
+    expectedBehavior?: string | null
+    actualBehavior?: string | null
+    severity?: $Enums.IssueSeverity
+    status?: $Enums.IssueStatus
+    pageUrl?: string | null
+    pagePath?: string | null
+    pageTitle?: string | null
+    referrer?: string | null
+    browser?: string | null
+    browserVersion?: string | null
+    operatingSystem?: string | null
+    deviceType?: string | null
+    viewportWidth?: number | null
+    viewportHeight?: number | null
+    screenWidth?: number | null
+    screenHeight?: number | null
+    timezone?: string | null
+    language?: string | null
+    onlineStatus?: boolean | null
+    connectionType?: string | null
+    appVersion?: string | null
+    errorType?: string | null
+    errorMessageSanitized?: string | null
+    errorStackSanitized?: string | null
+    correlationId?: string | null
+    screenshotUrl?: string | null
+    internalNotes?: string | null
+    assignedTo?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    resolvedAt?: Date | string | null
+    resolvedBy?: string | null
+  }
+
+  export type IssueReportUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reportId?: StringFieldUpdateOperationsInput | string
+    category?: EnumIssueCategoryFieldUpdateOperationsInput | $Enums.IssueCategory
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    expectedBehavior?: NullableStringFieldUpdateOperationsInput | string | null
+    actualBehavior?: NullableStringFieldUpdateOperationsInput | string | null
+    severity?: EnumIssueSeverityFieldUpdateOperationsInput | $Enums.IssueSeverity
+    status?: EnumIssueStatusFieldUpdateOperationsInput | $Enums.IssueStatus
+    pageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    pagePath?: NullableStringFieldUpdateOperationsInput | string | null
+    pageTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    referrer?: NullableStringFieldUpdateOperationsInput | string | null
+    browser?: NullableStringFieldUpdateOperationsInput | string | null
+    browserVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    operatingSystem?: NullableStringFieldUpdateOperationsInput | string | null
+    deviceType?: NullableStringFieldUpdateOperationsInput | string | null
+    viewportWidth?: NullableIntFieldUpdateOperationsInput | number | null
+    viewportHeight?: NullableIntFieldUpdateOperationsInput | number | null
+    screenWidth?: NullableIntFieldUpdateOperationsInput | number | null
+    screenHeight?: NullableIntFieldUpdateOperationsInput | number | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    language?: NullableStringFieldUpdateOperationsInput | string | null
+    onlineStatus?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    connectionType?: NullableStringFieldUpdateOperationsInput | string | null
+    appVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    errorType?: NullableStringFieldUpdateOperationsInput | string | null
+    errorMessageSanitized?: NullableStringFieldUpdateOperationsInput | string | null
+    errorStackSanitized?: NullableStringFieldUpdateOperationsInput | string | null
+    correlationId?: NullableStringFieldUpdateOperationsInput | string | null
+    screenshotUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    internalNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resolvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type IssueReportUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reportId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    category?: EnumIssueCategoryFieldUpdateOperationsInput | $Enums.IssueCategory
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    expectedBehavior?: NullableStringFieldUpdateOperationsInput | string | null
+    actualBehavior?: NullableStringFieldUpdateOperationsInput | string | null
+    severity?: EnumIssueSeverityFieldUpdateOperationsInput | $Enums.IssueSeverity
+    status?: EnumIssueStatusFieldUpdateOperationsInput | $Enums.IssueStatus
+    pageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    pagePath?: NullableStringFieldUpdateOperationsInput | string | null
+    pageTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    referrer?: NullableStringFieldUpdateOperationsInput | string | null
+    browser?: NullableStringFieldUpdateOperationsInput | string | null
+    browserVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    operatingSystem?: NullableStringFieldUpdateOperationsInput | string | null
+    deviceType?: NullableStringFieldUpdateOperationsInput | string | null
+    viewportWidth?: NullableIntFieldUpdateOperationsInput | number | null
+    viewportHeight?: NullableIntFieldUpdateOperationsInput | number | null
+    screenWidth?: NullableIntFieldUpdateOperationsInput | number | null
+    screenHeight?: NullableIntFieldUpdateOperationsInput | number | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    language?: NullableStringFieldUpdateOperationsInput | string | null
+    onlineStatus?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    connectionType?: NullableStringFieldUpdateOperationsInput | string | null
+    appVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    errorType?: NullableStringFieldUpdateOperationsInput | string | null
+    errorMessageSanitized?: NullableStringFieldUpdateOperationsInput | string | null
+    errorStackSanitized?: NullableStringFieldUpdateOperationsInput | string | null
+    correlationId?: NullableStringFieldUpdateOperationsInput | string | null
+    screenshotUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    internalNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resolvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -108662,6 +110906,12 @@ export namespace Prisma {
     none?: SessionWhereInput
   }
 
+  export type IssueReportListRelationFilter = {
+    every?: IssueReportWhereInput
+    some?: IssueReportWhereInput
+    none?: IssueReportWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -108752,6 +111002,10 @@ export namespace Prisma {
   }
 
   export type SessionOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type IssueReportOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -111828,10 +114082,14 @@ export namespace Prisma {
     receiptNumber?: SortOrder
     channel?: SortOrder
     status?: SortOrder
+    template?: SortOrder
+    subject?: SortOrder
+    providerMessageId?: SortOrder
     recipient_addr?: SortOrder
     retryCount?: SortOrder
     deliveredAt?: SortOrder
     errorMessage?: SortOrder
+    metadata?: SortOrder
     sentAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -111850,10 +114108,14 @@ export namespace Prisma {
     receiptNumber?: SortOrder
     channel?: SortOrder
     status?: SortOrder
+    template?: SortOrder
+    subject?: SortOrder
+    providerMessageId?: SortOrder
     recipient_addr?: SortOrder
     retryCount?: SortOrder
     deliveredAt?: SortOrder
     errorMessage?: SortOrder
+    metadata?: SortOrder
     sentAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -111868,10 +114130,14 @@ export namespace Prisma {
     receiptNumber?: SortOrder
     channel?: SortOrder
     status?: SortOrder
+    template?: SortOrder
+    subject?: SortOrder
+    providerMessageId?: SortOrder
     recipient_addr?: SortOrder
     retryCount?: SortOrder
     deliveredAt?: SortOrder
     errorMessage?: SortOrder
+    metadata?: SortOrder
     sentAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -113380,6 +115646,207 @@ export namespace Prisma {
     recipientCount?: SortOrder
   }
 
+  export type EnumIssueCategoryFilter<$PrismaModel = never> = {
+    equals?: $Enums.IssueCategory | EnumIssueCategoryFieldRefInput<$PrismaModel>
+    in?: $Enums.IssueCategory[] | ListEnumIssueCategoryFieldRefInput<$PrismaModel>
+    notIn?: $Enums.IssueCategory[] | ListEnumIssueCategoryFieldRefInput<$PrismaModel>
+    not?: NestedEnumIssueCategoryFilter<$PrismaModel> | $Enums.IssueCategory
+  }
+
+  export type EnumIssueSeverityFilter<$PrismaModel = never> = {
+    equals?: $Enums.IssueSeverity | EnumIssueSeverityFieldRefInput<$PrismaModel>
+    in?: $Enums.IssueSeverity[] | ListEnumIssueSeverityFieldRefInput<$PrismaModel>
+    notIn?: $Enums.IssueSeverity[] | ListEnumIssueSeverityFieldRefInput<$PrismaModel>
+    not?: NestedEnumIssueSeverityFilter<$PrismaModel> | $Enums.IssueSeverity
+  }
+
+  export type EnumIssueStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.IssueStatus | EnumIssueStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.IssueStatus[] | ListEnumIssueStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.IssueStatus[] | ListEnumIssueStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumIssueStatusFilter<$PrismaModel> | $Enums.IssueStatus
+  }
+
+  export type BoolNullableFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
+  }
+
+  export type IssueReportCountOrderByAggregateInput = {
+    id?: SortOrder
+    reportId?: SortOrder
+    userId?: SortOrder
+    category?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    expectedBehavior?: SortOrder
+    actualBehavior?: SortOrder
+    severity?: SortOrder
+    status?: SortOrder
+    pageUrl?: SortOrder
+    pagePath?: SortOrder
+    pageTitle?: SortOrder
+    referrer?: SortOrder
+    browser?: SortOrder
+    browserVersion?: SortOrder
+    operatingSystem?: SortOrder
+    deviceType?: SortOrder
+    viewportWidth?: SortOrder
+    viewportHeight?: SortOrder
+    screenWidth?: SortOrder
+    screenHeight?: SortOrder
+    timezone?: SortOrder
+    language?: SortOrder
+    onlineStatus?: SortOrder
+    connectionType?: SortOrder
+    appVersion?: SortOrder
+    errorType?: SortOrder
+    errorMessageSanitized?: SortOrder
+    errorStackSanitized?: SortOrder
+    correlationId?: SortOrder
+    screenshotUrl?: SortOrder
+    internalNotes?: SortOrder
+    assignedTo?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    resolvedAt?: SortOrder
+    resolvedBy?: SortOrder
+  }
+
+  export type IssueReportAvgOrderByAggregateInput = {
+    viewportWidth?: SortOrder
+    viewportHeight?: SortOrder
+    screenWidth?: SortOrder
+    screenHeight?: SortOrder
+  }
+
+  export type IssueReportMaxOrderByAggregateInput = {
+    id?: SortOrder
+    reportId?: SortOrder
+    userId?: SortOrder
+    category?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    expectedBehavior?: SortOrder
+    actualBehavior?: SortOrder
+    severity?: SortOrder
+    status?: SortOrder
+    pageUrl?: SortOrder
+    pagePath?: SortOrder
+    pageTitle?: SortOrder
+    referrer?: SortOrder
+    browser?: SortOrder
+    browserVersion?: SortOrder
+    operatingSystem?: SortOrder
+    deviceType?: SortOrder
+    viewportWidth?: SortOrder
+    viewportHeight?: SortOrder
+    screenWidth?: SortOrder
+    screenHeight?: SortOrder
+    timezone?: SortOrder
+    language?: SortOrder
+    onlineStatus?: SortOrder
+    connectionType?: SortOrder
+    appVersion?: SortOrder
+    errorType?: SortOrder
+    errorMessageSanitized?: SortOrder
+    errorStackSanitized?: SortOrder
+    correlationId?: SortOrder
+    screenshotUrl?: SortOrder
+    internalNotes?: SortOrder
+    assignedTo?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    resolvedAt?: SortOrder
+    resolvedBy?: SortOrder
+  }
+
+  export type IssueReportMinOrderByAggregateInput = {
+    id?: SortOrder
+    reportId?: SortOrder
+    userId?: SortOrder
+    category?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    expectedBehavior?: SortOrder
+    actualBehavior?: SortOrder
+    severity?: SortOrder
+    status?: SortOrder
+    pageUrl?: SortOrder
+    pagePath?: SortOrder
+    pageTitle?: SortOrder
+    referrer?: SortOrder
+    browser?: SortOrder
+    browserVersion?: SortOrder
+    operatingSystem?: SortOrder
+    deviceType?: SortOrder
+    viewportWidth?: SortOrder
+    viewportHeight?: SortOrder
+    screenWidth?: SortOrder
+    screenHeight?: SortOrder
+    timezone?: SortOrder
+    language?: SortOrder
+    onlineStatus?: SortOrder
+    connectionType?: SortOrder
+    appVersion?: SortOrder
+    errorType?: SortOrder
+    errorMessageSanitized?: SortOrder
+    errorStackSanitized?: SortOrder
+    correlationId?: SortOrder
+    screenshotUrl?: SortOrder
+    internalNotes?: SortOrder
+    assignedTo?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    resolvedAt?: SortOrder
+    resolvedBy?: SortOrder
+  }
+
+  export type IssueReportSumOrderByAggregateInput = {
+    viewportWidth?: SortOrder
+    viewportHeight?: SortOrder
+    screenWidth?: SortOrder
+    screenHeight?: SortOrder
+  }
+
+  export type EnumIssueCategoryWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.IssueCategory | EnumIssueCategoryFieldRefInput<$PrismaModel>
+    in?: $Enums.IssueCategory[] | ListEnumIssueCategoryFieldRefInput<$PrismaModel>
+    notIn?: $Enums.IssueCategory[] | ListEnumIssueCategoryFieldRefInput<$PrismaModel>
+    not?: NestedEnumIssueCategoryWithAggregatesFilter<$PrismaModel> | $Enums.IssueCategory
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumIssueCategoryFilter<$PrismaModel>
+    _max?: NestedEnumIssueCategoryFilter<$PrismaModel>
+  }
+
+  export type EnumIssueSeverityWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.IssueSeverity | EnumIssueSeverityFieldRefInput<$PrismaModel>
+    in?: $Enums.IssueSeverity[] | ListEnumIssueSeverityFieldRefInput<$PrismaModel>
+    notIn?: $Enums.IssueSeverity[] | ListEnumIssueSeverityFieldRefInput<$PrismaModel>
+    not?: NestedEnumIssueSeverityWithAggregatesFilter<$PrismaModel> | $Enums.IssueSeverity
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumIssueSeverityFilter<$PrismaModel>
+    _max?: NestedEnumIssueSeverityFilter<$PrismaModel>
+  }
+
+  export type EnumIssueStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.IssueStatus | EnumIssueStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.IssueStatus[] | ListEnumIssueStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.IssueStatus[] | ListEnumIssueStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumIssueStatusWithAggregatesFilter<$PrismaModel> | $Enums.IssueStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumIssueStatusFilter<$PrismaModel>
+    _max?: NestedEnumIssueStatusFilter<$PrismaModel>
+  }
+
+  export type BoolNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableWithAggregatesFilter<$PrismaModel> | boolean | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedBoolNullableFilter<$PrismaModel>
+    _max?: NestedBoolNullableFilter<$PrismaModel>
+  }
+
   export type DonationCreateNestedManyWithoutUserInput = {
     create?: XOR<DonationCreateWithoutUserInput, DonationUncheckedCreateWithoutUserInput> | DonationCreateWithoutUserInput[] | DonationUncheckedCreateWithoutUserInput[]
     connectOrCreate?: DonationCreateOrConnectWithoutUserInput | DonationCreateOrConnectWithoutUserInput[]
@@ -113540,6 +116007,13 @@ export namespace Prisma {
     connect?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
   }
 
+  export type IssueReportCreateNestedManyWithoutUserInput = {
+    create?: XOR<IssueReportCreateWithoutUserInput, IssueReportUncheckedCreateWithoutUserInput> | IssueReportCreateWithoutUserInput[] | IssueReportUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: IssueReportCreateOrConnectWithoutUserInput | IssueReportCreateOrConnectWithoutUserInput[]
+    createMany?: IssueReportCreateManyUserInputEnvelope
+    connect?: IssueReportWhereUniqueInput | IssueReportWhereUniqueInput[]
+  }
+
   export type DonationUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<DonationCreateWithoutUserInput, DonationUncheckedCreateWithoutUserInput> | DonationCreateWithoutUserInput[] | DonationUncheckedCreateWithoutUserInput[]
     connectOrCreate?: DonationCreateOrConnectWithoutUserInput | DonationCreateOrConnectWithoutUserInput[]
@@ -113698,6 +116172,13 @@ export namespace Prisma {
     connectOrCreate?: SessionCreateOrConnectWithoutUserInput | SessionCreateOrConnectWithoutUserInput[]
     createMany?: SessionCreateManyUserInputEnvelope
     connect?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
+  }
+
+  export type IssueReportUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<IssueReportCreateWithoutUserInput, IssueReportUncheckedCreateWithoutUserInput> | IssueReportCreateWithoutUserInput[] | IssueReportUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: IssueReportCreateOrConnectWithoutUserInput | IssueReportCreateOrConnectWithoutUserInput[]
+    createMany?: IssueReportCreateManyUserInputEnvelope
+    connect?: IssueReportWhereUniqueInput | IssueReportWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -114038,6 +116519,20 @@ export namespace Prisma {
     deleteMany?: SessionScalarWhereInput | SessionScalarWhereInput[]
   }
 
+  export type IssueReportUpdateManyWithoutUserNestedInput = {
+    create?: XOR<IssueReportCreateWithoutUserInput, IssueReportUncheckedCreateWithoutUserInput> | IssueReportCreateWithoutUserInput[] | IssueReportUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: IssueReportCreateOrConnectWithoutUserInput | IssueReportCreateOrConnectWithoutUserInput[]
+    upsert?: IssueReportUpsertWithWhereUniqueWithoutUserInput | IssueReportUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: IssueReportCreateManyUserInputEnvelope
+    set?: IssueReportWhereUniqueInput | IssueReportWhereUniqueInput[]
+    disconnect?: IssueReportWhereUniqueInput | IssueReportWhereUniqueInput[]
+    delete?: IssueReportWhereUniqueInput | IssueReportWhereUniqueInput[]
+    connect?: IssueReportWhereUniqueInput | IssueReportWhereUniqueInput[]
+    update?: IssueReportUpdateWithWhereUniqueWithoutUserInput | IssueReportUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: IssueReportUpdateManyWithWhereWithoutUserInput | IssueReportUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: IssueReportScalarWhereInput | IssueReportScalarWhereInput[]
+  }
+
   export type DonationUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<DonationCreateWithoutUserInput, DonationUncheckedCreateWithoutUserInput> | DonationCreateWithoutUserInput[] | DonationUncheckedCreateWithoutUserInput[]
     connectOrCreate?: DonationCreateOrConnectWithoutUserInput | DonationCreateOrConnectWithoutUserInput[]
@@ -114354,6 +116849,20 @@ export namespace Prisma {
     update?: SessionUpdateWithWhereUniqueWithoutUserInput | SessionUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: SessionUpdateManyWithWhereWithoutUserInput | SessionUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: SessionScalarWhereInput | SessionScalarWhereInput[]
+  }
+
+  export type IssueReportUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<IssueReportCreateWithoutUserInput, IssueReportUncheckedCreateWithoutUserInput> | IssueReportCreateWithoutUserInput[] | IssueReportUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: IssueReportCreateOrConnectWithoutUserInput | IssueReportCreateOrConnectWithoutUserInput[]
+    upsert?: IssueReportUpsertWithWhereUniqueWithoutUserInput | IssueReportUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: IssueReportCreateManyUserInputEnvelope
+    set?: IssueReportWhereUniqueInput | IssueReportWhereUniqueInput[]
+    disconnect?: IssueReportWhereUniqueInput | IssueReportWhereUniqueInput[]
+    delete?: IssueReportWhereUniqueInput | IssueReportWhereUniqueInput[]
+    connect?: IssueReportWhereUniqueInput | IssueReportWhereUniqueInput[]
+    update?: IssueReportUpdateWithWhereUniqueWithoutUserInput | IssueReportUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: IssueReportUpdateManyWithWhereWithoutUserInput | IssueReportUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: IssueReportScalarWhereInput | IssueReportScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutSessionsInput = {
@@ -116833,6 +119342,36 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutSmsAuditLogsInput, UserUpdateWithoutSmsAuditLogsInput>, UserUncheckedUpdateWithoutSmsAuditLogsInput>
   }
 
+  export type UserCreateNestedOneWithoutIssueReportsInput = {
+    create?: XOR<UserCreateWithoutIssueReportsInput, UserUncheckedCreateWithoutIssueReportsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutIssueReportsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type EnumIssueCategoryFieldUpdateOperationsInput = {
+    set?: $Enums.IssueCategory
+  }
+
+  export type EnumIssueSeverityFieldUpdateOperationsInput = {
+    set?: $Enums.IssueSeverity
+  }
+
+  export type EnumIssueStatusFieldUpdateOperationsInput = {
+    set?: $Enums.IssueStatus
+  }
+
+  export type NullableBoolFieldUpdateOperationsInput = {
+    set?: boolean | null
+  }
+
+  export type UserUpdateOneRequiredWithoutIssueReportsNestedInput = {
+    create?: XOR<UserCreateWithoutIssueReportsInput, UserUncheckedCreateWithoutIssueReportsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutIssueReportsInput
+    upsert?: UserUpsertWithoutIssueReportsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutIssueReportsInput, UserUpdateWithoutIssueReportsInput>, UserUncheckedUpdateWithoutIssueReportsInput>
+  }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -117399,6 +119938,70 @@ export namespace Prisma {
     _max?: NestedEnumSmsErrorCodeNullableFilter<$PrismaModel>
   }
 
+  export type NestedEnumIssueCategoryFilter<$PrismaModel = never> = {
+    equals?: $Enums.IssueCategory | EnumIssueCategoryFieldRefInput<$PrismaModel>
+    in?: $Enums.IssueCategory[] | ListEnumIssueCategoryFieldRefInput<$PrismaModel>
+    notIn?: $Enums.IssueCategory[] | ListEnumIssueCategoryFieldRefInput<$PrismaModel>
+    not?: NestedEnumIssueCategoryFilter<$PrismaModel> | $Enums.IssueCategory
+  }
+
+  export type NestedEnumIssueSeverityFilter<$PrismaModel = never> = {
+    equals?: $Enums.IssueSeverity | EnumIssueSeverityFieldRefInput<$PrismaModel>
+    in?: $Enums.IssueSeverity[] | ListEnumIssueSeverityFieldRefInput<$PrismaModel>
+    notIn?: $Enums.IssueSeverity[] | ListEnumIssueSeverityFieldRefInput<$PrismaModel>
+    not?: NestedEnumIssueSeverityFilter<$PrismaModel> | $Enums.IssueSeverity
+  }
+
+  export type NestedEnumIssueStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.IssueStatus | EnumIssueStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.IssueStatus[] | ListEnumIssueStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.IssueStatus[] | ListEnumIssueStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumIssueStatusFilter<$PrismaModel> | $Enums.IssueStatus
+  }
+
+  export type NestedBoolNullableFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
+  }
+
+  export type NestedEnumIssueCategoryWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.IssueCategory | EnumIssueCategoryFieldRefInput<$PrismaModel>
+    in?: $Enums.IssueCategory[] | ListEnumIssueCategoryFieldRefInput<$PrismaModel>
+    notIn?: $Enums.IssueCategory[] | ListEnumIssueCategoryFieldRefInput<$PrismaModel>
+    not?: NestedEnumIssueCategoryWithAggregatesFilter<$PrismaModel> | $Enums.IssueCategory
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumIssueCategoryFilter<$PrismaModel>
+    _max?: NestedEnumIssueCategoryFilter<$PrismaModel>
+  }
+
+  export type NestedEnumIssueSeverityWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.IssueSeverity | EnumIssueSeverityFieldRefInput<$PrismaModel>
+    in?: $Enums.IssueSeverity[] | ListEnumIssueSeverityFieldRefInput<$PrismaModel>
+    notIn?: $Enums.IssueSeverity[] | ListEnumIssueSeverityFieldRefInput<$PrismaModel>
+    not?: NestedEnumIssueSeverityWithAggregatesFilter<$PrismaModel> | $Enums.IssueSeverity
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumIssueSeverityFilter<$PrismaModel>
+    _max?: NestedEnumIssueSeverityFilter<$PrismaModel>
+  }
+
+  export type NestedEnumIssueStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.IssueStatus | EnumIssueStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.IssueStatus[] | ListEnumIssueStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.IssueStatus[] | ListEnumIssueStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumIssueStatusWithAggregatesFilter<$PrismaModel> | $Enums.IssueStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumIssueStatusFilter<$PrismaModel>
+    _max?: NestedEnumIssueStatusFilter<$PrismaModel>
+  }
+
+  export type NestedBoolNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableWithAggregatesFilter<$PrismaModel> | boolean | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedBoolNullableFilter<$PrismaModel>
+    _max?: NestedBoolNullableFilter<$PrismaModel>
+  }
+
   export type DonationCreateWithoutUserInput = {
     id?: string
     amount: number
@@ -117927,10 +120530,14 @@ export namespace Prisma {
     receiptNumber?: string | null
     channel: string
     status?: string
+    template?: string | null
+    subject?: string | null
+    providerMessageId?: string | null
     recipient_addr?: string | null
     retryCount?: number
     deliveredAt?: Date | string | null
     errorMessage?: string | null
+    metadata?: string | null
     sentAt?: Date | string
     updatedAt?: Date | string
     notification?: NotificationCreateNestedOneWithoutNotificationLogsInput
@@ -117945,10 +120552,14 @@ export namespace Prisma {
     receiptNumber?: string | null
     channel: string
     status?: string
+    template?: string | null
+    subject?: string | null
+    providerMessageId?: string | null
     recipient_addr?: string | null
     retryCount?: number
     deliveredAt?: Date | string | null
     errorMessage?: string | null
+    metadata?: string | null
     sentAt?: Date | string
     updatedAt?: Date | string
   }
@@ -118345,6 +120956,96 @@ export namespace Prisma {
 
   export type SessionCreateManyUserInputEnvelope = {
     data: SessionCreateManyUserInput | SessionCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type IssueReportCreateWithoutUserInput = {
+    id?: string
+    reportId: string
+    category: $Enums.IssueCategory
+    title: string
+    description: string
+    expectedBehavior?: string | null
+    actualBehavior?: string | null
+    severity?: $Enums.IssueSeverity
+    status?: $Enums.IssueStatus
+    pageUrl?: string | null
+    pagePath?: string | null
+    pageTitle?: string | null
+    referrer?: string | null
+    browser?: string | null
+    browserVersion?: string | null
+    operatingSystem?: string | null
+    deviceType?: string | null
+    viewportWidth?: number | null
+    viewportHeight?: number | null
+    screenWidth?: number | null
+    screenHeight?: number | null
+    timezone?: string | null
+    language?: string | null
+    onlineStatus?: boolean | null
+    connectionType?: string | null
+    appVersion?: string | null
+    errorType?: string | null
+    errorMessageSanitized?: string | null
+    errorStackSanitized?: string | null
+    correlationId?: string | null
+    screenshotUrl?: string | null
+    internalNotes?: string | null
+    assignedTo?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    resolvedAt?: Date | string | null
+    resolvedBy?: string | null
+  }
+
+  export type IssueReportUncheckedCreateWithoutUserInput = {
+    id?: string
+    reportId: string
+    category: $Enums.IssueCategory
+    title: string
+    description: string
+    expectedBehavior?: string | null
+    actualBehavior?: string | null
+    severity?: $Enums.IssueSeverity
+    status?: $Enums.IssueStatus
+    pageUrl?: string | null
+    pagePath?: string | null
+    pageTitle?: string | null
+    referrer?: string | null
+    browser?: string | null
+    browserVersion?: string | null
+    operatingSystem?: string | null
+    deviceType?: string | null
+    viewportWidth?: number | null
+    viewportHeight?: number | null
+    screenWidth?: number | null
+    screenHeight?: number | null
+    timezone?: string | null
+    language?: string | null
+    onlineStatus?: boolean | null
+    connectionType?: string | null
+    appVersion?: string | null
+    errorType?: string | null
+    errorMessageSanitized?: string | null
+    errorStackSanitized?: string | null
+    correlationId?: string | null
+    screenshotUrl?: string | null
+    internalNotes?: string | null
+    assignedTo?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    resolvedAt?: Date | string | null
+    resolvedBy?: string | null
+  }
+
+  export type IssueReportCreateOrConnectWithoutUserInput = {
+    where: IssueReportWhereUniqueInput
+    create: XOR<IssueReportCreateWithoutUserInput, IssueReportUncheckedCreateWithoutUserInput>
+  }
+
+  export type IssueReportCreateManyUserInputEnvelope = {
+    data: IssueReportCreateManyUserInput | IssueReportCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -118775,10 +121476,14 @@ export namespace Prisma {
     receiptNumber?: StringNullableFilter<"NotificationLog"> | string | null
     channel?: StringFilter<"NotificationLog"> | string
     status?: StringFilter<"NotificationLog"> | string
+    template?: StringNullableFilter<"NotificationLog"> | string | null
+    subject?: StringNullableFilter<"NotificationLog"> | string | null
+    providerMessageId?: StringNullableFilter<"NotificationLog"> | string | null
     recipient_addr?: StringNullableFilter<"NotificationLog"> | string | null
     retryCount?: IntFilter<"NotificationLog"> | number
     deliveredAt?: DateTimeNullableFilter<"NotificationLog"> | Date | string | null
     errorMessage?: StringNullableFilter<"NotificationLog"> | string | null
+    metadata?: StringNullableFilter<"NotificationLog"> | string | null
     sentAt?: DateTimeFilter<"NotificationLog"> | Date | string
     updatedAt?: DateTimeFilter<"NotificationLog"> | Date | string
   }
@@ -119166,6 +121871,66 @@ export namespace Prisma {
     revokedAt?: DateTimeNullableFilter<"Session"> | Date | string | null
   }
 
+  export type IssueReportUpsertWithWhereUniqueWithoutUserInput = {
+    where: IssueReportWhereUniqueInput
+    update: XOR<IssueReportUpdateWithoutUserInput, IssueReportUncheckedUpdateWithoutUserInput>
+    create: XOR<IssueReportCreateWithoutUserInput, IssueReportUncheckedCreateWithoutUserInput>
+  }
+
+  export type IssueReportUpdateWithWhereUniqueWithoutUserInput = {
+    where: IssueReportWhereUniqueInput
+    data: XOR<IssueReportUpdateWithoutUserInput, IssueReportUncheckedUpdateWithoutUserInput>
+  }
+
+  export type IssueReportUpdateManyWithWhereWithoutUserInput = {
+    where: IssueReportScalarWhereInput
+    data: XOR<IssueReportUpdateManyMutationInput, IssueReportUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type IssueReportScalarWhereInput = {
+    AND?: IssueReportScalarWhereInput | IssueReportScalarWhereInput[]
+    OR?: IssueReportScalarWhereInput[]
+    NOT?: IssueReportScalarWhereInput | IssueReportScalarWhereInput[]
+    id?: StringFilter<"IssueReport"> | string
+    reportId?: StringFilter<"IssueReport"> | string
+    userId?: StringFilter<"IssueReport"> | string
+    category?: EnumIssueCategoryFilter<"IssueReport"> | $Enums.IssueCategory
+    title?: StringFilter<"IssueReport"> | string
+    description?: StringFilter<"IssueReport"> | string
+    expectedBehavior?: StringNullableFilter<"IssueReport"> | string | null
+    actualBehavior?: StringNullableFilter<"IssueReport"> | string | null
+    severity?: EnumIssueSeverityFilter<"IssueReport"> | $Enums.IssueSeverity
+    status?: EnumIssueStatusFilter<"IssueReport"> | $Enums.IssueStatus
+    pageUrl?: StringNullableFilter<"IssueReport"> | string | null
+    pagePath?: StringNullableFilter<"IssueReport"> | string | null
+    pageTitle?: StringNullableFilter<"IssueReport"> | string | null
+    referrer?: StringNullableFilter<"IssueReport"> | string | null
+    browser?: StringNullableFilter<"IssueReport"> | string | null
+    browserVersion?: StringNullableFilter<"IssueReport"> | string | null
+    operatingSystem?: StringNullableFilter<"IssueReport"> | string | null
+    deviceType?: StringNullableFilter<"IssueReport"> | string | null
+    viewportWidth?: IntNullableFilter<"IssueReport"> | number | null
+    viewportHeight?: IntNullableFilter<"IssueReport"> | number | null
+    screenWidth?: IntNullableFilter<"IssueReport"> | number | null
+    screenHeight?: IntNullableFilter<"IssueReport"> | number | null
+    timezone?: StringNullableFilter<"IssueReport"> | string | null
+    language?: StringNullableFilter<"IssueReport"> | string | null
+    onlineStatus?: BoolNullableFilter<"IssueReport"> | boolean | null
+    connectionType?: StringNullableFilter<"IssueReport"> | string | null
+    appVersion?: StringNullableFilter<"IssueReport"> | string | null
+    errorType?: StringNullableFilter<"IssueReport"> | string | null
+    errorMessageSanitized?: StringNullableFilter<"IssueReport"> | string | null
+    errorStackSanitized?: StringNullableFilter<"IssueReport"> | string | null
+    correlationId?: StringNullableFilter<"IssueReport"> | string | null
+    screenshotUrl?: StringNullableFilter<"IssueReport"> | string | null
+    internalNotes?: StringNullableFilter<"IssueReport"> | string | null
+    assignedTo?: StringNullableFilter<"IssueReport"> | string | null
+    createdAt?: DateTimeFilter<"IssueReport"> | Date | string
+    updatedAt?: DateTimeFilter<"IssueReport"> | Date | string
+    resolvedAt?: DateTimeNullableFilter<"IssueReport"> | Date | string | null
+    resolvedBy?: StringNullableFilter<"IssueReport"> | string | null
+  }
+
   export type UserCreateWithoutSessionsInput = {
     id?: string
     name: string
@@ -119201,6 +121966,7 @@ export namespace Prisma {
     smsMessages?: SmsMessageCreateNestedManyWithoutMemberInput
     notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -119238,6 +122004,7 @@ export namespace Prisma {
     smsMessages?: SmsMessageUncheckedCreateNestedManyWithoutMemberInput
     notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -119291,6 +122058,7 @@ export namespace Prisma {
     smsMessages?: SmsMessageUpdateManyWithoutMemberNestedInput
     notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -119328,6 +122096,7 @@ export namespace Prisma {
     smsMessages?: SmsMessageUncheckedUpdateManyWithoutMemberNestedInput
     notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type BranchCreateWithoutEventsInput = {
@@ -119404,6 +122173,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutEventsCreatedInput = {
@@ -119441,6 +122211,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutEventsCreatedInput = {
@@ -119768,6 +122539,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutEventsCreatedInput = {
@@ -119805,6 +122577,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type EventRegistrationUpsertWithWhereUniqueWithoutEventInput = {
@@ -120149,6 +122922,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutEventMediaUploadsInput = {
@@ -120186,6 +122960,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutEventMediaUploadsInput = {
@@ -120358,6 +123133,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutEventMediaUploadsInput = {
@@ -120395,6 +123171,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type EventCreateWithoutEventImagesInput = {
@@ -121009,6 +123786,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutEventRegistrationsInput = {
@@ -121046,6 +123824,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutEventRegistrationsInput = {
@@ -121248,6 +124027,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutEventRegistrationsInput = {
@@ -121285,6 +124065,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type EventAttendanceUpsertWithWhereUniqueWithoutRegistrationInput = {
@@ -122539,6 +125320,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSermonViewsInput = {
@@ -122576,6 +125358,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSermonViewsInput = {
@@ -122752,6 +125535,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSermonViewsInput = {
@@ -122789,6 +125573,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type SermonCreateWithoutLikesInput = {
@@ -122943,6 +125728,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSermonLikesInput = {
@@ -122980,6 +125766,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSermonLikesInput = {
@@ -123156,6 +125943,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSermonLikesInput = {
@@ -123193,6 +125981,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type SermonCreateWithoutCommentsInput = {
@@ -123347,6 +126136,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSermonCommentsInput = {
@@ -123384,6 +126174,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSermonCommentsInput = {
@@ -123560,6 +126351,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSermonCommentsInput = {
@@ -123597,6 +126389,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type SermonCreateWithoutDownloadsInput = {
@@ -123751,6 +126544,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSermonDownloadsInput = {
@@ -123788,6 +126582,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSermonDownloadsInput = {
@@ -123964,6 +126759,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSermonDownloadsInput = {
@@ -124001,6 +126797,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type SermonCreateWithoutBookmarksInput = {
@@ -124155,6 +126952,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSermonBookmarksInput = {
@@ -124192,6 +126990,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSermonBookmarksInput = {
@@ -124368,6 +127167,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSermonBookmarksInput = {
@@ -124405,6 +127205,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutPrayerRequestsInput = {
@@ -124442,6 +127243,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPrayerRequestsInput = {
@@ -124479,6 +127281,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPrayerRequestsInput = {
@@ -124532,6 +127335,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPrayerRequestsInput = {
@@ -124569,6 +127373,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type DonationPurposeCreateWithoutDonationsInput = {
@@ -124765,6 +127570,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutDonationsInput = {
@@ -124802,6 +127608,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutDonationsInput = {
@@ -125067,6 +127874,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDonationsInput = {
@@ -125104,6 +127912,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ReceiptUpsertWithoutDonationInput = {
@@ -125182,6 +127991,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutTestimonialsInput = {
@@ -125219,6 +128029,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutTestimonialsInput = {
@@ -125272,6 +128083,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTestimonialsInput = {
@@ -125309,6 +128121,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type BranchCreateWithoutPastorsInput = {
@@ -125487,10 +128300,14 @@ export namespace Prisma {
     receiptNumber?: string | null
     channel: string
     status?: string
+    template?: string | null
+    subject?: string | null
+    providerMessageId?: string | null
     recipient_addr?: string | null
     retryCount?: number
     deliveredAt?: Date | string | null
     errorMessage?: string | null
+    metadata?: string | null
     sentAt?: Date | string
     updatedAt?: Date | string
     recipient?: UserCreateNestedOneWithoutNotificationLogsInput
@@ -125505,10 +128322,14 @@ export namespace Prisma {
     receiptNumber?: string | null
     channel: string
     status?: string
+    template?: string | null
+    subject?: string | null
+    providerMessageId?: string | null
     recipient_addr?: string | null
     retryCount?: number
     deliveredAt?: Date | string | null
     errorMessage?: string | null
+    metadata?: string | null
     sentAt?: Date | string
     updatedAt?: Date | string
   }
@@ -126689,6 +129510,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutEventReportsInput = {
@@ -126726,6 +129548,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutEventReportsInput = {
@@ -126971,6 +129794,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutEventReportsInput = {
@@ -127008,6 +129832,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type MediaReportUpsertWithWhereUniqueWithoutEventReportInput = {
@@ -127116,6 +129941,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutMediaReportsInput = {
@@ -127153,6 +129979,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutMediaReportsInput = {
@@ -127267,6 +130094,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMediaReportsInput = {
@@ -127304,6 +130132,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type DonationSessionCreateWithoutPurposeInput = {
@@ -127521,6 +130350,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutDonationSessionsInput = {
@@ -127558,6 +130388,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutDonationSessionsInput = {
@@ -127811,6 +130642,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDonationSessionsInput = {
@@ -127848,6 +130680,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type BranchUpsertWithoutDonationSessionsInput = {
@@ -128249,6 +131082,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutReceiptsInput = {
@@ -128286,6 +131120,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutReceiptsInput = {
@@ -128414,6 +131249,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutReceiptsInput = {
@@ -128451,6 +131287,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type NotificationCreateWithoutNotificationLogsInput = {
@@ -128513,6 +131350,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutNotificationLogsInput = {
@@ -128550,6 +131388,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutNotificationLogsInput = {
@@ -128634,6 +131473,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutNotificationLogsInput = {
@@ -128671,6 +131511,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutAuditLogsInput = {
@@ -128708,6 +131549,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAuditLogsInput = {
@@ -128745,6 +131587,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAuditLogsInput = {
@@ -128798,6 +131641,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAuditLogsInput = {
@@ -128835,6 +131679,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutDeviceTokensInput = {
@@ -128872,6 +131717,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutDeviceTokensInput = {
@@ -128909,6 +131755,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutDeviceTokensInput = {
@@ -128962,6 +131809,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDeviceTokensInput = {
@@ -128999,6 +131847,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type BranchCreateWithoutChurchServicesInput = {
@@ -129264,6 +132113,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutEventAttendanceInput = {
@@ -129301,6 +132151,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutEventAttendanceInput = {
@@ -129510,6 +132361,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutEventAttendanceInput = {
@@ -129547,6 +132399,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type EventCreateWithoutEventNotificationsInput = {
@@ -130087,6 +132940,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSmsMessagesInput = {
@@ -130124,6 +132978,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
     smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSmsMessagesInput = {
@@ -130177,6 +133032,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSmsMessagesInput = {
@@ -130214,6 +133070,7 @@ export namespace Prisma {
     notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
     smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutNotificationPreferencesInput = {
@@ -130251,6 +133108,7 @@ export namespace Prisma {
     smsMessages?: SmsMessageCreateNestedManyWithoutMemberInput
     smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutNotificationPreferencesInput = {
@@ -130288,6 +133146,7 @@ export namespace Prisma {
     smsMessages?: SmsMessageUncheckedCreateNestedManyWithoutMemberInput
     smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutNotificationPreferencesInput = {
@@ -130341,6 +133200,7 @@ export namespace Prisma {
     smsMessages?: SmsMessageUpdateManyWithoutMemberNestedInput
     smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutNotificationPreferencesInput = {
@@ -130378,6 +133238,7 @@ export namespace Prisma {
     smsMessages?: SmsMessageUncheckedUpdateManyWithoutMemberNestedInput
     smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutSmsAuditLogsInput = {
@@ -130415,6 +133276,7 @@ export namespace Prisma {
     smsMessages?: SmsMessageCreateNestedManyWithoutMemberInput
     notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSmsAuditLogsInput = {
@@ -130452,6 +133314,7 @@ export namespace Prisma {
     smsMessages?: SmsMessageUncheckedCreateNestedManyWithoutMemberInput
     notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    issueReports?: IssueReportUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSmsAuditLogsInput = {
@@ -130505,6 +133368,7 @@ export namespace Prisma {
     smsMessages?: SmsMessageUpdateManyWithoutMemberNestedInput
     notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSmsAuditLogsInput = {
@@ -130541,6 +133405,175 @@ export namespace Prisma {
     sermonDownloads?: SermonDownloadUncheckedUpdateManyWithoutUserNestedInput
     smsMessages?: SmsMessageUncheckedUpdateManyWithoutMemberNestedInput
     notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    issueReports?: IssueReportUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserCreateWithoutIssueReportsInput = {
+    id?: string
+    name: string
+    email: string
+    emailVerified?: Date | string | null
+    image?: string | null
+    profilePublicId?: string | null
+    password: string
+    role?: $Enums.UserRole
+    phone?: string | null
+    address?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    donations?: DonationCreateNestedManyWithoutUserInput
+    eventRegistrations?: EventRegistrationCreateNestedManyWithoutUserInput
+    prayerRequests?: PrayerRequestCreateNestedManyWithoutUserInput
+    testimonials?: TestimonialCreateNestedManyWithoutUserInput
+    eventReports?: EventReportCreateNestedManyWithoutCreatedByInput
+    mediaReports?: MediaReportCreateNestedManyWithoutUploadedByInput
+    eventsCreated?: EventCreateNestedManyWithoutCreatedByInput
+    eventMediaUploads?: EventMediaCreateNestedManyWithoutUploadedByInput
+    donationSessions?: DonationSessionCreateNestedManyWithoutMemberInput
+    receipts?: ReceiptCreateNestedManyWithoutMemberInput
+    notificationLogs?: NotificationLogCreateNestedManyWithoutRecipientInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    deviceTokens?: DeviceTokenCreateNestedManyWithoutUserInput
+    eventAttendance?: EventAttendanceCreateNestedManyWithoutMemberInput
+    sermonLikes?: SermonLikeCreateNestedManyWithoutUserInput
+    sermonComments?: SermonCommentCreateNestedManyWithoutUserInput
+    sermonBookmarks?: SermonBookmarkCreateNestedManyWithoutUserInput
+    sermonViews?: SermonViewCreateNestedManyWithoutUserInput
+    sermonDownloads?: SermonDownloadCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutIssueReportsInput = {
+    id?: string
+    name: string
+    email: string
+    emailVerified?: Date | string | null
+    image?: string | null
+    profilePublicId?: string | null
+    password: string
+    role?: $Enums.UserRole
+    phone?: string | null
+    address?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    donations?: DonationUncheckedCreateNestedManyWithoutUserInput
+    eventRegistrations?: EventRegistrationUncheckedCreateNestedManyWithoutUserInput
+    prayerRequests?: PrayerRequestUncheckedCreateNestedManyWithoutUserInput
+    testimonials?: TestimonialUncheckedCreateNestedManyWithoutUserInput
+    eventReports?: EventReportUncheckedCreateNestedManyWithoutCreatedByInput
+    mediaReports?: MediaReportUncheckedCreateNestedManyWithoutUploadedByInput
+    eventsCreated?: EventUncheckedCreateNestedManyWithoutCreatedByInput
+    eventMediaUploads?: EventMediaUncheckedCreateNestedManyWithoutUploadedByInput
+    donationSessions?: DonationSessionUncheckedCreateNestedManyWithoutMemberInput
+    receipts?: ReceiptUncheckedCreateNestedManyWithoutMemberInput
+    notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutRecipientInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    deviceTokens?: DeviceTokenUncheckedCreateNestedManyWithoutUserInput
+    eventAttendance?: EventAttendanceUncheckedCreateNestedManyWithoutMemberInput
+    sermonLikes?: SermonLikeUncheckedCreateNestedManyWithoutUserInput
+    sermonComments?: SermonCommentUncheckedCreateNestedManyWithoutUserInput
+    sermonBookmarks?: SermonBookmarkUncheckedCreateNestedManyWithoutUserInput
+    sermonViews?: SermonViewUncheckedCreateNestedManyWithoutUserInput
+    sermonDownloads?: SermonDownloadUncheckedCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageUncheckedCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutIssueReportsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutIssueReportsInput, UserUncheckedCreateWithoutIssueReportsInput>
+  }
+
+  export type UserUpsertWithoutIssueReportsInput = {
+    update: XOR<UserUpdateWithoutIssueReportsInput, UserUncheckedUpdateWithoutIssueReportsInput>
+    create: XOR<UserCreateWithoutIssueReportsInput, UserUncheckedCreateWithoutIssueReportsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutIssueReportsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutIssueReportsInput, UserUncheckedUpdateWithoutIssueReportsInput>
+  }
+
+  export type UserUpdateWithoutIssueReportsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    profilePublicId?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    donations?: DonationUpdateManyWithoutUserNestedInput
+    eventRegistrations?: EventRegistrationUpdateManyWithoutUserNestedInput
+    prayerRequests?: PrayerRequestUpdateManyWithoutUserNestedInput
+    testimonials?: TestimonialUpdateManyWithoutUserNestedInput
+    eventReports?: EventReportUpdateManyWithoutCreatedByNestedInput
+    mediaReports?: MediaReportUpdateManyWithoutUploadedByNestedInput
+    eventsCreated?: EventUpdateManyWithoutCreatedByNestedInput
+    eventMediaUploads?: EventMediaUpdateManyWithoutUploadedByNestedInput
+    donationSessions?: DonationSessionUpdateManyWithoutMemberNestedInput
+    receipts?: ReceiptUpdateManyWithoutMemberNestedInput
+    notificationLogs?: NotificationLogUpdateManyWithoutRecipientNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    deviceTokens?: DeviceTokenUpdateManyWithoutUserNestedInput
+    eventAttendance?: EventAttendanceUpdateManyWithoutMemberNestedInput
+    sermonLikes?: SermonLikeUpdateManyWithoutUserNestedInput
+    sermonComments?: SermonCommentUpdateManyWithoutUserNestedInput
+    sermonBookmarks?: SermonBookmarkUpdateManyWithoutUserNestedInput
+    sermonViews?: SermonViewUpdateManyWithoutUserNestedInput
+    sermonDownloads?: SermonDownloadUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutIssueReportsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    profilePublicId?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    donations?: DonationUncheckedUpdateManyWithoutUserNestedInput
+    eventRegistrations?: EventRegistrationUncheckedUpdateManyWithoutUserNestedInput
+    prayerRequests?: PrayerRequestUncheckedUpdateManyWithoutUserNestedInput
+    testimonials?: TestimonialUncheckedUpdateManyWithoutUserNestedInput
+    eventReports?: EventReportUncheckedUpdateManyWithoutCreatedByNestedInput
+    mediaReports?: MediaReportUncheckedUpdateManyWithoutUploadedByNestedInput
+    eventsCreated?: EventUncheckedUpdateManyWithoutCreatedByNestedInput
+    eventMediaUploads?: EventMediaUncheckedUpdateManyWithoutUploadedByNestedInput
+    donationSessions?: DonationSessionUncheckedUpdateManyWithoutMemberNestedInput
+    receipts?: ReceiptUncheckedUpdateManyWithoutMemberNestedInput
+    notificationLogs?: NotificationLogUncheckedUpdateManyWithoutRecipientNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    deviceTokens?: DeviceTokenUncheckedUpdateManyWithoutUserNestedInput
+    eventAttendance?: EventAttendanceUncheckedUpdateManyWithoutMemberNestedInput
+    sermonLikes?: SermonLikeUncheckedUpdateManyWithoutUserNestedInput
+    sermonComments?: SermonCommentUncheckedUpdateManyWithoutUserNestedInput
+    sermonBookmarks?: SermonBookmarkUncheckedUpdateManyWithoutUserNestedInput
+    sermonViews?: SermonViewUncheckedUpdateManyWithoutUserNestedInput
+    sermonDownloads?: SermonDownloadUncheckedUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUncheckedUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
   }
 
@@ -130751,10 +133784,14 @@ export namespace Prisma {
     receiptNumber?: string | null
     channel: string
     status?: string
+    template?: string | null
+    subject?: string | null
+    providerMessageId?: string | null
     recipient_addr?: string | null
     retryCount?: number
     deliveredAt?: Date | string | null
     errorMessage?: string | null
+    metadata?: string | null
     sentAt?: Date | string
     updatedAt?: Date | string
   }
@@ -130875,6 +133912,46 @@ export namespace Prisma {
     ipHash?: string | null
     userAgentHash?: string | null
     revokedAt?: Date | string | null
+  }
+
+  export type IssueReportCreateManyUserInput = {
+    id?: string
+    reportId: string
+    category: $Enums.IssueCategory
+    title: string
+    description: string
+    expectedBehavior?: string | null
+    actualBehavior?: string | null
+    severity?: $Enums.IssueSeverity
+    status?: $Enums.IssueStatus
+    pageUrl?: string | null
+    pagePath?: string | null
+    pageTitle?: string | null
+    referrer?: string | null
+    browser?: string | null
+    browserVersion?: string | null
+    operatingSystem?: string | null
+    deviceType?: string | null
+    viewportWidth?: number | null
+    viewportHeight?: number | null
+    screenWidth?: number | null
+    screenHeight?: number | null
+    timezone?: string | null
+    language?: string | null
+    onlineStatus?: boolean | null
+    connectionType?: string | null
+    appVersion?: string | null
+    errorType?: string | null
+    errorMessageSanitized?: string | null
+    errorStackSanitized?: string | null
+    correlationId?: string | null
+    screenshotUrl?: string | null
+    internalNotes?: string | null
+    assignedTo?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    resolvedAt?: Date | string | null
+    resolvedBy?: string | null
   }
 
   export type DonationUpdateWithoutUserInput = {
@@ -131503,10 +134580,14 @@ export namespace Prisma {
     receiptNumber?: NullableStringFieldUpdateOperationsInput | string | null
     channel?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    template?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     recipient_addr?: NullableStringFieldUpdateOperationsInput | string | null
     retryCount?: IntFieldUpdateOperationsInput | number
     deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableStringFieldUpdateOperationsInput | string | null
     sentAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     notification?: NotificationUpdateOneWithoutNotificationLogsNestedInput
@@ -131521,10 +134602,14 @@ export namespace Prisma {
     receiptNumber?: NullableStringFieldUpdateOperationsInput | string | null
     channel?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    template?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     recipient_addr?: NullableStringFieldUpdateOperationsInput | string | null
     retryCount?: IntFieldUpdateOperationsInput | number
     deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableStringFieldUpdateOperationsInput | string | null
     sentAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -131538,10 +134623,14 @@ export namespace Prisma {
     receiptNumber?: NullableStringFieldUpdateOperationsInput | string | null
     channel?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    template?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     recipient_addr?: NullableStringFieldUpdateOperationsInput | string | null
     retryCount?: IntFieldUpdateOperationsInput | number
     deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableStringFieldUpdateOperationsInput | string | null
     sentAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -131898,6 +134987,126 @@ export namespace Prisma {
     ipHash?: NullableStringFieldUpdateOperationsInput | string | null
     userAgentHash?: NullableStringFieldUpdateOperationsInput | string | null
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type IssueReportUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reportId?: StringFieldUpdateOperationsInput | string
+    category?: EnumIssueCategoryFieldUpdateOperationsInput | $Enums.IssueCategory
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    expectedBehavior?: NullableStringFieldUpdateOperationsInput | string | null
+    actualBehavior?: NullableStringFieldUpdateOperationsInput | string | null
+    severity?: EnumIssueSeverityFieldUpdateOperationsInput | $Enums.IssueSeverity
+    status?: EnumIssueStatusFieldUpdateOperationsInput | $Enums.IssueStatus
+    pageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    pagePath?: NullableStringFieldUpdateOperationsInput | string | null
+    pageTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    referrer?: NullableStringFieldUpdateOperationsInput | string | null
+    browser?: NullableStringFieldUpdateOperationsInput | string | null
+    browserVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    operatingSystem?: NullableStringFieldUpdateOperationsInput | string | null
+    deviceType?: NullableStringFieldUpdateOperationsInput | string | null
+    viewportWidth?: NullableIntFieldUpdateOperationsInput | number | null
+    viewportHeight?: NullableIntFieldUpdateOperationsInput | number | null
+    screenWidth?: NullableIntFieldUpdateOperationsInput | number | null
+    screenHeight?: NullableIntFieldUpdateOperationsInput | number | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    language?: NullableStringFieldUpdateOperationsInput | string | null
+    onlineStatus?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    connectionType?: NullableStringFieldUpdateOperationsInput | string | null
+    appVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    errorType?: NullableStringFieldUpdateOperationsInput | string | null
+    errorMessageSanitized?: NullableStringFieldUpdateOperationsInput | string | null
+    errorStackSanitized?: NullableStringFieldUpdateOperationsInput | string | null
+    correlationId?: NullableStringFieldUpdateOperationsInput | string | null
+    screenshotUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    internalNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resolvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type IssueReportUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reportId?: StringFieldUpdateOperationsInput | string
+    category?: EnumIssueCategoryFieldUpdateOperationsInput | $Enums.IssueCategory
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    expectedBehavior?: NullableStringFieldUpdateOperationsInput | string | null
+    actualBehavior?: NullableStringFieldUpdateOperationsInput | string | null
+    severity?: EnumIssueSeverityFieldUpdateOperationsInput | $Enums.IssueSeverity
+    status?: EnumIssueStatusFieldUpdateOperationsInput | $Enums.IssueStatus
+    pageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    pagePath?: NullableStringFieldUpdateOperationsInput | string | null
+    pageTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    referrer?: NullableStringFieldUpdateOperationsInput | string | null
+    browser?: NullableStringFieldUpdateOperationsInput | string | null
+    browserVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    operatingSystem?: NullableStringFieldUpdateOperationsInput | string | null
+    deviceType?: NullableStringFieldUpdateOperationsInput | string | null
+    viewportWidth?: NullableIntFieldUpdateOperationsInput | number | null
+    viewportHeight?: NullableIntFieldUpdateOperationsInput | number | null
+    screenWidth?: NullableIntFieldUpdateOperationsInput | number | null
+    screenHeight?: NullableIntFieldUpdateOperationsInput | number | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    language?: NullableStringFieldUpdateOperationsInput | string | null
+    onlineStatus?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    connectionType?: NullableStringFieldUpdateOperationsInput | string | null
+    appVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    errorType?: NullableStringFieldUpdateOperationsInput | string | null
+    errorMessageSanitized?: NullableStringFieldUpdateOperationsInput | string | null
+    errorStackSanitized?: NullableStringFieldUpdateOperationsInput | string | null
+    correlationId?: NullableStringFieldUpdateOperationsInput | string | null
+    screenshotUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    internalNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resolvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type IssueReportUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reportId?: StringFieldUpdateOperationsInput | string
+    category?: EnumIssueCategoryFieldUpdateOperationsInput | $Enums.IssueCategory
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    expectedBehavior?: NullableStringFieldUpdateOperationsInput | string | null
+    actualBehavior?: NullableStringFieldUpdateOperationsInput | string | null
+    severity?: EnumIssueSeverityFieldUpdateOperationsInput | $Enums.IssueSeverity
+    status?: EnumIssueStatusFieldUpdateOperationsInput | $Enums.IssueStatus
+    pageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    pagePath?: NullableStringFieldUpdateOperationsInput | string | null
+    pageTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    referrer?: NullableStringFieldUpdateOperationsInput | string | null
+    browser?: NullableStringFieldUpdateOperationsInput | string | null
+    browserVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    operatingSystem?: NullableStringFieldUpdateOperationsInput | string | null
+    deviceType?: NullableStringFieldUpdateOperationsInput | string | null
+    viewportWidth?: NullableIntFieldUpdateOperationsInput | number | null
+    viewportHeight?: NullableIntFieldUpdateOperationsInput | number | null
+    screenWidth?: NullableIntFieldUpdateOperationsInput | number | null
+    screenHeight?: NullableIntFieldUpdateOperationsInput | number | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    language?: NullableStringFieldUpdateOperationsInput | string | null
+    onlineStatus?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    connectionType?: NullableStringFieldUpdateOperationsInput | string | null
+    appVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    errorType?: NullableStringFieldUpdateOperationsInput | string | null
+    errorMessageSanitized?: NullableStringFieldUpdateOperationsInput | string | null
+    errorStackSanitized?: NullableStringFieldUpdateOperationsInput | string | null
+    correlationId?: NullableStringFieldUpdateOperationsInput | string | null
+    screenshotUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    internalNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resolvedBy?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type EventRegistrationCreateManyEventInput = {
@@ -132419,10 +135628,14 @@ export namespace Prisma {
     receiptNumber?: string | null
     channel: string
     status?: string
+    template?: string | null
+    subject?: string | null
+    providerMessageId?: string | null
     recipient_addr?: string | null
     retryCount?: number
     deliveredAt?: Date | string | null
     errorMessage?: string | null
+    metadata?: string | null
     sentAt?: Date | string
     updatedAt?: Date | string
   }
@@ -132435,10 +135648,14 @@ export namespace Prisma {
     receiptNumber?: NullableStringFieldUpdateOperationsInput | string | null
     channel?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    template?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     recipient_addr?: NullableStringFieldUpdateOperationsInput | string | null
     retryCount?: IntFieldUpdateOperationsInput | number
     deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableStringFieldUpdateOperationsInput | string | null
     sentAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     recipient?: UserUpdateOneWithoutNotificationLogsNestedInput
@@ -132453,10 +135670,14 @@ export namespace Prisma {
     receiptNumber?: NullableStringFieldUpdateOperationsInput | string | null
     channel?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    template?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     recipient_addr?: NullableStringFieldUpdateOperationsInput | string | null
     retryCount?: IntFieldUpdateOperationsInput | number
     deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableStringFieldUpdateOperationsInput | string | null
     sentAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -132470,10 +135691,14 @@ export namespace Prisma {
     receiptNumber?: NullableStringFieldUpdateOperationsInput | string | null
     channel?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    template?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     recipient_addr?: NullableStringFieldUpdateOperationsInput | string | null
     retryCount?: IntFieldUpdateOperationsInput | number
     deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableStringFieldUpdateOperationsInput | string | null
     sentAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -134321,6 +137546,10 @@ export namespace Prisma {
      * @deprecated Use SmsAuditLogDefaultArgs instead
      */
     export type SmsAuditLogArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = SmsAuditLogDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use IssueReportDefaultArgs instead
+     */
+    export type IssueReportArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = IssueReportDefaultArgs<ExtArgs>
 
   /**
    * Batch Payload for updateMany & deleteMany & createMany

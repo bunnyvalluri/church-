@@ -4,11 +4,15 @@
   "private": true,
   "scripts": {
     "start": "node server.js",
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": "node tests/sms.test.js && node tests/integration/backend-architecture.test.js",
     "db:seed": "node prisma/seed-complete.js",
     "db:check": "node prisma/check-db.js",
     "db:push": "prisma db push",
     "db:generate": "prisma generate",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "start:modular": "node dist/bootstrap/server.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

@@ -39,6 +39,26 @@ jobs:
         run: npx prisma generate --schema=./prisma/schema.prisma
         continue-on-error: true
 
+      - name: Typecheck Backend (Strict TypeScript)
+        working-directory: ./backend
+        run: npm run typecheck
+
+      - name: Build Backend (TypeScript Compilation)
+        working-directory: ./backend
+        run: npm run build
+
+      - name: Run Backend Architecture & Security Tests
+        working-directory: ./backend
+        env:
+          NODE_ENV: "test"
+          DB_OFFLINE: "true"
+          MONGODB_OFFLINE: "true"
+          DISABLE_BULLMQ: "true"
+        run: npm run test
+
+      - name: Validate Route Health & HTTP Status
+        run: npm run test:route-health
+
       - name: Lint Frontend
         run: npm run lint -w frontend --if-present
         continue-on-error: true

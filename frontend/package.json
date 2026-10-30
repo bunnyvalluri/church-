@@ -16,7 +16,8 @@
     "test:rbac": "playwright test tests/e2e/rbac-matrix.spec.ts",
     "test:responsive": "playwright test tests/responsive.spec.ts",
     "test:a11y": "playwright test tests/accessibility.spec.ts",
-    "test:smoke": "playwright test tests/smoke/production-smoke.spec.ts"
+    "test:smoke": "playwright test tests/smoke/production-smoke.spec.ts",
+    "test:route-health": "node tests/route-health/reports/generateRouteHealthReport.js"
   },
   "dependencies": {
     "@ai-sdk/google": "^3.0.15",

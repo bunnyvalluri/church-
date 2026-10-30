@@ -856,10 +856,14 @@ exports.Prisma.NotificationLogScalarFieldEnum = {
   receiptNumber: 'receiptNumber',
   channel: 'channel',
   status: 'status',
+  template: 'template',
+  subject: 'subject',
+  providerMessageId: 'providerMessageId',
   recipient_addr: 'recipient_addr',
   retryCount: 'retryCount',
   deliveredAt: 'deliveredAt',
   errorMessage: 'errorMessage',
+  metadata: 'metadata',
   sentAt: 'sentAt',
   updatedAt: 'updatedAt'
 };
@@ -1317,6 +1321,47 @@ exports.Prisma.SmsAuditLogScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.IssueReportScalarFieldEnum = {
+  id: 'id',
+  reportId: 'reportId',
+  userId: 'userId',
+  category: 'category',
+  title: 'title',
+  description: 'description',
+  expectedBehavior: 'expectedBehavior',
+  actualBehavior: 'actualBehavior',
+  severity: 'severity',
+  status: 'status',
+  pageUrl: 'pageUrl',
+  pagePath: 'pagePath',
+  pageTitle: 'pageTitle',
+  referrer: 'referrer',
+  browser: 'browser',
+  browserVersion: 'browserVersion',
+  operatingSystem: 'operatingSystem',
+  deviceType: 'deviceType',
+  viewportWidth: 'viewportWidth',
+  viewportHeight: 'viewportHeight',
+  screenWidth: 'screenWidth',
+  screenHeight: 'screenHeight',
+  timezone: 'timezone',
+  language: 'language',
+  onlineStatus: 'onlineStatus',
+  connectionType: 'connectionType',
+  appVersion: 'appVersion',
+  errorType: 'errorType',
+  errorMessageSanitized: 'errorMessageSanitized',
+  errorStackSanitized: 'errorStackSanitized',
+  correlationId: 'correlationId',
+  screenshotUrl: 'screenshotUrl',
+  internalNotes: 'internalNotes',
+  assignedTo: 'assignedTo',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  resolvedAt: 'resolvedAt',
+  resolvedBy: 'resolvedBy'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -1473,6 +1518,34 @@ exports.SmsErrorCode = exports.$Enums.SmsErrorCode = {
   UNKNOWN: 'UNKNOWN'
 };
 
+exports.IssueCategory = exports.$Enums.IssueCategory = {
+  SOMETHING_IS_BROKEN: 'SOMETHING_IS_BROKEN',
+  PAGE_NOT_LOADING: 'PAGE_NOT_LOADING',
+  LOGIN_ACCOUNT: 'LOGIN_ACCOUNT',
+  MOBILE_RESPONSIVE: 'MOBILE_RESPONSIVE',
+  WEBSITE_DISPLAY: 'WEBSITE_DISPLAY',
+  NETWORK_CONNECTION: 'NETWORK_CONNECTION',
+  BUG_UNEXPECTED: 'BUG_UNEXPECTED',
+  SUGGESTION: 'SUGGESTION',
+  OTHER: 'OTHER'
+};
+
+exports.IssueSeverity = exports.$Enums.IssueSeverity = {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH',
+  CRITICAL: 'CRITICAL'
+};
+
+exports.IssueStatus = exports.$Enums.IssueStatus = {
+  OPEN: 'OPEN',
+  INVESTIGATING: 'INVESTIGATING',
+  IN_PROGRESS: 'IN_PROGRESS',
+  RESOLVED: 'RESOLVED',
+  CLOSED: 'CLOSED',
+  DUPLICATE: 'DUPLICATE'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   Session: 'Session',
@@ -1553,7 +1626,8 @@ exports.Prisma.ModelName = {
   AIChatLog: 'AIChatLog',
   SmsMessage: 'SmsMessage',
   MemberNotificationPreference: 'MemberNotificationPreference',
-  SmsAuditLog: 'SmsAuditLog'
+  SmsAuditLog: 'SmsAuditLog',
+  IssueReport: 'IssueReport'
 };
 
 /**
