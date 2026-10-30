@@ -1,6 +1,6 @@
 # ── Stage 1: Dependency Resolver ──────────────────────────────────────────────
 FROM node:22-alpine AS deps
-RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
 # Copy dependency mappings for monorepo
@@ -17,14 +17,14 @@ RUN npm ci --ignore-scripts || npm install --ignore-scripts
 
 # ── Stage 2: Production Builder ───────────────────────────────────────────────
 FROM node:22-alpine AS builder
-RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
 # Copy entire dependency footprint (including workspace symlinks)
 COPY --from=deps /app ./
 COPY . .
 
-# Generate Prisma Client
+# Generate Prisma Client with full Linux and musl binary targets
 RUN cd frontend && npx prisma generate --schema=./prisma/schema.prisma || true
 RUN cd backend && npx prisma generate --schema=./prisma/schema.prisma || true
 
@@ -40,6 +40,8 @@ ENV NEXTAUTH_URL="http://localhost:3000"
 ENV NEXT_PUBLIC_APP_URL="https://kcmchurch.vercel.app"
 ENV NEXT_PUBLIC_SOCKET_URL="http://localhost:3001"
 ENV NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME="placeholder"
+ENV CLOUDINARY_API_KEY="placeholder"
+ENV CLOUDINARY_API_SECRET="placeholder"
 ENV NEXT_PUBLIC_FIREBASE_API_KEY="placeholder"
 ENV NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN="placeholder.firebaseapp.com"
 ENV NEXT_PUBLIC_FIREBASE_PROJECT_ID="placeholder"
@@ -47,6 +49,9 @@ ENV NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET="placeholder.appspot.com"
 ENV NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID="000000000000"
 ENV NEXT_PUBLIC_FIREBASE_APP_ID="1:000000000000:web:placeholder"
 ENV NEXT_PUBLIC_FIREBASE_VAPID_KEY="placeholder"
+ENV FIREBASE_PROJECT_ID="placeholder"
+ENV FIREBASE_CLIENT_EMAIL="placeholder@placeholder.iam.gserviceaccount.com"
+ENV FIREBASE_PRIVATE_KEY="-----BEGIN RSA PRIVATE KEY-----\nplaceholder\n-----END RSA PRIVATE KEY-----\n"
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 
 # Build the Next.js frontend
@@ -54,6 +59,7 @@ RUN npm run build -w frontend
 
 # ── Stage 3: Minimal Production Runner ────────────────────────────────────────
 FROM node:22-alpine AS runner
+RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
 ENV NODE_ENV="production"
