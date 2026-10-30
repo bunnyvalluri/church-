@@ -156,7 +156,15 @@ export default function RootLayout({
         <meta name="color-scheme" content="light dark" />
 
         {/* Global Schema.org structured data — Church + WebSite + FAQ (for Google AI Overviews) */}
-        <JsonLd data={[churchSchema(), websiteSchema(), churchFaqSchema()]} />
+        {/* Google Search Central: Standalone WebSite Schema for Site Name Definition */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(websiteSchema()),
+          }}
+        />
+        {/* Global Schema.org structured data — Church + FAQ */}
+        <JsonLd data={[churchSchema(), churchFaqSchema()]} />
 
         {/* Network performance optimizations: preconnect to high-priority origins */}
         <link rel="preconnect" href="https://www.googletagmanager.com" crossOrigin="anonymous" />

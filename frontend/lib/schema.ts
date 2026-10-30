@@ -186,7 +186,7 @@ export function websiteSchema() {
       "Kingdom of Christ",
       "KCM Church Hyderabad",
     ],
-    url: `${SITE_URL}/`,
+    url: SITE_URL,
     description:
       "Official website of Kingdom of Christ Ministries (KCM) — faith, worship services, ministries, locations, sermons, events, prayer support, and community outreach in Hyderabad, India.",
     publisher: {
