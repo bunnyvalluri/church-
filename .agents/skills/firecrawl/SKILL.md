@@ -5,12 +5,35 @@ description: Firecrawl Agent Integration Skill for web searching, scraping, craw
 
 # Firecrawl Agent Skill Instructions
 
-This skill enables Antigravity and AI agents to search, scrape, crawl, and extract clean web content using Firecrawl Cloud API & local Firecrawl services.
+This skill enables Antigravity and AI agents to search, scrape, crawl, and extract clean web content using the Firecrawl Cloud API & local Firecrawl services.
 
-## Firecrawl API Key Configuration
-- **API Key**: `fc-7d7905a9a13247bcaa18ba4517ce0b81`
-- **Base API Endpoint**: `https://api.firecrawl.dev/v1`
+## Firecrawl API Configuration
+- **API Key**: Loaded securely from the `FIRECRAWL_API_KEY` environment variable in `.env` / secret manager. Never commit raw API keys into repository files.
+- **Base API Endpoint**: `https://api.firecrawl.dev/v1` (configurable via `FIRECRAWL_BASE_URL`)
+- **Authentication Header**: `Authorization: Bearer <FIRECRAWL_API_KEY>`
 
+### Authentication Example
+```bash
+curl -X POST https://api.firecrawl.dev/v1/scrape \
+  -H "Authorization: Bearer $FIRECRAWL_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://example.com", "formats": ["markdown"]}'
+```
+
+In Node.js / Next.js server runtime:
+```javascript
+const apiKey = process.env.FIRECRAWL_API_KEY;
+const baseUrl = process.env.FIRECRAWL_BASE_URL || 'https://api.firecrawl.dev/v1';
+
+const res = await fetch(`${baseUrl}/scrape`, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${apiKey}`,
+  },
+  body: JSON.stringify({ url, formats: ['markdown'] }),
+});
+```
 
 ## API Capabilities
 
