@@ -7,6 +7,11 @@
   "css.lint.unknownAtRules": "ignore",
   "scss.lint.unknownAtRules": "ignore",
   "less.lint.unknownAtRules": "ignore",
+  "docker.lsp.experimental.vulnerabilityScanning": false,
+  "docker.lsp.experimental.scout.criticalHighVulnerabilities": false,
+  "docker.lsp.experimental.scout.vulnerabilities": false,
+  "docker.lsp.experimental.scout.recommendedTag": false,
+  "docker.lsp.experimental.scout.notPinnedDigest": false,
   "files.exclude": {
     "**/.git": true,
     "**/.svn": true,
