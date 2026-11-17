@@ -9,6 +9,7 @@ In the Kingdom of Christ Ministries platform, **all data originating from the cl
 ## 2. Threat Models & Mitigation Controls
 
 ### 2.1 Amount Tampering Attack
+
 - **Threat**: Attacker changes ₹1,000 to ₹1 or ₹100,000 in browser state or request body before checkout.
 - **Mitigation**:
   - Backend calculates and verifies order amount against church database limits.
@@ -16,6 +17,7 @@ In the Kingdom of Christ Ministries platform, **all data originating from the cl
   - During checkout verification and webhook receipt, the backend fetches payment details from Razorpay or verifies payload `amount` strictly equals `Math.round(session.amount * 100)`. Mismatches trigger immediate rejection, auto-block, and security audit alerts.
 
 ### 2.2 Payment Signature Forgery
+
 - **Threat**: Attacker sends fake `razorpay_signature` or `paymentSuccess: true` to mark a donation paid.
 - **Mitigation**:
   - `POST /api/payments/verify` requires `razorpay_order_id`, `razorpay_payment_id`, and `razorpay_signature`.
@@ -24,6 +26,7 @@ In the Kingdom of Christ Ministries platform, **all data originating from the cl
   - Fake signatures immediately return HTTP 400 and record `PAYMENT_SIGNATURE_INVALID`.
 
 ### 2.3 Webhook Replay & Duplicate Processing
+
 - **Threat**: Attacker captures legitimate webhook payload and replays it repeatedly to manipulate receipts or balances.
 - **Mitigation**:
   - Webhook signature is validated over raw binary/string request body with `RAZORPAY_WEBHOOK_SECRET`.
@@ -32,6 +35,7 @@ In the Kingdom of Christ Ministries platform, **all data originating from the cl
   - Replay timestamp protection: events older than 5 minutes in production are rejected.
 
 ### 2.4 Insecure Direct Object References (IDOR)
+
 - **Threat**: User queries `/api/payments/status/[id]` to inspect other members' donation history.
 - **Mitigation**:
   - Endpoint resolves caller's server session.
@@ -54,6 +58,7 @@ In the Kingdom of Christ Ministries platform, **all data originating from the cl
 ## 4. Security Audit Logging
 
 All security-relevant financial events are logged via `writeAuditLog` to the `audit_logs` table:
+
 - `PAYMENT_ORDER_CREATED`
 - `PAYMENT_VERIFIED`
 - `PAYMENT_SIGNATURE_INVALID`

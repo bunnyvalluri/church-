@@ -1,12 +1,15 @@
 # Kubernetes Architecture & Workload Deployment
 
 ## Purpose
+
 This document provides the technical specification for the Kubernetes cluster architecture, workload partitioning, Kustomize deployment manifests, resource allocation, and scaling strategies across the Kingdom of Christ Ministries infrastructure.
 
 ## Scope
+
 Covers manifests in `k8s/` and platform configurations in `platform/kubernetes/`.
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -58,6 +61,7 @@ graph TD
 ## 3. Health Probes & Zero-Downtime Rollouts
 
 All deployments configure standardized Kubernetes probes:
+
 - **Startup Probe**: `GET /api/health` (Initial delay: 5s, period: 5s, failureThreshold: 30) allows Next.js bundle compilation without premature pod termination.
 - **Readiness Probe**: `GET /api/ready` (Period: 5s, failureThreshold: 2) verifies PostgreSQL connection before receiving gateway traffic.
 - **Liveness Probe**: `GET /api/health` (Period: 10s, failureThreshold: 3) restarts deadlocked processes.
@@ -92,10 +96,12 @@ npm run k8s:delete
 ---
 
 ## Security Considerations
+
 - Pods execute with restricted security contexts (`runAsNonRoot: true`).
 - Secrets are encrypted at rest in etcd.
 
 ## Related Documentation
+
 - [Docker.md](Docker.md) — Container builds.
 - [Helm.md](Helm.md) — Helm package management.
 - [ArgoRollouts.md](ArgoRollouts.md) — Progressive delivery.

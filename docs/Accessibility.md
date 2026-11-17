@@ -31,7 +31,7 @@ The platform strictly adheres to **W3C Web Content Accessibility Guidelines (WCA
 graph TD
     UserAssistive[User with Assistive Technology / Keyboard] --> FocusEngine[Focus Management & Skip Links]
     FocusEngine --> RadixPrimitives[Radix UI Headless Primitives]
-    
+
     subgraph Accessibility Layer
         RadixPrimitives --> ARIAAttrs[ARIA Roles, States & Properties]
         RadixPrimitives --> KeyboardTrap[Modal Focus Trapping & Esc Key]

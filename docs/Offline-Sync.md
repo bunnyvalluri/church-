@@ -1,12 +1,15 @@
 # Offline Synchronization & Conflict Resolution
 
 ## Purpose
+
 This document provides the technical specification for the IndexedDB mutation queue, background synchronization engine, conflict resolution strategies, and server sync handlers across the Kingdom of Christ Ministries platform.
 
 ## Scope
+
 Covers `frontend/lib/offline/indexeddb.ts`, `frontend/lib/offline/sync-queue.ts`, `frontend/lib/offline/conflict-manager.ts`, and the `/api/sync/offline` server endpoint.
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -27,7 +30,7 @@ sequenceDiagram
 
     Note over User,SyncQueue: Device Reconnects to Internet
     SyncQueue->>IDB: Query all tasks where status == "PENDING" (Ordered by clientTimestamp ASC)
-    
+
     loop Process Each Queued Mutation (FIFO)
         SyncQueue->>ServerAPI: POST /api/sync/offline { action, payload, idempotentKey, clientTimestamp }
         ServerAPI->>DB: Check if idempotentKey already processed
@@ -71,6 +74,7 @@ sequenceDiagram
 ## 4. Exponential Backoff & Retry Policies
 
 When a network failure occurs mid-sync:
+
 1. The mutation's `retryCount` is incremented.
 2. Next retry delay is calculated: `delay = min(baseDelay * 2^retryCount, maxDelay)` (e.g. 1s, 2s, 4s, 8s, up to max 60s).
 3. If `retryCount >= 5`, the task is marked `FAILED_PERMANENT` and the user is prompted to manually review or discard the draft.
@@ -80,6 +84,7 @@ When a network failure occurs mid-sync:
 ## 5. Server-Side Sync Endpoint (`/api/sync/offline`)
 
 The server endpoint processes batch synchronization payloads inside a single transactional boundary:
+
 - Validates session authentication token.
 - Verifies payload schema with Zod.
 - Dispatches domain mutations via Prisma.
@@ -97,9 +102,11 @@ The server endpoint processes batch synchronization payloads inside a single tra
 ---
 
 ## Security Considerations
+
 - Mutation payloads in IndexedDB are isolated per browser profile and deleted immediately upon successful server confirmation.
 
 ## Related Documentation
+
 - [Offline-First.md](Offline-First.md) — Offline principles.
 - [PWA.md](PWA.md) — Service Worker configuration.
 - [API-Documentation.md](API-Documentation.md) — Sync API specifications.

@@ -1,12 +1,15 @@
 # CloudNativePG High-Availability PostgreSQL Operator
 
 ## Purpose
+
 This document provides the authoritative technical specification for CloudNativePG (CNPG), the Kubernetes-native operator managing high-availability PostgreSQL clusters, automated failover, streaming replication, continuous WAL archiving, Point-in-Time Recovery (PITR), and PgBouncer connection pooling for the Kingdom of Christ Ministries platform.
 
 ## Scope
+
 Covers manifests in `platform/database/`, operator deployments, cluster definitions (`kcm-db-cluster.yaml`), and database disaster recovery runbooks.
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -18,7 +21,7 @@ graph TD
     subgraph Kubernetes Namespace: kcm-system
         AppPods[Next.js & Backend Application Pods]
         PgBouncerService[PgBouncer Service: kcm-db-pooler:5432]
-        
+
         subgraph CloudNativePG 3-Node HA Cluster
             PGPrimary[(Node 1: PostgreSQL Primary / Read-Write)]
             PGStandby1[(Node 2: Sync Standby / Read-Only)]
@@ -28,7 +31,7 @@ graph TD
 
     AppPods --> PgBouncerService
     PgBouncerService --> PGPrimary
-    
+
     PGPrimary -->|Streaming Physical Replication| PGStandby1
     PGPrimary -->|Streaming Physical Replication| PGStandby2
 
@@ -128,10 +131,12 @@ spec:
 ---
 
 ## Security Considerations
+
 - Client TLS certificates are generated automatically by CloudNativePG for all internal connections.
 - Database authentication credentials use SCRAM-SHA-256 cryptographic hashing.
 
 ## Related Documentation
+
 - [PostgreSQL.md](PostgreSQL.md) — Relational data model and Prisma client.
 - [Database-Architecture.md](Database-Architecture.md) — Multi-database topology.
 - [Longhorn.md](Longhorn.md) — Underlying block storage configuration.

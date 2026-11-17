@@ -1,12 +1,15 @@
 # Admin Portal Module Specification
 
 ## Purpose
+
 This document provides the functional and technical specification for the Admin Portal, the centralized command center for system administrators to manage church members, oversee global infrastructure health, inspect security audit logs, and reconcile finances.
 
 ## Scope
+
 Covers frontend pages in `frontend/app/admin/`, API endpoints in `frontend/app/api/admin/`, and administrative telemetry streams.
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -28,7 +31,7 @@ Covers frontend pages in `frontend/app/admin/`, API endpoints in `frontend/app/a
 ```mermaid
 graph TD
     Admin([System Administrator]) --> AdminDashboard[/admin Dashboard]
-    
+
     AdminDashboard --> Users[User Management: Role Elevation & Deactivation]
     AdminDashboard --> Health[Infrastructure Health: Postgres, Mongo, Redis, FCM]
     AdminDashboard --> Audit[Audit Trail: Inspect Privileged Mutations]
@@ -37,18 +40,22 @@ graph TD
 ```
 
 ### 2.1 User Management & Role Elevation
+
 - Search members by name, email, or phone number.
 - Assign roles (`MEMBER`, `VOLUNTEER`, `EVENT_MANAGER`, `PASTOR`, `ADMIN`).
 - Deactivate or reset credentials for compromised accounts.
 
 ### 2.2 Detailed Health Monitoring (`/api/admin/health/detailed`)
+
 Performs real-time latency probes and connectivity checks across:
+
 - **PostgreSQL**: Measures query roundtrip time via `SELECT 1`.
 - **MongoDB Atlas**: Verifies connection pool health and write latency.
 - **Redis Cache**: Measures PING response time.
 - **External Services**: Probes Cloudinary, Firebase Admin SDK, and httpSMS gateway status.
 
 ### 2.3 Security Audit Trail Viewer
+
 - Queries the MongoDB `audit_events` collection with filters for actor, action type, and date range.
 - Captures before-and-after diffs on administrative modifications.
 
@@ -73,10 +80,12 @@ Performs real-time latency probes and connectivity checks across:
 ---
 
 ## Security Considerations
+
 - The Admin Portal is protected by Next.js Edge Middleware and strict API token guards.
 - All actions taken within the Admin Portal generate an immutable audit log entry.
 
 ## Related Documentation
+
 - [Authorization-RBAC.md](Authorization-RBAC.md) — Admin role definitions.
 - [MongoDB-Atlas.md](MongoDB-Atlas.md) — Audit event schema.
 - [Health-Checks.md](Health-Checks.md) — Health check probe specifications.

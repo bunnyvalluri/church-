@@ -1,12 +1,15 @@
 # Kubernetes Runtime Security & Workload Hardening
 
 ## Purpose
+
 This document provides the runtime security specification for container workloads, Kubernetes pod isolation, Pod Security Standards (PSS), NetworkPolicies, and kernel-level syscall monitoring across the Kingdom of Christ Ministries infrastructure.
 
 ## Scope
+
 Covers Kubernetes manifests in `k8s/` and `platform/security/`, Pod Security Admission, container execution contexts, and network isolation policies.
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -75,6 +78,7 @@ securityContext:
 ## 3. Network Isolation (Kubernetes NetworkPolicies)
 
 Default-deny network policies are deployed in `platform/kubernetes/network-policies/` and `monitoring/kubernetes/network-policy.yaml`:
+
 - **Default Ingress/Egress Deny**: All unspecified ingress and egress traffic is blocked by default.
 - **Microsegmentation**:
   - `frontend` pods may only communicate with `backend` on port 3001, `database` on port 5432, and external HTTPS on port 443.
@@ -86,6 +90,7 @@ Default-deny network policies are deployed in `platform/kubernetes/network-polic
 ## 4. Syscall Anomaly Detection via Falco
 
 Falco is deployed as a DaemonSet to intercept kernel-level syscalls via eBPF probes:
+
 - **Terminal Execution**: Detects interactive shells spawned inside running containers (`sh`, `bash`, `exec`).
 - **File System Tampering**: Detects unexpected writes to `/etc`, `/usr/bin`, or `/root`.
 - **Privilege Escalation**: Detects unauthorized `setuid` / `setgid` system calls.
@@ -103,10 +108,12 @@ Falco is deployed as a DaemonSet to intercept kernel-level syscalls via eBPF pro
 ---
 
 ## Security Considerations
+
 - Pods are forbidden from mounting the host filesystem or sharing the host network namespace.
 - All secrets are mounted as read-only volumes or injected as environment variables.
 
 ## Related Documentation
+
 - [Falco.md](Falco.md) — Falco rules and alerting.
 - [Trivy.md](Trivy.md) — Vulnerability scanning and SBOM generation.
 - [Kubernetes.md](Kubernetes.md) — Cluster deployment manifests.

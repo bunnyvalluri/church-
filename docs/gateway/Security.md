@@ -36,6 +36,7 @@ JWT validation is performed by Envoy Gateway at the proxy layer — before the r
 | `custom:role` | `X-User-Role` |
 
 **Protected Routes:**
+
 - `/admin/*` — requires valid Firebase JWT
 - `/pastor/*` — requires valid Firebase JWT
 - `/member/*` — requires valid Firebase JWT
@@ -43,6 +44,7 @@ JWT validation is performed by Envoy Gateway at the proxy layer — before the r
 - `/api/*` (except `/api/health`, `/api/webhooks`) — requires valid Firebase JWT
 
 **Public Routes:**
+
 - `/health`, `/healthz`, `/readyz` — no auth
 - `/api/health` — no auth
 - `/api/webhooks/*` — no auth (HMAC-verified by app)
@@ -73,6 +75,7 @@ Allowed origins: `kcmchurch.org`, `www.kcmchurch.org`, `admin.kcmchurch.org`, `p
 ## Security Headers
 
 Applied by HTTPRoute ResponseHeaderModifier:
+
 - `X-Frame-Options: SAMEORIGIN` (or DENY for admin)
 - `X-Content-Type-Options: nosniff`
 - `X-XSS-Protection: 1; mode=block`

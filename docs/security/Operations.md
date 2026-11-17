@@ -1,4 +1,5 @@
 # Operations — Falco Runtime Security
+
 ## Kingdom of Christ Ministries
 
 ## Daily Operations
@@ -134,6 +135,7 @@ helm upgrade falco falcosecurity/falco -n falco -f backup-helm-values-$(date +%Y
 | `kube_daemonset_status_number_unavailable{daemonset="falco"}` | Missing Falco pods |
 
 Prometheus query examples:
+
 ```promql
 # Event rate by priority
 rate(falcosidekick_falco_events_total[5m])

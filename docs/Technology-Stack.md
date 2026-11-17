@@ -1,12 +1,15 @@
 # Technology Stack Specification
 
 ## Purpose
+
 This document provides an exhaustive inventory of programming languages, runtime environments, frameworks, libraries, database engines, cloud services, and DevOps infrastructure tooling utilized in the Kingdom of Christ Ministries platform.
 
 ## Scope
+
 Covers frontend, backend, database, messaging, infrastructure, security, monitoring, and developer toolchains.
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -106,8 +109,10 @@ Covers frontend, backend, database, messaging, infrastructure, security, monitor
 ---
 
 ## Security Considerations
+
 All dependencies are locked in `package-lock.json` and scanned continuously for CVEs using Trivy and GitHub Dependabot.
 
 ## Related Documentation
+
 - [Project-Structure.md](Project-Structure.md) — Directory layout of the codebase.
 - [Requirements.md](Requirements.md) — System requirements and SLAs.

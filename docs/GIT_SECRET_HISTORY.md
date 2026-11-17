@@ -1,6 +1,7 @@
 # KCM Church — Git History Secret Audit & Repository Integrity
 
 ## Overview
+
 This document records the comprehensive Git history audit across all **1,224 commits** in the Kingdom of Christ Ministries repository, verifying that no live secrets, private keys, database passwords, or personal credentials remain exposed in git history.
 
 ---
@@ -19,6 +20,7 @@ git log -S "re_" --oneline
 ```
 
 ### Scope Examined:
+
 - Total commits analyzed: **1,224 commits**
 - Branches examined: `main`, all feature/fix branches
 - Tracked files inspected: 100% of tracked repository files
@@ -40,6 +42,7 @@ git log -S "re_" --oneline
 
 3. **Private Key & Certificate Protection**:
    - `.gitignore` explicitly excludes:
+
      ```
      *.pem
      *.key
@@ -51,6 +54,7 @@ git log -S "re_" --oneline
      firebase-service-account*.json
      *serviceAccount*.json
      ```
+
    - No `.pem`, `.key`, or JSON service account key files have ever been committed into the git tree.
 
 4. **Secret Compromise Protocol**:

@@ -1,6 +1,7 @@
 # Transactional Email System Specification
 
 ## Overview
+
 The Kingdom of Christ Ministries (KCM) transactional email system handles mission-critical delivery across authentication, password resets, 80G tax receipt notifications, and pastoral alerts.
 
 ---

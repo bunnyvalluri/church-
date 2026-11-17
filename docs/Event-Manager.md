@@ -1,12 +1,15 @@
 # Event Manager Module Specification
 
 ## Purpose
+
 This document specifies the architecture, workflows, and operational capabilities of the Event Manager module, covering the full event lifecycle from scheduling, capacity management, banner uploads, attendee registration, door QR check-in, to post-event reporting.
 
 ## Scope
+
 Covers event creation workflows, attendee registration endpoints (`/api/events/*`), QR check-in validation, and post-event media uploads.
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -25,7 +28,7 @@ stateDiagram-v2
     ONGOING --> COMPLETED: Service Concluded
     COMPLETED --> REPORT_FILED: Attendance & Media Uploaded
     REPORT_FILED --> [*]
-    
+
     PUBLISHED --> CANCELLED: Event Cancelled / Weather
     DRAFT --> ARCHIVED: Archived
 ```
@@ -35,9 +38,12 @@ stateDiagram-v2
 ## 2. Key Capabilities & Technical Mechanics
 
 ### 2.1 Atomic Seat & Capacity Management
+
 To prevent overbooking when hundreds of members register simultaneously for major conferences or youth retreats:
+
 - `registrationLimit` defines max attendee threshold.
 - `remainingSeats` is decremented inside a strict PostgreSQL serializable transaction:
+
 ```typescript
 await prisma.$transaction(async (tx) => {
   const event = await tx.event.findUnique({ where: { id: eventId } });
@@ -55,11 +61,13 @@ await prisma.$transaction(async (tx) => {
 ```
 
 ### 2.2 Digital QR Tickets & Door Check-In
+
 1. On registration, the member receives a unique QR code encoding `registrationId:eventId:userId:signature`.
 2. Door ushers scan the QR code using mobile device cameras hitting `/api/events/[id]/check-in`.
 3. The server marks `EventRegistration.status = ATTENDED` and creates an immutable `EventAttendance` entry.
 
 ### 2.3 Post-Event Media & Reporting
+
 Event managers upload event photos and summary reports (`/api/event-manager/reports`) to document community impact and archive recordings.
 
 ---
@@ -85,10 +93,12 @@ Event managers upload event photos and summary reports (`/api/event-manager/repo
 ---
 
 ## Security Considerations
+
 - QR tickets include cryptographic HMAC signatures to prevent counterfeit ticket generation.
 - Seat allocation logic runs in ACID transactions to eliminate race conditions.
 
 ## Related Documentation
+
 - [Events.md](Events.md) — Public event calendar specification.
 - [Attendance.md](Attendance.md) — Attendance tracking and analytics.
 - [Cloudinary.md](Cloudinary.md) — Event banner and photo storage.

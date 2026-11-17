@@ -1,12 +1,15 @@
 # Offline-First Architecture & Data Availability
 
 ## Purpose
+
 This document specifies the offline-first architectural principles, local data storage tiers, network availability listeners, and offline user experience flows implemented across the Kingdom of Christ Ministries platform.
 
 ## Scope
+
 Covers client-side state caching, offline drafts (`frontend/hooks/useOfflineDraft.ts`), connection health detection, and UI state indicators.
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -18,14 +21,14 @@ In many ministry and outreach scenarios (rural mission trips, medical camps, cro
 ```mermaid
 graph TD
     UserAction[User Submits Form / Action] --> CheckNet{Online / Offline?}
-    
+
     CheckNet -->|Online| DirectAPI[Direct API Call to Server]
     DirectAPI -->|Success 200| Complete[Action Confirmed & Synced]
-    
+
     CheckNet -->|Offline| LocalEngine[Offline Engine: IndexedDB & Local Cache]
     LocalEngine -->|Persist Locally| DraftStore[Saved to Offline Queue]
     DraftStore --> UIIndicator[UI Displays 'Saved Offline — Pending Sync']
-    
+
     subgraph Background Reconnect
         NetworkEvent[Network Restored: online event] --> SyncTrigger[Trigger Offline Sync Engine]
         SyncTrigger --> DraftStore
@@ -51,6 +54,7 @@ graph TD
 ## 3. Network Detection & UI States
 
 The frontend exposes real-time connectivity status via custom React hooks (`useOffline.ts`):
+
 - Listens to `window.addEventListener('online')` and `'offline'`.
 - Broadcasts real-time visual banners (`OfflineBanner.tsx`):
   - **Offline State**: "You are currently offline. Actions are saved locally and will sync automatically."
@@ -94,10 +98,12 @@ export function useOfflineDraft<T>(formKey: string, initialData: T) {
 ---
 
 ## Security Considerations
+
 - Sensitive financial credentials are never held in offline draft stores.
 - IndexedDB storage is scoped to the origin and isolated from other browser tabs.
 
 ## Related Documentation
+
 - [PWA.md](PWA.md) — Service worker implementation.
 - [Offline-Sync.md](Offline-Sync.md) — Conflict resolution and background queue.
 - [Health-Checks.md](Health-Checks.md) — `/api/health` endpoint specification.

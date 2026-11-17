@@ -10,6 +10,7 @@
 MongoDB Atlas is integrated as a complementary, high-throughput document database within the KCM platform. Its core mandate is to handle high-velocity, append-mostly workloads that would otherwise create read/write contention and bloated tables in the transactional PostgreSQL database.
 
 ### Why MongoDB?
+
 - **Unstructured / Semi-Structured Event Payloads**: Flexible schema evolution for dynamic event metadata, audit diffs, and device payloads.
 - **High-Throughput Ingestion**: Non-blocking ingestion of client activity logs, telemetry snapshots, and streaming metrics.
 - **Time-to-Live (TTL) Native Expiration**: Built-in automated data lifecycle management that purges ephemeral logs without costly manual PostgreSQL partition pruning.
@@ -20,6 +21,7 @@ MongoDB Atlas is integrated as a complementary, high-throughput document databas
 ## 2. Target Collections & Detailed Schemas
 
 ### 2.1 `activity_logs`
+
 Tracks user, admin, and background actions across the portal.
 
 ```json
@@ -43,6 +45,7 @@ Tracks user, admin, and background actions across the portal.
 ```
 
 ### 2.2 `audit_events`
+
 Immutable security and administrative compliance records.
 
 ```json
@@ -69,6 +72,7 @@ Immutable security and administrative compliance records.
 ```
 
 ### 2.3 `notification_events`
+
 Multi-channel notification dispatch records with delivery state machines.
 
 ```json
@@ -97,6 +101,7 @@ Multi-channel notification dispatch records with delivery state machines.
 ```
 
 ### 2.4 `system_events`
+
 Domain event streams and background loop execution snapshots.
 
 ```json
@@ -118,6 +123,7 @@ Domain event streams and background loop execution snapshots.
 ```
 
 ### 2.5 `analytics_events`
+
 High-volume interaction telemetry.
 
 ```json
@@ -166,6 +172,7 @@ High-volume interaction telemetry.
 ## 4. Connection Pooling & Lifecycle Management
 
 The `MongoClient` connection is managed as a **singleton instance** across process runtimes:
+
 - **Connection Pooling**:
   - `minPoolSize`: 5 connections
   - `maxPoolSize`: 50 connections in production (10 in dev)

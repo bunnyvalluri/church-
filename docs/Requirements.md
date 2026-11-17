@@ -1,12 +1,15 @@
 # System Requirements Specification
 
 ## Purpose
+
 This document defines the functional, non-functional, security, operational, and regulatory compliance requirements for the Kingdom of Christ Ministries (KCM Church) production platform.
 
 ## Scope
+
 Encompasses the web application, mobile progressive web app (PWA), backend APIs, database management systems, AI services, and Kubernetes cloud infrastructure.
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -31,22 +34,26 @@ Encompasses the web application, mobile progressive web app (PWA), backend APIs,
 ## 2. Non-Functional Requirements (NFR)
 
 ### 2.1 Performance & Core Web Vitals
+
 - **Largest Contentful Paint (LCP)**: <= 2.0 seconds on standard 4G mobile connections.
 - **First Input Delay (FID) / Interaction to Next Paint (INP)**: <= 100 milliseconds.
 - **Cumulative Layout Shift (CLS)**: <= 0.05 across all desktop and mobile viewports.
 - **API Response Latency**: 95th percentile (P95) <= 150ms for read endpoints; P95 <= 350ms for transactional database writes.
 
 ### 2.2 Availability, Reliability & Recovery (SLAs / SLOs)
+
 - **Uptime Target (SLO)**: 99.95% availability during church service hours and public hours.
 - **Recovery Point Objective (RPO)**: <= 5 minutes for relational financial and member data (Continuous WAL archiving).
 - **Recovery Time Objective (RTO)**: <= 30 minutes for full disaster recovery restoration via Velero and CloudNativePG.
 
 ### 2.3 Scalability & Concurrency
+
 - **Frontend Pods**: Horizontal Pod Autoscaling (HPA) configured to scale between 2 and 10 replicas based on CPU (70%) and Memory (80%) thresholds.
 - **Database Connection Pooling**: PgBouncer layer with a maximum pool size of 200 concurrent active connections to prevent connection exhaustion.
 - **WebSocket Scaling**: Redis Pub/Sub adapter supporting up to 10,000 concurrent active socket connections.
 
 ### 2.4 Browser & Device Compatibility
+
 - Full compatibility with modern desktop browsers: Google Chrome, Mozilla Firefox, Apple Safari, Microsoft Edge.
 - Full compatibility with mobile browsers: Mobile Safari (iOS 15+), Chrome for Android, Samsung Internet (v18+).
 - Support for PWA standalone installation mode across iOS and Android devices.
@@ -72,9 +79,11 @@ Encompasses the web application, mobile progressive web app (PWA), backend APIs,
 ---
 
 ## Security Considerations
+
 All requirements have been mapped to automated integration and security scanning gates in GitHub Actions (`.github/workflows/*`).
 
 ## Related Documentation
+
 - [Technology-Stack.md](Technology-Stack.md) — Languages and libraries fulfilling these requirements.
 - [Security.md](Security.md) — Comprehensive security architecture.
 - [Testing.md](Testing.md) — Quality assurance and verification methodology.

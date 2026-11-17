@@ -5,6 +5,7 @@ Use this checklist prior to launching live donations on `https://kcmchurch.verce
 ---
 
 ## 1. Secrets & Credentials Checklist
+
 - [ ] `RAZORPAY_KEY_ID` configured in Vercel Environment Variables (`rzp_live_...`).
 - [ ] `RAZORPAY_KEY_SECRET` configured in Vercel Environment Variables (Server-Only).
 - [ ] `RAZORPAY_WEBHOOK_SECRET` configured in Vercel Environment Variables and Razorpay Dashboard.
@@ -15,6 +16,7 @@ Use this checklist prior to launching live donations on `https://kcmchurch.verce
 ---
 
 ## 2. Razorpay Dashboard Configuration
+
 - [ ] Webhook URL registered: `https://kcmchurch.vercel.app/api/webhooks/razorpay`.
 - [ ] Webhook active events selected: `payment.authorized`, `payment.captured`, `payment.failed`, `payment.refunded`, `order.paid`.
 - [ ] Business KYC verified and live mode enabled in Razorpay.
@@ -24,6 +26,7 @@ Use this checklist prior to launching live donations on `https://kcmchurch.verce
 ---
 
 ## 3. Security & Anti-Fraud Verification
+
 - [ ] No simulation or mock bypasses available in production (`[Simulate Successful Payment]` completely removed).
 - [ ] All signature verifications use timing-safe comparison (`crypto.timingSafeEqual`).
 - [ ] Amount tampering verification active (paise-level check).
@@ -33,6 +36,7 @@ Use this checklist prior to launching live donations on `https://kcmchurch.verce
 ---
 
 ## 4. Frontend & Mobile User Experience
+
 - [ ] Responsive 4-step wizard verified across Mobile (iOS/Android) and Desktop browsers.
 - [ ] Dynamic UPI QR displays with crisp contrast for scanning.
 - [ ] Mobile deep-links open Google Pay, PhonePe, Paytm, and BHIM apps seamlessly.

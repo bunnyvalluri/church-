@@ -1,6 +1,7 @@
 # KCM Email System Architecture
 
 ## 1. Overview
+
 The Kingdom of Christ Ministries (KCM) transactional email system provides secure, resilient, and observable email delivery across authentication, administrative notifications, pastoral care, and member operations for the production portal at [https://kcmchurch.vercel.app](https://kcmchurch.vercel.app).
 
 ---
@@ -107,6 +108,7 @@ The delivery system strictly avoids binary boolean flags (`emailSent = true`). I
 ## 5. Database Schema (Neon PostgreSQL)
 
 ### `security_events`
+
 - `id`: CUID
 - `user_id`: Nullable relation to User
 - `event_type`: Enum (`USER_REGISTERED`, `USER_LOGIN_SUCCESS`, `USER_LOGIN_FAILED_THRESHOLD`, etc.)
@@ -115,6 +117,7 @@ The delivery system strictly avoids binary boolean flags (`emailSent = true`). I
 - `metadata`: JSON payload
 
 ### `email_events`
+
 - `id`: CUID
 - `security_event_id`: Relation to `SecurityEvent`
 - `recipient_hash`: SHA-256 of recipient email (preserves auditability with zero plain-text leaks)
@@ -127,6 +130,7 @@ The delivery system strictly avoids binary boolean flags (`emailSent = true`). I
 - `last_error_code`: Machine-readable error categorization
 
 ### `email_delivery_attempts`
+
 - `id`: CUID
 - `email_event_id`: Relation to `EmailEvent`
 - `attempt_number`: 1, 2, 3...
@@ -135,6 +139,7 @@ The delivery system strictly avoids binary boolean flags (`emailSent = true`). I
 - `duration_ms`: Latency of provider HTTP/SMTP handshake
 
 ### `email_webhook_events`
+
 - `id`: CUID
 - `provider_event_id`: `@unique` Svix/Resend event ID for replay protection
 - `signature_verified`: Boolean confirmed via HMAC-SHA256

@@ -26,6 +26,7 @@
 ## 2. Test Execution Details
 
 ### 1. Static Type Checking & Linting
+
 - `npm run typecheck -w frontend`:
   - Output: `tsc --noEmit` exited with code 0.
   - Verification: Clean AST compilation across all Next.js App Router pages, components, and server routes.
@@ -33,7 +34,9 @@
   - Output: 0 errors. Only standard Next.js advisory warnings regarding `next/image` vs `img` on external upload previews.
 
 ### 2. Live Database Verification (`backend/prisma/check-db.js`)
+
 - Result:
+
   ```text
   === LIVE DATABASE STATUS — KCM Portal ===
   Users:          36
@@ -58,6 +61,7 @@
   ```
 
 ### 3. Production Smoke Suite (`tests/smoke/production-smoke.spec.ts`)
+
 - Target: `https://kcmchurch.vercel.app`
 - Test 1: Live production homepage HTTP 200 and title integrity (PASSED)
 - Test 2: robots.txt and sitemap.xml endpoints are live and healthy (PASSED)
@@ -65,6 +69,7 @@
 - Test 4: Essential public routes load cleanly without crashing (`/about`, `/sermons`, `/events`, `/prayer`, `/give`, `/gallery`, `/ngo`) (PASSED)
 
 ### 4. Cross-Browser & Mobile Drawer Suite (`tests/cross-browser.spec.ts`)
+
 - Passed all 14 mobile and desktop viewport profiles:
   - iPhone SE (320px)
   - Samsung Galaxy (360px)
@@ -82,14 +87,17 @@
   - Register form & password meter (PASSED)
 
 ### 5. 21-Breakpoint Responsive Suite (`tests/responsive.spec.ts`)
+
 - Tested viewports: 320px, 360px, 375px, 390px, 412px, 430px, 480px, 540px, 600px, 768px, 820px, 834px, 1024px, 1080px, 1280px, 1366px, 1440px, 1536px, 1920px, 2560px, 3840px.
 - Result: **0 horizontal scrollbars / 0 layout shifts** across all 21 viewports.
 
 ### 6. WCAG 2.2 AA Accessibility Suite (`tests/accessibility.spec.ts`)
+
 - Test 1: Skip to main content link renders and receives keyboard focus (PASSED).
 - Test 2: Main content container contains appropriate tabIndex (PASSED).
 
 ### 7. Socket.IO Realtime & Reconnect Suite (`backend/tests/socket-realtime.test.js`)
+
 - Client A and Client B connection: OK
 - Event broadcasting without page refresh: OK
 - Simulated network failure & disconnection: OK
@@ -97,6 +105,7 @@
 - Post-reconnect message delivery: OK
 
 ### 8. SMS Delivery Engine Suite (`backend/tests/sms.test.js`)
+
 - Phone normalization (E.164 +91): 5/5 PASSED
 - SMS encoding & segment calculation (GSM-7 & UCS-2 Unicode Telugu): 2/2 PASSED
 - Dynamic church templates: 3/3 PASSED

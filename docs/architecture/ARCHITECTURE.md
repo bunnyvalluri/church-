@@ -3,6 +3,7 @@
 ## 1. Executive Summary & Design Paradigm
 
 The Kingdom of Christ Ministries (KCM) Church Platform is designed with a layered, decoupled, and highly modular architecture that emphasizes:
+
 - **Clean Separation of Concerns**: Clear demarcation between Presentation (UI/React), Application Services, Domain/Business Logic, Data Access, and Infrastructure.
 - **High Cohesion & Low Coupling**: Independent domain modules (Auth, Events, Sermons, Prayers, Giving, NGO, Realtime, Media) communicating through standardized service contracts and Zod-validated data boundaries.
 - **Resilient & Offline-First UX**: Progressive Web App (PWA) with IndexedDB client buffering and deterministic server reconciliation.

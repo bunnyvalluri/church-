@@ -11,6 +11,7 @@
 | **HIGHLY SENSITIVE** | Password hashes (`bcrypt`), session token hashes, API secret keys | Salted hashing, zero plaintext storage, strict server-side quarantine |
 
 ## 2. Security Controls & Secrets Quarantine
+
 1. **Zero Client Secrets**:
    - `DATABASE_URL`, `DIRECT_URL`, `MONGODB_URI`, `REDIS_URL` are strictly forbidden in client-side bundles and Next.js public environment prefixes (`NEXT_PUBLIC_*`).
 2. **Sanitized Error Logging**:

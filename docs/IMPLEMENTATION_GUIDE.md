@@ -83,7 +83,7 @@ export default function OurStoryPage() {
       <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto prose prose-lg dark:prose-invert">
-            
+
             <h2 className="animate-fade-in-up">How It All Began</h2>
             <p className="animate-fade-in-up animate-delay-100">
               Kingdom of Christ Ministries was founded with a vision to spread 
@@ -148,12 +148,14 @@ export default function OurStoryPage() {
 ## ⚡ Quick Start
 
 ### Option 1: Manual Creation (Recommended for Learning)
+
 1. Create each folder and file manually
 2. Copy the template above
 3. Customize content from `CONTENT_STRUCTURE.md`
 4. Add animations and styling
 
 ### Option 2: Automated Script
+
 Create a script to generate all pages at once:
 
 ```bash
@@ -169,18 +171,21 @@ mkdir -p app/{sermons,events,blog,prayer,give,membership}
 ## 🎨 Styling Tips
 
 ### Use Consistent Design
+
 - Same hero section style
 - Same content container width
 - Same typography
 - Same animations
 
 ### Add Visual Interest
+
 - Background gradients
 - Icons for sections
 - Images where relevant
 - Cards for lists
 
 ### Professional Animations
+
 ```typescript
 // Stagger list items
 <ul className="stagger-children">
@@ -205,6 +210,7 @@ mkdir -p app/{sermons,events,blog,prayer,give,membership}
 ## 📝 Content Checklist
 
 For each page, ensure you have:
+
 - [ ] Page title (H1)
 - [ ] Meta description
 - [ ] Hero section
@@ -223,6 +229,7 @@ For each page, ensure you have:
 Create pages in this order:
 
 ### Phase 1 (Essential)
+
 1. ✅ About > Our Story
 2. ✅ About > Leadership
 3. ✅ About > Our Beliefs
@@ -230,6 +237,7 @@ Create pages in this order:
 5. ✅ Prayer Requests
 
 ### Phase 2 (Important)
+
 6. ✅ Sermons
 7. ✅ Get Involved > Join a Small Group
 8. ✅ Get Involved > Volunteer
@@ -237,6 +245,7 @@ Create pages in this order:
 10. ✅ Become a Member
 
 ### Phase 3 (Additional)
+
 11. ✅ About > Ministries
 12. ✅ About > Mission & Vision
 13. ✅ Blog & Articles
@@ -249,18 +258,22 @@ Create pages in this order:
 ## 🚀 Example: Creating "Our Story" Page
 
 ### Step 1: Create File
+
 ```bash
 mkdir -p app/about/story
 touch app/about/story/page.tsx
 ```
 
 ### Step 2: Add Content
+
 Copy the template above and customize with content from `CONTENT_STRUCTURE.md`
 
 ### Step 3: Test
+
 Visit: `http://localhost:3000/about/story`
 
 ### Step 4: Refine
+
 - Add images
 - Adjust animations
 - Fine-tune content
@@ -301,22 +314,28 @@ Get Involved:
 ## 💡 Pro Tips
 
 ### 1. Reuse Components
+
 Create reusable components for:
+
 - Page hero sections
 - Content containers
 - CTA sections
 - Card layouts
 
 ### 2. Use TypeScript
+
 Type your props for better development experience
 
 ### 3. Optimize Images
+
 Use Next.js Image component for all images
 
 ### 4. Add Loading States
+
 Show skeleton loaders while content loads
 
 ### 5. Test Responsively
+
 Check on mobile, tablet, and desktop
 
 ---
@@ -324,16 +343,19 @@ Check on mobile, tablet, and desktop
 ## 🎨 Design Consistency
 
 ### Colors
+
 - Primary: Purple (#8B5CF6)
 - Secondary: Indigo (#6366F1)
 - Accent: Pink, Blue, Green gradients
 
 ### Typography
+
 - Headings: Bold, large
 - Body: Regular, readable
 - Links: Purple with hover effect
 
 ### Spacing
+
 - Section padding: py-16
 - Container: max-w-4xl mx-auto
 - Gap between elements: mb-6, mb-8
@@ -343,6 +365,7 @@ Check on mobile, tablet, and desktop
 ## 📱 Mobile Optimization
 
 Ensure all pages are mobile-friendly:
+
 - Responsive text sizes (text-xl md:text-2xl)
 - Flexible layouts (flex-col sm:flex-row)
 - Touch-friendly buttons (min 44px height)
@@ -353,6 +376,7 @@ Ensure all pages are mobile-friendly:
 ## 🔍 SEO Best Practices
 
 For each page:
+
 ```typescript
 export const metadata: Metadata = {
   title: "Page Title | Kingdom of Christ Ministries",

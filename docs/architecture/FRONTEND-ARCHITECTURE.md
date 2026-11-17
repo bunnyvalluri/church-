@@ -3,6 +3,7 @@
 ## 1. Overview & Framework Structure
 
 The KCM Church frontend is built on **Next.js 14** using the App Router (`frontend/app/`):
+
 - **Server Components**: Leveraged for static metadata, SEO, schema.org graphs, and pre-rendered SSG routes (`/`, `/events`, `/sermons`, `/locations/*`).
 - **Client Components (`'use client'`)**: Isolated strictly to interactive elements (Modals, Forms, Camera Capture, Live Socket alerts, Theme Toggle).
 - **Route Groups & Sub-Portals**:
@@ -32,6 +33,7 @@ The KCM Church frontend is built on **Next.js 14** using the App Router (`fronte
 ## 3. Custom Hooks Architecture
 
 All complex asynchronous or side-effect logic is encapsulated in custom hooks located in `frontend/hooks/`:
+
 - `useEvents`: Fetches and caches church calendar schedules with branch filter support.
 - `useEventSocket`: Real-time Socket.io listener for new events and broadcast alerts.
 - `useOfflineDraft`: Automatically buffers form drafts in IndexedDB to prevent data loss.

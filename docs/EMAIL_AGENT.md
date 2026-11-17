@@ -1,6 +1,7 @@
 # KCM Email Reliability Agent
 
 ## 1. Overview
+
 The **KCM Email Reliability Agent** is an autonomous, evidence-based observability engine built to safeguard email communications for Kingdom of Christ Ministries.
 
 ---
@@ -55,6 +56,7 @@ The **KCM Email Reliability Agent** is an autonomous, evidence-based observabili
 ---
 
 ## 3. Incident Deduplication & Alert Policy
+
 - **Cooldown Window**: 30 minutes per unique `incidentKey`.
 - **Alert Aggregation**: Rapid repeated failures increment an internal incident counter rather than inundating the administrator's inbox.
 - **Recovery Dispatch**: When an outage transitions back to `OPERATIONAL`, the agent automatically dispatches a recovery confirmation (`[KCM RECOVERY] Production Email Service Recovered`).
@@ -62,5 +64,6 @@ The **KCM Email Reliability Agent** is an autonomous, evidence-based observabili
 ---
 
 ## 4. Alert Destination
+
 - **Designated Administrator**: `Vallurirahul3@gmail.com`
 - **Security Policy**: Alert notifications strictly redact passwords, API keys, and connection strings. Only operational diagnostics (HTTP status, error codes, affected event types, correlation IDs) are dispatched.

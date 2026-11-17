@@ -11,7 +11,9 @@
 | **Webhooks Ingress (`/api/webhooks/*`)** | 1 Minute | 300 requests / IP | Token Bucket |
 
 ## 2. Header Contract
+
 When rate limits are evaluated, the following standard response headers are emitted:
+
 - `X-RateLimit-Limit`: Maximum requests allowed in current window.
 - `X-RateLimit-Remaining`: Remaining request quota.
 - `X-RateLimit-Reset`: UTC epoch timestamp when the window resets.

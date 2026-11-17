@@ -1,6 +1,7 @@
 # KCM Church — API Secret Security & Server-Side Enforcement
 
 ## Overview
+
 This document specifies the server-side API defense architecture for Kingdom of Christ Ministries (KCM). In accordance with Zero-Trust principles, no client-provided role, identity, or status attribute is trusted without cryptographic or database validation on the server.
 
 ---
@@ -40,6 +41,7 @@ Inbound Request ──► [Extract Signature Header]
 ```
 
 ### Supported Webhook Handlers:
+
 - **Razorpay**: `x-razorpay-signature` validated against `RAZORPAY_WEBHOOK_SECRET`.
 - **Stripe**: `stripe-signature` validated via `stripe.webhooks.constructEvent` using `STRIPE_WEBHOOK_SECRET`.
 - **httpSMS**: `x-signature` validated against `HTTPSMS_WEBHOOK_SECRET`.

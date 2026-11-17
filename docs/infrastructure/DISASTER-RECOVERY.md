@@ -34,16 +34,20 @@ This document establishes the Disaster Recovery (DR) and Business Continuity pro
 ## 3. Database Disaster Recovery Procedures
 
 ### 3.1. PostgreSQL / Neon Recovery
+
 1. **Point-In-Time Restore (PITR)**:
    - Identify failure timestamp $T_{incident}$.
    - In Neon Console or CLI:
+
      ```bash
      neon branches create --name restore-branch --parent main --timestamp "2026-09-26T12:00:00Z"
      ```
+
    - Verify table integrity and row counts.
    - Update `DATABASE_URL` connection secret via Kubernetes Secret / Vercel Environment Variables.
 2. **CloudNativePG Cluster Recovery (In-Cluster)**:
    - Restore cluster from S3 backup target using standard CNPG `recovery` specification:
+
      ```yaml
      apiVersion: postgresql.cnpg.io/v1
      kind: Cluster
@@ -56,10 +60,12 @@ This document establishes the Disaster Recovery (DR) and Business Continuity pro
      ```
 
 ### 3.2. MongoDB Atlas Recovery
+
 - Trigger Point-In-Time Restore from Atlas Console or CLI for `kcm_documents` cluster.
 - Rotate database credentials if incident involved credential compromise.
 
 ### 3.3. Redis State Recovery
+
 - Redis holds transient cache, rate-limiting counters, and active BullMQ jobs.
 - Upon node/pod recreation, Redis starts clean or loads `dump.rdb`.
 - OODA loops automatically reconcile pending database records into queues upon restart.
@@ -69,12 +75,14 @@ This document establishes the Disaster Recovery (DR) and Business Continuity pro
 ## 4. Application Infrastructure Redeployment
 
 ### 4.1. Edge Redeployment (Vercel / Next.js)
+
 ```bash
 # Redeploy latest verified production release instantly
 vercel deploy --prod --prebuilt
 ```
 
 ### 4.2. Kubernetes Cluster Redeployment
+
 ```bash
 # Apply full namespace and kustomized infrastructure
 kubectl apply -k k8s/
@@ -89,6 +97,7 @@ kubectl rollout status deployment/kcm-backend-api -n kcm-system
 ## 5. Secret Recovery & Key Rotation Protocol
 
 In the event of a suspected security leak:
+
 1. **Neon / PostgreSQL**: Reset role password and update `DATABASE_URL`.
 2. **NextAuth Secret**: Generate new 32-character random string (`openssl rand -base64 32`). Active sessions will expire safely, prompting clean re-login.
 3. **Razorpay Webhook Secret**: Rotate webhook secret in Razorpay Dashboard and update `RAZORPAY_WEBHOOK_SECRET`.

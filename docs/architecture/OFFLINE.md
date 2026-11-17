@@ -3,6 +3,7 @@
 ## 1. PWA Service Worker & Cache Hierarchy
 
 The platform implements an offline-first architecture via Workbox and custom Service Worker logic (`frontend/public/sw.js`):
+
 - **Cache-First Strategy**: Static assets, fonts, app shell (`/_next/static/*`, `/icons/*`, `/manifest.json`).
 - **Stale-While-Revalidate**: Public sermons, events, leadership directory, and i18n translation bundles.
 - **Network-Only**: Authenticated payments, donation checkouts, and password resets.

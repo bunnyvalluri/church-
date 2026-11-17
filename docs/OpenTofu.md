@@ -1,12 +1,15 @@
 # Infrastructure as Code (IaC) with OpenTofu
 
 ## Purpose
+
 This document provides the technical specification for OpenTofu (open-source Terraform fork), used for declarative cloud and Kubernetes infrastructure provisioning across the Kingdom of Christ Ministries platform.
 
 ## Scope
+
 Covers OpenTofu root configurations and modular subcomponents in `platform/opentofu/`, `platform/database/opentofu/`, `platform/storage/longhorn/opentofu/`, `platform/messaging/kafka/opentofu/`, and `platform/security/falco/opentofu/`.
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -16,7 +19,7 @@ Covers OpenTofu root configurations and modular subcomponents in `platform/opent
 ```mermaid
 graph TD
     Root[OpenTofu Root Configuration: platform/opentofu/main.tf]
-    
+
     subgraph Core Platform Modules
         Root --> ModCert[module.cert_manager: Automated TLS Certificates]
         Root --> ModGateway[module.gateway: Envoy Gateway & HTTPRoutes]
@@ -100,10 +103,12 @@ tofu -chdir=platform/opentofu output
 ---
 
 ## Security Considerations
+
 - Sensitive state files are encrypted at rest with AES-256 in the remote S3 state backend.
 - Provider secrets are injected via environment variables (`TF_VAR_*`) and never hardcoded in `.tf` files.
 
 ## Related Documentation
+
 - [Helm.md](Helm.md) — Helm charts provisioned by OpenTofu.
 - [CloudNativePG.md](CloudNativePG.md) — Database cluster module.
 - [Envoy-Gateway.md](Envoy-Gateway.md) — Gateway module.

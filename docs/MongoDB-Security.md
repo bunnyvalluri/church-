@@ -1,12 +1,15 @@
 # MongoDB Atlas Security Architecture & Hardening Guide
 
 ## Purpose
+
 This document specifies the security architecture, network isolation, least-privilege role-based access control, connection pooling standards, and credential rotation procedures for MongoDB Atlas across the Kingdom of Christ Ministries platform.
 
 ## Scope
+
 Covers MongoDB connection clients (`frontend/lib/mongodb/client.ts`, `backend/server.js`), document schemas, TTL indexing, Atlas network access lists, and DevSecOps rotation protocols.
 
 ## Status
+
 > Status: Implemented & Enforced
 
 ---
@@ -70,6 +73,7 @@ Configured in `frontend/lib/mongodb/client.ts`:
 The application must never connect using an Atlas administrative account (`atlasAdmin` or `root`).
 
 ### Production Application User Configuration:
+
 - **Username**: `kcm_app_user`
 - **Authentication Database**: `admin`
 - **Database Roles**:
@@ -114,10 +118,12 @@ MONGODB_OFFLINE="false"
 ---
 
 ## Security Considerations
+
 - Rotate the exposed MongoDB credential before considering any security incident resolved.
 - Connection strings must never be logged, printed, or returned in API error responses.
 
 ## Related Documentation
+
 - [Secrets-Management.md](Secrets-Management.md) — Credential rotation workflows.
 - [MongoDB-Atlas.md](MongoDB-Atlas.md) — Document schemas and TTL indexes.
 - [Security.md](Security.md) — Platform-wide security architecture.

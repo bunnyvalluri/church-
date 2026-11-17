@@ -1,6 +1,7 @@
 # KCM Offline-First Frontend & IndexedDB UI Synchronization
 
 ## 1. Offline User Experience Flow
+
 ```
 [User Submits Prayer / Event Registration]
                     |
@@ -16,4 +17,5 @@
 ```
 
 ## 2. Real-Time Network State UI
+
 - [`useOnlineStatus`](file:///c:/K.C.M-Portal/frontend/hooks/useOnlineStatus.ts) hook detects network transitions and displays subtle status pills (`Online`, `Offline`, `Syncing`) in the navigation bar.

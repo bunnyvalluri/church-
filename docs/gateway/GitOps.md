@@ -14,6 +14,7 @@
 ## Sync Ordering (Waves)
 
 Sync waves ensure resources deploy in dependency order:
+
 1. **Wave -10:** Envoy Gateway controller (Helm chart)
 2. **Wave -5:** Namespace, GatewayClass bootstrapped
 3. **Wave -2:** cert-manager issuers and TLS certificates

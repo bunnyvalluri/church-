@@ -1,12 +1,15 @@
 # UI/UX Design System & Animation Guidelines
 
 ## Purpose
+
 This document specifies the design philosophy, visual design system, color palette tokens, typography scales, glassmorphism effects, and animation choreography for the Kingdom of Christ Ministries platform.
 
 ## Scope
+
 Covers Tailwind CSS design tokens (`tailwind.config.ts`), CSS root variables (`app/globals.css`), Radix UI styling patterns, and Framer Motion micro-interactions.
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -50,6 +53,7 @@ graph LR
 ## 3. Typography Hierarchy
 
 Configured via Next.js Google Font integration (`next/font/google`):
+
 - **Primary Body & Interface**: `Inter` (Optimized for ultra-clear legibility at small sizes).
 - **Headings & Displays**: `Outfit` / `Playfair Display` (Conveys dignity, warmth, and editorial elegance).
 
@@ -66,6 +70,7 @@ Configured via Next.js Google Font integration (`next/font/google`):
 ## 4. Glassmorphism & Elevation Tokens
 
 The interface incorporates subtle frosted glass surfaces using CSS backdrop filters:
+
 - **Glass Card**: `background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1);`
 - **Elevations**:
   - `shadow-sm`: Subtle border elevation on cards.
@@ -77,6 +82,7 @@ The interface incorporates subtle frosted glass surfaces using CSS backdrop filt
 ## 5. Animation Choreography (Framer Motion)
 
 Animations enhance engagement without introducing distracting motion:
+
 - **Page Transitions**: Subtle fade and vertical slide (`opacity: 0 -> 1, y: 8 -> 0`, duration: `0.25s`).
 - **Interactive Micro-animations**: Button tap scaling (`whileTap={{ scale: 0.98 }}`), card hover lift (`whileHover={{ y: -4 }}`).
 - **Reduced Motion Support**: All motion components honor the OS setting `prefers-reduced-motion: reduce`.
@@ -91,9 +97,11 @@ Animations enhance engagement without introducing distracting motion:
 ---
 
 ## Security Considerations
+
 - Color contrast ratios strictly meet WCAG 2.1 AA requirements (>= 4.5:1 for normal text).
 
 ## Related Documentation
+
 - [Frontend.md](Frontend.md) — Frontend application architecture.
 - [Responsive-Design.md](Responsive-Design.md) — Viewport layout rules.
 - [Accessibility.md](Accessibility.md) — WCAG accessibility compliance.

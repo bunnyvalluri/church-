@@ -1,4 +1,5 @@
 # Alerting — Falco Security Alerts
+
 ## Kingdom of Christ Ministries
 
 ## Alert Flow
@@ -10,6 +11,7 @@ Falco event → Falcosidekick → Alertmanager → Routing by severity
 ## Severity Tiers
 
 ### CRITICAL (Immediate Response)
+
 | Alert | Trigger |
 |---|---|
 | `FalcoCriticalSecurityEvent` | Any CRITICAL Falco event |
@@ -22,6 +24,7 @@ Falco event → Falcosidekick → Alertmanager → Routing by severity
 | `FalcoKubernetesPrivilegedPod` | Privileged pod created |
 
 ### HIGH (< 30 min response)
+
 | Alert | Trigger |
 |---|---|
 | `FalcoHighSeverityBurst` | >5 HIGH events in 10min |
@@ -30,12 +33,14 @@ Falco event → Falcosidekick → Alertmanager → Routing by severity
 | `FalcoUnexpectedNetworkConnection` | unexpected outbound |
 
 ### WARNING (< 4 hours)
+
 | Alert | Trigger |
 |---|---|
 | `FalcoWarningEventAccumulation` | >20 warnings in 30min |
 | `FalcoTmpWriteInContainer` | >50 /tmp writes/hour |
 
 ### Infrastructure Health
+
 | Alert | Trigger |
 |---|---|
 | `FalcosidekickNotReceivingEvents` | No events for 5min |
@@ -54,6 +59,7 @@ All Falco alerts (team=security)
 ```
 
 ## Inhibition Rules
+
 - Critical suppresses High for same `rule`
 - High suppresses Warning for same `namespace`
 

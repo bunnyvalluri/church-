@@ -1,10 +1,13 @@
 # OpenTofu — Falco Infrastructure as Code
+
 ## Kingdom of Christ Ministries
 
 ## Modules
 
 ### `modules/falco`
+
 Provisions Falco runtime security engine:
+
 - `falco` Kubernetes namespace (with PSA labels)
 - ServiceAccount + ClusterRole + ClusterRoleBinding
 - NetworkPolicy
@@ -12,7 +15,9 @@ Provisions Falco runtime security engine:
 - Falcosidekick Helm release
 
 ### `modules/falco-monitoring`
+
 Provisions observability integration:
+
 - Grafana dashboard ConfigMaps (5 dashboards)
 - ServiceMonitor for Prometheus scraping Falcosidekick
 

@@ -13,8 +13,11 @@
 | **Offline Sync Cache** | IndexedDB (`kcm-offline-db`) | **30 Days for synced items** | Client-side compaction | Mobile device storage conservation |
 
 ## 2. Safe Automated Cleanup Jobs
+
 - **Expired Session Reaper**: Runs daily via backend maintenance cron:
+
   ```sql
   DELETE FROM sessions WHERE "expiresAt" < NOW() - INTERVAL '30 days';
   ```
+
 - **Webhook Audit Trimming**: Retains `payment_webhooks` older than 180 days in compressed archive cold storage.

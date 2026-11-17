@@ -20,10 +20,12 @@ The platform defines 4 discrete roles with strict hierarchy and server-side rout
    - Redirects unauthenticated requests to `/login?next=<path>`.
 2. **API Route Guards (`frontend/lib/authMiddleware.ts`)**:
    - Every protected API handler enforces role requirements:
+
      ```typescript
      export const POST = requireRole(['ADMIN', 'PASTOR'], async (req, session) => {
        // Handler logic executing with guaranteed authorization
      });
      ```
+
 3. **Database-Level IDOR Protection**:
    - Handlers verify that the querying user ID owns the requested resource (e.g. member donation receipt) unless the user holds `ADMIN` role.

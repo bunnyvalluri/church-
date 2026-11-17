@@ -1,12 +1,15 @@
 # Longhorn Distributed Block Storage Architecture
 
 ## Purpose
+
 This document provides the technical specification for Longhorn, the enterprise distributed block storage system providing high-performance, replicated persistent volumes, automated snapshots, and offsite backups across the Kingdom of Christ Ministries Kubernetes infrastructure.
 
 ## Scope
+
 Covers StorageClasses (`platform/storage/longhorn/storageclasses/`), PersistentVolumeClaims (`platform/storage/longhorn/volumes/`), snapshot CRDs, and disaster recovery runbooks.
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -70,6 +73,7 @@ graph TD
 ## 3. Recurring Snapshots & Offsite Backups
 
 Configured in `platform/storage/longhorn/snapshots/` and `backups/`:
+
 - **Hourly Volume Snapshots**: Retains 24 rolling snapshots locally for near-instant rollback.
 - **Nightly Offsite Backups**: Compresses and uploads block delta blocks to S3 offsite storage at `02:00 UTC`.
 - **Velero CSI Integration**: Velero utilizes the `velero-longhorn-plugin` to take coordinated volume snapshots during cluster-wide DR jobs.
@@ -95,9 +99,11 @@ Configured in `platform/storage/longhorn/snapshots/` and `backups/`:
 ---
 
 ## Security Considerations
+
 - Data at rest can be encrypted using `longhorn-crypto` StorageClass with Kubernetes secret key bindings.
 
 ## Related Documentation
+
 - [Velero.md](Velero.md) — Disaster recovery backup operator.
 - [CloudNativePG.md](CloudNativePG.md) — PostgreSQL storage configuration.
 - [Backup-Restore.md](Backup-Restore.md) — Full recovery procedures.

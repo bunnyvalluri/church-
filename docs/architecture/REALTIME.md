@@ -3,6 +3,7 @@
 ## 1. WebSocket Infrastructure & Room Routing
 
 The real-time layer leverages **Socket.io** backed by Redis Adapter for horizontal scalability:
+
 - **Default Namespace (`/`)**: Connects web browsers, mobile PWA clients, and admin dashboards.
 - **Room Topology**:
   - `branch:<branch_id>`: Broadcasts branch-specific updates (announcements, attendance counts).

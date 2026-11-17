@@ -9,7 +9,9 @@
 | `GET /api/health`| Comprehensive Health Report | < 500ms | All 11 health subsystems passing |
 
 ## 2. Graceful Shutdown Sequence
+
 Upon receiving `SIGTERM` / `SIGINT`:
+
 1. Stop accepting new inbound HTTP requests.
 2. Allow active inflight requests 25 seconds to complete.
 3. Pause background BullMQ queue consumers.

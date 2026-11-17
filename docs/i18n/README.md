@@ -44,6 +44,7 @@ frontend/
 ## 🚀 Quick Usage
 
 ### React Client Components
+
 ```tsx
 "use client";
 
@@ -69,16 +70,19 @@ export default function MyComponent() {
 ## 🛠️ Validation & Verification
 
 Run the automated translation parity audit:
+
 ```bash
 npm run i18n:check
 ```
 
 Run end-to-end multilingual tests:
+
 ```bash
 npx playwright test tests/e2e/language-switch.spec.ts
 ```
 
 Run TypeScript compilation check:
+
 ```bash
 npm run typecheck
 ```

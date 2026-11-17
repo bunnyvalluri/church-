@@ -29,6 +29,7 @@ FIELD_VOLUNTEER (Event Scanning & Volunteer Operations)
 ## 2. Server-Side Enforcement Architecture
 
 ### Principle of Zero Client Trust
+
 No role, permission flag, or user ID submitted in request bodies or query parameters is trusted. The server derives authorization exclusively from the validated database session:
 
 1. **Edge Middleware Pre-Filter (`frontend/middleware.ts`):**

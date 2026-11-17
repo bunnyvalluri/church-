@@ -1,6 +1,7 @@
 # Razorpay Webhook Integration Guide
 
 ## 1. Webhook Setup in Razorpay Dashboard
+
 1. Log in to [Razorpay Dashboard](https://dashboard.razorpay.com/).
 2. Navigate to **Settings** → **Webhooks** → **Add New Webhook**.
 3. **Webhook URL**: `https://kcmchurch.vercel.app/api/webhooks/razorpay` (or `https://kcmchurch.vercel.app/api/payments/webhook`)
@@ -46,7 +47,9 @@ export function verifyRazorpayWebhookSignature(
 ---
 
 ## 3. Idempotency & Deduplication
+
 To prevent duplicate processing when Razorpay retries webhook deliveries:
+
 1. Compute a unique event key: `SHA-256(orderId + "|" + paymentId + "|" + eventType)`.
 2. Check `PaymentWebhook` table for existing processed records.
 3. If already processed, immediately return `HTTP 200 OK` with `{ received: true, processed: false, reason: "duplicate" }`.

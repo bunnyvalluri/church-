@@ -1,12 +1,15 @@
 # GitOps Continuous Delivery with Argo CD
 
 ## Purpose
+
 This document provides the technical specification for Argo CD, the declarative GitOps continuous delivery engine responsible for synchronizing Kubernetes workloads and infrastructure manifests from Git to production clusters for the Kingdom of Christ Ministries platform.
 
 ## Scope
+
 Covers Argo CD Applications, ApplicationSets (`platform/*/argocd/`), automated sync policies, and drift remediation.
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -16,7 +19,7 @@ Covers Argo CD Applications, ApplicationSets (`platform/*/argocd/`), automated s
 ```mermaid
 graph TD
     GitRepo[(Git Repository: bunnyvalluri/church-)] -->|Webhook / Polling| ArgoCDServer[Argo CD Controller]
-    
+
     subgraph Argo CD Application Management
         ArgoCDServer --> AppGateway[App: kcm-gateway]
         ArgoCDServer --> AppDatabase[App: kcm-database-cnpg]
@@ -43,6 +46,7 @@ graph TD
 ## 2. Application & ApplicationSet Manifests
 
 ### 2.1 Database Application (`platform/database/kubernetes/argocd-app.yaml`)
+
 ```yaml
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -67,6 +71,7 @@ spec:
 ```
 
 ### 2.2 ApplicationSet for Modular Subsystems
+
 ApplicationSets in `platform/helm/charts/argocd/templates/applicationset.yaml` dynamically discover and instantiate sub-applications based on Git directories.
 
 ---
@@ -89,10 +94,12 @@ ApplicationSets in `platform/helm/charts/argocd/templates/applicationset.yaml` d
 ---
 
 ## Security Considerations
+
 - Argo CD runs in a dedicated `argocd` namespace with strict RBAC restricting project repository access.
 - SSO authentication integrates with Google Workspace or GitHub Teams.
 
 ## Related Documentation
+
 - [GitOps.md](GitOps.md) — GitOps workflow guidelines.
 - [ArgoRollouts.md](ArgoRollouts.md) — Progressive delivery integration.
 - [Helm.md](Helm.md) — Helm charts managed by Argo CD.

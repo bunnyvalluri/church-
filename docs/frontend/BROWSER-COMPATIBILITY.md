@@ -10,5 +10,6 @@
 | **Gecko** | Mozilla Firefox | Standard scrollbar styling, CSS grid alignment |
 
 ## 2. iOS Safari & Mobile Viewport Fixes
+
 - Replaced `100vh` in full-height layouts with `100dvh` (Dynamic Viewport Height) to prevent bottom navigation controls from clipping modal action buttons.
 - Applied `env(safe-area-inset-bottom)` to fixed bottom navigation bars on notched iPhone screens.

@@ -44,12 +44,16 @@
 ## 3. Mobile Navigation & Accessibility Remediation (ERR-FE-006)
 
 ### Issue
+
 The automated cross-browser test suite failed during mobile navigation testing:
+
 1. `cross-browser.spec.ts` attempted to locate `#mobile-menu`, whereas `MobileDrawer.tsx` rendered `id="mobile-drawer"`.
 2. The drawer did not listen for `Escape` key events, violating **WCAG 2.2 AA (Criterion 2.1.2: No Keyboard Trap)** for modal dialogues.
 
 ### Remediation
+
 1. Implemented standard `keydown` event listener in `frontend/components/layout/nav/MobileDrawer.tsx`:
+
    ```typescript
    useEffect(() => {
      if (isOpen) {
@@ -69,6 +73,7 @@ The automated cross-browser test suite failed during mobile navigation testing:
      }
    }, [isOpen, onClose]);
    ```
+
 2. Updated test query in `frontend/tests/cross-browser.spec.ts` to `page.locator("#mobile-drawer, #mobile-menu")`.
 3. Verified both drawer opening, backdrop blur, link interaction, and Escape key dismissal pass in 6.0s.
 
@@ -77,6 +82,7 @@ The automated cross-browser test suite failed during mobile navigation testing:
 ## 4. Input Auto-Zoom Prevention on iOS Safari
 
 In `frontend/app/globals.css`, form controls below 768px enforce:
+
 ```css
 @media screen and (max-width: 767px) {
   input, select, textarea {
@@ -84,4 +90,5 @@ In `frontend/app/globals.css`, form controls below 768px enforce:
   }
 }
 ```
+
 This ensures WebKit on iOS never triggers involuntary auto-zooming or shifts viewport scroll position during input focus.

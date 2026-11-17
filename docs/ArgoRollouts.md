@@ -1,12 +1,15 @@
 # Progressive Delivery with Argo Rollouts
 
 ## Purpose
+
 This document specifies the progressive delivery architecture, Canary release strategies, automated metric analysis, and instant rollback triggers implemented using Argo Rollouts for the Kingdom of Christ Ministries platform.
 
 ## Scope
+
 Covers Rollout CRDs in `platform/rollouts/`, Envoy Gateway traffic routing, and Prometheus-backed AnalysisTemplates.
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -26,14 +29,14 @@ sequenceDiagram
     CI->>RolloutCtrl: Update Frontend Image Tag to v1.1.0
     RolloutCtrl->>CanaryPods: Spin up Canary Replica
     RolloutCtrl->>Gateway: Route 20% traffic to CanaryPods (80% to StablePods)
-    
+
     loop Real-time Metric Analysis (5 Minutes)
         RolloutCtrl->>Prom: Query HTTP Error Rate & Latency
         Prom-->>RolloutCtrl: Error Rate = 0.02% (< 1% threshold) -> PASS
     end
 
     RolloutCtrl->>Gateway: Step 2: Route 50% traffic to CanaryPods
-    
+
     loop Real-time Metric Analysis (5 Minutes)
         RolloutCtrl->>Prom: Query HTTP Error Rate & Latency
         Prom-->>RolloutCtrl: Error Rate = 0.01% -> PASS
@@ -82,10 +85,12 @@ spec:
 ## 3. Automated Metric Analysis (`AnalysisTemplate`)
 
 During each canary step, Argo Rollouts evaluates Prometheus queries continuously:
+
 - **HTTP Error Rate**: `sum(rate(http_requests_total{status=~"5.*", app="kcm-frontend-canary"}[2m])) / sum(rate(http_requests_total{app="kcm-frontend-canary"}[2m])) <= 0.01` (Must be <= 1%).
 - **P99 Latency**: `histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{app="kcm-frontend-canary"}[2m])) by (le)) <= 0.5` (Must be <= 500ms).
 
 ### Automated Instant Rollback
+
 If the error rate exceeds 1% or latency spikes above 500ms during any stage, the analysis marks a failure, Envoy Gateway instantly shifts 100% traffic back to `StablePods`, and the canary pods are terminated.
 
 ---
@@ -118,10 +123,12 @@ kubectl argo rollouts undo kcm-frontend-rollout -n kcm-system --to-revision=1
 ---
 
 ## Security Considerations
+
 - Traffic shifting is enforced cryptographically at the Envoy Gateway level.
 - Failed deployments are quarantined without exposing end users to broken releases.
 
 ## Related Documentation
+
 - [ArgoCD.md](ArgoCD.md) — GitOps continuous delivery.
 - [Envoy-Gateway.md](Envoy-Gateway.md) — Traffic routing gateway.
 - [Monitoring.md](Monitoring.md) — Prometheus metrics.

@@ -1,12 +1,15 @@
 # NATS JetStream Messaging & Key-Value Store
 
 ## Purpose
+
 This document provides the technical specification for NATS JetStream, the high-performance, lightweight message broker and distributed key-value store powering microservice pub/sub and fast state caching for the Kingdom of Christ Ministries platform.
 
 ## Scope
+
 Covers manifests in `platform/messaging/nats/`, JetStream stream definitions (`streams.yaml`), Key-Value stores (`kv-stores.yaml`), TypeScript publishers/subscribers, and operational runbooks.
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -45,10 +48,12 @@ graph TD
 ## 2. JetStream Stream & KV Configurations
 
 ### 2.1 Streams Definition (`platform/messaging/nats/jetstream/streams.yaml`)
+
 - **`KCM_EVENTS`**: Retains domain events for 7 days with file storage backend and 3-way replication (`R: 3`).
 - **`KCM_NOTIFICATIONS`**: Buffers outbound push, SMS, and email payloads with deduplication window of 2 minutes.
 
 ### 2.2 Distributed Key-Value Store (`kv-stores.yaml`)
+
 - **`app_runtime_config`**: Distributes dynamic feature flags and banner alert toggles to all running pods in real-time.
 - **`session_cache`**: Caches active user authentication tokens for sub-millisecond edge validation.
 
@@ -80,10 +85,12 @@ graph TD
 ---
 
 ## Security Considerations
+
 - NATS client connections authenticate using TLS certificates and bcrypt-hashed authentication tokens.
 - User accounts enforce subject-level read/write permission whitelists.
 
 ## Related Documentation
+
 - [Messaging.md](Messaging.md) — Asynchronous messaging overview.
 - [Kafka.md](Kafka.md) — Apache Kafka streaming.
 - [Helm.md](Helm.md) — NATS Helm packaging.

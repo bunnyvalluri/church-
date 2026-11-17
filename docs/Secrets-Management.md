@@ -1,12 +1,15 @@
 # Enterprise Secrets Management & Key Lifecycle Architecture
 
 ## Purpose
+
 This document specifies the authoritative enterprise secrets management architecture, zero-trust credential principles, environment variable segregation, MongoDB Atlas rotation workflows, Vercel configuration, GitHub secret scanning protocols, and incident response procedures for the Kingdom of Christ Ministries platform.
 
 ## Scope
+
 Covers database connection strings (PostgreSQL & MongoDB Atlas), API tokens, payment secrets, OAuth client credentials, and cloud service accounts.
 
 ## Status
+
 > Status: Implemented & Enforced
 
 ---
@@ -40,14 +43,18 @@ graph TD
 Secrets are never hardcoded or committed to version control. They are injected strictly through environment variables according to the deployment tier:
 
 ### 2.1 Local Development Configuration
+
 1. Copy `.env.example` to `.env.local`:
+
    ```bash
    cp .env.example .env.local
    ```
+
 2. Populate `.env.local` with developer-specific credentials or enable offline mock flags (`MONGODB_OFFLINE="true"`, `DB_OFFLINE="true"`).
 3. Ensure `.env.local` is never staged for Git commits (enforced by `.gitignore`).
 
 ### 2.2 Vercel Production & Preview Deployments
+
 1. In the Vercel Project Dashboard (`church`), navigate to **Settings** ➔ **Environment Variables**.
 2. Add server-side variables under the **Production**, **Preview**, and **Development** scopes:
    - `MONGODB_URI`: `mongodb+srv://<USERNAME>:<PASSWORD>@<CLUSTER>/<DATABASE>?retryWrites=true&w=majority`
@@ -106,6 +113,7 @@ sequenceDiagram
 ```
 
 ### Step-by-Step Rotation Checklist:
+
 1. **Create New User**: Go to **MongoDB Atlas** ➔ **Database Access** ➔ **Add New Database User**.
 2. **Assign Least Privilege**: Assign `readWrite` role scoped strictly to the `kcm_church` database (do NOT grant `atlasAdmin` or cluster-wide roles).
 3. **Update Vercel & Kubernetes**: Update the `MONGODB_URI` environment variable with the new username and password.
@@ -125,6 +133,7 @@ sequenceDiagram
 ## 6. Secret Leak Incident Response Protocol
 
 If a credential or secret is committed or detected by secret scanning:
+
 1. **Immediate Revocation**: Do not wait for Git history scrubbing. Immediately rotate or delete the credential in the respective provider console (MongoDB Atlas, Google Cloud, Razorpay, Resend).
 2. **Sanitize Workspace**: Update local code or documentation to use safe placeholders (`mongodb+srv://<USERNAME>:<PASSWORD>@<CLUSTER>/<DATABASE>`).
 3. **Git History Remediation**: If needed, execute history rewriting using `git-filter-repo` on isolated branches, coordinate with team members, and force-push sanitized refs.
@@ -146,10 +155,12 @@ If a credential or secret is committed or detected by secret scanning:
 ---
 
 ## Security Considerations
+
 - Never hardcode or print real credentials in documentation, tickets, or pull requests.
 - All code and documentation must use standard placeholder formats: `mongodb+srv://<USERNAME>:<PASSWORD>@<CLUSTER>/<DATABASE>`.
 
 ## Related Documentation
+
 - [Security.md](Security.md) — Comprehensive security architecture.
 - [MongoDB-Security.md](MongoDB-Security.md) — MongoDB Atlas least-privilege & network security.
 - [Environment-Variables.md](Environment-Variables.md) — Parameter catalog.

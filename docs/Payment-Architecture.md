@@ -41,11 +41,13 @@ The Kingdom of Christ Ministries (KCM) platform implements a **zero-trust financ
 ## 2. Core Architecture Principles
 
 ### Zero-Trust Client Layer
+
 - The browser **NEVER** decides or declares payment success.
 - Amounts, purpose codes, currencies, and donor identities submitted from the client are validated against database allowlists.
 - All monetary amounts are computed and stored in **integer minor units (paise)** to eliminate floating-point precision hazards.
 
 ### Pluggable Payment Provider Abstraction
+
 - The platform defines a unified `PaymentProvider` interface in `lib/payments/types.ts`:
   - `createOrder(input: CreatePaymentOrderInput): Promise<PaymentOrderResult>`
   - `verifyPaymentSignature(input: VerifySignatureInput): boolean`
@@ -55,6 +57,7 @@ The Kingdom of Christ Ministries (KCM) platform implements a **zero-trust financ
 - `RazorpayPaymentProvider` implements this contract, isolating gateway-specific APIs from business domains.
 
 ### Financial Single Source of Truth
+
 - Relational PostgreSQL (`prisma.donation`, `prisma.donationSession`, `prisma.paymentTransaction`, `prisma.receipt`, `prisma.transaction`) acts as the immutable financial ledger.
 - Status changes and receipt generation execute within atomic transactions (`prisma.$transaction`).
 

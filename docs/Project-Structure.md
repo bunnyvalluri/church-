@@ -1,12 +1,15 @@
 # Project Monorepo Structure
 
 ## Purpose
+
 This document provides an authoritative breakdown of the file and directory layout across the Kingdom of Christ Ministries (KCM Church) monorepo.
 
 ## Scope
+
 Covers root workspaces, frontend application, backend companion services, database definitions, platform IaC/Kubernetes manifests, monitoring configs, and scripts.
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -133,9 +136,11 @@ platform/
 ---
 
 ## Security Considerations
+
 - Sensitive `.env` files and credentials are strictly ignored in `.gitignore`.
 - Build artifacts (`.next`, `dist`, `node_modules`) are quarantined from source commits.
 
 ## Related Documentation
+
 - [Technology-Stack.md](Technology-Stack.md) — Tooling versions and frameworks.
 - [Architecture.md](Architecture.md) — System architecture breakdown.

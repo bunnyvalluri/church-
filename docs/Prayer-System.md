@@ -1,12 +1,15 @@
 # Prayer Request & Intercession System
 
 ## Purpose
+
 This document provides the functional and technical specification for the Prayer Request & Intercession System, covering prayer submission, confidentiality tiers, pastoral review workflows, and answered prayer testimonials across the Kingdom of Christ Ministries platform.
 
 ## Scope
+
 Covers prayer submission routes (`/prayer`, `/member/prayers`), pastoral intercession consoles (`/pastor/main/prayer-requests`), API handlers, and notification dispatchers.
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -17,7 +20,7 @@ Covers prayer submission routes (`/prayer`, `/member/prayers`), pastoral interce
 stateDiagram-v2
     [*] --> SUBMITTED: Member / Guest Submits Request
     SUBMITTED --> PENDING_REVIEW: Stored in PostgreSQL (status: PENDING)
-    
+
     state PENDING_REVIEW {
         [*] --> CheckConfidentiality
         CheckConfidentiality --> PUBLIC_WALL: isPrivate == false
@@ -69,6 +72,7 @@ model PrayerRequest {
 ## 4. Pastoral Updates & Automated Feedback
 
 When a pastor marks a prayer request as `UNDER_PRAYER` or attaches an encouraging scripture note:
+
 1. The update is persisted in PostgreSQL.
 2. An automated push notification (FCM) or SMS is dispatched to the member: *"Pastor David and the KCM Intercession Team are praying for your request."*
 3. The member's dashboard (`/member/prayers`) updates in real-time.
@@ -95,10 +99,12 @@ When a pastor marks a prayer request as `UNDER_PRAYER` or attaches an encouragin
 ---
 
 ## Security Considerations
+
 - Confidential prayer text is strictly excluded from public API responses.
 - Database access to confidential prayers requires `role: PASTOR` or `ADMIN`.
 
 ## Related Documentation
+
 - [Pastor-Portal.md](Pastor-Portal.md) — Pastoral review interface.
 - [Member-Portal.md](Member-Portal.md) — Member prayer tracker.
 - [Privacy.md](Privacy.md) — Data confidentiality standards.

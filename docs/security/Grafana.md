@@ -1,4 +1,5 @@
 # Grafana — Security Dashboards
+
 ## Kingdom of Christ Ministries
 
 ## Dashboards Overview
@@ -75,6 +76,7 @@ sum(increase(falcosidekick_falco_events_total{priority="critical"}[168h]))
 ## OpenTofu Module
 
 The `falco-monitoring` module provisions all dashboard ConfigMaps:
+
 ```
 platform/opentofu/modules/falco-monitoring/main.tf
 ```

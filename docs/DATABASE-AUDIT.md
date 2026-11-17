@@ -36,16 +36,21 @@ A full audit of the production database connection string confirmed 100% live co
 ## 2. Table Mapping Diagnosis (ERR-DB-004 Remediation)
 
 ### Root Cause Analysis
+
 During audit execution, running `node backend/prisma/check-db.js` yielded:
+
 ```text
 The table `public.Pastor` does not exist in the current database.
 ```
+
 Upon inspecting the Prisma schema in `backend/prisma/schema.prisma` and `frontend/prisma/schema.prisma`:
+
 - Model `Pastor` is mapped using `@@map("pastors")`.
 - The generated client is output to `./generated/client`.
 - When scripts executed `require('@prisma/client')`, Node resolved the unmapped default client from root `node_modules`, which looked for `public.Pastor` instead of `public.pastors`.
 
 ### Resolution
+
 Both `backend/prisma/check-db.js` and `frontend/prisma/check-db.js` were updated to resolve `./generated/client` with graceful fallbacks. Execution now returns all 190 live records cleanly in under 2.2 seconds.
 
 ---

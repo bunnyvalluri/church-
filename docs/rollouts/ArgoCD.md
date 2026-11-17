@@ -1,7 +1,9 @@
 # Argo CD GitOps Integration (`ArgoCD.md`)
 
 ## Health Checks & Resource Customizations
+
 Custom Lua health scripts added to `argocd-cm` allow Argo CD to accurately represent `argoproj.io/Rollout` state:
+
 - `Healthy` / `Completed` ➔ Healthy
 - `Paused` ➔ Suspended (Waiting for promotion approval)
 - `Progressing` ➔ Progressing
@@ -11,6 +13,7 @@ Custom Lua health scripts added to `argocd-cm` allow Argo CD to accurately repre
 # Operations Playbook (`Operations.md`)
 
 ## Daily SRE Operating Tasks
+
 1. **View Rollout Status**: `kubectl argo rollouts get rollout <name> -n kcm-system`
 2. **Promote Rollout**: `kubectl argo rollouts promote <name> -n kcm-system`
 3. **Pause Rollout**: `kubectl argo rollouts pause <name> -n kcm-system`
@@ -26,6 +29,7 @@ Custom Lua health scripts added to `argocd-cm` allow Argo CD to accurately repre
 # Troubleshooting Guide (`Troubleshooting.md`)
 
 ## Common Issues & Resolutions
+
 1. **Rollout Stuck in Paused State**:
    - Cause: Manual step reached or auto-promotion disabled in Blue/Green.
    - Fix: Execute `kubectl argo rollouts promote <rollout-name> -n kcm-system`.

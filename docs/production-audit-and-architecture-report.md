@@ -1,4 +1,5 @@
 # Kingdom of Christ Ministries (KCM) Platform
+
 ## Production Audit, Architecture & Technical Readiness Report
 
 **Document Status**: `FINAL / APPROVED`  
@@ -9,6 +10,7 @@
 ---
 
 ## Table of Contents
+
 1. [Architecture Report](#1-architecture-report)
 2. [Route Audit Report](#2-route-audit-report)
 3. [Functional Requirements Report](#3-functional-requirements-report)
@@ -32,6 +34,7 @@
 The Kingdom of Christ Ministries (KCM) platform is structured as an enterprise-grade, offline-first Church Management & Community Outreach Platform.
 
 ### System Topography
+
 ```
  ┌─────────────────────────────────────────────────────────────────────────┐
  │                       Client Application Layer                          │
@@ -91,6 +94,7 @@ Every route across the public site, portal ecosystem, and backend APIs has been 
 ## 3. Functional Requirements Report
 
 All 19 operational domains are active with production backend integration:
+
 1. **Public Website**: Next.js App Router with SEO metadata, structural JSON-LD schemas, responsive mobile drawer navigation, and multi-language support (English, Telugu, Hindi).
 2. **Authentication**: JWT & Cookie-based session management with server-side signature validation. Password hashing via `bcryptjs` (salt rounds: 12).
 3. **Members & Families**: Directory schema supporting primary members, family dependencies, branch mappings, and baptism records.
@@ -209,21 +213,27 @@ All 19 operational domains are active with production backend integration:
 ## 15. Production Deployment Instructions
 
 1. **Environment Configuration**:
+
    ```bash
    cp .env.example .env.local
    # Populate DATABASE_URL, NEXTAUTH_SECRET, RAZORPAY_KEY_SECRET, etc.
    ```
+
 2. **Database Migration & Seeding**:
+
    ```bash
    cd backend
    npm run db:push
    npm run db:seed
    ```
+
 3. **Frontend Build & Start**:
+
    ```bash
    cd frontend
    npm run build
    npm run start
    ```
+
 4. **Health Verification**:
    Navigate to `https://<your-domain>/api/health` and verify status returns `{"status":"UP"}`.

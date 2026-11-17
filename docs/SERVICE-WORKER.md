@@ -1,6 +1,7 @@
 # Service Worker Architecture & Operational Manual
 
 ## Document Details
+
 - **Module**: `frontend/public/sw.js`
 - **Registration**: `frontend/components/providers/ServiceWorkerProvider.tsx`
 - **Current Version**: `v6`
@@ -73,8 +74,10 @@ function safeCachePut(cacheName, request, response) {
 
 1. **Install (`self.skipWaiting()`)**:
    Pre-caches `/`, `/manifest.json`, `/logo.png`, and `/offline`.
+
 2. **Activate (`self.clients.claim()`)**:
    Inspects `caches.keys()`. Any cache starting with `kcm-` that is not in `ALLOWED_CACHES` (`['kcm-static-v6', 'kcm-public-content-v6']`) is deleted immediately.
+
 3. **Background Sync (`sync` event)**:
    Listens for `kcm-offline-sync` tag and notifies active clients to trigger `syncEngine.triggerSync()`.
 

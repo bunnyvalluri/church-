@@ -20,6 +20,7 @@ git push origin main
 ## 2. Emergency Manual Rollback Procedures
 
 ### Scenario A: Vercel Serverless Production Rollback
+
 1. Open the [Vercel Dashboard](https://vercel.com).
 2. Select the `church-` project and navigate to the **Deployments** tab.
 3. Locate the previous healthy deployment marked with green health tags.
@@ -27,6 +28,7 @@ git push origin main
 5. Vercel routes 100% of global DNS and edge traffic to the selected deployment within < 300ms.
 
 ### Scenario B: Kubernetes / Argo Rollout
+
 ```bash
 # Check current rollout status
 kubectl argo rollouts status kcm-portal-rollout -n kcm-system

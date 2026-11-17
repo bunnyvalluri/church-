@@ -1,6 +1,7 @@
 # Auto-Healing & Infrastructure Self-Recovery Specification
 
 ## 1. Overview
+
 The KCM auto-healing system provides bounded, deterministic recovery from transient infrastructure, build, and runtime anomalies without manual operator intervention.
 
 ---
@@ -18,7 +19,9 @@ The KCM auto-healing system provides bounded, deterministic recovery from transi
 ---
 
 ## 3. Rollback Lock & Anti-Loop Protection
+
 To prevent thrashing cycles (`Deploy → Fail → Rollback → Deploy → Fail`):
+
 - Persistent lock state tracked in `.deployment-rollback-lock.json`.
 - `MAX_AUTOMATIC_ROLLBACKS = 2`.
 - When exceeded, automated promotions are halted, an incident record is logged, and manual operator review is mandated.

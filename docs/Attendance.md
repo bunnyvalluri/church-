@@ -1,12 +1,15 @@
 # Attendance Tracking & Analytics Specification
 
 ## Purpose
+
 This document provides the technical specification for attendance recording, digital check-in scanning, service headcounts, and congregation engagement analytics across the Kingdom of Christ Ministries platform.
 
 ## Scope
+
 Covers QR check-in scanning endpoints (`/api/events/[id]/check-in`), attendance reporting routes, database models (`event_attendance`), and pastoral analytics dashboards (`/pastor/reports/attendance`).
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -68,6 +71,7 @@ model EventAttendance {
 ## 4. Attendance Analytics & Trend Intelligence
 
 Available in `/pastor/reports/attendance`:
+
 - **Branch Comparisons**: Tracks weekly attendance curves across Shapur Nagar, Subhash Nagar, and Bahadurpally sanctuaries.
 - **Engagement Retention**: Flags members who have missed 3 or more consecutive weeks for pastoral follow-up and pastoral care calls.
 
@@ -83,10 +87,12 @@ Available in `/pastor/reports/attendance`:
 ---
 
 ## Security Considerations
+
 - Check-in QR tokens expire after event conclusion to prevent reuse.
 - Attendance records are strictly confidential and inaccessible to unauthorized third parties.
 
 ## Related Documentation
+
 - [Event-Manager.md](Event-Manager.md) — Event registration and ticketing.
 - [Pastor-Portal.md](Pastor-Portal.md) — Attendance dashboards.
 - [Database-Architecture.md](Database-Architecture.md) — Relational schema.

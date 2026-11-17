@@ -14,6 +14,7 @@ This document outlines key management, Git hygiene, and rotation protocols for a
 ## 2. Git & Repository Hygiene
 
 - **`.gitignore` Enforcements**:
+
   ```gitignore
   .env
   .env.local
@@ -24,6 +25,7 @@ This document outlines key management, Git hygiene, and rotation protocols for a
   *.key
   service-account.json
   ```
+
 - **Secret Scanning**: All commits are checked via automated ripgrep pattern scanners to block accidental token commits.
 
 ---

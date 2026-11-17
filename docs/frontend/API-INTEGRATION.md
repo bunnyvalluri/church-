@@ -33,4 +33,3 @@ if (response.ok && response.data) {
   console.error(response.error, response.classification);
 }
 ```
-

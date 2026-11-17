@@ -1,12 +1,15 @@
 # Helm Packaging & Chart Architecture
 
 ## Purpose
+
 This document provides the technical specification for the Helm chart architecture, umbrella charts, subchart dependencies, values overrides, and OCI registry publishing across the Kingdom of Christ Ministries platform.
 
 ## Scope
+
 Covers charts in `platform/helm/charts/`, umbrella chart definitions, and Helm CI/CD automation pipelines.
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -51,6 +54,7 @@ graph TD
 ## 3. Values Hierarchy & Environment Overrides
 
 Configuration is driven by a clean values inheritance model:
+
 1. **Subchart Defaults**: `platform/helm/charts/<subchart>/values.yaml`
 2. **Environment Base Values**: `platform/helm/kcm-gateway/values.yaml`
 3. **Runtime Overrides**: Passed during GitOps or manual deployment via `--set` or secret values files.
@@ -85,9 +89,11 @@ helm upgrade --install kcm-release platform/helm/kcm-gateway \
 ---
 
 ## Security Considerations
+
 - Charts are cryptographically signed and published as OCI artifacts to GHCR (`ghcr.io/bunnyvalluri/church-helm/*`).
 
 ## Related Documentation
+
 - [Kubernetes.md](Kubernetes.md) — Base workload manifests.
 - [ArgoCD.md](ArgoCD.md) — GitOps synchronization.
 - [OpenTofu.md](OpenTofu.md) — Terraform/OpenTofu infrastructure provisioning.

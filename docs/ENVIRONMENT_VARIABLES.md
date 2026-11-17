@@ -1,6 +1,7 @@
 # KCM Church — Environment Variables Security & Architecture
 
 ## Overview
+
 This document defines the environment variable taxonomy, isolation boundaries, rotation procedures, and deployment environment separation for Kingdom of Christ Ministries (KCM).
 
 ---
@@ -8,6 +9,7 @@ This document defines the environment variable taxonomy, isolation boundaries, r
 ## Variable Classification & Security Boundaries
 
 ### 1. PUBLIC CLIENT VARIABLES (`NEXT_PUBLIC_*`)
+
 These variables are embedded into JavaScript bundles during build time and sent to all browsers.
 **CRITICAL RULE**: NEVER place private API keys, secrets, database credentials, or service account data under `NEXT_PUBLIC_*`.
 
@@ -33,6 +35,7 @@ These variables are embedded into JavaScript bundles during build time and sent 
 ---
 
 ### 2. SERVER-ONLY SECRETS (STRICTLY CONFIDENTIAL)
+
 These variables MUST NEVER be prefixed with `NEXT_PUBLIC_` and are NEVER included in client bundles. They are accessible exclusively in Node.js / Edge server environments.
 
 | Variable | Sensitive Category | Purpose | Rotation Frequency |
@@ -96,13 +99,18 @@ When rotating any server-side credential:
 
 1. **Generate New Credential**:
    Generate the replacement secret in the provider dashboard (e.g. Neon, Razorpay, Google Cloud Console).
+
 2. **Staged Update in Vercel**:
    Update the secret in Vercel Project Settings for Production environment.
+
 3. **Dual-Key Acceptance (where supported)**:
    For webhook secrets and API keys supporting rolling rotation, add the new secret while retaining previous secret during rollout.
+
 4. **Trigger Deployment**:
    Trigger a production redeploy (`git push` or Vercel redeploy) to ensure all serverless instances load new environment variables.
+
 5. **Revoke Previous Credential**:
    Once verified, permanently delete/revoke the retired secret in the external provider dashboard.
+
 6. **Verification**:
    Run automated health check endpoint (`/api/ready` and `/api/health`) to confirm database and service connectivity.

@@ -1,4 +1,5 @@
 # Falco — Installation & Configuration
+
 ## Kingdom of Christ Ministries
 
 ## What Is Falco?
@@ -128,6 +129,7 @@ curl -s http://localhost:2802/metrics | grep falcosidekick_falco_events_total
 | `kmod` | Any | Universal | Kernel module loading, less secure |
 
 Change driver:
+
 ```bash
 # Edit values.yaml
 driver:

@@ -11,6 +11,7 @@
 | `MEMBER` | Self-Service & Community | Personal profile, giving history, prayer submissions, sermon engagement |
 
 ## 2. Insecure Direct Object Reference (IDOR) Protection
+
 All endpoints accepting object identifiers (e.g. `/api/members/:id`, `/api/receipts/:id`, `/api/donations/:id`) enforce server-side ownership checks:
 
 ```typescript
@@ -27,4 +28,5 @@ export async function verifyResourceOwnership(
   }
 }
 ```
+
 Client visibility guards (e.g. hidden UI buttons) are treated as UX enhancements only; server-side enforcement remains the strict security boundary.

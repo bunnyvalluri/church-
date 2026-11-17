@@ -3,6 +3,7 @@
 ## 1. Authentication Strategy
 
 The platform implements a **Dual-Strategy Secure Authentication Architecture**:
+
 1. **HttpOnly SameSite Session Cookies** (`kcm_session`) for browser clients.
 2. **Bearer Authorization Tokens** for mobile PWA and external programmatic clients.
 
@@ -33,6 +34,7 @@ The platform implements a **Dual-Strategy Secure Authentication Architecture**:
 ---
 
 ## 2. Google Identity Services (GIS) Flow
+
 1. Client initializes Google One-Tap or Sign-In button with `NEXT_PUBLIC_GOOGLE_CLIENT_ID`.
 2. Google emits an ID token (`credential`).
 3. Client forwards the credential to `POST /api/auth/google`.
@@ -43,9 +45,9 @@ The platform implements a **Dual-Strategy Secure Authentication Architecture**:
 ---
 
 ## 3. Role-Based Portal Redirection
+
 * **`ADMIN` / `SUPER_ADMIN`** → `/admin/dashboard`
 * **`PASTOR`** → `/pastor/dashboard`
 * **`EVENT_MANAGER`** → `/event-manager`
 * **`FIELD_VOLUNTEER`** → `/field-volunteer`
 * **`MEMBER`** → `/member/profile`
-

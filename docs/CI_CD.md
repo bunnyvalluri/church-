@@ -46,6 +46,7 @@ Pull Request / Branch Push
 ---
 
 ## Security Hardening
+
 - **Strict Error Handling**: `continue-on-error: true` is strictly prohibited on mandatory quality and security checks.
 - **Least Privilege Tokens**: Workflows declare explicit top-level `permissions: contents: read`.
 - **Zero Hardcoded Secrets**: Secrets are injected dynamically through GitHub Actions repository secrets.

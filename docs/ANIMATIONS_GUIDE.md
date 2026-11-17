@@ -9,19 +9,23 @@ Your church website now features **professional, smooth, and engaging animations
 ## 🎯 New Animation Library
 
 ### **Fade Animations**
+
 - `animate-fade-in` - Smooth fade in with upward movement
 - `animate-fade-in-up` - Fade in from bottom (30px)
 - `animate-fade-in-down` - Fade in from top
 
 ### **Slide Animations**
+
 - `animate-slide-in` - Slide in from left
 - `animate-slide-in-right` - Slide in from right
 
 ### **Scale & Bounce**
+
 - `animate-scale-in` - Smooth scale-in effect
 - `animate-bounce-in` - Bouncy entrance (playful)
 
 ### **Continuous Animations**
+
 - `animate-float` - Gentle floating motion (3s loop)
 - `animate-glow` - Pulsing glow effect
 - `animate-shimmer` - Shimmer/shine effect
@@ -49,7 +53,9 @@ animate-delay-1000  <!-- 1000ms -->
 ## 🎨 Special Effects
 
 ### **Stagger Children**
+
 Automatically animates children with cascading delays:
+
 ```html
 <div class="stagger-children">
   <div>Item 1</div> <!-- Animates first -->
@@ -59,7 +65,9 @@ Automatically animates children with cascading delays:
 ```
 
 ### **Hover Lift**
+
 Cards lift up on hover with shadow:
+
 ```html
 <div class="hover-lift">
   <!-- Lifts 8px up on hover -->
@@ -67,7 +75,9 @@ Cards lift up on hover with shadow:
 ```
 
 ### **Card Flip (3D)**
+
 Subtle 3D rotation on hover:
+
 ```html
 <div class="card-flip">
   <!-- Rotates in 3D on hover -->
@@ -75,7 +85,9 @@ Subtle 3D rotation on hover:
 ```
 
 ### **Shimmer Background**
+
 Loading shimmer effect:
+
 ```html
 <div class="shimmer-bg">
   <!-- Animated shimmer -->
@@ -146,6 +158,7 @@ All animations use professional easing curves:
 ## 🎯 Usage Examples
 
 ### **Basic Fade In**
+
 ```html
 <div class="animate-fade-in">
   Content fades in smoothly
@@ -153,6 +166,7 @@ All animations use professional easing curves:
 ```
 
 ### **Delayed Fade In**
+
 ```html
 <div class="animate-fade-in-up animate-delay-300">
   Fades in after 300ms
@@ -160,6 +174,7 @@ All animations use professional easing curves:
 ```
 
 ### **Hover Effects**
+
 ```html
 <div class="hover-lift card-flip">
   Lifts and rotates on hover
@@ -167,6 +182,7 @@ All animations use professional easing curves:
 ```
 
 ### **Staggered List**
+
 ```html
 <div class="stagger-children">
   <div>Item 1</div>
@@ -181,6 +197,7 @@ All animations use professional easing curves:
 ## 🎨 Where Animations Are Applied
 
 ### **Hero Section** ⭐
+
 - ✅ Floating background orbs
 - ✅ Bounce-in badge
 - ✅ Fade-in-up heading
@@ -191,16 +208,19 @@ All animations use professional easing curves:
 - ✅ Glow effect on numbers
 
 ### **Services Section**
+
 - Cards with hover lift
 - Staggered entrance
 - Smooth transitions
 
 ### **Events Section**
+
 - Card animations
 - Hover effects
 - Button interactions
 
 ### **Footer**
+
 - Fade-in on scroll
 - Link hover states
 
@@ -209,6 +229,7 @@ All animations use professional easing curves:
 ## 🎬 Animation Best Practices
 
 ### **DO:**
+
 ✅ Use delays for staggered effects
 ✅ Keep animations under 1 second
 ✅ Use easing for natural motion
@@ -216,6 +237,7 @@ All animations use professional easing curves:
 ✅ Ensure accessibility (prefers-reduced-motion)
 
 ### **DON'T:**
+
 ❌ Overuse animations
 ❌ Make animations too slow
 ❌ Animate layout properties (width, height)
@@ -227,11 +249,13 @@ All animations use professional easing curves:
 ## 🚀 Performance Metrics
 
 **Before:**
+
 - Basic fade-in only
 - No stagger effects
 - Simple hover states
 
 **After:**
+
 - 14+ animation types
 - Stagger support
 - 3D effects
@@ -239,6 +263,7 @@ All animations use professional easing curves:
 - GPU accelerated
 
 **Performance:**
+
 - 60fps animations
 - No jank
 - Smooth scrolling
@@ -249,16 +274,19 @@ All animations use professional easing curves:
 ## 🎨 Visual Improvements
 
 ### **Depth & Dimension**
+
 - Floating orbs create depth
 - 3D card flips add dimension
 - Shadows enhance elevation
 
 ### **Movement & Life**
+
 - Continuous float animations
 - Pulsing glows
 - Shimmer effects
 
 ### **Professional Polish**
+
 - Smooth easing curves
 - Perfect timing
 - Staggered cascades
@@ -268,6 +296,7 @@ All animations use professional easing curves:
 ## 📊 Comparison
 
 ### **Before:**
+
 ```css
 .animate-fade-in {
   animation: fade-in 0.5s ease-out;
@@ -275,6 +304,7 @@ All animations use professional easing curves:
 ```
 
 ### **After:**
+
 ```css
 .animate-fade-in-up {
   animation: fade-in-up 0.8s ease-out forwards;
@@ -308,6 +338,7 @@ Your website now has:
 ## 🌟 Result
 
 Your church website now feels:
+
 - **Alive** - Continuous subtle motion
 - **Professional** - Smooth, polished animations
 - **Engaging** - Draws attention naturally

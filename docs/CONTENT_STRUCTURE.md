@@ -7,9 +7,11 @@ This document outlines the content and purpose for each section of the website.
 ## 📋 About Section
 
 ### **Our Story**
+
 **URL:** `/about/story`
 
 **Content:**
+
 ```
 # Our Story
 
@@ -40,9 +42,11 @@ Our mission remains the same: to know Christ and make Him known.
 ---
 
 ### **Leadership**
+
 **URL:** `/about/leadership`
 
 **Content:**
+
 ```
 # Our Leadership
 
@@ -83,9 +87,11 @@ Teaching children about Jesus in fun, engaging ways
 ---
 
 ### **Our Beliefs**
+
 **URL:** `/about/beliefs`
 
 **Content:**
+
 ```
 # Our Beliefs
 
@@ -127,9 +133,11 @@ We believe in the personal, visible return of Jesus Christ.
 ---
 
 ### **Ministries**
+
 **URL:** `/about/ministries`
 
 **Content:**
+
 ```
 # Our Ministries
 
@@ -179,9 +187,11 @@ Serving our community with Christ's love
 ---
 
 ### **Mission & Vision**
+
 **URL:** `/about/mission`
 
 **Content:**
+
 ```
 # Mission & Vision
 
@@ -233,9 +243,11 @@ Taking the Gospel to our city and beyond
 ## 📚 Resources Section
 
 ### **Sermons**
+
 **URL:** `/sermons`
 
 **Content:**
+
 ```
 # Sermons
 
@@ -271,9 +283,11 @@ available in video and audio formats.
 ---
 
 ### **Events Calendar**
+
 **URL:** `/events`
 
 **Content:**
+
 ```
 # Events Calendar
 
@@ -311,9 +325,11 @@ available in video and audio formats.
 ---
 
 ### **Blog & Articles**
+
 **URL:** `/blog`
 
 **Content:**
+
 ```
 # Blog & Articles
 
@@ -347,9 +363,11 @@ available in video and audio formats.
 ---
 
 ### **Prayer Requests**
+
 **URL:** `/prayer`
 
 **Content:**
+
 ```
 # Prayer Requests
 
@@ -385,9 +403,11 @@ Email: prayer@kingdomofchrist.org
 ---
 
 ### **Bible Study**
+
 **URL:** `/resources/bible-study`
 
 **Content:**
+
 ```
 # Bible Study Resources
 
@@ -421,9 +441,11 @@ Email: prayer@kingdomofchrist.org
 ---
 
 ### **Media Library**
+
 **URL:** `/resources/media`
 
 **Content:**
+
 ```
 # Media Library
 
@@ -460,9 +482,11 @@ Email: prayer@kingdomofchrist.org
 ## 🤝 Get Involved Section
 
 ### **Join a Small Group**
+
 **URL:** `/get-involved/small-groups`
 
 **Content:**
+
 ```
 # Join a Small Group
 
@@ -510,9 +534,11 @@ Small groups are where we do life together. It's where:
 ---
 
 ### **Volunteer**
+
 **URL:** `/get-involved/volunteer`
 
 **Content:**
+
 ```
 # Volunteer Opportunities
 
@@ -558,9 +584,11 @@ Small groups are where we do life together. It's where:
 ---
 
 ### **Serve**
+
 **URL:** `/get-involved/serve`
 
 **Content:**
+
 ```
 # Serve in Ministry
 
@@ -604,9 +632,11 @@ Welcome and serve guests
 ---
 
 ### **Give Online**
+
 **URL:** `/give`
 
 **Content:**
+
 ```
 # Give Online
 
@@ -656,9 +686,11 @@ Phone: +91 96409 43777
 ---
 
 ### **Become a Member**
+
 **URL:** `/membership`
 
 **Content:**
+
 ```
 # Become a Member
 
@@ -732,6 +764,7 @@ Jeedimetla, Hyderabad, Telangana 500055
 ### To Create These Pages:
 
 1. **Create page files** in `app/` directory:
+
    ```
    app/about/story/page.tsx
    app/about/leadership/page.tsx

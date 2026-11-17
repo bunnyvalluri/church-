@@ -1,12 +1,15 @@
 # Application Performance & Core Web Vitals Optimization
 
 ## Purpose
+
 This document provides the performance engineering specification, Core Web Vitals optimization benchmarks, caching hierarchies, database query optimizations, and resource scaling profiles for the Kingdom of Christ Ministries platform.
 
 ## Scope
+
 Covers frontend rendering performance, image/video compression, API response latency, database index efficiency, and Kubernetes autoscaling.
 
 ## Status
+
 > Status: Implemented & Monitored
 
 ---
@@ -116,9 +119,11 @@ spec:
 ---
 
 ## Security Considerations
+
 - Resource limits (`limits.cpu`, `limits.memory`) protect against resource exhaustion and Denial-of-Service (DoS).
 
 ## Related Documentation
+
 - [Frontend.md](Frontend.md) — Architecture of client components.
 - [CloudNativePG.md](CloudNativePG.md) — Database tuning and connection pooling.
 - [Monitoring.md](Monitoring.md) — Real-time performance dashboards.

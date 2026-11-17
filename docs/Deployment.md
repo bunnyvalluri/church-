@@ -1,6 +1,7 @@
 # Deployment Guide — Kingdom of Christ Ministries
 
 ## 1. Hosting Platforms
+
 - **Primary Web App**: Vercel Serverless Edge Platform (`https://kcmchurch.vercel.app`)
 - **Database**: Neon Serverless PostgreSQL (Cloud) / CloudNativePG (Kubernetes)
 - **Asset Storage**: Cloudinary (Media CDN) & Firebase Cloud Storage
@@ -24,6 +25,7 @@
 ---
 
 ## 3. Production Deployment Checklist
+
 1. Verify `npm run lint` and `npm run typecheck` pass.
 2. Verify `npm run i18n:check` reports 100% key parity across all languages.
 3. Ensure no local `.env` files are tracked in Git.

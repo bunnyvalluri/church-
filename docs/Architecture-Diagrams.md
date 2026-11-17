@@ -1,12 +1,15 @@
 # Architecture & Operational Workflow Diagrams
 
 ## Purpose
+
 This document provides visual Mermaid architectural, operational, and sequence diagrams illustrating key data flows, authentication cycles, administrative interactions, infrastructure topologies, and disaster recovery processes across the Kingdom of Christ Ministries platform.
 
 ## Scope
+
 Covers all functional workflows, database flows, infrastructure pipelines, and user journeys implemented in the repository.
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -39,7 +42,7 @@ graph TB
         NextFrontend -->|Prisma Pool| PG[(PostgreSQL HA Cluster - CloudNativePG)]
         NextFrontend -->|Async Writes| Mongo[(MongoDB Atlas Telemetry)]
         NextFrontend -->|Media Storage| Cloudinary[(Cloudinary Media CDN)]
-        
+
         ExpressBackend -->|Prisma Client| PG
         ExpressBackend -->|Telemetry| Mongo
         ExpressBackend -->|Pub/Sub & Cache| Redis[(Redis Cluster)]
@@ -76,7 +79,7 @@ sequenceDiagram
     Client->>Gateway: HTTPS Request (e.g. GET /events or POST /api/donations)
     Gateway->>Gateway: Apply Rate Limiting & TLS Termination
     Gateway->>NextJS: Forward HTTP Request with X-Forwarded Headers
-    
+
     alt Static or Public SSR Request
         NextJS->>DB: Query Event / Sermon metadata (Prisma)
         DB-->>NextJS: Return Relational Records
@@ -210,7 +213,7 @@ graph TD
     PastorDashboard --> MemberDirectory[View Member Roster & Discipleship]
     PastorDashboard --> Reports[View Attendance & Giving Analytics]
     PastorDashboard --> OpenClaw[OpenClaw AI Ministry Assistant]
-    
+
     OpenClaw --> SermonAI[Generate Sermon Outlines & Cross-References]
     OpenClaw --> EventAI[Generate Event Copy & Promotional Posts]
     OpenClaw --> ResearchAI[Conduct Theological & Biblical Research]
@@ -251,13 +254,13 @@ sequenceDiagram
     Admin->>EventAPI: POST Event Details (title, date, capacity, bannerUrl)
     EventAPI->>DB: Insert Event record (status: PUBLISHED)
     DB-->>EventAPI: Event Created
-    
+
     Member->>EventAPI: POST /api/events/[id]/register
     EventAPI->>DB: Check remainingSeats > 0 inside transaction
     EventAPI->>DB: Create EventRegistration + Decrement remainingSeats
     DB-->>EventAPI: Registration Confirmed
     EventAPI-->>Member: Return Registration Badge & QR Code
-    
+
     Note over Member,CheckInAPI: On Event Day at Venue
     Member->>CheckInAPI: Scan QR Code at entrance
     CheckInAPI->>DB: Mark EventRegistration status as ATTENDED
@@ -279,7 +282,7 @@ sequenceDiagram
     PrayerAPI->>DB: Insert PrayerRequest (status: PENDING)
     DB-->>PrayerAPI: Saved Record
     PrayerAPI-->>Member: Confirmation receipt
-    
+
     Pastor->>PastorAPI: Fetch Pending Prayer Requests
     PastorAPI->>DB: Query PrayerRequests where status = PENDING
     DB-->>PastorAPI: Return list
@@ -332,7 +335,7 @@ sequenceDiagram
     GatewayAPI->>Razorpay: Create Order with receipt ID
     Razorpay-->>GatewayAPI: Return order_id & signature requirements
     GatewayAPI-->>DonateUI: Return Razorpay Checkout Modal Config
-    
+
     Donor->>Razorpay: Complete Payment (UPI / NetBanking / Cards)
     Razorpay->>WebhookAPI: POST Webhook Event (payment.captured)
     WebhookAPI->>WebhookAPI: Verify Webhook HMAC Signature
@@ -363,7 +366,7 @@ sequenceDiagram
     UploadRoute->>DB: Associate URL & public_id with Target Entity
     DB-->>UploadRoute: Transaction Commit
     UploadRoute-->>Admin: 200 OK { url: secure_url }
-    
+
     Note over LoopWorker,Cloudinary: Async Verification Loop (Every 10 min)
     LoopWorker->>DB: Query recent Media records
     LoopWorker->>Cloudinary: Verify asset availability via HEAD check
@@ -390,7 +393,7 @@ sequenceDiagram
     User->>SW: Submit Prayer Request / Form
     SW->>IDB: Save operation to offline queue with UUID timestamp
     IDB-->>User: UI displays "Saved locally — Will sync when online"
-    
+
     Note over User,SW: Network Restored (online event)
     SW->>SyncEngine: Trigger sync loop
     SyncEngine->>IDB: Read all pending mutation tasks (FIFO)
@@ -425,7 +428,7 @@ sequenceDiagram
     Actions->>Actions: Trivy Security & Container Image Scan
     Actions->>Registry: Build & Push Multi-arch Docker Image with Git SHA
     Actions->>Git: Commit updated image tag to GitOps manifests
-    
+
     ArgoCD->>Git: Poll & Detect manifest change (GitOps Reconciliation)
     ArgoCD->>Cluster: Apply Updated Kustomize / Helm Manifests
     Cluster->>Rollout: Initialize Progressive Canary Release
@@ -498,9 +501,11 @@ sequenceDiagram
 ---
 
 ## Security Considerations
+
 All communication links between clients, gateways, pods, and databases are strictly encrypted in transit using TLS 1.3. Internal database connections enforce SSL/TLS with client certificate verification.
 
 ## Related Documentation
+
 - [Architecture.md](Architecture.md) — Textual architectural breakdown.
 - [CloudNativePG.md](CloudNativePG.md) — Database cluster topology.
 - [ArgoRollouts.md](ArgoRollouts.md) — Progressive delivery configuration.

@@ -35,6 +35,7 @@ Step 4: Verification & Settlement
 ## 2. NGO Donation Flow (`/ngo/donations`)
 
 The NGO donation portal uses the **exact same production payment service** as Member Giving. Both routes share:
+
 - Unified `/api/payments/create-order`
 - Unified `/api/payments/verify`
 - Unified `/api/webhooks/razorpay`

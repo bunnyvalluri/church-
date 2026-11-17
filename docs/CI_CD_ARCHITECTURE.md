@@ -74,6 +74,7 @@ The Kingdom of Christ Ministries platform implements a deterministic, multi-tier
 ## 2. Immutable Deployment Metadata
 
 Every release injected into production contains deterministic, non-sensitive traceability headers exposed via `GET /api/health/version`:
+
 - `gitCommitSha`: 40-character Git commit hash
 - `deploymentId`: Unique deployment identifier
 - `appVersion`: Semantic version (`1.0.0`)

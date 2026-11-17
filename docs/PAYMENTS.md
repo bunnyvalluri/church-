@@ -1,9 +1,11 @@
 # Kingdom of Christ Ministries (KCM) — Payment Architecture
 
 ## 1. Executive Summary
+
 The KCM Payment & Giving system is an enterprise-grade, Zero-Trust financial infrastructure designed for high availability, security, real-time feedback, and strict financial auditability.
 
 ### Core Payment Principles
+
 1. **Zero Client-Side Trust**: The browser never declares payment success or generates verified transaction IDs.
 2. **Server-Side Order Generation**: Razorpay Orders API is invoked securely on the backend; amounts are converted to integer paise (`₹100 = 10000 paise`) to eliminate floating-point calculation anomalies.
 3. **Cryptographic HMAC-SHA256 Verification**:
@@ -38,6 +40,7 @@ The KCM Payment & Giving system is an enterprise-grade, Zero-Trust financial inf
 ---
 
 ## 3. Supported Currencies & Gateways
+
 - **Default Currency**: INR (`₹`)
 - **Primary Gateway**: Razorpay (India & International Cards via Razorpay)
 - **Secondary/Optional**: Stripe (USD)
@@ -45,7 +48,9 @@ The KCM Payment & Giving system is an enterprise-grade, Zero-Trust financial inf
 ---
 
 ## 4. Financial Reconciliation & Ledger
+
 Each completed donation atomically generates:
+
 1. `Donation` record marked `COMPLETED` with `amountVerified: true` and `signatureVerified: true`.
 2. `DonationSession` marked `COMPLETED`.
 3. `PaymentTransaction` record linking to church bank ledger.

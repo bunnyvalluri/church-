@@ -1,7 +1,9 @@
 # KCM Database Indexing & Query Optimization Guide
 
 ## 1. Index Strategy Overview
+
 The KCM schema uses a comprehensive indexing strategy targeting three primary query profiles:
+
 1. **Foreign Key Traversals**: All relational lookup keys (`userId`, `eventId`, `sermonId`, `branchId`, `sessionId`) are indexed.
 2. **Filtering & Sorting Combinations**: Composite indexes covering status, dates, and sort orders.
 3. **Idempotency & Deduplication**: Unique indexes on external IDs, hashes, and token values.
@@ -24,5 +26,6 @@ The KCM schema uses a comprehensive indexing strategy targeting three primary qu
 | `sms_messages` (`SmsMessage`)| `idempotencyKey`, `providerMessageId` | UNIQUE | SMS delivery deduplication & provider status webhooks |
 
 ## 3. Query Guidelines (Avoiding N+1 and Large Offsets)
+
 - **Selective Projections**: In Prisma queries, use `select: { ... }` instead of fetching full entity bodies on high-volume listing endpoints.
 - **Bounded Pagination**: All API listing endpoints enforce default `take: 20` and maximum `take: 100` limits.

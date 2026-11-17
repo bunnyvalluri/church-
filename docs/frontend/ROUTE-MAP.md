@@ -5,6 +5,7 @@ This document catalogues all 148 active application routes across public outreac
 ---
 
 ## 1. Public Outreach Routes
+
 | Route | Method | Access | Purpose |
 |---|---|---|---|
 | `/` | `GET` | Public | Church home page, hero video, gospel message, quick links |
@@ -27,6 +28,7 @@ This document catalogues all 148 active application routes across public outreac
 ---
 
 ## 2. Authentication & Session Gateways
+
 | Route | Access | Role Target | Behavior |
 |---|---|---|---|
 | `/login` | Public | All | Universal sign-in (email/password & Google GIS) |
@@ -37,6 +39,7 @@ This document catalogues all 148 active application routes across public outreac
 ---
 
 ## 3. Authenticated Church Portals (Edge RBAC Protected)
+
 | Portal Prefix | Authorized Roles | Key Pages & Features |
 |---|---|---|
 | `/member/*` | `MEMBER`, `PASTOR`, `ADMIN` | Profile, My Giving History, Registered Events, Prayer Requests |
@@ -48,6 +51,6 @@ This document catalogues all 148 active application routes across public outreac
 ---
 
 ## 4. Robots & SEO Directives
+
 * **Indexed**: All public outreach routes (`/`, `/about`, `/sermons`, `/events`, `/prayer`, `/locations`, `/give`, `/ngo`).
 * **Disallowed (No-Index)**: All portal paths (`/admin/*`, `/member/*`, `/pastor/*`, `/event-manager/*`, `/portal-select`), authentication flows (`/login`, `/register`, `/forgot-password`), and internal API endpoints (`/api/*`).
-

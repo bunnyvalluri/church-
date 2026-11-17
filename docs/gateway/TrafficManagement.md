@@ -26,6 +26,7 @@
 ## Retry Policy
 
 API routes retry on:
+
 - `Error5xx` — 5xx responses
 - `GatewayError` — 502, 503, 504
 - `Reset` — connection reset
@@ -41,12 +42,14 @@ maxParallelRetries: 3
 ```
 
 **Active Health Check:** `GET /health` every 10s
+
 - Unhealthy after 3 failures
 - Healthy after 2 successes
 
 ## Traffic Mirroring
 
 Controlled via `platform/gateway/policies/traffic-mirror.yaml`.
+
 - **Default:** Disabled (`traffic-mirror.kcm/enabled: "false"`)
 - **When enabled:** 10% of API traffic mirrored to canary (shadow — no user impact)
 - Enable during pre-production canary testing only
@@ -54,6 +57,7 @@ Controlled via `platform/gateway/policies/traffic-mirror.yaml`.
 ## Session Persistence
 
 Cookie-based session stickiness:
+
 - **Frontend:** 1-hour session cookie
 - **API:** 24-hour persistent cookie
 

@@ -3,6 +3,7 @@
 ## 1. System Architecture Overview
 
 The Kingdom of Christ Ministries (KCM) portal is architected as a high-availability, hybrid cloud-native platform:
+
 - **Frontend / Edge**: Next.js 14 App Router, pre-rendered static content (SSG), dynamic server actions, edge caching.
 - **Backend API**: Node.js microservices with Prisma ORM, Socket.io real-time layer, and BullMQ worker queues.
 - **Databases**: Managed Neon PostgreSQL (direct connection pooling) + MongoDB Atlas (unstructured audit logs).
@@ -59,6 +60,7 @@ All environment configuration follows strict least-privilege classification. Ser
 ## 3. Container & Build Specifications
 
 ### Frontend Container (`docker/Dockerfile`)
+
 - **Base Image**: `node:22-alpine` (Pinned major LTS)
 - **Stages**:
   1. `deps`: Resolves dependencies with `npm ci --ignore-scripts`.
@@ -66,6 +68,7 @@ All environment configuration follows strict least-privilege classification. Ser
   3. `runner`: Unprivileged user `nextjs:nodejs` (UID 1001), healthcheck on `/api/health/live`.
 
 ### Backend Container (`backend/Dockerfile`)
+
 - **Base Image**: `node:22-alpine`
 - **Stages**: Multi-stage build running unprivileged user `backend:nodejs` (UID 1001) on port 3001.
 

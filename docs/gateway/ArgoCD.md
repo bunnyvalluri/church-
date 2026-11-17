@@ -18,6 +18,7 @@ argocd app list | grep kcm-gateway
 ## Health Checks
 
 Custom health check for `Gateway` kind:
+
 - `Healthy` — when `Programmed=True`
 - `Progressing` — when conditions not yet set
 - Standard health for all other resource kinds
@@ -25,11 +26,13 @@ Custom health check for `Gateway` kind:
 ## Sync Policies
 
 **Enabled for all apps:**
+
 - `selfHeal: true` — auto-reverts manual kubectl changes
 - `retry.limit: 5` — retry failed syncs up to 5 times
 - `ServerSideApply: true` — for CRD-heavy resources
 
 **Exception — TLS app:**
+
 - `prune: false` — certificates are NEVER pruned (prevent accidental deletion)
 
 ## Key Operations
@@ -59,6 +62,7 @@ argocd app rollback kcm-gateway-config 1
 ## Sync Wave Ordering
 
 Resources deploy in this sequence during a fresh install:
+
 ```
 Wave -10: Envoy Gateway Helm chart
 Wave  -5: Namespace + GatewayClass (bootstrap)

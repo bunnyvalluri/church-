@@ -18,4 +18,5 @@
 ---
 
 ## Auto-Provisioning Mechanism
+
 All dashboard JSON files in `monitoring/dashboards/` are automatically mounted into Grafana pods via Kubernetes ConfigMaps and provisioned on startup via Grafana's sidecar provider.

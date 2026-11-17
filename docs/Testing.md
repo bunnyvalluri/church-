@@ -1,6 +1,7 @@
 # Automated Testing Engine & Quality Assurance
 
 ## Overview
+
 The KCM Church platform features an end-to-end testing engine built with **Playwright Test** that validates functional correctness, security policies, role-based access control, responsive viewports, and accessibility.
 
 ---
@@ -21,6 +22,7 @@ The KCM Church platform features an end-to-end testing engine built with **Playw
 ---
 
 ## Running Tests Locally
+
 ```bash
 # Run complete test suite
 npm run test

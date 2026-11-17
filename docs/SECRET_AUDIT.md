@@ -1,6 +1,7 @@
 # KCM Church — Comprehensive Secret Exposure & Security Audit
 
 ## Executive Summary
+
 This document provides the exhaustive secret audit for the Kingdom of Christ Ministries (KCM) Church Application platform. It tracks all historical and runtime secret findings, their classifications, risk assessments, credential rotation status, and source-code remediation verification.
 
 **Zero-Secret Policy**: In accordance with enterprise security best practices and incident response standards, this audit document NEVER stores raw secrets, live API keys, token values, hashes, or database passwords. All credentials are fully redacted with standard placeholder indicators.

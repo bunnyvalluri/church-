@@ -1,4 +1,5 @@
 # GitOps — Falco Security Platform
+
 ## Kingdom of Christ Ministries
 
 ## Overview
@@ -67,6 +68,7 @@ vim platform/security/falco/alerts/falco-prometheus-rules.yaml
 ## Sync Policy
 
 All Falco ArgoCD Applications use:
+
 - `automated.prune: true` — removes deleted resources
 - `automated.selfHeal: true` — reverts manual kubectl changes
 - Retry with exponential backoff (5 attempts, 30s start)

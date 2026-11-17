@@ -5,6 +5,7 @@ Inspired by [Egonex-AI / Understand-Anything](https://github.com/Egonex-AI/Under
 ---
 
 ## Stack Summary
+
 - **Frontend / Web Core**: Next.js 14 (App Router), TypeScript, TailwindCSS
 - **Backend / Realtime Services**: Node.js, Express, Socket.io, Redis Adapter
 - **Database & Data Modeling**: Prisma ORM, Neon PostgreSQL (Serverless)
@@ -17,6 +18,7 @@ Inspired by [Egonex-AI / Understand-Anything](https://github.com/Egonex-AI/Under
 ## Part 1: Deep Analysis of 10 Core System Subsystem Flows
 
 ### 1. Auth Flow
+
 - **Architecture**: Dual-layer authentication & authorization using Firebase Admin SDK and Prisma ORM.
 - **Entry Points**: `frontend/lib/authMiddleware.ts`, `frontend/lib/firebaseAdmin.ts`, `frontend/app/api/auth/*`.
 - **Workflow**:
@@ -28,6 +30,7 @@ Inspired by [Egonex-AI / Understand-Anything](https://github.com/Egonex-AI/Under
 - **Security Protocols**: Role-based access control (RBAC), automatic UID-email alignment, and secure server-side session decoding.
 
 ### 2. Event Upload Flow
+
 - **Architecture**: Multi-stage event creation with media attachment, database persistence, realtime web-socket emission, and external integration.
 - **Entry Points**: `frontend/app/api/events/route.ts`, `backend/server.js` (`/api/events`), `backend/src/loops/eventUploadLoop.js`.
 - **Workflow**:
@@ -38,6 +41,7 @@ Inspired by [Egonex-AI / Understand-Anything](https://github.com/Egonex-AI/Under
   5. Google Apps Script Webhook (`/api/google-event-trigger`) is invoked to sync events with Google Sheets / Church Calendar.
 
 ### 3. Sermon Upload Flow
+
 - **Architecture**: Direct client-to-Cloudinary media ingestion with metadata registration and notifications.
 - **Entry Points**: `frontend/lib/cloudinary.ts`, `frontend/app/api/upload/sign/route.ts`, `frontend/app/api/sermons/route.ts`.
 - **Workflow**:
@@ -48,6 +52,7 @@ Inspired by [Egonex-AI / Understand-Anything](https://github.com/Egonex-AI/Under
   5. API saves `Sermon` record in Neon Postgres and triggers FCM push notifications to members subscribed to sermon alerts.
 
 ### 4. Donation Flow
+
 - **Architecture**: 16-state deterministic finite state machine (`donationStateMachine.ts`) handling UPI/Razorpay payments, receipt generation, and notification queues.
 - **Entry Points**: `frontend/lib/donationStateMachine.ts`, `frontend/lib/paymentService.ts`, `frontend/lib/paymentSecurity.ts`, `frontend/lib/receiptEngine.ts`.
 - **Workflow**:
@@ -58,6 +63,7 @@ Inspired by [Egonex-AI / Understand-Anything](https://github.com/Egonex-AI/Under
   5. `donationNotificationService.ts` dispatches multi-channel thank-you messages (`COMPLETED`).
 
 ### 5. Notification Flow
+
 - **Architecture**: Hybrid multi-channel notification engine (Firebase FCM push + Socket.io realtime + retry queue worker).
 - **Entry Points**: `backend/src/services/fcmService.js`, `backend/src/services/notificationDispatcher.js`, `backend/src/cron/notificationRetryWorker.js`.
 - **Workflow**:
@@ -68,6 +74,7 @@ Inspired by [Egonex-AI / Understand-Anything](https://github.com/Egonex-AI/Under
   5. Failed FCM dispatches are enqueued into `NotificationRetryQueue` and retried with exponential backoff up to 5 attempts.
 
 ### 6. Cloudinary Integration Flow
+
 - **Architecture**: Direct signed upload architecture avoiding server memory overhead for large media.
 - **Entry Points**: `frontend/lib/cloudinary.ts`, `frontend/lib/uploadSecurity.ts`.
 - **Workflow**:
@@ -78,6 +85,7 @@ Inspired by [Egonex-AI / Understand-Anything](https://github.com/Egonex-AI/Under
   5. Public IDs stored in PostgreSQL enable dynamic image transformations on demand (e.g. `c_fill,w_800,h_600,f_auto,q_auto`).
 
 ### 7. Socket.io Realtime Flow
+
 - **Architecture**: Distributed Socket.io cluster backed by Redis Pub/Sub adapter for horizontal pod scaling in Kubernetes.
 - **Entry Points**: `backend/server.js`, `frontend/lib/socketTrigger.ts`.
 - **Workflow**:
@@ -88,6 +96,7 @@ Inspired by [Egonex-AI / Understand-Anything](https://github.com/Egonex-AI/Under
   5. Sockets push realtime updates to connected browsers (e.g., live donation counters, chat, agent progress).
 
 ### 8. API Gateway Architecture
+
 - **Architecture**: Layer 7 Kubernetes Gateway API managed via OpenTofu/Terraform and YAML manifests.
 - **Entry Points**: `platform/gateway/gateways/kcm-gateway.yaml`, `platform/gateway/httproutes/*`, `platform/gateway/tls/*`.
 - **Workflow**:
@@ -101,6 +110,7 @@ Inspired by [Egonex-AI / Understand-Anything](https://github.com/Egonex-AI/Under
      - `webhook-route.yaml` → `/api/webhooks/*` routed with rate-limiting policies
 
 ### 9. Database Relationship Graph
+
 - **Architecture**: Relational schema in Neon PostgreSQL defined in `database/schema.prisma`.
 - **Core Entities**:
   - `User`: Central actor linked to `donations`, `eventRegistrations`, `eventsCreated`, `deviceTokens`, `sermonLikes`, `sermonComments`, `auditLogs`.
@@ -111,6 +121,7 @@ Inspired by [Egonex-AI / Understand-Anything](https://github.com/Egonex-AI/Under
   - `AgentReachTask` & `ChurchNewsArticle`: Store AI agent intelligence results and web scraping sources.
 
 ### 10. Offline Sync Architecture
+
 - **Architecture**: Client-side IndexedDB persistence with automatic sync reconciliation when online connectivity is restored.
 - **Entry Points**: `frontend/lib/offlineSync.ts`, `frontend/app/api/sync/route.ts`.
 - **Workflow**:
@@ -126,6 +137,7 @@ Inspired by [Egonex-AI / Understand-Anything](https://github.com/Egonex-AI/Under
 ## Part 2: Complete Code Intelligence Graphs & Visualizations
 
 ### Graph 1: Knowledge Graph (Domain & Subsystem Mapping)
+
 ```mermaid
 graph TD
     subgraph Core System Domains
@@ -148,6 +160,7 @@ graph TD
 ```
 
 ### Graph 2: Dependency Graph (Module Architecture & Packages)
+
 ```mermaid
 graph LR
     subgraph Frontend Layer
@@ -176,6 +189,7 @@ graph LR
 ```
 
 ### Graph 3: Business Flow Map (End-to-End Lifecycles)
+
 ```mermaid
 sequenceDiagram
     autonumber
@@ -208,6 +222,7 @@ sequenceDiagram
 ```
 
 ### Graph 4: Architecture Visualization (5-Tier Infrastructure)
+
 ```mermaid
 graph TB
     subgraph Tier 1: Ingress Gateway
@@ -248,14 +263,15 @@ graph TB
 ```
 
 ### Graph 5: API Dependency Tree (Endpoints & Handlers)
+
 ```mermaid
 graph TD
     API["/api Core Namespace"]
-    
+
     API --> AuthRoute["/api/auth/*"]
     AuthRoute --> AuthMW[authMiddleware.ts]
     AuthMW --> FBA[firebaseAdmin.ts]
-    
+
     API --> EventRoute["/api/events"]
     EventRoute --> EvtLoop[eventUploadLoop.js]
     EvtLoop --> CloudSDK[cloudinary.ts]
@@ -276,6 +292,7 @@ graph TD
 ```
 
 ### Graph 6: Event Flow Graph (Creation, Broadcast, and Webhook)
+
 ```mermaid
 flowchart LR
     A[Admin Creates Event in Portal] --> B[POST /api/events]
@@ -291,6 +308,7 @@ flowchart LR
 ```
 
 ### Graph 7: Auth Flow Graph (RBAC Authorization Pipeline)
+
 ```mermaid
 flowchart TD
     Req[Incoming HTTP Request] --> ExtractToken[Extract Bearer Token from Headers]
@@ -311,6 +329,7 @@ flowchart TD
 ```
 
 ### Graph 8: Upload Pipeline Graph (Direct Signed Upload)
+
 ```mermaid
 sequenceDiagram
     autonumber
@@ -332,18 +351,19 @@ sequenceDiagram
 ```
 
 ### Graph 9: Realtime Notification Graph (Socket & FCM Retry)
+
 ```mermaid
 flowchart TD
     Trigger[Notification Trigger Event] --> Dispatcher[notificationDispatcher.js]
-    
+
     Dispatcher --> FCMChannel[FCM Push Service]
     Dispatcher --> SocketChannel[Socket.io Realtime Emit]
-    
+
     FCMChannel --> SendFCM[Send Payload via Firebase Admin]
     SendFCM --> FCMResult{Delivery Success?}
     FCMResult -- Yes --> LogSuccess[Log Delivery in NotificationLog]
     FCMResult -- No --> QueueRetry[Enqueue into NotificationRetryQueue]
-    
+
     QueueRetry --> Worker[notificationRetryWorker.js Cron]
     Worker --> Backoff{Attempt Limit < 5?}
     Backoff -- Yes --> Retrigger[Exponential Backoff Retry]
@@ -358,6 +378,7 @@ flowchart TD
 ## Part 3: Operational Guide — Understand, Debug, Optimize, & Scale
 
 ### 1. How to Debug Common Issues
+
 - **Authentication / 401/403 Errors**:
   1. Inspect `authMiddleware.ts` logs for token decoding failures.
   2. Verify `FIREBASE_SERVICE_ACCOUNT_KEY` environment variable format in server environment.
@@ -371,6 +392,7 @@ flowchart TD
   2. Verify sticky sessions (session affinity) configured in Gateway API `websocket-route.yaml`.
 
 ### 2. Performance Optimization Strategies
+
 - **Database Query Optimization**:
   - Utilize Prisma connection pooling URL for Neon PostgreSQL (`@prisma/client` with pooled connection string).
   - Implement selective field querying (`select: { id: true, role: true }`) instead of fetching entire user rows.
@@ -381,6 +403,7 @@ flowchart TD
   - Implement memory LRU cache (`lib/lruCache.ts`) for static church content, news articles, and branch configurations.
 
 ### 3. Scaling Guidelines for Enterprise Growth
+
 - **Stateless Backend Scaling**:
   - Scale Express companion backend pods horizontally (`PROCESS_TYPE=socket` vs `PROCESS_TYPE=api`).
   - Ensure Redis Pub/Sub adapter is active so socket broadcasts reach clients regardless of which pod they are connected to.

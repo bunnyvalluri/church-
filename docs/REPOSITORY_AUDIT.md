@@ -1,11 +1,13 @@
 # Repository Audit — Kingdom of Christ Ministries (KCM) Platform
 
 ## Executive Summary
+
 This document represents an exhaustive, verified technical audit of the **Kingdom of Christ Ministries (`church-`) monorepo**. The platform is an enterprise-grade digital ministry hub supporting multilingual congregational experiences, live video broadcasting, automated 80G tax-exempt donation processing, sermon archiving, pastoral management, prayer wall request queuing, and real-time community engagement.
 
 ---
 
 ## Phase 0 & 1 Metadata
+
 - **Current Branch**: `main`
 - **Current Commit SHA**: `4ca5218bdac561a6da04fde376111fbdec2e64df`
 - **Monorepo Manager**: NPM Workspaces (`package.json`) with workspaces `frontend` and `backend`

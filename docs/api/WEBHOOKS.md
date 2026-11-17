@@ -9,6 +9,7 @@
 | **Resend** | `/api/webhooks/resend` | Svix HMAC Signature (`svix-signature`) | `RESEND_WEBHOOK_SECRET` |
 
 ## 2. Ingress Processing Rules
+
 1. **Raw Body Capture**: Signatures are verified against the unparsed raw request buffer before JSON parsing.
 2. **Asynchronous Hand-off**: Webhooks acknowledge receipt with `HTTP 200` within 500ms and process heavy downstream tasks (e.g. PDF receipt generation, email dispatch) via background retry queues.
 3. **Replay Defense**: `webhookEventId` deduplication prevents re-execution of historical events.

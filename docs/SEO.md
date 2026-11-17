@@ -1,12 +1,15 @@
 # Search Engine Optimization (SEO) & Structured Data
 
 ## Purpose
+
 This document specifies the Search Engine Optimization (SEO) architecture, Next.js metadata configurations, OpenGraph social sharing tags, dynamic XML sitemaps, and JSON-LD structured data schemas implemented across the Kingdom of Christ Ministries web platform.
 
 ## Scope
+
 Covers all public pages (`/`, `/about`, `/events`, `/sermons`, `/locations`, `/ngo`, `/give`) and dynamic detail routes (`/events/[slug]`, `/sermons/[id]`, `/locations/[slug]`).
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -56,6 +59,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 The platform embeds rich Google-compliant JSON-LD structured data to maximize discoverability and rich snippet rankings:
 
 ### 2.1 Church Organization Schema (`app/layout.tsx`)
+
 ```json
 {
   "@context": "https://schema.org",
@@ -86,9 +90,11 @@ The platform embeds rich Google-compliant JSON-LD structured data to maximize di
 ```
 
 ### 2.2 Event Schema (`app/events/[slug]/page.tsx`)
+
 Embeds `schema.org/Event` with `startDate`, `endDate`, `eventStatus`, `eventAttendanceMode`, and `location` parameters.
 
 ### 2.3 Sermon & Video Schema (`app/sermons/[id]/page.tsx`)
+
 Embeds `schema.org/VideoObject` and `AudioObject` with `uploadDate`, `duration`, `embedUrl`, and `author` (preacher).
 
 ---
@@ -116,9 +122,11 @@ Each branch page (`/locations/[slug]`) incorporates localized geo-tags, Google M
 ---
 
 ## Security Considerations
+
 - Private member names and confidential prayer submissions are strictly excluded from public sitemaps and search indexing.
 
 ## Related Documentation
+
 - [Frontend.md](Frontend.md) — App Router setup.
 - [Routing.md](Routing.md) — Route structure.
 - [Performance.md](Performance.md) — Core Web Vitals optimization.

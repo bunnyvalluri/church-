@@ -1,4 +1,5 @@
 # Threat Detection Reference
+
 ## Kingdom of Christ Ministries — Runtime Security
 
 ## Threat Categories
@@ -68,6 +69,7 @@
 ## Detection Logic
 
 Falco operates at **Layer 0** — kernel system calls. It cannot be bypassed by:
+
 - Process hiding (rootkits at userspace level)
 - Log deletion (Falco operates independently of container logs)
 - Container runtime manipulation (eBPF is in kernel space)

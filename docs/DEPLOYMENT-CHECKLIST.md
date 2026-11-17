@@ -12,19 +12,27 @@
 Before triggering any git push to `main` or Vercel release:
 
 - [ ] **TypeScript Compilation:**
+
   ```bash
   npm run typecheck -w frontend
   ```
+
   *Requirement: Exits with code 0. Zero compiler errors.*
+
 - [ ] **Linting & Code Quality:**
+
   ```bash
   npm run lint -w frontend
   ```
+
   *Requirement: Exits with code 0. Zero critical errors.*
+
 - [ ] **Database Connectivity & Model Mapping:**
+
   ```bash
   node backend/prisma/check-db.js
   ```
+
   *Requirement: Resolves `./generated/client` with 16 tables and 190 live records.*
 
 ---
@@ -55,18 +63,25 @@ Verify in the Vercel Project Dashboard (`Settings` -> `Environment Variables`):
 Immediately following Vercel deployment completion:
 
 - [ ] **Production Smoke Suite:**
+
   ```bash
   $env:PLAYWRIGHT_TEST_BASE_URL="https://kcmchurch.vercel.app"; npx playwright test tests/smoke/production-smoke.spec.ts --project=chromium-desktop
   ```
+
 - [ ] **Cross-Browser & Mobile Drawer Suite:**
+
   ```bash
   $env:PLAYWRIGHT_TEST_BASE_URL="https://kcmchurch.vercel.app"; npx playwright test tests/cross-browser.spec.ts --project=chromium-desktop
   ```
+
 - [ ] **21-Breakpoint Responsive Suite:**
+
   ```bash
   $env:PLAYWRIGHT_TEST_BASE_URL="https://kcmchurch.vercel.app"; npx playwright test tests/responsive.spec.ts --project=chromium-desktop
   ```
+
 - [ ] **WCAG 2.2 AA Accessibility Suite:**
+
   ```bash
   $env:PLAYWRIGHT_TEST_BASE_URL="https://kcmchurch.vercel.app"; npx playwright test tests/accessibility.spec.ts --project=chromium-desktop
   ```
@@ -76,6 +91,7 @@ Immediately following Vercel deployment completion:
 ## 5. Rollback Procedure
 
 If any critical regression is identified post-release:
+
 1. Navigate to **Vercel Dashboard** -> **Deployments**.
 2. Identify the previous stable deployment (marked `Instant Rollback Eligible`).
 3. Click the three dots (`...`) -> **Promote to Production**.

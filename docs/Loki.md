@@ -1,12 +1,15 @@
 # Grafana Loki Log Aggregation Engine
 
 ## Purpose
+
 This document provides the technical specification for Grafana Loki, the scalable, horizontally partitionable log aggregation system used to collect, index, and query application and infrastructure logs across the Kingdom of Christ Ministries platform.
 
 ## Scope
+
 Covers Loki Helm configurations (`platform/logging/helm/`), Fluentbit/Promtail collector DaemonSets (`platform/logging/collectors/`), and LogQL operational querying.
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -37,6 +40,7 @@ graph TD
 ## 2. Log Ingestion & Labeling Strategy
 
 Unlike traditional heavyweight indexers (Elasticsearch), Loki indexes only metadata labels, drastically reducing storage footprint and CPU overhead:
+
 - **Indexed Labels**: `namespace`, `app`, `container`, `pod`, `level`.
 - **Dynamic Content Filtering**: Body text, JSON fields, and correlation IDs are parsed dynamically at query time using LogQL.
 
@@ -45,16 +49,19 @@ Unlike traditional heavyweight indexers (Elasticsearch), Loki indexes only metad
 ## 3. LogQL Query Examples
 
 ### 3.1 Filter Application Errors in Real-Time
+
 ```logql
 {namespace="kcm-system", app="kcm-frontend"} | json | level="ERROR"
 ```
 
 ### 3.2 Trace Specific User Action by Correlation ID
+
 ```logql
 {namespace="kcm-system"} | json | correlationId="req_8f7e6d5c-4b3a-2a1b"
 ```
 
 ### 3.3 Compute Error Rates per Minute
+
 ```logql
 sum(rate({namespace="kcm-system"} | json | level="ERROR" [1m])) by (app)
 ```
@@ -79,10 +86,12 @@ sum(rate({namespace="kcm-system"} | json | level="ERROR" [1m])) by (app)
 ---
 
 ## Security Considerations
+
 - Multi-tenancy headers (`X-Scope-OrgID`) isolate production logs from staging environments.
 - Logs are stored on encrypted Longhorn block storage volumes.
 
 ## Related Documentation
+
 - [Logging.md](Logging.md) — Application logging schema.
 - [Grafana.md](Grafana.md) — Dashboards and log exploration.
 - [Longhorn.md](Longhorn.md) — Persistent storage tier.

@@ -11,5 +11,6 @@
 | `xl` (1440px+) | Large Desktop Displays | Max container width constraint (1280px / 1440px centered), multi-column analytics |
 
 ## 2. Zero Horizontal Overflow Guarantee
+
 - All containers use `max-w-full` with fluid padding (`px-4 sm:px-6 lg:px-8`).
 - Complex tables wrap inside responsive scroll containers or transform into vertical stacked cards on viewports under 768px.

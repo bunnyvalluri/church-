@@ -1,12 +1,15 @@
 # Frontend Application Architecture
 
 ## Purpose
+
 This document provides the definitive architectural and engineering specification for the Next.js 14 frontend web application powering the Kingdom of Christ Ministries platform.
 
 ## Scope
+
 Covers React Server Components (RSC), App Router layouts, component hierarchies, state management, SWR/React Query data caching, UI primitives, and bundle optimization.
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -21,7 +24,7 @@ graph TD
     ThemeProvider --> Navbar[Navigation Bar & Mobile Drawer]
     ThemeProvider --> PageView[Active Page Component]
     ThemeProvider --> Footer[Footer & Legal Links]
-    
+
     subgraph Rendering Architecture
         PageView --> RSC[React Server Components - Data Fetching & SEO]
         PageView --> RCC[React Client Components - Interactivity & State]
@@ -62,6 +65,7 @@ Components are organized into reusable, domain-focused modules in `frontend/comp
 
 1. **Server-Side Fetching**: React Server Components query PostgreSQL directly using the singleton Prisma client (`@/lib/db`) during SSR/SSG.
 2. **Client-Side SWR / React Query**: Dynamic client views (e.g. real-time prayer lists, donation histories, event seat counters) use SWR:
+
 ```typescript
 import useSWR from "swr";
 
@@ -75,6 +79,7 @@ export function useUpcomingEvents() {
   return { events: data?.events ?? [], isLoading, error, mutate };
 }
 ```
+
 3. **Optimistic UI Updates**: When a member likes a sermon or submits a prayer request, SWR mutates local cache immediately before receiving server confirmation, providing instantaneous visual feedback.
 
 ---
@@ -104,10 +109,12 @@ export function useUpcomingEvents() {
 ---
 
 ## Security Considerations
+
 - Client bundles exclude backend secrets and database drivers.
 - All user-rendered HTML is sanitized to block XSS attacks.
 
 ## Related Documentation
+
 - [UI-UX.md](UI-UX.md) — Design system and animation guidelines.
 - [Responsive-Design.md](Responsive-Design.md) — Mobile-first viewport standards.
 - [Routing.md](Routing.md) — Complete page routing matrix.

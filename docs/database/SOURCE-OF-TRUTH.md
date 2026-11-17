@@ -14,6 +14,7 @@
 | **Offline Sync Queue** | Client IndexedDB | PostgreSQL target tables | Replicated Queue | Client generates UUID; server applies idempotently using operation key |
 
 ## 2. Cross-Database Synchronization & Isolation
+
 - **No Shared Dual Writes**: PostgreSQL owns all transactional domain records. MongoDB is never written to as a duplicate primary store for relational data.
 - **Cache Invalidation Flow**:
   1. Primary update committed to PostgreSQL in a transaction.

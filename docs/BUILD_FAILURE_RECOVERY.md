@@ -13,7 +13,9 @@
 ---
 
 ## 2. Diagnostic Artifacts
+
 All build failures produce a JSON report at `reports/build-failure-report.json` containing:
+
 - Failure category
 - Timestamp
 - Attempt count

@@ -29,6 +29,7 @@ During the exhaustive full-stack audit of the Kingdom of Christ Ministries (KCM)
 ## 3. Detailed Error Reports
 
 ### ERR-RT-001: Realtime Localhost Leakage & Unhandled Companion Endpoints
+
 - **Evidence:** Browser console displayed: `WebSocket connection to 'ws://localhost:3001/socket.io/?EIO=4&transport=websocket' failed: Connection refused`.
 - **Root Cause:**
   - `agentReachClient.ts` defaulted fallback URL to `url || 'http://localhost:3001'` even in production browser runtime.
@@ -40,6 +41,7 @@ During the exhaustive full-stack audit of the Kingdom of Christ Ministries (KCM)
 ---
 
 ### ERR-SEC-002: Permissions-Policy RFC 8941 Parsing Error & Duplicate Headers
+
 - **Evidence:** Chromium DevTools console displayed: `Error with Permissions-Policy header: Parse of permissions policy failed because of errors reported by structured header parser`.
 - **Root Cause:**
   - Both `frontend/vercel.json` and `frontend/next.config.js` defined headers for `/(.*)`.
@@ -53,6 +55,7 @@ During the exhaustive full-stack audit of the Kingdom of Christ Ministries (KCM)
 ---
 
 ### ERR-SEC-003: Public Exposure of Secret Service API Key
+
 - **Evidence:** Root `.env` contained `NEXT_PUBLIC_FIRECRAWL_API_KEY="fc-7d7905a9a13247bcaa18ba4517ce0b81"`.
 - **Root Cause:**
   - Developer erroneously prefixed the Firecrawl server API key with `NEXT_PUBLIC_`, which triggers Next.js Webpack define plugin to embed the raw string into static client JavaScript chunks.
@@ -63,6 +66,7 @@ During the exhaustive full-stack audit of the Kingdom of Christ Ministries (KCM)
 ---
 
 ### ERR-DB-004: Prisma Model Table Mapping Failure in Database Health Scripts
+
 - **Evidence:** `node backend/prisma/check-db.js` threw: `Invalid p.pastor.count() invocation: The table public.Pastor does not exist in the current database`.
 - **Root Cause:**
   - Neon PostgreSQL table is created as `pastors` (lowercase).
@@ -75,6 +79,7 @@ During the exhaustive full-stack audit of the Kingdom of Christ Ministries (KCM)
 ---
 
 ### ERR-PWA-005: Service Worker Inflexible Cache-First Strategy on Dynamic Scripts
+
 - **Evidence:** `frontend/public/sw.js` line 94 applied Cache-First to all `\.(css|js)$` without checking if files were hashed or immutable Next.js chunks.
 - **Root Cause:**
   - Non-hashed scripts and stylesheets could remain cached across multiple production deployments.
@@ -86,6 +91,7 @@ During the exhaustive full-stack audit of the Kingdom of Christ Ministries (KCM)
 ---
 
 ### ERR-FE-006: Mobile Navigation Drawer Test Failure & Missing Keyboard Accessibility
+
 - **Evidence:** `cross-browser.spec.ts` failed with `locator("#mobile-menu") timed out`.
 - **Root Cause:**
   - The drawer component defined `id="mobile-drawer"`, mismatched with the test query.

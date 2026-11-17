@@ -1,12 +1,15 @@
 # Declarative GitOps Operations & Architecture
 
 ## Purpose
+
 This document provides the technical specification for the declarative GitOps delivery model powering the Kingdom of Christ Ministries platform, establishing Git as the single authoritative source of truth for all Kubernetes infrastructure, application deployments, and operational policies.
 
 ## Scope
+
 Covers GitOps repository structures, branching workflows, Argo CD reconciliation loops, environment promotions, and automated drift correction.
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -52,6 +55,7 @@ graph LR
 ## 3. Disaster Recovery via GitOps
 
 Because all application and infrastructure states are fully declared in Git:
+
 1. In the event of total cluster loss, a replacement cluster can be spun up in minutes using OpenTofu (`tofu apply`).
 2. Pointing Argo CD to the Git repository restores all namespaces, CRDs, network policies, and application workloads automatically.
 3. Database and persistent storage are restored from S3 backups via Velero and CloudNativePG.
@@ -68,9 +72,11 @@ Because all application and infrastructure states are fully declared in Git:
 ---
 
 ## Security Considerations
+
 - Direct write access (`kubectl apply`) to the production cluster is disabled; all changes must flow through peer-reviewed Git Pull Requests.
 
 ## Related Documentation
+
 - [ArgoCD.md](ArgoCD.md) — Argo CD configuration.
 - [ArgoRollouts.md](ArgoRollouts.md) — Progressive canary delivery.
 - [CI-CD.md](CI-CD.md) — CI/CD build automation.

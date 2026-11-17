@@ -7,16 +7,16 @@ graph TD
     Client["Client Browser (Member Portal)"] -->|1. Capture Real Telemetry| Diag["issueDiagnostics.ts"]
     Client -->|2. Buffer Unhandled Errors| Buffer["clientErrorCollector.ts"]
     Client -->|3. POST /api/member/reports| API["Next.js Route Handler"]
-    
+
     API -->|Auth & Rate Limit| Security["authMiddleware.ts & rateLimit"]
     API -->|Sanitization & Duplicate Check| Service["issueService.ts"]
-    
+
     Service -->|Primary Driver: Prisma ORM| Neon["Neon PostgreSQL (issue_reports)"]
     Service -.->|Fallback Engine: Direct HTTPS SQL| Neon
-    
+
     API -->|Audit Log| Audit["auditLogger.ts"]
     API -->|Socket.IO Event| Sockets["socketTrigger.ts (Admin & Member Rooms)"]
-    
+
     Admin["Admin Triage Console (/admin/support/reports)"] -->|GET /api/admin/reports| API
     Admin -->|PATCH status & assignment| API
 ```

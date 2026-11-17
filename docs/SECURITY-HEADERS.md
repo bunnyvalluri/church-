@@ -34,10 +34,12 @@ All security headers are centralized in `frontend/next.config.js` to ensure unif
 ## 2. Header-by-Header Rationale
 
 ### Strict-Transport-Security (HSTS)
+
 - **Directive:** `max-age=63072000; includeSubDomains; preload`
 - **Effect:** Enforces HTTPS for 2 years across all subdomains and permits inclusion in browser HSTS preload lists. Disallows SSL stripping attacks.
 
 ### Permissions-Policy (RFC 8941 Structured Header)
+
 - **Directive:** `camera=(self), microphone=(), geolocation=(), payment=(self "https://checkout.razorpay.com" "https://js.stripe.com"), fullscreen=(self)`
 - **RFC Compliance:** Formatted in strict compliance with RFC 8941 Structured Headers dictionary syntax.
 - **Access Scope:**
@@ -47,6 +49,7 @@ All security headers are centralized in `frontend/next.config.js` to ensure unif
   - `payment`: Whitelisted for Razorpay and Stripe checkout dialogs.
 
 ### Content-Security-Policy (CSP)
+
 - **Directives:**
   - `default-src 'self'`: Restricts default resource fetching to same origin.
   - `script-src 'self' 'unsafe-eval' 'unsafe-inline' https://checkout.razorpay.com https://www.googletagmanager.com https://apis.google.com https://*.firebaseapp.com https://accounts.google.com https://www.youtube.com https://vercel.live`: Restricts executable JavaScript to trusted payment, auth, and analytics vendors.
@@ -54,5 +57,6 @@ All security headers are centralized in `frontend/next.config.js` to ensure unif
   - `object-src 'none'`: Mitigates legacy Flash/ActiveX plugin exploits.
 
 ### Cross-Origin-Opener-Policy & Cross-Origin-Resource-Policy
+
 - **COOP:** `same-origin-allow-popups` (allows seamless Google OAuth and Razorpay checkout popup windows without sacrificing process isolation).
 - **CORP:** `cross-origin` (allows CDN media resources to be safely shared).

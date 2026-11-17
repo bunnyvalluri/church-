@@ -1,9 +1,11 @@
 # Loki — Falco Log Integration
+
 ## Kingdom of Christ Ministries
 
 ## Overview
 
 Falco events flow to Loki via two paths:
+
 1. **Falcosidekick** → pushes JSON events directly to Loki HTTP API
 2. **Promtail (Falco)** → reads `/var/log/falco/falco.log` → structured logs
 
@@ -49,6 +51,7 @@ sum by (rule) (count_over_time({app="falco"}[1h]))
 ## Retention
 
 Configure Loki retention for security audit compliance:
+
 ```yaml
 # loki-stack.yaml
 limits_config:

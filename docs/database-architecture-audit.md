@@ -17,6 +17,7 @@ This audit establishes the baseline before introducing **MongoDB Atlas** as a hi
 ## 2. Component-by-Component Architectural Audit
 
 ### 2.1 Frontend Architecture
+
 - **Framework**: Next.js 14.2 (App Router with dynamic server routes and static pages).
 - **Language**: TypeScript 5.4.
 - **State Management**: TanStack React Query (`@tanstack/react-query` v5.101), SWR (`swr` v2.4), React Context.
@@ -27,6 +28,7 @@ This audit establishes the baseline before introducing **MongoDB Atlas** as a hi
   - Next.js Server-side Middleware (`frontend/lib/authMiddleware.ts`) verifying Firebase ID tokens via `firebase-admin` and mapping them to PostgreSQL `User` records with role-based access control.
 
 ### 2.2 Backend Companion Architecture
+
 - **Framework**: Express 5.2 on Node.js.
 - **Processes**:
   - `PROCESS_TYPE=all`: Unified companion server (Socket.io + HTTP API + BullMQ worker).
@@ -37,6 +39,7 @@ This audit establishes the baseline before introducing **MongoDB Atlas** as a hi
 - **Metrics**: Prometheus instrumentation (`backend/src/metrics.js`) exposing `/metrics` for Grafana scraping.
 
 ### 2.3 Database Layer (PostgreSQL / Neon)
+
 - **Engine**: PostgreSQL 15+ hosted on Neon / RDS / CNPG.
 - **ORM / Query Layer**: Prisma Client (`@prisma/client` v5.11.0), outputting generated types to `frontend/prisma/generated/client` and `backend/prisma/generated/client`.
 - **Client Resilience**: Custom Prisma Proxy (`frontend/lib/prisma.ts`) with `DB_OFFLINE` toggle for isolated dev mode, connection pool protection, and automatic process exit cleanup.
@@ -48,11 +51,13 @@ This audit establishes the baseline before introducing **MongoDB Atlas** as a hi
 The current Prisma schema defines 50+ models organized across church business domains:
 
 ### Identity & Access Control
+
 - `User` (`members` table): Member profile, contact info, hashed credentials, role enum (`SUPER_ADMIN`, `ADMIN`, `PASTOR`, `MEMBER`, `EVENT_MANAGER`, `FIELD_VOLUNTEER`, `NGO_ADMIN`, `BRANCH_MANAGER`, `MEDIA_TEAM`).
 - `DeviceToken` (`device_tokens`): FCM tokens for multi-device push delivery.
 - `AuditLog` (`audit_logs`): Legacy relational audit trail.
 
 ### Events & Attendance
+
 - `Event`: Church events, dates, venue, registration limits, speaker, banner, priority, color theme, visibility.
 - `EventCategory`: Categories (Worship, Youth, Conference, Outreach).
 - `EventMedia`, `EventImage`, `EventVideo`: Media attachments linked to Cloudinary.
@@ -62,11 +67,13 @@ The current Prisma schema defines 50+ models organized across church business do
 - `EventReport`, `MediaReport`: Post-event administrative reports and photo metrics.
 
 ### Sermons & Media
+
 - `Sermon`: Audio/video metadata, scripture references, sermon notes, views, likes, downloads.
 - `SermonMedia`, `SermonAudio`, `SermonNotes`: Formatted content and Cloudinary assets.
 - `SermonView`, `SermonLike`, `SermonComment`, `SermonBookmark`, `SermonDownload`: Member engagement metrics.
 
 ### Giving, Finance & Donations
+
 - `Donation`: Transaction records, amounts, currency (INR, USD), payment status, donor info, payment method.
 - `PaymentTransaction`: Gateway references (Razorpay order ID, payment ID, signature).
 - `Receipt`: Generated PDF receipt URLs, 80G tax exemption numbers, timestamps.
@@ -77,6 +84,7 @@ The current Prisma schema defines 50+ models organized across church business do
 - `DonationAgentEvent`, `DonationRetryJob`: State machine audit logs and retry queue jobs.
 
 ### Ministries, Community & Pastoral Care
+
 - `PrayerRequest`: Member prayer submissions, categories (Health, Family, Financial, Spiritual), status (Pending, Praying, Answered).
 - `Pastor`: Pastor profiles, designations, bio, contact, sprite assets.
 - `Ministry`: Ministry groups (Youth, Women, Men, Music, Outreach).
@@ -87,6 +95,7 @@ The current Prisma schema defines 50+ models organized across church business do
 - `ChurchService`: Weekly service schedules and timings.
 
 ### Internet Intelligence & Scraped Content
+
 - `AgentReachTask`, `AgentReachSource`: AI research task outputs.
 - `ChurchNewsArticle`, `ChurchNewsItem`: Curated news articles.
 - `FirecrawlScrapeJob`, `SermonResearchSummary`, `BibleStudyResource`, `NgoOpportunity`: Scraped external resources.
@@ -105,6 +114,7 @@ The current Prisma schema defines 50+ models organized across church business do
 ## 5. Existing Cloudinary Media Storage
 
 Folder hierarchy managed in `frontend/lib/cloudinary.ts`:
+
 - `church-platform/events`: Event banners, promotional flyers.
 - `church-platform/sermons`: Sermon thumbnails, audio recordings.
 - `church-platform/ngo`: NGO project images and documentation.

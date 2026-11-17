@@ -17,11 +17,13 @@ Our audit identified several critical security, reliability, and GitOps complian
 ## 2. Comprehensive Audit Findings & Technical Gaps
 
 ### A. Docker & Container Security Audit
+
 - **Previous Gap:** Single-stage or sub-optimal Dockerfiles lacking strict non-root user execution, layer caching, and read-only filesystem compatibility.
 - **Security Vulnerability:** Running containers as root (`uid 0`), leaving the pod exposed to container escape attacks.
 - **Remediation:** Upgraded both `docker/Dockerfile` and `backend/Dockerfile` to multi-stage minimal builds (`Deps` -> `Builder` -> `Runner`) using official Node 20 Alpine images. Standardized non-root system users (`uid: 1001`, `gid: 1001`), enabled Next.js standalone tracing, and added explicit file permissions (`chown=1001:1001`).
 
 ### B. Kubernetes & GitOps Audit
+
 - **Previous Gap:** Monolithic `k8s/` folder containing hardcoded `stringData` secrets (`secret.yaml`), missing HorizontalPodAutoscalers for all sub-services, lack of NetworkPolicies, missing PodSecurityAdmission constraints, and absence of Argo CD GitOps definitions.
 - **Remediation:** 
   1. Created an isolated GitOps infrastructure structure (`kcm-church-infra/`).
@@ -30,6 +32,7 @@ Our audit identified several critical security, reliability, and GitOps complian
   4. Removed plaintext secrets from Git and instituted `SealedSecrets` / `ExternalSecrets` Operator schema.
 
 ### C. CI/CD & Image Registry Audit
+
 - **Previous Gap:** Basic GitHub Actions workflows without multi-architecture builds, Trivy vulnerability scanning, container image signing, or automated Helm manifest updates back to GitOps repositories.
 - **Remediation:** Designed `.github/workflows/gitops-pipeline.yml` with:
   - Multi-arch Docker Buildx (`linux/amd64`, `linux/arm64`).
@@ -39,14 +42,17 @@ Our audit identified several critical security, reliability, and GitOps complian
   - Automated GitOps image tag update commits back to `kcm-church-infra`.
 
 ### D. Security & Microsegmentation Audit
+
 - **Previous Gap:** Flat pod networking allowing unrestricted pod-to-pod communication.
 - **Remediation:** Created strict `NetworkPolicies` for all namespaces (`default-deny-all` with explicit allowed pathways: Frontend -> Backend API, Backend -> PostgreSQL & Redis, Prometheus -> Scraping endpoints). Enforced Kubernetes `restricted` Pod Security Standards.
 
 ### E. Observability & Logging Audit
+
 - **Previous Gap:** No centralized metric collection or structured logging infrastructure.
 - **Remediation:** Integrated Prometheus Operator, Grafana with pre-built production dashboards (Node health, HTTP latency, DB connection pool, Redis cache hits), Loki + Promtail for centralized log aggregation, and Alertmanager routing for critical system events.
 
 ### F. Disaster Recovery Audit
+
 - **Previous Gap:** No automated database snapshotting or disaster recovery runbooks.
 - **Remediation:** Configured automated PostgreSQL backup CronJobs with AES-256 encryption and external cloud synchronization, accompanied by a guaranteed 15-minute RTO / 1-hour RPO recovery plan.
 

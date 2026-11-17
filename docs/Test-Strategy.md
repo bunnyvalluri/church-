@@ -1,12 +1,15 @@
 # Quality Engineering & Testing Strategy
 
 ## Purpose
+
 This document specifies the enterprise testing strategy, testing pyramid, coverage thresholds, risk-based validation matrix, and automated quality gates for the Kingdom of Christ Ministries platform.
 
 ## Scope
+
 Covers all layers of testing: static analysis, unit tests, API integration tests, Playwright E2E tests, cross-browser matrices, accessibility scans, and performance load testing.
 
 ## Status
+
 > Status: Implemented & Enforced
 
 ---
@@ -53,6 +56,7 @@ graph TD
 ## 4. Quality Acceptance Criteria for Releases
 
 A pull request or release tag is strictly rejected if:
+
 1. TypeScript compilation throws any error (`tsc --noEmit`).
 2. Any route returns unhandled 500 error during `npm run test:health`.
 3. An unauthenticated or standard member account is able to access `/admin` or `/pastor`.
@@ -70,9 +74,11 @@ A pull request or release tag is strictly rejected if:
 ---
 
 ## Security Considerations
+
 - Test credentials and fixtures are isolated from production user databases.
 
 ## Related Documentation
+
 - [Testing.md](Testing.md) — CLI test execution commands.
 - [CI-CD.md](CI-CD.md) — GitHub Actions automated gates.
 - [Authorization-RBAC.md](Authorization-RBAC.md) — Access control matrix.

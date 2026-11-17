@@ -30,11 +30,13 @@ This audit assesses the current infrastructure, container runtime, database, cac
 ## 3. Monitoring & Telemetry Audit
 
 ### Existing Coverage
+
 - Basic Kubernetes manifests in `k8s/` and placeholder Prometheus/Loki configs in `kcm-church-infra/observability/`.
 - No native `/metrics` endpoint exposed in Express backend or Next.js frontend.
 - No automated Grafana dashboard provisioning or centralized contact point alerting tree.
 
 ### Required Telemetry Infrastructure
+
 1. **Metrics Collection**: Prometheus scrape targets for Node Exporter, kube-state-metrics, Redis Exporter, PostgreSQL Exporter, NGINX Ingress, Express Backend (`prom-client`), Next.js SSR.
 2. **Log Aggregation**: Loki stack with Promtail DaemonSet capturing container stdout/stderr, NGINX access/error logs, Prisma query logs, and Kubernetes audit logs.
 3. **Grafana Visualization**: 13+ production dashboards with 0% mock data using official Grafana release.

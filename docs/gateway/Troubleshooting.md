@@ -27,14 +27,18 @@ kubectl get httproute -n kcm-system \
 ## Common Issues
 
 ### 1. Gateway shows `Programmed=False`
+
 **Cause:** Missing TLS secret or GatewayClass not accepted.
+
 ```bash
 kubectl get secret kcm-tls-cert -n kcm-system     # Must exist
 kubectl get gatewayclass kcm-gateway-class          # Must show Accepted=True
 ```
 
 ### 2. HTTPRoute shows `ResolvedRefs=False`
+
 **Cause:** Backend service not found or wrong port.
+
 ```bash
 kubectl get svc -n kcm-system | grep frontend      # Service must exist
 # Check port matches service spec
@@ -42,7 +46,9 @@ kubectl describe httproute kcm-frontend-route -n kcm-system
 ```
 
 ### 3. 401 Unauthorized on protected routes
+
 **Cause:** Missing or invalid Firebase JWT token.
+
 ```bash
 # Test with a valid token:
 TOKEN="your-firebase-id-token"
@@ -52,7 +58,9 @@ kubectl logs -n envoy-gateway-system -l app.kubernetes.io/name=envoy-gateway | g
 ```
 
 ### 4. 429 Too Many Requests
+
 **Cause:** Rate limit exceeded. Check which tier applies.
+
 ```bash
 kubectl get backendtrafficpolicy kcm-rate-limit-policy -n kcm-system -o yaml
 # Check Redis rate limit service:
@@ -60,7 +68,9 @@ kubectl get pods -n envoy-gateway-system | grep ratelimit
 ```
 
 ### 5. WebSocket connections dropping
+
 **Cause:** Timeout too short or missing upgrade headers.
+
 ```bash
 kubectl get httproute kcm-websocket-route -n kcm-system -o yaml
 # Timeout should be 3600s
@@ -69,7 +79,9 @@ kubectl get svc backend-socket-service -n kcm-system
 ```
 
 ### 6. TLS certificate shows `Ready=False`
+
 **Cause:** ACME challenge failed.
+
 ```bash
 kubectl describe certificate kcm-tls-cert -n kcm-system
 kubectl describe challengeorder -n kcm-system  
@@ -78,7 +90,9 @@ kubectl logs -n cert-manager -l app=cert-manager | grep -i error
 ```
 
 ### 7. Argo Rollouts weights not updating HTTPRoute
+
 **Cause:** Gateway API plugin not installed in Argo Rollouts.
+
 ```bash
 kubectl get cm argo-rollouts-config -n argo-rollouts -o yaml | grep gateway
 # Plugin must be installed:
@@ -86,7 +100,9 @@ kubectl get cm argo-rollouts-config -n argo-rollouts -o yaml | grep gateway
 ```
 
 ### 8. Grafana showing no metrics
+
 **Cause:** ServiceMonitor label selector mismatch.
+
 ```bash
 kubectl get servicemonitor -n monitoring envoy-gateway-controller -o yaml
 # Check labels match prometheus operator's serviceMonitorSelector:

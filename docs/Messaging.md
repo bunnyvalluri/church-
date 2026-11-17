@@ -1,12 +1,15 @@
 # Asynchronous Messaging & Event-Driven Architecture
 
 ## Purpose
+
 This document provides the technical specification for the asynchronous messaging and event-driven architecture powering decoupled microservices across the Kingdom of Christ Ministries platform.
 
 ## Scope
+
 Covers Apache Kafka event streaming (`platform/messaging/kafka/`), NATS JetStream messaging (`platform/messaging/nats/`), and Redis Pub/Sub event distribution.
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -98,10 +101,12 @@ export interface ChurchDomainEvent<T = any> {
 ---
 
 ## Security Considerations
+
 - Kafka topics and NATS subjects enforce TLS 1.3 encryption and SASL/SCRAM authentication.
 - Access Control Lists (ACLs) restrict producer and consumer permissions per microservice.
 
 ## Related Documentation
+
 - [Kafka.md](Kafka.md) — Apache Kafka cluster specification.
 - [NATS.md](NATS.md) — NATS JetStream specification.
 - [Notification-System.md](notification-system.md) — Notification dispatcher engine.

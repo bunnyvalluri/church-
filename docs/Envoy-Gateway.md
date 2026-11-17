@@ -1,12 +1,15 @@
 # Kubernetes Gateway API & Envoy Gateway
 
 ## Purpose
+
 This document provides the technical specification for Envoy Gateway, the modern Kubernetes Gateway API implementation managing edge ingress traffic, TLS termination, path-based routing, JWT authentication policies, rate limiting, and canary traffic splitting across the Kingdom of Christ Ministries platform.
 
 ## Scope
+
 Covers manifests in `platform/gateway/` including GatewayClasses, Gateways, HTTPRoutes, SecurityPolicies, and TLS certificates.
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -16,7 +19,7 @@ Covers manifests in `platform/gateway/` including GatewayClasses, Gateways, HTTP
 ```mermaid
 graph TD
     Client[Internet Clients / Browsers] -->|HTTPS (Port 443)| EnvoyGateway[Envoy Gateway Edge Proxy]
-    
+
     subgraph Gateway Policies
         EnvoyGateway --> TLSPolicy[TLS Termination: Let's Encrypt / cert-manager]
         EnvoyGateway --> RateLimitPolicy[RateLimitPolicy: 100 req/min/IP]
@@ -41,6 +44,7 @@ graph TD
 ## 2. Gateway API Manifests
 
 ### 2.1 Gateway Instance (`platform/gateway/gateways/kcm-gateway.yaml`)
+
 ```yaml
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
@@ -66,6 +70,7 @@ spec:
 ```
 
 ### 2.2 HTTPRoute Definitions (`platform/gateway/httproutes/`)
+
 - **`public-route.yaml`**: Routes general traffic, static pages, and Next.js SSR pages to `kcm-frontend:3000`.
 - **`webhook-route.yaml`**: Routes external webhooks (`/api/payments/webhook`, `/api/webhooks/httpsms`) directly to backend worker pods with rate limit exemptions.
 - **`admin-route.yaml`**: Enforces strict IP allowlists and JWT security headers for `/admin/*` paths.
@@ -90,9 +95,11 @@ spec:
 ---
 
 ## Security Considerations
+
 - Envoy Gateway strips untrusted internal headers (`X-Forwarded-Client-Cert`, `X-Internal-Role`) before forwarding requests to application pods.
 
 ## Related Documentation
+
 - [Kubernetes.md](Kubernetes.md) — Base workload services.
 - [ArgoRollouts.md](ArgoRollouts.md) — Canary traffic routing.
 - [Security.md](Security.md) — Security headers and rate limiting.

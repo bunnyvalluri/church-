@@ -1,12 +1,15 @@
 # Member Privacy, Data Protection & Confidentiality
 
 ## Purpose
+
 This document specifies the privacy guidelines, Personally Identifiable Information (PII) protection policies, and confidential data workflows for the Kingdom of Christ Ministries platform.
 
 ## Scope
+
 Covers member profiles, pastoral prayer requests, donor financial transactions, baptism records, and data retention lifecycles.
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -52,10 +55,12 @@ The church platform processes sensitive spiritual, personal, and financial data 
 ---
 
 ## Security Considerations
+
 - All database backups are encrypted at rest with AES-256.
 - Database access is restricted to application VPC pods via strict Kubernetes network policies.
 
 ## Related Documentation
+
 - [Security.md](Security.md) — Security controls and encryption standards.
 - [Database-Architecture.md](Database-Architecture.md) — Data storage and TTL indexes.
 - [Finance.md](Finance.md) — Financial record policies.

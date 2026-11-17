@@ -12,6 +12,7 @@
 The entire Kingdom of Christ Ministries (KCM) platform has undergone a comprehensive, multi-layer performance engineering audit and optimization across all Public, Member, Admin, Pastor, and Event Manager routes.
 
 All routes strictly satisfy production performance targets on **both Mobile (4G mid-range Android simulation) and Desktop (broadband)**:
+
 - **LCP:** $\le 2.18\text{s}$ on Mobile (Target: $\le 2.50\text{s}$), $\le 1.22\text{s}$ on Desktop.
 - **INP:** $\le 85\text{ms}$ on Mobile (Target: $\le 200\text{ms}$), $\le 40\text{ms}$ on Desktop.
 - **CLS:** $\le 0.019$ on Mobile (Target: $\le 0.10$), $\le 0.012$ on Desktop.
@@ -37,6 +38,7 @@ All routes strictly satisfy production performance targets on **both Mobile (4G 
 ## 3. Routes Tested & Audited (100% Inventory Coverage)
 
 ### Public Routes
+
 - `/` (Homepage)
 - `/ngo`, `/ngo/projects`, `/ngo/gallery`, `/ngo/videos`, `/ngo/volunteers`, `/ngo/donations`
 - `/gallery`
@@ -46,9 +48,11 @@ All routes strictly satisfy production performance targets on **both Mobile (4G 
 - `/login`, `/register`
 
 ### Member Portal (Role: `MEMBER`)
+
 - `/member`, `/member/profile`, `/member/events`, `/member/prayers`, `/member/sermons`, `/member/volunteer`, `/member/give`, `/member/report`
 
 ### Admin Portal (Role: `ADMIN` / `SUPER_ADMIN`)
+
 - `/admin/dashboard`, `/admin/openclaw-orchestrator`, `/admin/notifications/sms`, `/admin/notifications/email`
 - `/admin/members`, `/admin/members/groups`, `/admin/members/prayer-requests`, `/admin/members/family-management`
 - `/admin/finance`, `/admin/finance/donations`, `/admin/finance/pledges`, `/admin/finance/transactions`, `/admin/finance/accounts`
@@ -58,12 +62,14 @@ All routes strictly satisfy production performance targets on **both Mobile (4G 
 - `/admin/settings`, `/admin/settings/general`, `/admin/settings/users`
 
 ### Pastor Portal (Role: `PASTOR`)
+
 - `/pastor/main/dashboard`, `/pastor/main/sermons`, `/pastor/main/donations`, `/pastor/main/member-requests`, `/pastor/main/prayer-requests`, `/pastor/main/events`, `/pastor/main/messages`, `/pastor/main/bible-study-groups`, `/pastor/main/small-groups`, `/pastor/main/volunteers`, `/pastor/main/ngo-projects`, `/pastor/main/ngo-media`, `/pastor/main/ngo-volunteers`
 - `/pastor/reports/attendance`, `/pastor/reports/members`, `/pastor/reports/finance`, `/pastor/reports/growth`
 - `/pastor/calendar`, `/pastor/media/gallery`, `/pastor/media/videos`, `/pastor/media/documents`
 - `/pastor/main/profile`, `/pastor/main/church-settings`, `/pastor/settings/security`, `/pastor/settings/notifications`
 
 ### Event Manager Portal (Role: `EVENT_MANAGER`)
+
 - `/event-manager`, `/event-manager/report`
 
 ---
@@ -71,30 +77,36 @@ All routes strictly satisfy production performance targets on **both Mobile (4G 
 ## 4. Key Performance Optimizations Implemented
 
 ### A. Next.js Edge Middleware Static Matcher Bypass (TTFB & CPU Optimization)
+
 - **Problem:** Static assets (`.png`, `.jpg`, `.webp`, `.avif`, `.svg`, `.woff2`, `sitemap.xml`, `manifest.json`) were matching the generic edge middleware regex, causing serverless invocation overhead and adding $15\text{ms}$–$40\text{ms}$ to static file TTFB.
 - **Solution:** Configured strict negative-lookahead matcher in `frontend/middleware.ts` to exclude all static file extensions, sitemaps, manifests, and favicon files. Static assets now bypass Edge middleware completely and stream directly from Vercel Edge CDN caches.
 
 ### B. Tree-Shaking & Package Import Optimization
+
 - **Problem:** Large icon and UI component libraries (`lucide-react`, `@radix-ui/*`) were including superfluous code in client bundles.
 - **Solution:** Extended `experimental.optimizePackageImports` in `frontend/next.config.js` for `lucide-react`, `framer-motion`, `recharts`, `date-fns`, `clsx`, `tailwind-merge`, and all Radix UI primitives (`dialog`, `dropdown-menu`, `select`, `tabs`, `toast`, `navigation-menu`).
 - **Result:** Shared initial JS bundle was trimmed to **87.9 kB**.
 
 ### C. Public Asset & Media Cache Control Architecture
+
 - **Problem:** Missing browser/CDN caching directives forced re-validation of immutable fonts, brand assets, and sitemaps.
 - **Solution:** Added `Cache-Control: public, max-age=31536000, immutable` for `/_next/static/*`, `/fonts/*`, `/images/*`, `/brand/*`, `/icons/*`, and `s-maxage=86400, stale-while-revalidate=604800` for dynamic manifests and sitemaps.
 
 ### D. Image & Media Delivery System
+
 - **Next.js Image Formats:** Modern `AVIF` and `WebP` configured with `minimumCacheTTL: 31536000`.
 - **LCP Optimization:** Critical hero elements use responsive SVGs/gradients with explicit sizing, preventing hero download delays.
 - **Gallery Virtualization:** `gallery` and `ngo/gallery` use progressive batch rendering (`INITIAL_BATCH = 24`, `BATCH_SIZE = 16`) driven by `IntersectionObserver`, preventing thousands of nodes from inflating DOM size.
 - **YouTube Embeds:** Lazy-loaded thumbnail fallback chain (`hqdefault.jpg`, `mqdefault.jpg`) without loading heavy YouTube JS iframes until explicit user play interaction.
 
 ### E. Database Query & Indexing Architecture (Neon PostgreSQL)
+
 - **Prisma Schema Optimization:** Models (`User`, `Session`, `Event`, `Sermon`, `Donation`, `Gallery`, `ChurchService`, etc.) have comprehensive single and composite indexes on query paths (`[userId]`, `[branchId]`, `[category]`, `[status]`, `[date]`, `[createdAt]`).
 - **Connection Pooling:** Serverless connection pooling active with Prisma Client singleton, avoiding connection starvation under load.
 - **Data Fetching:** Parallelized server-side `Promise.all()` fetching on dynamic landing routes with 60-second ISR edge revalidation (`export const revalidate = 60`).
 
 ### F. Security, Payments & Third-Party Scripts
+
 - **Payment SDKs:** Razorpay (`checkout.js`) and Stripe SDKs are loaded **strictly on demand** when the user initiates a checkout interaction inside the payment modal (`DynamicPaymentModal.tsx` and `ngo/donations/page.tsx`). They are not loaded globally on page load.
 - **Edge Session Security:** Cryptographic session verification executes at edge via Web Crypto HMAC without full database round-trips for authenticated pages.
 

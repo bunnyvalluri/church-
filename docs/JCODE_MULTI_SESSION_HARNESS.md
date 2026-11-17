@@ -1,4 +1,5 @@
 # jcode Multi-Session Engineering Harness Architecture
+
 ## Kingdom of Christ Ministries (KCM) Church Platform
 
 > **Engine Status**: `ACTIVE`  
@@ -32,36 +33,43 @@
 ```
 
 ### Session 1: Event Manager Session (`1-event-manager.toml`)
+
 - **Core Domain**: Event CRUD workflows, poster/banner upload pipelines, real-time push and web notifications.
 - **Tech Stack**: Next.js App Router, Express API, Cloudinary/S3, Socket.io, Firebase FCM, BullMQ (`eventUploadQueue`).
 - **Focus Paths**: `frontend/app/events`, `backend/src/services/eventService.js`, `backend/src/queues/eventQueue.js`.
 
 ### Session 2: Sermon Session (`2-sermon.toml`)
+
 - **Core Domain**: Audio/video sermon uploads, Cloudinary media processing, automatic transcription, landing page hero banner sync.
 - **Tech Stack**: Cloudinary API, Express, Next.js components, HLS video player.
 - **Focus Paths**: `frontend/app/sermons`, `backend/src/services/sermonService.js`, `backend/src/queues/sermonAutomationQueue.js`.
 
 ### Session 3: Security Session (`3-security.toml`)
+
 - **Core Domain**: Anti-forgery JWT token rotation, RBAC permission matrices, Zod API validation, magic-byte file inspection, security audit loops.
 - **Tech Stack**: JWT, Express Middleware, Zod validation, Security Audit Loop.
 - **Focus Paths**: `backend/src/middleware/auth.js`, `backend/src/middleware/rbac.js`, `docs/security/`.
 
 ### Session 4: Performance Session (`4-performance.toml`)
+
 - **Core Domain**: Dynamic scroll virtualization, React Server Component (RSC) rendering, Next.js bundle chunking & tree-shaking.
 - **Tech Stack**: React 18, Next.js, Framer Motion, TanStack Virtual, Lighthouse telemetry.
 - **Focus Paths**: `frontend/app/`, `frontend/components/`, `frontend/next.config.js`.
 
 ### Session 5: API Gateway Session (`5-api-gateway.toml`)
+
 - **Core Domain**: Unified Express/Next route refactoring, central rate-limiting middleware, correlation ID request logging.
 - **Tech Stack**: Express, Next.js Edge Middleware, Pino/Winston logger, Rate-limiter.
 - **Focus Paths**: `backend/server.js`, `frontend/middleware.ts`, `docs/gateway/`.
 
 ### Session 6: PWA Session (`6-pwa.toml`)
+
 - **Core Domain**: Service worker caching strategies (Stale-While-Revalidate, Cache-First), IndexedDB offline storage, Background Sync API.
 - **Tech Stack**: Service Worker API, IndexedDB, Workbox, Background Sync API.
 - **Focus Paths**: `frontend/public/sw.js`, `frontend/lib/pwa/`.
 
 ### Session 7: Deployment Session (`7-deployment.toml`)
+
 - **Core Domain**: GitHub Actions CI/CD pipelines, Docker/Kubernetes/ArgoCD manifests, Prometheus monitoring metrics, automated zero-downtime rollbacks.
 - **Tech Stack**: GitHub Actions, Docker, K8s, Helm, ArgoCD, Prometheus, Grafana.
 - **Focus Paths**: `.github/workflows/`, `k8s/`, `docker/`, `monitoring/`, `docs/Rollback.md`.
@@ -87,16 +95,19 @@ The `swarm.json` specification defines structured pub/sub channels between sessi
 ## 4. Operation Runbook
 
 ### Initializing the Swarm (PowerShell)
+
 ```powershell
 .\scripts\jcode\start-swarm.ps1
 ```
 
 ### Inspecting Swarm & Session Telemetry (Node.js)
+
 ```bash
 node scripts/jcode/session-manager.js status
 ```
 
 ### Exporting Swarm Configuration
+
 ```bash
 node scripts/jcode/session-manager.js swarm-config
 ```

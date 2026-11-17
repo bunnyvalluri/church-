@@ -1,12 +1,15 @@
 # Health Check Probes & Service Readiness Specification
 
 ## Purpose
+
 This document provides the technical specification for service health probes, readiness checks, liveness probes, and detailed administrative diagnostic endpoints across the Kingdom of Christ Ministries platform.
 
 ## Scope
+
 Covers `/api/health`, `/api/ready`, `/api/live`, `/api/admin/health/detailed`, and Kubernetes pod probe configurations.
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -59,7 +62,7 @@ export async function GET() {
   try {
     // 1. PostgreSQL check via lightweight query
     await prisma.$queryRaw`SELECT 1`;
-    
+
     // 2. Return 200 OK if all critical operational dependencies are reachable
     return NextResponse.json({
       ready: true,
@@ -95,10 +98,12 @@ export async function GET() {
 ---
 
 ## Security Considerations
+
 - Public probes (`/api/health`, `/api/ready`) expose zero internal system paths, connection strings, or database versions.
 - Detailed diagnostic endpoints (`/api/admin/health/detailed`) require authenticated `ADMIN` session privileges.
 
 ## Related Documentation
+
 - [Kubernetes.md](Kubernetes.md) — Pod deployment manifests.
 - [Monitoring.md](Monitoring.md) — Prometheus health metrics.
 - [Admin-Portal.md](Admin-Portal.md) — Health monitor UI.

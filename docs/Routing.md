@@ -1,12 +1,15 @@
 # Application Routing Specification
 
 ## Purpose
+
 This document provides an exhaustive, authoritative reference of all frontend user-facing routes and pages in the Kingdom of Christ Ministries platform, categorized by security boundaries and role requirements.
 
 ## Scope
+
 Covers all Next.js 14 App Router paths within `frontend/app/`.
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -89,13 +92,13 @@ Access control is enforced at the edge via `frontend/middleware.ts` and server-s
 graph TD
     IncomingReq[Incoming Route Request] --> NextMiddleware[Next.js Edge Middleware]
     NextMiddleware --> CheckPublic{Is Public Route?}
-    
+
     CheckPublic -->|Yes| AllowRoute[Allow Request & Render Page]
     CheckPublic -->|No| CheckSession{Valid Auth Session?}
-    
+
     CheckSession -->|No| RedirectLogin[Redirect to /login with redirect URL]
     CheckSession -->|Yes| CheckRole{Role Authorized for Path?}
-    
+
     CheckRole -->|Yes| AllowRoute
     CheckRole -->|No| RedirectDenied[Redirect to /portal-select with Access Denied Toast]
 ```
@@ -103,9 +106,11 @@ graph TD
 ---
 
 ## Security Considerations
+
 - All authenticated routes validate the encrypted HTTP session cookie on each request.
 - Role privilege escalation attempts are automatically captured and recorded to the MongoDB security audit log.
 
 ## Related Documentation
+
 - [Authorization-RBAC.md](Authorization-RBAC.md) — Detailed RBAC matrix and permissions.
 - [API-Documentation.md](API-Documentation.md) — Corresponding REST API handlers.

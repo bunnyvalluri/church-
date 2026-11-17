@@ -47,6 +47,7 @@ The KCM Observability Platform is built on native Cloud-Native Computing Foundat
 ---
 
 ## Key Principles
+
 1. **Zero Source Code Modification**: Deploys the official `grafana/grafana` image directly.
 2. **GitOps & Declarative IaC**: All dashboards, datasources, and alert policies are stored in Git (`monitoring/`) and synced via Argo CD and OpenTofu.
 3. **High Availability**: Multi-replica pod deployment with sticky sessions, externalized PostgreSQL state database, and Redis session store.

@@ -1,4 +1,5 @@
 # Troubleshooting — Falco Runtime Security
+
 ## Kingdom of Christ Ministries
 
 ---
@@ -20,6 +21,7 @@ Error: failed to open BPF probe
 ```
 
 **Fix**: Switch to `ebpf` or `kmod` driver:
+
 ```yaml
 # values.yaml
 driver:
@@ -33,6 +35,7 @@ Error: Cannot find kernel headers
 ```
 
 **Fix**: Install kernel headers on nodes:
+
 ```bash
 # Ubuntu/Debian
 sudo apt-get install linux-headers-$(uname -r)
@@ -47,6 +50,7 @@ Error: pods "falco-xxx" is forbidden: violates PodSecurity "restricted"
 ```
 
 **Fix**: Ensure the `falco` namespace has `privileged` PSA label:
+
 ```bash
 kubectl get namespace falco -o yaml | grep pod-security
 # Should show: pod-security.kubernetes.io/enforce: privileged
@@ -112,6 +116,7 @@ kubectl logs -n falco deployment/falcosidekick | grep -i "loki\|error"
 ```
 
 **Fix**: Verify Loki endpoint in `values-falcosidekick.yaml`:
+
 ```yaml
 config:
   loki:
@@ -133,6 +138,7 @@ kubectl port-forward -n monitoring svc/prometheus-k8s 9090:9090
 ```
 
 **Fix**: Ensure ServiceMonitor has correct labels:
+
 ```yaml
 metadata:
   labels:
@@ -152,6 +158,7 @@ kubectl logs -n monitoring deployment/grafana -c grafana-sc-dashboard | tail -20
 ```
 
 **Fix**: Ensure ConfigMaps have the `grafana_dashboard: "1"` label:
+
 ```bash
 kubectl label configmap grafana-dashboard-falco-security-overview \
   grafana_dashboard=1 -n monitoring

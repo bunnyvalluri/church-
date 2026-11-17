@@ -1,12 +1,15 @@
 # MongoDB Atlas Telemetry & Event Storage
 
 ## Purpose
+
 This document provides the technical specification for MongoDB Atlas, used as the dedicated document database for system telemetry, security audit logging, notification dispatch histories, and operational activity streams across the Kingdom of Christ Ministries platform.
 
 ## Scope
+
 Covers MongoDB client architecture, repositories, collection schemas, TTL indexing, and the offline development simulation layer.
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -52,7 +55,9 @@ graph TD
 ## 2. Collections & Document Schemas
 
 ### 2.1 `audit_events` Collection
+
 Records administrative actions, role modifications, financial exports, and security-relevant mutations.
+
 - **Fields**:
   - `_id`: ObjectId
   - `action`: String (e.g. `USER_ROLE_UPDATED`, `DONATION_RECORD_EXPORTED`, `SERMON_DELETED`)
@@ -64,16 +69,21 @@ Records administrative actions, role modifications, financial exports, and secur
   - `timestamp`: Date (Indexed)
 
 ### 2.2 `system_events` Collection
+
 Tracks microservice health events, worker cycle completions, and API latency anomalies.
+
 - **Fields**: `serviceName`, `eventType`, `severity` (`INFO`, `WARN`, `ERROR`, `CRITICAL`), `details`, `timestamp`.
 - **TTL Expiration**: Automatically purged after 90 days via MongoDB TTL index.
 
 ### 2.3 `notification_history` Collection
+
 Logs all outbound SMS, FCM Push, and Email deliveries along with delivery statuses, provider transaction IDs, and retry attempts.
+
 - **Fields**: `recipientId`, `channel` (`SMS`, `FCM`, `EMAIL`, `WHATSAPP`), `templateId`, `status` (`DELIVERED`, `QUEUED`, `FAILED`), `attempts`, `errorDetails`, `sentAt`.
 - **TTL Expiration**: Automatically purged after 30 days via MongoDB TTL index.
 
 ### 2.4 `activity_logs` Collection
+
 Powers real-time activity feeds in the Member and Pastor portals (e.g. "Pastor David published a new sermon", "Youth Camp registration opened").
 
 ---
@@ -108,6 +118,7 @@ export async function ensureMongoIndexes(db: Db) {
 ## 4. Repositories & Service Layer
 
 The application interacts with MongoDB exclusively through typed repository patterns:
+
 - `analyticsEventRepository.ts`: Aggregates sermon play counts and event page views.
 - `auditEventRepository.ts`: Inserts immutable audit log entries.
 - `notificationEventRepository.ts`: Logs and queries notification dispatch records.
@@ -118,6 +129,7 @@ The application interacts with MongoDB exclusively through typed repository patt
 ## 5. Offline & Local Development Mode
 
 To allow local development without requiring live MongoDB Atlas credentials:
+
 - Set `MONGODB_OFFLINE="true"` in `.env.local`.
 - In offline mode, the MongoDB client returns structured in-memory mock responses and avoids connection timeouts, ensuring the Next.js app starts instantly.
 
@@ -134,10 +146,12 @@ To allow local development without requiring live MongoDB Atlas credentials:
 ---
 
 ## Security Considerations
+
 - Sensitive fields (credit card tokens, authentication credentials) are filtered and stripped before being written to MongoDB.
 - MongoDB Atlas connections enforce TLS 1.3 encryption and SCRAM-SHA-256 authentication.
 
 ## Related Documentation
+
 - [Database-Architecture.md](Database-Architecture.md) — Multi-database topology.
 - [Logging.md](Logging.md) — Structured logging and Loki integration.
 - [Admin-Portal.md](Admin-Portal.md) — Audit log viewer in Admin Portal.

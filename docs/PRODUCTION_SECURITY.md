@@ -1,6 +1,7 @@
 # KCM Church — Production Security & Bundle Isolation Report
 
 ## Overview
+
 This document certifies the production build security, client-side bundle isolation, Content Security Policy (CSP) enforcement, and runtime log redaction for Kingdom of Christ Ministries (KCM).
 
 ---
@@ -44,6 +45,7 @@ object-src 'none';
 ```
 
 ### Security Headers:
+
 - `X-Content-Type-Options: nosniff`
 - `X-Frame-Options: SAMEORIGIN`
 - `Referrer-Policy: strict-origin-when-cross-origin`
@@ -56,11 +58,14 @@ object-src 'none';
 Application logging strictly sanitizes all sensitive tokens before outputting to stdout or external collectors:
 
 1. **Authorization Headers**:
+
    ```
    BAD:  Authorization: Bearer eyJhbGciOi...
    GOOD: Authorization: Bearer [REDACTED]
    ```
+
 2. **Database Credentials**:
    `postgresql://[USER]:[PASSWORD]@[HOST]:[PORT]/[DB]` is automatically redacted to `postgresql://[REDACTED_USER]:[REDACTED_PASS]@[REDACTED_HOST]`.
+
 3. **Environment Validation Logging**:
    `validateEnv()` in `frontend/lib/env.ts` logs only variable key names that failed schema validation, never their values.

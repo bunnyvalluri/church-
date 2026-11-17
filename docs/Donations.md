@@ -1,12 +1,15 @@
 # Online Giving, Offerings & Dynamic UPI QR System
 
 ## Purpose
+
 This document provides the technical specification for the online giving subsystem, covering tithe and offering collections, multi-currency processing (Razorpay & Stripe), dynamic UPI QR code generation, live session polling, and automated 80G tax receipt delivery across the Kingdom of Christ Ministries platform.
 
 ## Scope
+
 Covers `/give`, `/give/receipt/[donationId]`, payment session APIs (`/api/donations/*`), payment webhook listeners (`/api/payments/webhook`), and receipt generators.
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -16,7 +19,7 @@ Covers `/give`, `/give/receipt/[donationId]`, payment session APIs (`/api/donati
 ```mermaid
 graph TD
     Donor[Donor / Member] --> GivePage[/give Page]
-    
+
     subgraph Payment Modality Selection
         GivePage --> UPI[Dynamic UPI QR Code: PhonePe, GPay, Paytm]
         GivePage --> RazorpayGate[Razorpay Gateway: Cards, NetBanking, UPI Intent (INR)]
@@ -36,7 +39,7 @@ graph TD
         StripeGate --> Webhook
         PollSession --> Complete[Payment Verified]
         Webhook --> Complete
-        
+
         Complete --> SaveDB[Persist in PostgreSQL donations table]
         SaveDB --> GenReceipt[Generate Signed 80G PDF Receipt]
         GenReceipt --> EmailReceipt[Email PDF Attachment to Donor via Resend]
@@ -49,8 +52,10 @@ graph TD
 ## 2. Dynamic UPI QR Generation (`/api/donations/generate-qr`)
 
 For frictionless giving in India without payment gateway gateway transaction fees:
+
 1. Generates a standard National Payments Corporation of India (NPCI) UPI payment URI:
    `upi://pay?pa=kcmministries@bank&pn=Kingdom%20of%20Christ%20Ministries&am=1000.00&cu=INR&tr=SES_9a8b7c6d`
+
 2. Encodes the URI into a high-contrast QR code image using `qrcode` library.
 3. Initializes a `DonationSession` in PostgreSQL to track live scanning and payment confirmation.
 
@@ -86,10 +91,12 @@ For frictionless giving in India without payment gateway gateway transaction fee
 ---
 
 ## Security Considerations
+
 - PCI-DSS Compliance: Application servers never capture or persist card CVVs or banking credentials.
 - All webhook events require valid HMAC cryptographic signatures.
 
 ## Related Documentation
+
 - [Finance.md](Finance.md) — Financial reconciliation and reporting.
 - [Database-Architecture.md](Database-Architecture.md) — PostgreSQL donation models.
 - [Environment-Variables.md](Environment-Variables.md) — Payment gateway credentials.

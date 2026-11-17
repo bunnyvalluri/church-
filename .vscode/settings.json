@@ -7,15 +7,27 @@
   "css.lint.unknownAtRules": "ignore",
   "scss.lint.unknownAtRules": "ignore",
   "less.lint.unknownAtRules": "ignore",
+  "markdownlint.run": "off",
+  "markdownlint.lintWorkspaceGlobs": [],
+  "markdownlint.config": {
+    "default": false
+  },
   "docker.languageserver.diagnostics.critical_high_vulnerabilities": "ignore",
   "docker.languageserver.diagnostics.recommended_tags": "ignore",
   "docker.languageserver.diagnostics.deprecatedMaintainer": "ignore",
   "docker.languageserver.diagnostics.emptyContinuationLine": "ignore",
   "docker.languageserver.diagnostics.instructionJSONInSingleQuotes": "ignore",
   "docker.languageserver.diagnostics.instructionWorkdirRelative": "ignore",
+  "docker.languageserver.diagnostics.directiveCasing": "ignore",
+  "docker.languageserver.diagnostics.instructionCasing": "ignore",
+  "docker.languageserver.lintingRules": {
+    "all": "ignore"
+  },
+  "docker.extension.enableComposeLanguageServer": false,
   "docker.scout.enable": false,
   "docker.scout.hover": false,
   "docker.languageserver.scout.enable": false,
+  "docker.languageserver.scout.diagnostics": false,
   "files.exclude": {
     "**/.git": true,
     "**/.svn": true,

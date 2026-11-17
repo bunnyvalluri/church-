@@ -156,16 +156,19 @@ backend/src/
 ## 3. Database Architecture & Data Integrity
 
 ### 3.1 PostgreSQL (Neon) Primary Source of Truth
+
 * Managed via **Prisma ORM** (`backend/prisma/schema.prisma`).
 * Stores structured core relational entities: `User`, `Event`, `Donation`, `Sermon`, `PrayerRequest`, `EventAttendance`, `AuditLog`, `DeviceToken`, `Session`.
 * **Idempotency**: All payment transactions enforce unique `idempotencyKey` / `orderId` indexing to prevent duplicate charges or double recording.
 * **Concurrency**: Optimistic locking patterns ensure concurrent edits to records do not overwrite newer versions.
 
 ### 3.2 MongoDB Atlas Document Storage
+
 * Utilized for high-throughput, unstructured event logging: `audit_events`, `system_events`, `notification_events`.
 * Configured with reconnection resilience, socket timeouts, and automatic retry on network drops.
 
 ### 3.3 Redis & BullMQ
+
 * Provides distributed caching, socket room pub/sub adapter (`@socket.io/redis-adapter`), and asynchronous job queues.
 * Auto-detects Upstash TLS (`rediss://`) and gracefully operates in offline / bypass mode when Redis is unconfigured during local development.
 
@@ -207,6 +210,7 @@ Health endpoints are fully anonymized and reveal **zero passwords, connection UR
 ## 6. Verification & Automated Testing
 
 The backend includes a zero-dependency automated test suite covering:
+
 * ✅ **Health & Probes**: Liveness and readiness endpoints return standard payloads.
 * ✅ **Security & RBAC**: Unauthenticated requests receive 401; unauthorized roles receive 403; admin receives 200.
 * ✅ **Financial Integrity**: Negative and non-idempotent donation requests are rejected; valid orders return proper paise amounts.

@@ -1,6 +1,7 @@
 # KCM Centralized API Error Handling Specification
 
 ## 1. Domain Error Classes
+
 The backend uses a typed hierarchy of domain error classes derived from `AppError`:
 
 ```typescript
@@ -55,7 +56,9 @@ export class RateLimitError extends AppError {
 ```
 
 ## 2. Production Error Sanitization
+
 In production (`NODE_ENV === 'production'`):
+
 - Internal database errors (Prisma codes `P2002`, `P2025`) are mapped to user-friendly messages.
 - Stack traces and connection parameters are omitted from responses.
 - Structured logs record full error contexts along with `requestId` and `correlationId` for observability.

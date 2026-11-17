@@ -1,4 +1,5 @@
 # Post-Incident Review (PIR) Template
+
 ## Kingdom of Christ Ministries (KCM Church Platform)
 
 ---
@@ -18,6 +19,7 @@
 ---
 
 ### 1. User & Business Impact
+
 - **Affected User Cohorts**: `[e.g., Public visitors, Branch pastors, Donors]`
 - **Failed Requests / Transactions**: `[e.g., 0.2% of API calls, 0 lost financial transactions]`
 - **Revenue / Donation Impact**: `[e.g., Delayed webhook processing, zero loss]`
@@ -38,6 +40,7 @@
 ---
 
 ### 3. Root Cause Analysis (5 Whys)
+
 1. **Why did the API return 500 errors?**
    - *Database connection pool was exhausted.*
 2. **Why was the connection pool exhausted?**

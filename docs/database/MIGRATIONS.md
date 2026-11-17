@@ -1,6 +1,7 @@
 # KCM Database Migration Safety & Lifecycle Management
 
 ## 1. Migration Strategy (Expand & Contract)
+
 For all schema evolutions on production databases, the **Expand-and-Contract (Two-Phase)** migration pattern is strictly enforced:
 
 ```
@@ -19,6 +20,7 @@ Step 3: CONTRACT
 ```
 
 ## 2. Safety Guidelines for Production Migrations
+
 1. **Zero Table Locks**:
    - Never add `NOT NULL` columns without a safe default value.
    - Use `CREATE INDEX CONCURRENTLY` in PostgreSQL for index additions on large tables.

@@ -1,6 +1,7 @@
 # KCM Backend & API Architecture Specification
 
 ## 1. System Ingress & Layer Separation
+
 The KCM Church backend architecture is structured around clean domain boundaries with strict separation of concerns across request ingress, authentication, validation, domain services, and database persistence:
 
 ```
@@ -37,9 +38,11 @@ The KCM Church backend architecture is structured around clean domain boundaries
 ```
 
 ## 2. API Contract Standard
+
 All backend REST endpoints return a deterministic JSON envelope:
 
 ### Success Response:
+
 ```json
 {
   "success": true,
@@ -54,6 +57,7 @@ All backend REST endpoints return a deterministic JSON envelope:
 ```
 
 ### Error Response:
+
 ```json
 {
   "success": false,
@@ -64,4 +68,5 @@ All backend REST endpoints return a deterministic JSON envelope:
   "requestId": "req_01hx..."
 }
 ```
+
 Production error responses strictly sanitize internal SQL, Prisma internals, or stack traces.

@@ -38,4 +38,3 @@ npm run test:smoke -w frontend
 * **Form Validation**: Asserts rejection of invalid emails, malformed phone numbers, and negative donation amounts.
 * **Offline Sync**: Tests mutation enqueueing when `navigator.onLine === false` and automatic clearing upon sync.
 * **Accessibility**: Audits color contrast, focus management, and screen-reader headings.
-

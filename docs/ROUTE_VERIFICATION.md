@@ -1,6 +1,7 @@
 # KCM Route-by-Route Production Verification Matrix
 
 ## Target URL
+
 `https://kcmchurch.vercel.app`
 
 ---
@@ -119,6 +120,7 @@
 ---
 
 ## Summary
+
 - **Total Discovered & Verified Routes**: 105 (including sub-routes and anchors)
 - **Status Breakdown**:
   - `PASS`: 105

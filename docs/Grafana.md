@@ -1,12 +1,15 @@
 # Grafana Visualizations & Operational Dashboards
 
 ## Purpose
+
 This document specifies the Grafana visualization architecture, multi-source datasource configurations, dashboard definitions, and high-availability deployment for the Kingdom of Christ Ministries platform.
 
 ## Scope
+
 Covers Grafana HA deployment (`monitoring/kubernetes/grafana-ha-deployment.yaml`), provisioned datasources (`monitoring/datasources/`), and dashboard JSON models (`monitoring/dashboards/`).
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -82,10 +85,12 @@ graph TD
 ---
 
 ## Security Considerations
+
 - Default `admin` access credential is generated randomly during OpenTofu installation and stored in a Kubernetes secret.
 - Session cookies use `Secure: true` and `SameSite: strict`.
 
 ## Related Documentation
+
 - [Monitoring.md](Monitoring.md) — Alerting architecture.
 - [Loki.md](Loki.md) — Log collection with Loki.
 - [Prometheus.md](Prometheus.md) — Metrics scraping.

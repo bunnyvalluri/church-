@@ -1,6 +1,7 @@
 # KCM Authentication & Session Management Specification
 
 ## 1. Authentication Architecture
+
 The platform enforces server-side authentication using cryptographic JWTs delivered via secure HTTP-Only cookies.
 
 ```
@@ -18,6 +19,7 @@ The platform enforces server-side authentication using cryptographic JWTs delive
 ```
 
 ## 2. Google Identity Services (GIS) Security
+
 1. **Server-Side Token Verification**: The Google credential JWT sent from GIS is verified server-side against Google's public keys using `google-auth-library` or JWKS endpoint.
 2. **Audience & Issuer Validation**:
    - `iss` must match `https://accounts.google.com`

@@ -1,4 +1,5 @@
 # Kingdom of Christ Ministries (KCM) Church Application
+
 # Enterprise Secret Remediation & Zero-Trust Security Report
 
 **Document Version**: 2.4.0-ENTERPRISE  
@@ -101,21 +102,28 @@ In accordance with Zero-Trust Incident Response protocols, all credentials expos
 Removing secrets from the working tree does not erase git history objects. The following procedure details repository history remediation:
 
 ### History Rewriting Runbook:
+
 1. **Pre-requisite**: Ensure all 5 providers above have completed credential rotation so old secrets are invalidated.
 2. **Repository Backup**:
+
    ```bash
    git clone --mirror https://github.com/bunnyvalluri/church-.git kcm-church-backup.git
    ```
+
 3. **Execute History Rewriting via `git-filter-repo`**:
    Create `expressions.txt` containing replacement rules for historical tokens (replace sensitive strings with `[REDACTED_HISTORICAL_SECRET]`).
+
    ```bash
    git filter-repo --replace-text expressions.txt
    ```
+
 4. **Force Push Cleaned Branches**:
+
    ```bash
    git push origin --force --all
    git push origin --force --tags
    ```
+
 5. **Verify Clean History**:
    Run `git log -G"npg_"` and `git log -G"whsec_"` to confirm zero occurrences remain across all commit trees.
 

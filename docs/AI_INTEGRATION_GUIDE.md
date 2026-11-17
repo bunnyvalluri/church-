@@ -17,11 +17,13 @@ We are transforming **Kingdom of Christ Ministries** from a standard website int
 ## 🚀 Phase 1: "Ask the Church" AI Assistant (Building Now)
 
 We will build a floating Chat Object that helps visitors:
+
 1.  **Find Sermons**: "Do you have any sermons about anxiety?" (Uses Vector DB search)
 2.  **Get Prayer Help**: "I need a prayer for healing." (Uses LLM generation)
 3.  **Church Info**: "What time is the Subhash Nagar service?" (Uses RAG context)
 
 ## 🔮 Phase 2: Sermon Intelligence
+
 - **Auto-Summarization**: Upload a video, get a summary + bible verses used.
 - **Sentiment Analysis**: Understand the emotional tone of member feedback/prayer requests.
 

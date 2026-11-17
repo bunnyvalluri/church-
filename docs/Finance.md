@@ -1,12 +1,15 @@
 # Financial Management & Reconciliation Architecture
 
 ## Purpose
+
 This document specifies the financial tracking architecture, payment reconciliation workflows, fund accounting categories, 80G tax receipt generation, and auditing standards for the Kingdom of Christ Ministries platform.
 
 ## Scope
+
 Covers payment processing pipelines (Razorpay and Stripe), donation database models, receipt generation routines (`frontend/app/api/receipts/`), and financial export handlers.
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -44,11 +47,11 @@ sequenceDiagram
     PaymentAPI->>Gateway: Create Gateway Order
     Gateway-->>PaymentAPI: Order ID & Token
     PaymentAPI-->>Checkout: Gateway Client Config
-    
+
     Donor->>Gateway: Complete Payment (UPI / Card / NetBanking)
     Gateway->>Webhook: Asynchronous Webhook (payment.captured / charge.succeeded)
     Webhook->>Webhook: Validate HMAC Signature
-    
+
     Webhook->>PG: Insert Donation (status: COMPLETED)
     Webhook->>PDFGen: Generate Signed 80G Tax Receipt
     PDFGen->>PG: Store Receipt (receiptNumber, pdfUrl)
@@ -83,10 +86,12 @@ sequenceDiagram
 ---
 
 ## Security Considerations
+
 - Zero credit card numbers or bank CVVs are stored on application servers.
 - Financial audit logs are written to MongoDB with immutable before-and-after transaction states.
 
 ## Related Documentation
+
 - [Donations.md](Donations.md) — Public giving interface.
 - [Database-Architecture.md](Database-Architecture.md) — PostgreSQL donation models.
 - [Privacy.md](Privacy.md) — Financial privacy policies.

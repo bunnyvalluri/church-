@@ -1,12 +1,15 @@
 # Quick Start & Practical Execution Guide (try.md)
 
 ## Purpose
+
 This document provides the definitive, step-by-step practical guide to clone, install, configure, build, run, test, containerize, and deploy the entire Kingdom of Christ Ministries (KCM Church) platform.
 
 ## Scope
+
 Covers local bare-metal development, Docker Compose orchestration, automated testing suites, and Kubernetes cluster deployment.
 
 ## Status
+
 > Status: Implemented & Verified
 
 ---
@@ -56,7 +59,9 @@ cp .env.example .env.local
 ```
 
 ### Fast Offline Developer Defaults
+
 The default `.env.example` is pre-configured with offline development flags enabled:
+
 ```dotenv
 # Database offline fallback mode
 DB_OFFLINE="true"
@@ -104,6 +109,7 @@ npm run dev
 ```
 
 Open your browser and navigate to:
+
 - **Church Web Portal**: [http://localhost:3000](http://localhost:3000)
 - **Member Dashboard**: [http://localhost:3000/member](http://localhost:3000/member)
 - **Pastor Studio**: [http://localhost:3000/pastor](http://localhost:3000/pastor)
@@ -146,6 +152,7 @@ npm run build
 ## 9. Run with Docker Compose
 
 ### Development Stack (Hot-Reloading)
+
 ```bash
 # Spin up PostgreSQL, Redis, Frontend, and Backend
 npm run docker:dev
@@ -155,6 +162,7 @@ npm run docker:dev:down
 ```
 
 ### Production Simulation Stack
+
 ```bash
 # Build and run production containers
 npm run docker:prod
@@ -208,6 +216,7 @@ npm run test:smoke -w frontend
 ---
 
 ## Related Documentation
+
 - [README.md](README.md) — Complete Documentation Index.
 - [Troubleshooting.md](Troubleshooting.md) — Comprehensive problem runbooks.
 - [Production-Deployment.md](Production-Deployment.md) — Production rollout SOP.

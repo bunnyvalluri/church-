@@ -1,6 +1,7 @@
 # KCM Database Tier Architecture
 
 ## 1. System Overview & Polyglot Persistence
+
 The Kingdom of Christ Ministries platform leverages a purpose-built polyglot persistence architecture designed to balance strict relational data integrity with high-availability client operations.
 
 ```
@@ -37,5 +38,6 @@ The Kingdom of Christ Ministries platform leverages a purpose-built polyglot per
 | **Client IndexedDB** | **Edge / Offline Store** | Client-side cached sermon metadata, offline prayer request drafts, and queued event registrations pending server sync. |
 
 ## 3. Serverless Connection Management & Pooling
+
 - **Neon pgBouncer**: Production connections use Neon pooled connection URIs with `sslmode=require` and connection limits sized to prevent socket exhaustion during concurrent serverless execution spikes.
 - **Singleton Client Pattern**: Managed via [frontend/lib/prisma.ts](file:///c:/K.C.M-Portal/frontend/lib/prisma.ts), preventing duplicate connection pools across Next.js API route invocations during development hot-reloading and production worker scaling.

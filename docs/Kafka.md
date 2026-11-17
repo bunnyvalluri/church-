@@ -1,12 +1,15 @@
 # Apache Kafka Event Streaming Architecture
 
 ## Purpose
+
 This document provides the technical specification for Apache Kafka (deployed via the Strimzi Kubernetes Operator), managing high-throughput event streaming, distributed topics, producer/consumer services, and dead-letter queues across the Kingdom of Christ Ministries platform.
 
 ## Scope
+
 Covers manifests in `platform/messaging/kafka/`, Helm charts, OpenTofu modules, typed TypeScript producers/consumers, and operational runbooks.
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -70,10 +73,12 @@ graph TD
 ## 3. Producer & Consumer Implementations
 
 ### 3.1 Producer Service (`platform/messaging/kafka/producers/kafka-producer.service.ts`)
+
 - Configured with `acks: "all"` (`-1`) to ensure writes are committed across all in-sync replicas before returning success.
 - Implements idempotent producer mode (`enable.idempotence: true`) to prevent message duplication during network retries.
 
 ### 3.2 Consumer Service (`platform/messaging/kafka/consumers/kafka-consumer.service.ts`)
+
 - Consumer groups scale dynamically across available topic partitions.
 - Manually commits offsets only after downstream business processing completes successfully (`enable.auto.commit: false`).
 
@@ -98,10 +103,12 @@ graph TD
 ---
 
 ## Security Considerations
+
 - Communication between brokers and client pods enforces TLS encryption with mutual certificate verification (mTLS).
 - Kafka ACLs (`kafka-acls.yaml`) restrict producer write access strictly to authorized topics.
 
 ## Related Documentation
+
 - [Messaging.md](Messaging.md) — Event-driven overview.
 - [NATS.md](NATS.md) — NATS JetStream messaging.
 - [Monitoring.md](Monitoring.md) — Kafka consumer lag dashboards.

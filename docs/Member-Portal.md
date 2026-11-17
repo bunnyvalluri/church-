@@ -1,12 +1,15 @@
 # Member Portal Module Specification
 
 ## Purpose
+
 This document provides the functional and technical specification for the Member Portal, the self-service web and mobile dashboard empowering church members to manage their spiritual journey, track giving statements, register for events, and submit prayer requests.
 
 ## Scope
+
 Covers frontend pages in `frontend/app/member/`, client components in `frontend/components/member/`, and member API endpoints in `frontend/app/api/member/`.
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -30,7 +33,7 @@ Covers frontend pages in `frontend/app/member/`, client components in `frontend/
 ```mermaid
 graph TD
     Member([Authenticated Member]) --> Portal[/member Dashboard]
-    
+
     Portal --> Profile[Update Name, Phone, Address & Cloudinary Avatar]
     Portal --> Giving[View Online Giving & Download 80G Tax Receipts]
     Portal --> Events[View Registered Events & Present Check-In QR Pass]
@@ -39,14 +42,17 @@ graph TD
 ```
 
 ### 2.1 Profile & Avatar Upload
+
 - Members can update their personal contact details and upload profile photos.
 - Profile photos stream directly to Cloudinary (`church-platform/profiles`) and persist in PostgreSQL under `User.image`.
 
 ### 2.2 Giving Statements & Tax Receipts
+
 - Queries personal donations filtered by date range or tax year.
 - Generates official signed PDF donation receipts via `/api/receipts/[id]/pdf`.
 
 ### 2.3 Event Passes & QR Check-In
+
 - For each registered event, members receive a digital pass with a unique QR code.
 - At church venues, door ushers scan the QR code to verify registration and record attendance instantly.
 
@@ -74,10 +80,12 @@ graph TD
 ---
 
 ## Security Considerations
+
 - Row-level scoping ensures members can only access and modify their own records.
 - Session tokens are re-validated on every API request.
 
 ## Related Documentation
+
 - [Authentication.md](Authentication.md) — Login and session management.
 - [Donations.md](Donations.md) — Giving systems and receipts.
 - [Prayer-System.md](Prayer-System.md) — Prayer pipeline.

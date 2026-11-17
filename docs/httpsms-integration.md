@@ -150,6 +150,7 @@ Configure the webhook callback URL in your httpSMS dashboard:
   - `message.expired`
 
 When a webhook arrives, the backend:
+
 1. Validates the `x-webhook-signature` or `x-api-key` header using HMAC SHA-256.
 2. Idempotently updates the `sms_messages` table record matching `provider_message_id`.
 3. Broadcasts a real-time event via Companion Socket.io (`sms.delivered`, `sms.failed`, `sms.updated`), instantly updating the admin dashboard without manual browser refresh.
@@ -189,24 +190,32 @@ When a webhook arrives, the backend:
 ## 7. Business Workflows & Triggers
 
 ### A. Church Events (Create & Update)
+
 When an event is published or modified in `/event-manager` or `/api/events`:
+
 - The event upload loop calls `notificationDispatcher.js`.
 - Eligible members opted-in to Event notifications are resolved.
 - Unique idempotency key `event-{eventId}-{memberId}-{action}` prevents duplicate sends.
 - SMS jobs are placed into the Outbox queue.
 
 ### B. Member Registration
+
 Upon successful user account registration in `/api/auth/register`:
+
 - `sendWelcomeSMS(member)` is called after the database transaction is committed.
 - Welcomes the member with customized blessing text.
 
 ### C. Online Offerings & Donations
+
 When an online payment is verified via Razorpay/Stripe webhook:
+
 - Only after database transaction verification succeeds, `sendDonationSMS(donation)` triggers.
 - Generates official receipt reference: `"KCM Ministries: Praise the Lord! Your offering of ₹500 was received successfully. (Ref: KCM-XXXXXX)"`.
 
 ### D. Pastoral Prayer Desk
+
 When a member submits a prayer request:
+
 - An acknowledgment SMS confirms pastoral intercession.
 
 ---

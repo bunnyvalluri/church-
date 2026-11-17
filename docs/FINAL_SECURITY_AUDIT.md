@@ -1,11 +1,13 @@
 # KCM Security Audit
 
 ## Executive Summary
+
 This document provides the principal engineering verification report for the Kingdom of Christ Ministries (`church-`) platform. All security controls, role-based access limits, database boundaries, secret management mechanisms, PWA offline resilience, and CI/CD pipelines have been audited against enterprise security standards.
 
 ---
 
 ## Repository Status
+
 - **Git Branch**: `main`
 - **Commit SHA**: `4ca5218bdac561a6da04fde376111fbdec2e64df`
 - **Monorepo Status**: Fully synchronized, 0 uncommitted secret files, 100% key parity across EN/TE/HI translations.
@@ -13,6 +15,7 @@ This document provides the principal engineering verification report for the Kin
 ---
 
 ## Secret Scan
+
 - **Result**: NO VERIFIED PRODUCTION SECRET FOUND
 - **Details**:
   - `platform/helm/opentofu/terraform.tfvars`: Sanitized mock/placeholder tokens to generic placeholders (`YOUR_GHCR_PAT_HERE`).
@@ -22,6 +25,7 @@ This document provides the principal engineering verification report for the Kin
 ---
 
 ## Dependency Security
+
 - **Severity**: LOW
 - **Status**: VERIFIED
 - **Evidence**: Core packages (`next@14.2.0`, `react@18.3.0`, `prisma@5.11.0`, `express@5.2.1`, `socket.io@4.8.3`) are aligned without breaking API changes.
@@ -29,6 +33,7 @@ This document provides the principal engineering verification report for the Kin
 ---
 
 ## Frontend Security
+
 - **Severity**: HIGH
 - **Status**: FIXED / VERIFIED
 - **Evidence**:
@@ -39,6 +44,7 @@ This document provides the principal engineering verification report for the Kin
 ---
 
 ## Backend Security
+
 - **Severity**: HIGH
 - **Status**: VERIFIED
 - **Evidence**:
@@ -48,6 +54,7 @@ This document provides the principal engineering verification report for the Kin
 ---
 
 ## Database Security
+
 - **Severity**: HIGH
 - **Status**: VERIFIED
 - **Evidence**:
@@ -57,6 +64,7 @@ This document provides the principal engineering verification report for the Kin
 ---
 
 ## Authentication Security
+
 - **Severity**: HIGH
 - **Status**: VERIFIED
 - **Evidence**:
@@ -66,6 +74,7 @@ This document provides the principal engineering verification report for the Kin
 ---
 
 ## Authorization / RBAC
+
 - **Severity**: CRITICAL
 - **Status**: VERIFIED
 - **Evidence**: Verified route matrix protecting Admin, Pastor, Event Manager, and Member portals via `frontend/middleware.ts`.
@@ -73,6 +82,7 @@ This document provides the principal engineering verification report for the Kin
 ---
 
 ## File Upload Security
+
 - **Severity**: MEDIUM
 - **Status**: VERIFIED
 - **Evidence**: Cloudinary uploads use signed direct presets and server-generated signatures.
@@ -80,6 +90,7 @@ This document provides the principal engineering verification report for the Kin
 ---
 
 ## Realtime Security
+
 - **Severity**: MEDIUM
 - **Status**: VERIFIED
 - **Evidence**:
@@ -88,6 +99,7 @@ This document provides the principal engineering verification report for the Kin
 ---
 
 ## PWA Security
+
 - **Severity**: MEDIUM
 - **Status**: VERIFIED
 - **Evidence**:
@@ -97,6 +109,7 @@ This document provides the principal engineering verification report for the Kin
 ---
 
 ## HTTPS Security
+
 - **Severity**: HIGH
 - **Status**: VERIFIED
 - **Evidence**: Production URL `https://kcmchurch.vercel.app` enforces TLS and 301 HTTPS upgrade redirects.
@@ -104,6 +117,7 @@ This document provides the principal engineering verification report for the Kin
 ---
 
 ## Security Headers
+
 - **Severity**: HIGH
 - **Status**: VERIFIED
 - **Evidence**: `frontend/next.config.js` sets HSTS (`max-age=63072000; includeSubDomains; preload`), strict CSP, `X-Content-Type-Options: nosniff`, and `frame-ancestors 'self'`.
@@ -111,6 +125,7 @@ This document provides the principal engineering verification report for the Kin
 ---
 
 ## CI/CD Security
+
 - **Severity**: HIGH
 - **Status**: FIXED / VERIFIED
 - **Evidence**:
@@ -121,6 +136,7 @@ This document provides the principal engineering verification report for the Kin
 ---
 
 ## Infrastructure Security
+
 - **Severity**: MEDIUM
 - **Status**: VERIFIED
 - **Evidence**: Helm, Docker, and Kubernetes templates utilize least-privilege non-root container specs.
@@ -128,6 +144,7 @@ This document provides the principal engineering verification report for the Kin
 ---
 
 ## Observability
+
 - **Severity**: LOW
 - **Status**: VERIFIED
 - **Evidence**: Health endpoints configured at `/api/health`, `/api/health/live`, `/api/health/ready`, `/api/health/dependencies`.
@@ -135,6 +152,7 @@ This document provides the principal engineering verification report for the Kin
 ---
 
 ## Testing
+
 - **Severity**: LOW
 - **Status**: VERIFIED
 - **Evidence**: Playwright test engine configured across E2E, Security, RBAC, Language Switcher, Responsive, and Smoke suites.
@@ -142,11 +160,13 @@ This document provides the principal engineering verification report for the Kin
 ---
 
 ## Remaining Risks
+
 1. Production external service dependencies (e.g. Razorpay payment gateway uptime, Cloudinary CDN rate limits) depend on third-party SLA.
 2. In-memory rate limiting should be supplemented with distributed Redis rate limiting (Upstash / Redis) for multi-region serverless clusters.
 
 ---
 
 ## Recommended Next Actions
+
 1. Configure external uptime monitoring (e.g. BetterStack / UptimeRobot) pointing to `https://kcmchurch.vercel.app/api/health`.
 2. Schedule quarterly automated dependency audits (`npm audit`).

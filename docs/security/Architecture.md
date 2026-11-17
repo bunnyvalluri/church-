@@ -1,4 +1,5 @@
 # Architecture — Enterprise Runtime Security Platform
+
 ## Kingdom of Christ Ministries
 
 ## System Architecture

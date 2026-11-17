@@ -58,4 +58,3 @@ Each business feature is maintained independently under [`frontend/src/features/
     * Services: `ReportsService.getExecutiveMetrics`.
 18. **`admin`**:
     * Services: `AdminService.getSystemDiagnostics`, `AdminService.getAuditLogs`.
-

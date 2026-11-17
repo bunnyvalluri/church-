@@ -1,12 +1,15 @@
 # KCM NGO & Community Outreach Platform
 
 ## Purpose
+
 This document provides the functional and technical specification for the KCM NGO & Community Outreach Platform, dedicated to managing humanitarian projects, medical relief camps, food drives, educational aid, field volunteer reporting, and dedicated charitable giving.
 
 ## Scope
+
 Covers frontend pages in `frontend/app/ngo/`, field volunteer reporting at `/field-volunteer`, API endpoints in `frontend/app/api/ngo/` and `frontend/app/api/field-volunteer/`, and NGO media assets.
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -33,7 +36,7 @@ graph TD
     Budgeting --> CampaignLaunch[Launch Campaign on /ngo/projects]
     CampaignLaunch --> DonorContributions[Collect Targeted Donations via Razorpay/Stripe]
     CampaignLaunch --> VolunteerAssignment[Assign Field Volunteers & Logistics]
-    
+
     subgraph Execution & Field Reporting
         VolunteerAssignment --> OnSiteExecution[Outreach Execution at Venue]
         OnSiteExecution --> FieldCheckin[Volunteer Logs In on /field-volunteer]
@@ -49,14 +52,17 @@ graph TD
 ## 3. Key Technical Capabilities
 
 ### 3.1 Field Volunteer Check-In & Reporting (`/field-volunteer`)
+
 - **Field Reporting API (`/api/field-volunteer/report`)**: Allows field team members to record the number of families served, food packets distributed, or patients examined during outreach drives.
 - **Offline Resilience**: Supports offline logging via IndexedDB; reports automatically sync when volunteers return to cell coverage areas.
 
 ### 3.2 Targeted Humanitarian Offerings
+
 - Donations made through `/ngo/donations` are automatically earmarked with `purpose: "NGO_RELIEF"`.
 - Generates 80G tax exemption receipts with NGO registration numbers and audited foundation credentials.
 
 ### 3.3 NGO Media CDN Storage
+
 - Outreach photography and videos are stored in Cloudinary under `church-platform/ngo` with automated facial clarity optimization and responsive compression.
 
 ---
@@ -82,10 +88,12 @@ graph TD
 ---
 
 ## Security Considerations
+
 - Field volunteer reports validate user identity to prevent fraudulent impact reporting.
 - Beneficiary personal dignity and privacy are protected; photos adhere to ethical NGO publishing guidelines.
 
 ## Related Documentation
+
 - [Donations.md](Donations.md) — Charitable giving flows.
 - [Cloudinary.md](Cloudinary.md) — Media storage.
 - [Offline-Sync.md](Offline-Sync.md) — Remote field report synchronization.

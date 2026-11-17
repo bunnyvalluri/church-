@@ -4,6 +4,7 @@
 **Production URL:** [https://kcmchurch.vercel.app/](https://kcmchurch.vercel.app/)  
 **Environment:** Production Next.js 14 App Router, Edge Middleware, Neon PostgreSQL Serverless, Vercel Global Edge Network  
 **Target Core Web Vitals:**  
+
 - **LCP:** $\le 2.5\text{s}$ (Mobile & Desktop)  
 - **INP:** $\le 200\text{ms}$ (Mobile & Desktop)  
 - **CLS:** $\le 0.10$ (Mobile & Desktop)  

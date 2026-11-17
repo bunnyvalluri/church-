@@ -1,6 +1,7 @@
 # KCM Church — Client Storage Security & Session Architecture
 
 ## Overview
+
 This document audits all browser-side storage (`localStorage`, `sessionStorage`, cookies, and IndexedDB) across the Kingdom of Christ Ministries platform, defining security standards and validating that zero secrets or credentials reside in client storage.
 
 ---

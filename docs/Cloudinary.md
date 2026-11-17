@@ -1,12 +1,15 @@
 # Cloudinary Media Storage & Transformation Architecture
 
 ## Purpose
+
 This document provides the technical specification for Cloudinary integration within the Kingdom of Christ Ministries platform, covering media upload pipelines, automated transformations, folder hierarchy, CDN delivery, and programmatic asset deletion.
 
 ## Scope
+
 Covers the Cloudinary Node SDK implementation in `frontend/lib/cloudinary.ts`, API upload routes (`frontend/app/api/upload/*`), and background media verification loops.
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -59,12 +62,16 @@ To maintain a clean asset structure, media is strictly partitioned into organize
 ## 3. Automated Transformations & Responsive Delivery
 
 ### 3.1 Upload Transformations
+
 On initial upload via `uploadBufferToCloudinary()`, assets receive automatic baseline optimization:
+
 - **Images**: Quality set to `q_auto`, format set to `f_auto` (serves WebP or AVIF based on client browser support), maximum width bounded to `2000px` (`crop: "limit"`).
 - **Videos**: Audio/video quality set to `q_auto`, streaming codec set to `f_auto`.
 
 ### 3.2 Dynamic Client-Side Delivery Helper (`getOptimizedCloudinaryUrl`)
+
 Frontend components request exact transformation URLs dynamically:
+
 ```typescript
 import { getOptimizedCloudinaryUrl } from "@/lib/cloudinary";
 
@@ -84,6 +91,7 @@ const thumbUrl = getOptimizedCloudinaryUrl(publicIdOrUrl, {
 ## 4. Programmatic Asset Deletion
 
 When an event, sermon, or profile photo is deleted or replaced, the associated Cloudinary asset is destroyed using `deleteCloudinaryAsset(publicId, resourceType)` to avoid orphaned storage costs:
+
 - **Public ID**: Stored in PostgreSQL (e.g. `coverImagePublicId`, `profilePublicId`).
 - **Safety Fallback**: In non-production environments with mock keys (`CLOUDINARY_CLOUD_NAME="demo"`), deletion succeeds silently without throwing errors.
 
@@ -92,6 +100,7 @@ When an event, sermon, or profile photo is deleted or replaced, the associated C
 ## 5. Development & Mock Mode
 
 When developing locally without Cloudinary credentials:
+
 - If `CLOUDINARY_CLOUD_NAME="demo"` or `CLOUDINARY_API_KEY="1234567890"`, the SDK automatically resolves uploads with high-quality deterministic mock images (Unsplash CDN), permitting full feature testing without network failures.
 
 ---
@@ -107,9 +116,11 @@ When developing locally without Cloudinary credentials:
 ---
 
 ## Security Considerations
+
 - `CLOUDINARY_API_SECRET` is kept server-side only and never exposed with `NEXT_PUBLIC_` prefix.
 - Upload endpoints authenticate session tokens to prevent unauthorized anonymous file uploads.
 
 ## Related Documentation
+
 - [Media-Management.md](Media-Management.md) — Comprehensive media lifecycle and background verification loops.
 - [Environment-Variables.md](Environment-Variables.md) — Cloudinary environment variables.

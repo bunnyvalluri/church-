@@ -1,6 +1,7 @@
 # Continuous Integration & Delivery Specification
 
 ## Overview
+
 This document outlines the automated CI/CD pipeline running via GitHub Actions for the KCM Church platform monorepo.
 
 ---
@@ -49,6 +50,7 @@ GitHub Push / Pull Request
 ---
 
 ## 2. Enforcement Gates
+
 - **Zero Permissive Overrides**: `continue-on-error: true` is prohibited on mandatory lint, typecheck, translation, or test gates.
 - **Least Privilege Tokens**: Workflows declare explicit `permissions: contents: read`.
 - **Pre-deployment Verification**: Next.js builds must complete successfully without unhandled errors.

@@ -1,12 +1,15 @@
 # Configuration Management Architecture
 
 ## Purpose
+
 This document provides the technical specification for configuration layering, build-time vs runtime parameter injection, and dynamic feature flag distribution across the Kingdom of Christ Ministries platform.
 
 ## Scope
+
 Covers local development configurations, Next.js build parameters, Express runtime settings, and Kubernetes ConfigMaps.
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -51,6 +54,7 @@ data:
 ## 3. Dynamic Feature Flag Schema
 
 Distributed via NATS KV / Redis cache:
+
 - `feature.ai_assistant_enabled`: `true` | `false`
 - `feature.stripe_payments_enabled`: `true` | `false`
 - `feature.offline_pwa_banner`: `true` | `false`
@@ -68,8 +72,10 @@ Distributed via NATS KV / Redis cache:
 ---
 
 ## Security Considerations
+
 - Non-public keys are strictly excluded from client webpack compilation bundles.
 
 ## Related Documentation
+
 - [Environment-Variables.md](Environment-Variables.md) — Comprehensive parameter list.
 - [Secrets-Management.md](Secrets-Management.md) — Secret distribution and rotation.

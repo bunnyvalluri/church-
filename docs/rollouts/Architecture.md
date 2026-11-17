@@ -1,6 +1,7 @@
 # Enterprise Progressive Delivery Platform Architecture
 
 ## Executive Summary
+
 This document defines the high-level architecture of the **Enterprise Progressive Delivery Platform** for **Kingdom of Christ Ministries (KCM Church)** using official **Argo Rollouts**.
 
 ## Architectural Diagram
@@ -43,6 +44,7 @@ This document defines the high-level architecture of the **Enterprise Progressiv
 ```
 
 ## Key Architectural Principles
+
 1. **Zero Downtime Releases**: Every software update is validated against active metrics before complete traffic promotion.
 2. **Automated Blast Radius Mitigation**: Canary releases restrict initial user exposure to 10%, shielding 90% of church portal users from unhandled bugs.
 3. **Decoupled Infrastructure as Code**: OpenTofu provisions controller namespaces and dependencies; Helm parameterizes application rollouts; Argo CD enforces GitOps state synchronization.

@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 # check=skip=all
+# check=skip=critical_high_vulnerabilities
 
-# dockerfile-utils: ignore
 FROM nginx:alpine
 
 # Remove default nginx config

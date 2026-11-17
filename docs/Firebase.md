@@ -1,12 +1,15 @@
 # Firebase Integration Architecture
 
 ## Purpose
+
 This document specifies the integration of Firebase services within the Kingdom of Christ Ministries platform, covering client-side Google authentication, server-side identity verification via the Firebase Admin SDK, Firebase Cloud Messaging (FCM) push notifications, and Firestore offline capabilities.
 
 ## Scope
+
 Covers frontend client SDK (`frontend/lib/firebase.ts`), backend/server admin SDK (`frontend/lib/firebaseAdmin.ts`, `backend/src/services/fcmService.js`), and FCM topic dispatching.
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -38,7 +41,7 @@ graph TD
     ClientUI -->|Google Sign-In| FirebaseClientSDK
     FirebaseClientSDK -->|Authenticate| FirebaseAuthService
     FirebaseAuthService -->>FirebaseClientSDK: Returns ID Token (JWT)
-    
+
     FirebaseClientSDK -->|POST ID Token| NextAPISync
     NextAPISync -->|verifyIdToken| FirebaseAdminSDK
     FirebaseAdminSDK -->|Validate Key| FirebaseAuthService
@@ -57,7 +60,9 @@ graph TD
 ## 2. Authentication & Server Token Verification
 
 ### 2.1 Client SDK Configuration (`frontend/lib/firebase.ts`)
+
 The client SDK initializes Firebase on the browser using public configuration parameters:
+
 - `NEXT_PUBLIC_FIREBASE_API_KEY`
 - `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`
 - `NEXT_PUBLIC_FIREBASE_PROJECT_ID`
@@ -66,7 +71,9 @@ The client SDK initializes Firebase on the browser using public configuration pa
 - `NEXT_PUBLIC_FIREBASE_APP_ID`
 
 ### 2.2 Server-Side Admin SDK (`frontend/lib/firebaseAdmin.ts`)
+
 The server validates incoming Firebase ID tokens using the initialized Admin SDK:
+
 ```typescript
 import * as admin from "firebase-admin";
 
@@ -90,10 +97,12 @@ export { admin };
 ## 3. Firebase Cloud Messaging (FCM) Push Architecture
 
 ### 3.1 Device Token Registration
+
 1. When a member permits browser push notifications, the service worker retrieves an FCM registration token.
 2. The token is sent to `/api/device-tokens` and persisted in PostgreSQL under `DeviceToken` linked to the user's `id`.
 
 ### 3.2 Broadcast & Topic Subscriptions
+
 - **Topic Name**: `kcm-events` (configured via `FIREBASE_FCM_TOPIC`).
 - **Use Cases**: Emergency church announcements, Sunday service live stream broadcasts, and event reminders.
 - **Multicast Dispatch**: In `backend/src/services/fcmService.js`, messages are dispatched in chunks of 500 tokens using `admin.messaging().sendEachForMulticast()`.
@@ -103,6 +112,7 @@ export { admin };
 ## 4. Offline & Development Simulation
 
 To support offline local testing without requiring active Firebase credentials:
+
 - Setting `FIRESTORE_OFFLINE="true"` bypasses live network verification and allows deterministic local mock token verification in development environments.
 
 ---
@@ -118,10 +128,12 @@ To support offline local testing without requiring active Firebase credentials:
 ---
 
 ## Security Considerations
+
 - Service account private keys are base64 encoded, passed via environment variables, and never committed to source control.
 - Tokens are verified server-side with cryptographic signature checks on every sync request.
 
 ## Related Documentation
+
 - [Authentication.md](Authentication.md) — Authentication and session management.
 - [Database-Architecture.md](Database-Architecture.md) — Overall data topology.
 - [Notification-System.md](notification-system.md) — In-depth notification dispatch engine.

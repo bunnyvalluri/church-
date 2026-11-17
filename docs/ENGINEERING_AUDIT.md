@@ -1,6 +1,7 @@
 # Engineering & Quality Audit Report — Before vs After
 
 ## Overview
+
 This document details the engineering findings, risk assessments, structural remediations, and quality verifications applied across the Kingdom of Christ Ministries platform.
 
 ---

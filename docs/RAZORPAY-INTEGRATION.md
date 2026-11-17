@@ -3,6 +3,7 @@
 ## 1. Gateway Overview
 
 Kingdom of Christ Ministries utilizes **Razorpay Payment Gateway** supporting:
+
 - UPI Intent & Dynamic QR flows (GPay, PhonePe, Paytm, BHIM, FamApp)
 - Credit / Debit Cards
 - Netbanking
@@ -29,6 +30,7 @@ NEXT_PUBLIC_RAZORPAY_KEY_ID="<YOUR_PUBLIC_RAZORPAY_KEY_ID>"
 ## 3. Razorpay Dashboard Configuration
 
 ### Webhook Setup:
+
 1. Log in to [Razorpay Dashboard](https://dashboard.razorpay.com/).
 2. Navigate to **Settings** -> **Webhooks** -> **Add New Webhook**.
 3. **Webhook URL**: `https://kcmchurch.vercel.app/api/webhooks/razorpay`
@@ -46,6 +48,7 @@ NEXT_PUBLIC_RAZORPAY_KEY_ID="<YOUR_PUBLIC_RAZORPAY_KEY_ID>"
 ## 4. Payment Flow Lifecycle
 
 ### Step 1: Order Creation (Server-Side)
+
 ```typescript
 const order = await razorpay.orders.create({
   amount: amountInPaise, // e.g. 100000 paise = ₹1000.00
@@ -59,6 +62,7 @@ const order = await razorpay.orders.create({
 ```
 
 ### Step 2: Client-Side Checkout
+
 ```typescript
 const options = {
   key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
@@ -83,6 +87,7 @@ const options = {
 ```
 
 ### Step 3: Signature Verification
+
 ```typescript
 const generatedSignature = crypto
   .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)

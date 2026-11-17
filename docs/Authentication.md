@@ -3,6 +3,7 @@
 ## Architecture
 
 Authentication in the KCM Church Platform combines:
+
 1. **Edge-Verified Cryptographic Sessions**: Low-latency token verification in Next.js Edge middleware (`middleware.ts`) using Web Crypto `HMAC-SHA256`.
 2. **NextAuth 4.x / Firebase Auth Integration**: Multi-provider authentication supporting email/password and Google OAuth.
 3. **Database-Backed Role Resolution**: Authoritative user roles stored in PostgreSQL.
@@ -23,6 +24,7 @@ Authentication in the KCM Church Platform combines:
 ---
 
 ## Session Invalidation & Protection
+
 - Cookie Name: `__Secure-next-auth.session-token` (production) / `next-auth.session-token` (development)
 - Attributes: `HttpOnly`, `Secure`, `SameSite=Lax`, `Path=/`
 - Token Expiration: Automatic refresh with absolute session timeout.

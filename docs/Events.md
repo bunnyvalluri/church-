@@ -1,12 +1,15 @@
 # Public Events & Multi-Branch Service Schedule
 
 ## Purpose
+
 This document specifies the architecture, calendar systems, branch scheduling, public registration workflows, and social discovery features for church events across the Kingdom of Christ Ministries platform.
 
 ## Scope
+
 Covers public event routes (`frontend/app/events/`), branch filtering, calendar export integrations (iCal / Google Calendar), and event registration APIs.
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -18,7 +21,7 @@ The church operates multiple regional branch sanctuaries across Hyderabad. The e
 ```mermaid
 graph TD
     User[Website Visitor / Member] --> EventsHome[/events Page]
-    
+
     subgraph Multi-Branch Filtering
         EventsHome --> AllBranches[All Church Events]
         EventsHome --> Shapur[Shapur Nagar Main Sanctuary]
@@ -87,10 +90,12 @@ graph TD
 ---
 
 ## Security Considerations
+
 - Automated CAPTCHA / rate-limiting prevents bot spamming on public event registration endpoints.
 - Event slugs are sanitized to prevent URL injection attacks.
 
 ## Related Documentation
+
 - [Event-Manager.md](Event-Manager.md) — Operational event management.
 - [Attendance.md](Attendance.md) — QR check-in and attendance recording.
 - [SEO.md](SEO.md) — Event structured data schemas.

@@ -66,6 +66,7 @@ kubectl get secret kcm-tls-cert -n kcm-system \
 ## Staging vs Production
 
 For initial setup:
+
 1. Set `issuerRef.name: letsencrypt-staging` in `kcm-tls-cert.yaml`
 2. Validate ACME challenge flow works
 3. Delete the staging secret: `kubectl delete secret kcm-tls-cert -n kcm-system`

@@ -13,11 +13,13 @@ This is a lightweight alternative to the Kubernetes deployment for simpler setup
 ## 2. Environment Configuration
 
 Create a `.env` file in the root directory (you can copy `.env.example`):
+
 ```bash
 cp .env.example .env
 ```
 
 Ensure the following variables are set in your `.env` file:
+
 ```env
 # Point this to your Neon PostgreSQL database
 DATABASE_URL="postgresql://<USERNAME>:<PASSWORD>@<HOST>/<DATABASE>?sslmode=require"
@@ -37,15 +39,18 @@ NEXT_PUBLIC_SOCKET_URL=http://localhost
 The local development configuration mounts your source code directly into the containers. This allows you to edit files on your host machine and see the changes instantly with Next.js and Nodemon hot-reloading, while keeping your Node versions and dependencies perfectly isolated.
 
 **Start Local Development:**
+
 ```bash
 docker-compose up --build
 ```
+
 - The API will run at `http://localhost/api`
 - The Frontend will run at `http://localhost:3000` (Nginx proxies `http://localhost` to it)
 - Redis is automatically provisioned.
 - Your `.env` will connect the local containers directly to your Neon DB.
 
 **Stop Environment:**
+
 ```bash
 docker-compose down
 ```
@@ -55,11 +60,13 @@ docker-compose down
 The production configuration uses pre-compiled, highly-optimized Docker images. It automatically spins up Nginx as an API gateway, splits the backend into API, WebSockets, BullMQ workers, and Cron schedulers to ensure zero event loops blocking and high scalability.
 
 **Start Production:**
+
 ```bash
 docker-compose -f docker-compose.prod.yml up -d
 ```
 
 **Check Service Health & Logs:**
+
 ```bash
 # Check if all containers are healthy
 docker ps
@@ -72,6 +79,7 @@ docker-compose -f docker-compose.prod.yml logs -f backend-api
 
 This repository is equipped with a GitHub Action (`.github/workflows/docker-publish.yml`). 
 Every time you push code to the `main` branch, it will automatically build and publish three images to the GitHub Container Registry (GHCR):
+
 1. `ghcr.io/bunnyvalluri/kcm-frontend`
 2. `ghcr.io/bunnyvalluri/kcm-backend`
 3. `ghcr.io/bunnyvalluri/kcm-nginx`

@@ -16,7 +16,9 @@ erDiagram
 ## Entity Details
 
 ### 1. `DonationSession`
+
 Tracks short-lived checkout and QR code sessions.
+
 - `id` (String, Primary Key)
 - `referenceNumber` (String, Unique) — Stores Razorpay Order ID (`order_...`)
 - `amount` (Float)
@@ -26,7 +28,9 @@ Tracks short-lived checkout and QR code sessions.
 - `ipAddress` (String)
 
 ### 2. `Donation`
+
 Authoritative record for all contributions.
+
 - `id` (String, Primary Key)
 - `userId` (String, optional Foreign Key)
 - `amount` (Float)
@@ -42,7 +46,9 @@ Authoritative record for all contributions.
 - `verifiedBy` (`WEBHOOK`, `RAZORPAY_API`, `CHECKOUT_VERIFY`)
 
 ### 3. `Receipt`
+
 Immutable 80G tax receipt records.
+
 - `id` (String, Primary Key)
 - `receiptNumber` (String, Unique)
 - `donationId` (String, Unique Foreign Key)
@@ -51,7 +57,9 @@ Immutable 80G tax receipt records.
 - `issuedAt` (DateTime)
 
 ### 4. `PaymentWebhook`
+
 Tracks raw webhook deliveries for idempotency and forensic auditing.
+
 - `id` (String, Primary Key)
 - `webhookEventId` (String, Unique Index) — `SHA-256(orderId|paymentId|eventType)`
 - `payload` (JSON)

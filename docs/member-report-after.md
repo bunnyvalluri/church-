@@ -15,6 +15,7 @@ A comprehensive, production-grade **Member Issue Reporting and Diagnostics Syste
 ## 2. Inventory of Delivered Components
 
 ### 2.1 Database & Persistence
+
 - **Neon PostgreSQL Table**: `issue_reports` created and indexed directly in `neondb`.
 - **Prisma Schema Synchronization**:
   - `frontend/prisma/schema.prisma`: Added `IssueCategory`, `IssueSeverity`, `IssueStatus` enums, `IssueReport` model, and relation in `User`.
@@ -24,6 +25,7 @@ A comprehensive, production-grade **Member Issue Reporting and Diagnostics Syste
   - No simulated or mocked database transactions.
 
 ### 2.2 Client-Side Diagnostics & Telemetry
+
 - **`frontend/lib/issueDiagnostics.ts`**:
   - `captureBrowserDiagnostics()`: Real non-spoofed browser detection, OS parsing, device category, viewport/screen dimensions, timezone, language, and network connection type.
   - `sanitizeDiagnosticText()`: Token, secret, cookie, bearer, and credential redaction.
@@ -33,6 +35,7 @@ A comprehensive, production-grade **Member Issue Reporting and Diagnostics Syste
   - Real-time client error ring-buffer capturing unhandled runtime rejections and window errors for pre-population in support tickets.
 
 ### 2.3 Secure API Routes
+
 1. `GET /api/member/reports`: Lists authenticated member's reports with pagination.
 2. `POST /api/member/reports`: Validates Zod payload, checks 7-day duplicates, stores in Neon, triggers audit logs, and emits real-time Socket.IO alerts.
 3. `GET /api/member/reports/:reportId`: IDOR-protected member safe endpoint stripping internal stacks and notes.
@@ -44,6 +47,7 @@ A comprehensive, production-grade **Member Issue Reporting and Diagnostics Syste
 9. `POST /api/admin/reports/:reportId/notes`: Internal investigation note append mechanism.
 
 ### 2.4 User Interfaces
+
 - **Member Portal (`frontend/app/member/report/page.tsx`)**:
   - Category selector with descriptive icons.
   - Severity indicator buttons (`LOW`, `MEDIUM`, `HIGH`, `CRITICAL`).
@@ -62,4 +66,5 @@ A comprehensive, production-grade **Member Issue Reporting and Diagnostics Syste
   - Direct "Report Problem" button carrying error digest context to `/member/report`.
 
 ### 2.5 Automated Verification Suite
+
 - `frontend/tests/e2e/member-reports.spec.ts`: Playwright test suite covering authentication guards, member form validation, diagnostic transparency, submission flow, history listing, admin access, and RBAC boundary enforcement.

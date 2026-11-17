@@ -1,12 +1,15 @@
 # Production Security Verification Checklist
 
 ## Purpose
+
 This document provides an exhaustive, actionable security verification checklist that must be executed prior to promoting any release to production across the Kingdom of Christ Ministries platform.
 
 ## Scope
+
 Covers application code, databases, authentication mechanisms, Kubernetes clusters, network perimeters, container images, and secrets.
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -14,6 +17,7 @@ Covers application code, databases, authentication mechanisms, Kubernetes cluste
 ## 1. Security Verification Checklist Matrix
 
 ### 1.1 Application & API Security
+
 - [x] **Input Validation**: All API routes validate incoming request payloads with Zod schemas.
 - [x] **XSS Prevention**: User-generated rich text is sanitized via `sanitize-html` before database persistence.
 - [x] **SQL Injection Defense**: All database mutations execute via parameterized Prisma ORM queries.
@@ -22,18 +26,21 @@ Covers application code, databases, authentication mechanisms, Kubernetes cluste
 - [x] **Security Headers**: HSTS, CSP, X-Frame-Options (`DENY`), X-Content-Type-Options (`nosniff`) enabled in `next.config.js`.
 
 ### 1.2 Authentication & Session Management
+
 - [x] **Credential Hashing**: Bcrypt salt rounds >= 12 configured for all user credentials.
 - [x] **Session Cookies**: `kcm_session` cookies configured with `HttpOnly: true`, `Secure: true`, `SameSite: Lax`.
 - [x] **Google OAuth**: Tokens verified cryptographically using `google-auth-library` server-side.
 - [x] **RBAC Enforcement**: Edge middleware (`frontend/middleware.ts`) and API guards enforce role authorization boundaries.
 
 ### 1.3 Database & Storage Security
+
 - [x] **PostgreSQL Encryption**: SSL mode enforced (`sslmode=require`) on all Prisma connection strings.
 - [x] **MongoDB Access**: IP Access Lists configured on MongoDB Atlas; TLS 1.3 enforced.
 - [x] **Cloudinary Storage**: API secrets strictly kept server-side; MIME validation enforced on uploads.
 - [x] **Financial Data Isolation**: No raw credit card or banking secrets stored in local databases.
 
 ### 1.4 Kubernetes & Container Security
+
 - [x] **Non-Root Execution**: Pods enforce `runAsNonRoot: true` with non-zero user IDs (`10001`).
 - [x] **Read-Only Root Filesystem**: `readOnlyRootFilesystem: true` enabled; write operations restricted to `/tmp` `emptyDir`.
 - [x] **Capability Dropping**: Container `capabilities.drop: ["ALL"]` configured in all deployments.
@@ -42,6 +49,7 @@ Covers application code, databases, authentication mechanisms, Kubernetes cluste
 - [x] **Vulnerability Scanning**: Trivy Operator scanning running workloads; no unpatched CRITICAL CVEs present.
 
 ### 1.5 Secrets & Environment Configuration
+
 - [x] **No Plaintext Secrets**: Zero API keys or secrets committed to Git repository (verified by Trivy secret scans).
 - [x] **Secret Injection**: Production secrets injected via Kubernetes Secrets or sealed secret operators.
 - [x] **Webhook Signatures**: Payment and SMS webhooks verify HMAC signatures before payload processing.
@@ -67,6 +75,7 @@ kubectl get pods -n falco -l app.kubernetes.io/name=falco
 ---
 
 ## Related Documentation
+
 - [Security.md](Security.md) — Comprehensive security architecture.
 - [Runtime-Security.md](Runtime-Security.md) — Kubernetes pod hardening.
 - [Falco.md](Falco.md) — Runtime anomaly monitoring.

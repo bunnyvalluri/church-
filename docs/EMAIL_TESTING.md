@@ -3,6 +3,7 @@
 ## 1. Automated Test Execution
 
 Run the complete test suite:
+
 ```bash
 # Run all email unit, integration, and security tests
 npm run test:email
@@ -19,6 +20,7 @@ npx prisma validate
 ## 2. Test Suites Overview
 
 ### `frontend/tests/email-system.spec.ts` (55 tests)
+
 - Verifies that production templates contain zero dev/sandbox notices.
 - Validates that email subjects contain no `[Sandbox Preview...]` prefixes.
 - Tests HTML output for raw CSS leaking regressions.
@@ -27,6 +29,7 @@ npx prisma validate
 - Tests memory sliding window idempotency.
 
 ### `frontend/tests/email-delivery-agent.spec.ts` (35 tests)
+
 - Verifies error classification: permanent (`UNVERIFIED_DOMAIN`, `INVALID_CREDENTIALS`, `INVALID_RECIPIENT`) vs transient (`RATE_LIMIT_EXCEEDED`, `NETWORK_TIMEOUT`, `PROVIDER_5XX`).
 - Tests exponential backoff calculation and jitter bounds.
 - Validates SHA-256 recipient hashing and privacy-safe masking.
@@ -40,6 +43,7 @@ npx prisma validate
 ## 3. Manual Live Verification
 
 ### Endpoint 1: Health Diagnostic
+
 ```bash
 # Public ping
 curl -i https://kcmchurch.vercel.app/api/health/email
@@ -49,6 +53,7 @@ curl -i -H "x-health-key: <SESSION_SECRET>" https://kcmchurch.vercel.app/api/hea
 ```
 
 ### Endpoint 2: Simulated Webhook Delivery
+
 ```bash
 curl -X POST https://kcmchurch.vercel.app/api/webhooks/resend \
   -H "Content-Type: application/json" \

@@ -1,12 +1,15 @@
 # Structured Logging Architecture & Standards
 
 ## Purpose
+
 This document specifies the structured JSON logging architecture, standardized log levels, context fields, correlation IDs, PII redaction rules, and ingestion pipelines for the Kingdom of Christ Ministries platform.
 
 ## Scope
+
 Covers application loggers (`backend/src/utils/logger.js`, `frontend/lib/auditLogger.ts`), container stdout/stderr formats, and Loki log collectors.
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -48,6 +51,7 @@ All application logs are emitted to `stdout` and `stderr` as single-line structu
 ## 3. Automated PII Masking & Redaction
 
 The logger applies regex sanitizers before serializing log objects:
+
 ```typescript
 const SENSITIVE_KEYS = ["password", "token", "secret", "panNumber", "cvv", "creditCard", "auth"];
 
@@ -77,10 +81,12 @@ export function maskSensitiveData(obj: any): any {
 ---
 
 ## Security Considerations
+
 - Plaintext credentials and cryptographic keys are never written to log outputs.
 - Log access in Grafana Loki is restricted to authorized operations personnel.
 
 ## Related Documentation
+
 - [Loki.md](Loki.md) — Grafana Loki log aggregation.
 - [Observability.md](Observability.md) — Trace and log correlation.
 - [Privacy.md](Privacy.md) — PII protection standards.

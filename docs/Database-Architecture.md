@@ -1,12 +1,15 @@
 # Database Architecture & Data Ownership Specification
 
 ## Purpose
+
 This document specifies the multi-database architecture, data segregation principles, connection lifecycles, and consistency models used across the Kingdom of Christ Ministries platform.
 
 ## Scope
+
 Covers PostgreSQL (managed via CloudNativePG operator and Prisma ORM), MongoDB Atlas (document telemetry and audit logs), and Firebase (authentication identities and FCM device registry).
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -28,7 +31,7 @@ graph TD
         PGPrimary[(PostgreSQL Primary Instance)]
         PGReplica1[(PostgreSQL Sync Standby)]
         PGReplica2[(PostgreSQL Async Standby)]
-        
+
         PgBouncer --> PGPrimary
         PGPrimary -->|Streaming Replication| PGReplica1
         PGPrimary -->|Streaming Replication| PGReplica2
@@ -40,7 +43,7 @@ graph TD
         ColSystem[system_events collection]
         ColNotif[notification_history collection]
         ColActivity[activity_logs collection]
-        
+
         MongoCluster --- ColAudit
         MongoCluster --- ColSystem
         MongoCluster --- ColNotif
@@ -89,11 +92,13 @@ graph TD
 ## 3. Connection Architecture & Pool Management
 
 ### 3.1 PostgreSQL Connection Management (Prisma & PgBouncer)
+
 - **Prisma Client Singleton**: Instantiated once in `frontend/lib/db.ts` to prevent connection leaks during Next.js Hot Module Reloading (HMR).
 - **PgBouncer Pooling**: Sits in front of the CloudNativePG cluster in transaction pooling mode, enabling thousands of client requests to share a pool of 50-200 physical database connections.
 - **Connection Timeout**: 10 seconds with query execution timeouts set to 15 seconds.
 
 ### 3.2 MongoDB Atlas Connection Architecture
+
 - **MongoClient Reuse**: Managed via `frontend/lib/mongodb/client.ts` and `backend/src/infrastructure/mongodb/client.js` with global caching in development and production environments.
 - **Pool Sizing**: `maxPoolSize: 50`, `minPoolSize: 10`, `serverSelectionTimeoutMS: 5000`.
 - **Offline Fallback**: If `MONGODB_OFFLINE="true"` is set, writes gracefully fallback to local memory structures to guarantee zero downtime during local offline development.
@@ -109,11 +114,13 @@ graph TD
 ---
 
 ## Security Considerations
+
 - All PostgreSQL connections require SSL (`sslmode=require`).
 - MongoDB Atlas enforces IP Access Lists (IP Whitelisting) and TLS 1.3 encryption in transit.
 - No database credentials or connection strings are stored in plaintext code.
 
 ## Related Documentation
+
 - [PostgreSQL.md](PostgreSQL.md) — Relational schema, Prisma client, and migrations.
 - [MongoDB-Atlas.md](MongoDB-Atlas.md) — Event schemas and TTL indexes.
 - [Firebase.md](Firebase.md) — Firebase identity and push integration.

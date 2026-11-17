@@ -1,12 +1,15 @@
 # Pastor Portal & AI Ministry Studio Specification
 
 ## Purpose
+
 This document provides the technical specification for the Pastor Portal, the comprehensive ministry management platform empowering pastoral staff to manage sermon publications, shepherd the congregation, review prayer requests, analyze church attendance trends, and leverage AI ministry tools.
 
 ## Scope
+
 Covers frontend pages in `frontend/app/pastor/`, pastoral API handlers in `frontend/app/api/pastor/`, and the OpenClaw AI Ministry Orchestrator (`/pastor/openclaw-orchestrator`).
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -34,7 +37,7 @@ The Pastor Portal includes the **OpenClaw AI Orchestrator** powered by Google Ge
 ```mermaid
 graph TD
     Pastor([Pastor / Preacher]) --> AIStudio[OpenClaw AI Ministry Studio]
-    
+
     subgraph AI Ministry Engines
         AIStudio --> SermonGen[Sermon Outline & Exegesis Generator]
         AIStudio --> BibleCross[Scripture Cross-Referencing Engine]
@@ -88,10 +91,12 @@ graph TD
 ---
 
 ## Security Considerations
+
 - Access to confidential prayer requests and pastoral notes is restricted exclusively to `PASTOR` and `ADMIN` roles.
 - AI prompts and generated outputs do not expose member PII to third-party model training datasets.
 
 ## Related Documentation
+
 - [Authorization-RBAC.md](Authorization-RBAC.md) — Pastoral permissions.
 - [Sermons.md](Sermons.md) — Sermon catalogue and streaming architecture.
 - [Prayer-System.md](Prayer-System.md) — Prayer request workflow.

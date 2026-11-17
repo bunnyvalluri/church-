@@ -1,6 +1,7 @@
 # Member Issue Reporting & Diagnostics User Guide
 
 ## Overview
+
 The Member Issue Reporting system provides church members and staff with an intuitive, transparent, and secure mechanism to report bugs, accessibility issues, network anomalies, or general feedback encountered across the Kingdom of Christ Ministries platform.
 
 ---
@@ -8,6 +9,7 @@ The Member Issue Reporting system provides church members and staff with an intu
 ## Member Guide (`/member/report`)
 
 ### Submitting a Report
+
 1. **Navigate to Support**:
    - Access `/member/report` from any member portal page or by clicking **"Report Problem"** on any runtime error boundary.
 2. **Select Issue Category**:
@@ -28,12 +30,15 @@ The Member Issue Reporting system provides church members and staff with an intu
    - Upon submission, a unique reference ID `KCM-ERR-XXXXXXXX` is generated immediately.
 
 ### Tracking Submitted Reports
+
 - Switch to the **"My Submitted Reports"** tab at the top of `/member/report`.
 - Review real-time status badges (`Received`, `Investigating`, `In Progress`, `Resolved`).
 - Click any report to view a member-safe inspection modal.
 
 ### Direct Support Contact
+
 For urgent pastoral or church account needs:
+
 - **Phone**: `+91 9505288171`
 - **Email**: `codewithrahul3@gmail.com`
 

@@ -1,12 +1,15 @@
 # Media Management & Verification Pipeline
 
 ## Purpose
+
 This document specifies the end-to-end media management lifecycle, asynchronous verification loops, CDN delivery architecture, and storage policies across the Kingdom of Christ Ministries platform.
 
 ## Scope
+
 Covers frontend file selection, server-side streaming, database metadata persistence, background verification routines, and edge CDN delivery.
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -19,7 +22,7 @@ graph TD
     NextUpload -->|2. Buffer Stream (MIME Verified)| CloudinaryCDN[Cloudinary CDN Infrastructure]
     CloudinaryCDN -->|3. Transformations (f_auto, q_auto)| CloudinaryStorage[Cloudinary Global Storage]
     NextUpload -->|4. Persist Secure URL & Public ID| PG[(PostgreSQL Database)]
-    
+
     subgraph Background Healing & Verification
         VerificationLoop[Upload Verification Loop (backend/src/loops/*)] -->|5. Poll Unverified Assets| PG
         VerificationLoop -->|6. HTTP HEAD Accessibility Check| CloudinaryCDN
@@ -75,9 +78,11 @@ To prevent broken image links on public-facing pages, the companion backend runs
 ---
 
 ## Security Considerations
+
 - All file buffers are inspected for MIME type and magic numbers before transmission to prevent malicious script uploads.
 - Upload routes require authenticated staff or admin session tokens.
 
 ## Related Documentation
+
 - [Cloudinary.md](Cloudinary.md) — SDK implementation and folder structure.
 - [Performance.md](Performance.md) — Image and video optimization metrics.

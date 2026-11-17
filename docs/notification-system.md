@@ -91,6 +91,7 @@ scripts/
 ## Environment Variables Required
 
 ### Google Sheets
+
 ```env
 GOOGLE_SHEETS_ID=1R7F0c6uL-L1TnYGAwjhVN3RaRjoDjZP8j1J7AlC1...
 GOOGLE_SHEETS_RANGE=KCM Members Database!A:M
@@ -100,6 +101,7 @@ GOOGLE_SERVICE_ACCOUNT_KEY=base64_encoded_service_account_json
 ```
 
 ### Twilio
+
 ```env
 TWILIO_ACCOUNT_SID=ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 TWILIO_AUTH_TOKEN=your_auth_token
@@ -108,12 +110,14 @@ TWILIO_WHATSAPP_NUMBER=whatsapp:+14155238886
 ```
 
 ### Firebase
+
 ```env
 FIREBASE_ADMIN_SERVICE_ACCOUNT=base64_encoded_firebase_service_account
 FIREBASE_FCM_TOPIC=kcm-events
 ```
 
 ### Resend (Email)
+
 ```env
 RESEND_API_KEY=re_your_key_here
 RESEND_FROM_EMAIL=KCM Ministries <noreply@kcmministries.org>
@@ -171,6 +175,7 @@ RESEND_FROM_EMAIL=KCM Ministries <noreply@kcmministries.org>
 | Push | Firebase FCM | All registered `device_tokens` in PostgreSQL |
 
 ### Preference Filtering
+
 - If a member has **no preference** set → they receive **all channels**
 - If a member sets `"Email,SMS"` → they receive only Email and SMS
 
@@ -189,6 +194,7 @@ Attempt 3 → Fail → DEAD_LETTER → AuditLog entry
 Retry worker runs every **15 minutes** automatically.
 
 Manual trigger:
+
 ```bash
 curl -X POST http://localhost:3001/api/notifications/retry
 ```
@@ -229,6 +235,7 @@ curl -X POST http://localhost:3001/api/notifications/retry
 ## Testing
 
 ### Full end-to-end test:
+
 ```bash
 curl -X POST http://localhost:3001/api/events \
   -H "Content-Type: application/json" \
@@ -243,6 +250,7 @@ curl -X POST http://localhost:3001/api/events \
 ```
 
 ### Check notification logs:
+
 ```sql
 SELECT channel, status, recipient_addr, sent_at, error_message
 FROM notification_logs
@@ -251,6 +259,7 @@ LIMIT 20;
 ```
 
 ### Check retry jobs:
+
 ```sql
 SELECT channel, status, attempts, next_retry_at, last_error
 FROM event_notification_retry_jobs

@@ -1,6 +1,7 @@
 # KCM Platform System Architecture
 
 ## Overview
+
 Kingdom of Christ Ministries (KCM) is built as a modern, high-performance monorepo serving congregational web interactions, administrative governance, pastoral research workflows, event management, and 80G tax-exempt donation processing.
 
 ---

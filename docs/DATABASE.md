@@ -1,6 +1,7 @@
 # Database Architecture & Security Model
 
 ## Overview
+
 The KCM Platform database layer is powered by **PostgreSQL 16** managed via **Prisma ORM 5.11.0**, hosted on **Neon Serverless PostgreSQL** with optional **CloudNativePG** clustering for Kubernetes deployments.
 
 ---
@@ -21,6 +22,7 @@ The KCM Platform database layer is powered by **PostgreSQL 16** managed via **Pr
 ---
 
 ## Security Policies
+
 - **Strict Parameterization**: All DB interactions run through Prisma ORM prepared statements.
 - **SSL/TLS Mandate**: All remote database connections require `sslmode=require`.
 - **Sensitive Field Isolation**: Password hashes, tokens, and payment secrets are omitted from API projections.

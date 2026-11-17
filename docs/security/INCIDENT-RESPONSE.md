@@ -18,17 +18,22 @@ This document outlines the standard operating procedures for identifying, triagi
 ## 2. Containment & Mitigation Procedures
 
 ### Step 1: Immediate Key Rotation (If Credential Leak Occurs)
+
 1. Revoke the exposed API key in OpenRouter / OpenAI / Google Cloud Console.
 2. Generate a new key and update Vercel Environment Variables:
+
    ```powershell
    vercel env add OPENROUTER_API_KEY production
    ```
+
 3. Trigger redeployment to invalidate edge caches.
 
 ### Step 2: Emergency Prompt Hardening
+
 - Update `PROMPT_INJECTION_PATTERNS` in `frontend/lib/ai/aiSecurityPipeline.ts` with newly observed attack signatures.
 - Deploy hotfix immediately to production.
 
 ### Step 3: Audit Logging & Post-Mortem
+
 - Review `AIChatLog` in PostgreSQL for the affected timeframe.
 - Document Root Cause Analysis (RCA) in `docs/security/incidents/`.

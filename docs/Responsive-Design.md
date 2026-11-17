@@ -1,12 +1,15 @@
 # Responsive Design & Mobile Viewport Specification
 
 ## Purpose
+
 This document specifies the responsive design standards, mobile-first breakpoint systems, touch interaction ergonomics, and fluid layout paradigms implemented across the Kingdom of Christ Ministries platform.
 
 ## Scope
+
 Covers all pages, portals, forms, tables, modals, and navigation components across desktop, tablet, and mobile viewports.
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -37,10 +40,13 @@ With over 70% of church members accessing sermon audio, event registrations, and
 ## 3. Touch Ergonomics & Safe Area Insets
 
 ### 3.1 Touch Target Sizes
+
 All interactive elements (buttons, inputs, dropdown triggers, pagination links) enforce a minimum touch target bounding box of **44x44 CSS pixels** to satisfy Apple HIG and Google Material guidelines.
 
 ### 3.2 Safe Area Inset Support
+
 Fixed headers and mobile bottom navigation bars respect device hardware notches, home indicator bars, and dynamic islands using CSS environment variables:
+
 ```css
 .mobile-nav-bar {
   padding-bottom: max(1rem, env(safe-area-inset-bottom));
@@ -88,9 +94,11 @@ graph TD
 ---
 
 ## Security Considerations
+
 - Responsive layouts avoid hidden fields containing sensitive data that could be leaked to the DOM.
 
 ## Related Documentation
+
 - [Frontend.md](Frontend.md) — Next.js component setup.
 - [Browser-Compatibility.md](Browser-Compatibility.md) — Cross-device testing matrix.
 - [Accessibility.md](Accessibility.md) — Mobile accessibility compliance.

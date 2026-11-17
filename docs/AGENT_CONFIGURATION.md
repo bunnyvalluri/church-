@@ -1,6 +1,7 @@
 # Agent Configuration & Development Harness Audit
 
 ## Purpose
+
 This document catalogs all AI agent harness elements, skills, workflows, and session configurations within `.agent/`, `.agents/`, and `.jcode/`.
 
 ---
@@ -21,6 +22,7 @@ This document catalogs all AI agent harness elements, skills, workflows, and ses
 ---
 
 ## 2. Security Review
+
 - **Zero Credentials**: All `.jcode` files use standard templated environment variable references (e.g. `${NEON_DATABASE_URL}`, `${CLOUDINARY_URL}`).
 - **Zero Session Tokens**: No personal OAuth tokens or bearer strings are tracked in git.
 - **Git Tracking**: Verified that `.jcode` contains only declarative schemas and structural blueprints.

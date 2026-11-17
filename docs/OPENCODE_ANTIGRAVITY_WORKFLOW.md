@@ -1,4 +1,5 @@
 # OPENCODE-ANTIGRAVITY-AUTH AI WORKFLOW ENGINEERING SYSTEM
+
 ## KCM Ministries Church Platform — Development & Optimization Guide
 
 > **Plugin**: `opencode-antigravity-auth`  
@@ -12,6 +13,7 @@
 The `opencode-antigravity-auth` plugin is the core AI workflow engine designed to supercharge development velocity, enforce strict architectural discipline, and eliminate context degradation bottlenecks across the KCM Ministries Church Platform.
 
 ### Key Architecture Components:
+
 - **Authentication & Gateway**: Persistent, secure session tokens (`antigravity-auth-gateway`) with 1-hour auto-rotation.
 - **Model Rotation Engine**: Dynamic switching between **Claude** (for complex architecture, schema design, security policy definition, and system decomposition) and **Gemini** (for fast, high-volume implementation, large refactors, unit test generation, and worker code).
 - **Session Memory Graph**: Shared graph database stored in `.jcode/memory/graph.db` providing cross-session synchronization and state recovery.
@@ -39,6 +41,7 @@ The `opencode-antigravity-auth` plugin is the core AI workflow engine designed t
 ## 2. Model Rotation Strategy & Execution Protocol
 
 ### Rule of Handoff
+
 1. **Architectural Phase (Claude)**:
    - Define exact interfaces, TypeScript types, API contracts, security constraints, and database migration scripts.
    - Output structured RFC markdown or spec JSON into `.jcode/memory/specs/`.
@@ -54,6 +57,7 @@ The `opencode-antigravity-auth` plugin is the core AI workflow engine designed t
 ## 3. The 10 AI Workflow Domains (Step-by-Step Execution Protocols)
 
 ### Domain 1: Multi-Session Coding
+
 - **Objective**: Run concurrent development streams without context collisions.
 - **Session Routing**:
   - `Session-1`: Auth & User Roles (`Admin`, `Pastor`, `Member`)
@@ -64,6 +68,7 @@ The `opencode-antigravity-auth` plugin is the core AI workflow engine designed t
 - **Plugin Command**: `npx opencode-antigravity-auth session:spawn --domain <domain_name>`
 
 ### Domain 2: Large Refactors
+
 - **Objective**: Execute multi-file structural updates safely across Next.js App Router and Node backend services.
 - **Protocol**:
   1. Claude generates AST refactoring blueprints.
@@ -71,11 +76,13 @@ The `opencode-antigravity-auth` plugin is the core AI workflow engine designed t
   3. Validate through `npm run lint` and `npm run test`.
 
 ### Domain 3: Parallel Agent Development (Swarm Mode)
+
 - **Objective**: Deploy background subagents to work on isolated modules simultaneously.
 - **Swarm Lock**: Managed via `.jcode/jcode.config.toml` optimistic locking (`lock_timeout_seconds = 300`).
 - **Use Case**: Concurrent build of Admin Portal analytics and Member Portal prayer feeds.
 
 ### Domain 4: Performance Optimization
+
 - **Objective**: Achieve Lighthouse Performance 95+ and dynamic bundle size < 250KB.
 - **Actions**:
   - Image optimization via Cloudinary dynamic transformations (`f_auto,q_auto`).
@@ -83,6 +90,7 @@ The `opencode-antigravity-auth` plugin is the core AI workflow engine designed t
   - PWA precaching strategy via Workbox.
 
 ### Domain 5: Security Hardening
+
 - **Objective**: Zero vulnerability exposure across public and administrative endpoints.
 - **Security Envelope**:
   - JWT RS256 signature validation with rate limiting (120 RPM per IP).
@@ -90,20 +98,24 @@ The `opencode-antigravity-auth` plugin is the core AI workflow engine designed t
   - RBAC Middleware enforcing `ADMIN`, `PASTOR`, `MEMBER`, and `VOLUNTEER` permissions.
 
 ### Domain 6: API Gateway Implementation
+
 - **Objective**: Unified routing layer managing proxy requests between Next.js frontend (`localhost:3000`) and Express backend (`localhost:4000`).
 - **Key Files**: [docs/gateway/api-gateway-spec.md](file:///c:/K.C.M-Portal/docs/gateway/api-gateway-spec.md), Express router `/api/v1/gateway`.
 
 ### Domain 7: PWA Offline Sync
+
 - **Objective**: Ensure seamless offline app capability for members and pastors in low-connectivity environments.
 - **Features**:
   - IndexedDB storage for offline Prayer Requests, Sermon notes, and Event bookmarks.
   - Background Sync API to automatically flush queued actions when internet connectivity is restored.
 
 ### Domain 8: Cloudinary Integration
+
 - **Objective**: Scalable church media hosting (Sermon video clips, Event banners, Ministry photos).
 - **Features**: Direct signed client uploads, thumbnail generation, automatic webp/avif format conversion.
 
 ### Domain 9: Socket.io Realtime Flows
+
 - **Objective**: Live interactive church experiences.
 - **Realtime Rooms**:
   - `sermon_live`: Live chat and prayer counter during live streams.
@@ -111,6 +123,7 @@ The `opencode-antigravity-auth` plugin is the core AI workflow engine designed t
   - `admin_notifications`: Real-time system health and donation alerts.
 
 ### Domain 10: Firebase FCM Notifications
+
 - **Objective**: Targeted mobile and web push broadcasts.
 - **Topic Routing**:
   - `kcm_topic_all`: Urgent church-wide announcements.

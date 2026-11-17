@@ -3,6 +3,7 @@
 ## 1. Rollback Decision Framework
 
 Rollback is automatically initiated when all the following conditions are met:
+
 1. A new deployment has been promoted to production.
 2. The observation window starts (`ROLLBACK_OBSERVATION_WINDOW = 30s`).
 3. Monitoring detects a critical sustained anomaly across 3 consecutive cycles:
@@ -20,6 +21,7 @@ Rollback is automatically initiated when all the following conditions are met:
 > Application rollback does NOT automatically revert database schema migrations.
 
 ### Safety Rules:
+
 1. **Expand-and-Contract Pattern**: All schema changes must be backward-compatible (e.g. add new nullable columns first, deploy new code, then deprecate old columns in a separate milestone).
 2. **Zero Destructive Migrations in Rollback Windows**: Dropping columns or renaming tables during normal deployment releases is strictly prohibited.
 3. **Pre-Migration Verification**: The migration engine asserts compatibility before applying changes.

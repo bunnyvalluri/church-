@@ -105,4 +105,3 @@ frontend/
 2. **Strict White-Theme Consistency**: `forcedTheme="light"` prevents dark-mode inversion, providing a crisp, dignified church brand experience with dark slate typography and royal violet accents.
 3. **Accessibility by Default**: Every interactive element satisfies WCAG 2.1 AA requirements, providing keyboard focus rings, screen-reader aria labels, and 44x44px touch targets.
 4. **Resilient Offline-First Sync**: Critical field workflows (event check-in, prayer submission) function when offline and synchronize via an idempotent queue once connectivity resumes.
-

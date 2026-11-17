@@ -53,4 +53,3 @@ The design system is located in [`frontend/src/components/ui/`](file:///C:/K.C.M
 | `Breadcrumb` | `DataControls.tsx` | Slash-separated hierarchical page location breadcrumb. |
 | `FileUploader` | `DataControls.tsx` | Drag-and-drop file upload container with size validation and preview. |
 | `ImageViewer` | `DataControls.tsx` | Fullscreen lightbox modal with high-resolution image preview. |
-

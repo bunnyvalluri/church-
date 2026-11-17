@@ -1,12 +1,15 @@
 # Cross-Browser & Multi-Platform Compatibility Matrix
 
 ## Purpose
+
 This document provides the authoritative compatibility specification, platform support tiers, browser-specific polyfills, and testing matrix for the Kingdom of Christ Ministries web application.
 
 ## Scope
+
 Covers modern desktop and mobile browsers across Android, iOS, Windows, macOS, Linux (Ubuntu), and ChromeOS.
 
 ## Status
+
 > Status: Implemented & Verified
 
 ---
@@ -53,6 +56,7 @@ The application is engineered and continuously validated against standard modern
 ## 4. Automated Cross-Browser Testing Pipeline
 
 Browser compatibility is asserted continuously via Playwright test suites (`frontend/playwright.config.ts`):
+
 ```bash
 # Execute full cross-browser test suite across Chromium, WebKit, and Firefox
 npm run test:e2e -w frontend
@@ -71,9 +75,11 @@ npm run test:e2e -w frontend
 ---
 
 ## Security Considerations
+
 - Feature detection (`if ('serviceWorker' in navigator)`) is always used instead of brittle user-agent sniffing.
 
 ## Related Documentation
+
 - [Responsive-Design.md](Responsive-Design.md) — Viewport layout standards.
 - [Testing.md](Testing.md) — Playwright test execution guides.
 - [PWA.md](PWA.md) — Progressive Web App installation guidelines.

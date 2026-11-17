@@ -11,6 +11,7 @@ The Issue Reporting & Diagnostics suite includes automated end-to-end tests, uni
 **Test File**: `frontend/tests/e2e/member-reports.spec.ts`
 
 ### Test Scenarios Covered:
+
 1. **Unauthenticated Boundary Guards**:
    - Verify unauthenticated visitor accessing `/member/report` is redirected to `/login`.
    - Verify unauthenticated visitor accessing `/admin/support/reports` is redirected to `/login`.
@@ -26,6 +27,7 @@ The Issue Reporting & Diagnostics suite includes automated end-to-end tests, uni
    - Verify regular member is rejected from accessing `/admin/support/reports`.
 
 ### Running the Test:
+
 ```bash
 cd frontend
 npx playwright test tests/e2e/member-reports.spec.ts --project=chromium
@@ -36,6 +38,7 @@ npx playwright test tests/e2e/member-reports.spec.ts --project=chromium
 ## 3. TypeScript & Compilation Verification
 
 Ensure the frontend passes type checking without any errors:
+
 ```bash
 npm run typecheck -w frontend
 ```

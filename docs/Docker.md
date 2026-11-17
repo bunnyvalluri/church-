@@ -1,12 +1,15 @@
 # Container Architecture & Docker Deployment
 
 ## Purpose
+
 This document specifies the multi-stage Docker container architecture, image optimization strategies, local multi-service orchestration (Docker Compose), and container security hardening for the Kingdom of Christ Ministries platform.
 
 ## Scope
+
 Covers `docker/Dockerfile`, `docker/docker-compose.yml`, `docker/docker-compose.prod.yml`, and container build pipelines.
 
 ## Status
+
 > Status: Implemented
 
 ---
@@ -23,6 +26,7 @@ graph TD
 ```
 
 ### Stage Breakdown
+
 1. **`base`**: Lightweight `node:20-alpine` with `libc6-compat` for native bindings.
 2. **`deps`**: Installs root and workspace `package.json` dependencies with `npm ci`.
 3. **`builder`**: Generates Prisma Client artifacts (`npx prisma generate`) and builds standalone Next.js bundles (`npm run build`).
@@ -33,7 +37,9 @@ graph TD
 ## 2. Docker Compose Orchestration
 
 ### 2.1 Local Development Environment (`docker/docker-compose.yml`)
+
 Runs the full local development stack with live hot-reloading:
+
 - **`frontend`**: Next.js App Router server on port `3000`.
 - **`backend`**: Express & Socket.io server on port `3001`.
 - **`postgres`**: PostgreSQL 16 on port `5432` with pre-seeded database volume.
@@ -48,7 +54,9 @@ npm run docker:dev:down
 ```
 
 ### 2.2 Production Simulation Stack (`docker/docker-compose.prod.yml`)
+
 Runs optimized standalone container builds with production environment variables:
+
 ```bash
 # Start production containers locally
 npm run docker:prod
@@ -74,10 +82,12 @@ npm run docker:prod
 ---
 
 ## Security Considerations
+
 - Zero secrets or `.env` files are baked into container image layers.
 - Trivy scans all container images before publishing to registry.
 
 ## Related Documentation
+
 - [Kubernetes.md](Kubernetes.md) — Kubernetes workload manifests.
 - [CI-CD.md](CI-CD.md) — Automated GitHub Actions container build pipeline.
 - [Trivy.md](Trivy.md) — Container image vulnerability scanning.

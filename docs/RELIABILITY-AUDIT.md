@@ -29,6 +29,7 @@
 ## 2. BEFORE vs AFTER Defect Matrix
 
 ### Frontend Subsystem
+
 - **BEFORE**:
   - `frontend/app/api/health/route.ts` returned a fabricated `"healthy"` status when `DB_OFFLINE === "true"` or when MongoDB was offline, masking true operational downtime.
   - `apiClient.ts` lacked exponential backoff with jitter, lacked `Idempotency-Key` headers for state mutations, and did not classify HTTP status codes into actionable error types.
@@ -41,6 +42,7 @@
   - TypeScript verification (`tsc --noEmit`): 0 compilation errors.
 
 ### Backend Subsystem
+
 - **BEFORE**:
   - Companion Express server lacked universal health check routes (only a single stub was conditionally attached inside a `PROCESS_TYPE === 'worker'` listener).
   - Multiple endpoints (`api/device-tokens`, `api/notifications/dispatch`, `api/agents/church-news`) instantiated `new PrismaClient()` ad-hoc in request handlers, risking connection pool exhaustion.
@@ -50,6 +52,7 @@
   - Backend category in health diagnostics achieved 6/6 checks PASSED (100%).
 
 ### Database Subsystem (Neon PostgreSQL & MongoDB Atlas)
+
 - **BEFORE**:
   - Neon PostgreSQL connection string was not loaded in CLI health engine context, causing false-positive failure `DATABASE_URL environment variable is missing`.
   - MongoDB Atlas TLS handshake failure previously disguised as "healthy" via fallback bypass.
@@ -60,6 +63,7 @@
   - MongoDB Atlas documented as non-primary document store for telemetry; connection failures now accurately surface as `DEGRADED` rather than failing the core platform.
 
 ### Security Subsystem
+
 - **BEFORE**:
   - Detected 1 static credential leakage in `frontend/tests/security/chatbot-security.spec.ts` (unredacted PostgreSQL connection string in test suite).
   - `.gitignore` lacked explicit `*.local` wildcard pattern.
@@ -73,6 +77,7 @@
   - Security category achieved 10/10 checks PASSED (100%).
 
 ### Administrative Health Dashboard & Member Reporting
+
 - **NEW**: Created `/admin/system-health` and backend API `/api/admin/system-health`.
   - Tracks all 14 KCM subsystems: Frontend, Backend, Database, Redis, MongoDB, Firebase, Realtime, Storage, Email, SMS, Payments, Queues, CI/CD, Deployment.
   - Displays STATUS (`HEALTHY`, `DEGRADED`, `DOWN`), LATENCY (ms), LAST CHECK, and ERROR COUNT.
@@ -81,6 +86,7 @@
 - **VERIFIED**: `/member/report` audited for zero sensitive credential leakage, automatic diagnostic capture (browser, OS, viewport, correlation ID), and database persistence in `IssueReport` table.
 
 ### DevOps & CI/CD Quality Gates
+
 - **BEFORE**:
   - `.github/workflows/ci.yml` had `continue-on-error: true` on linting and lacked automated dependency audits, security scans, type checking, and unit/integration tests.
 - **AFTER**:
@@ -102,6 +108,7 @@
 ## 3. Evidence-Based Verification Log
 
 ### Diagnostic Engine Run (65 Checks)
+
 ```
 ============================================================
   KINGDOM OF CHRIST MINISTRIES — PLATFORM HEALTH ENGINE
@@ -137,6 +144,7 @@ Category Rollups:
 ```
 
 ### TypeScript Compiler Check
+
 ```
 > frontend@1.0.0 typecheck
 > tsc --noEmit
@@ -144,6 +152,7 @@ Process exited with code 0 (0 errors).
 ```
 
 ### PostgreSQL Live Data Verification
+
 ```
 === LIVE DATABASE STATUS — KCM Portal ===
 Users:          36

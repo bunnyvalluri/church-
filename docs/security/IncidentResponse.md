@@ -1,4 +1,5 @@
 # Incident Response Guide
+
 ## Kingdom of Christ Ministries — Runtime Security
 
 ## Alert Severity Definitions
@@ -15,6 +16,7 @@
 ## Incident Classification
 
 ### P0 — Critical (Treat as Active Breach)
+
 - Shell spawned in any KCM container
 - Crypto mining detected
 - Container escape attempt
@@ -24,6 +26,7 @@
 - Bulk secrets dump
 
 ### P1 — High (Investigate Immediately)
+
 - kubectl exec into production pod (unauthorized)
 - Privilege escalation attempt
 - Unexpected outbound connection
@@ -32,6 +35,7 @@
 - ServiceAccount token read
 
 ### P2 — Warning (Investigate Within 4 Hours)
+
 - Repeated /tmp writes
 - Cron unexpected behavior
 - Unexpected binary execution

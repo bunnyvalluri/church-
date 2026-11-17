@@ -1,6 +1,7 @@
 # KCM AI Assistant & Context Pipeline API Specification
 
 ## 1. Pipeline Flow
+
 ```
 User Prompt (Client)
         |
@@ -24,6 +25,7 @@ User Prompt (Client)
 ```
 
 ## 2. Security Boundaries
+
 1. **Zero System Prompt Exposure**: The model's internal prompt instructions are not revealed to users.
 2. **Least Privilege Context**: User role determines what knowledge items can be retrieved by the context engine. Financial and private member records are never injected into LLM prompts.
 3. **Audit Trails**: All queries, latency measurements, and moderation flags are logged to `ai_chat_logs`.

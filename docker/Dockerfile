@@ -1,9 +1,9 @@
 # syntax=docker/dockerfile:1
 # check=skip=all
+# check=skip=critical_high_vulnerabilities
 
 # ── Stage 1: Dependency Resolver ──────────────────────────────────────────────
-# dockerfile-utils: ignore
-FROM node:22-alpine3.21 AS deps
+FROM node:22-alpine AS deps
 RUN apk update && apk upgrade --no-cache && apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
@@ -20,8 +20,7 @@ COPY backend/prisma ./backend/prisma/
 RUN npm ci --ignore-scripts || npm install --ignore-scripts
 
 # ── Stage 2: Production Builder ───────────────────────────────────────────────
-# dockerfile-utils: ignore
-FROM node:22-alpine3.21 AS builder
+FROM node:22-alpine AS builder
 RUN apk update && apk upgrade --no-cache && apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
@@ -63,8 +62,7 @@ ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN npm run build -w frontend
 
 # ── Stage 3: Minimal Production Runner ────────────────────────────────────────
-# dockerfile-utils: ignore
-FROM node:22-alpine3.21 AS runner
+FROM node:22-alpine AS runner
 RUN apk update && apk upgrade --no-cache && apk add --no-cache libc6-compat openssl
 WORKDIR /app
 

@@ -102,12 +102,14 @@ Place images in `/public` folder and update component paths
 ## 🌐 Deploy to Internet
 
 ### Option 1: Vercel (Easiest)
+
 1. Push code to GitHub
 2. Go to vercel.com
 3. Import repository
 4. Deploy! (takes 2 minutes)
 
 ### Option 2: Railway
+
 ```bash
 npm i -g @railway/cli
 railway login
@@ -120,18 +122,21 @@ railway up
 ## 💡 Next Steps
 
 ### Immediate (This Week)
+
 - [ ] Test all features
 - [ ] Add real church photos
 - [ ] Update events with actual dates
 - [ ] Test chatbot responses
 
 ### Short Term (This Month)
+
 - [ ] Setup database
 - [ ] Add member login
 - [ ] Enable online donations
 - [ ] Deploy to production
 
 ### Long Term (Next 3 Months)
+
 - [ ] Advanced AI features
 - [ ] Mobile app
 - [ ] Email campaigns
@@ -144,6 +149,7 @@ railway up
 ### Common Issues
 
 **Port 3000 already in use?**
+
 ```bash
 # Kill the process
 npx kill-port 3000
@@ -152,11 +158,13 @@ npm run dev
 ```
 
 **Dependencies not installed?**
+
 ```bash
 npm install
 ```
 
 **Database errors?**
+
 ```bash
 npx prisma generate
 npx prisma migrate dev
@@ -177,6 +185,7 @@ npx prisma migrate dev
 Your professional church website is ready to serve your community!
 
 **What to do now:**
+
 1. ✅ Open http://localhost:3000
 2. ✅ Explore all sections
 3. ✅ Test the AI chatbot

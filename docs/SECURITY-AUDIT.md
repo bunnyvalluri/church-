@@ -9,13 +9,16 @@
 ## 1. Security Posture Assessment
 
 ### 1.1 HTTP Security Headers & RFC Compliance
+
 All security headers have been centralized in `frontend/next.config.js` to eliminate conflict with Vercel's edge proxy:
+
 - **Strict-Transport-Security (HSTS):** `max-age=63072000; includeSubDomains; preload` (enforces TLS 1.3 across all subdomains for 2 years).
 - **X-Frame-Options:** `SAMEORIGIN` (prevents clickjacking attacks while permitting same-origin iframes).
 - **X-Content-Type-Options:** `nosniff` (mitigates MIME type confusion and sniffing attacks).
 - **Referrer-Policy:** `strict-origin-when-cross-origin` (prevents path and query leakage to third parties).
 - **Permissions-Policy:**
   `camera=(self), microphone=(), geolocation=(), payment=(self "https://checkout.razorpay.com" "https://js.stripe.com"), fullscreen=(self)`
+
   - Formatted strictly in compliance with **RFC 8941 Structured Header Parser**.
   - Camera access granted strictly to `self` to support QR code scanning in the Event Manager portal.
   - Microphones, geolocations, and unauthorized sensors strictly blocked.
@@ -26,6 +29,7 @@ All security headers have been centralized in `frontend/next.config.js` to elimi
 ## 2. Secrets & Environment Variable Auditing
 
 ### 2.1 Remediation of Client-Exposed Environment Variables
+
 - **Finding:** `NEXT_PUBLIC_FIRECRAWL_API_KEY` was found in root `.env`.
 - **Severity:** HIGH / CRITICAL.
 - **Action Taken:**
@@ -34,6 +38,7 @@ All security headers have been centralized in `frontend/next.config.js` to elimi
   - Audited client bundle outputs to verify zero server credentials remain exposed.
 
 ### 2.2 Database Credentials
+
 - Neon PostgreSQL connection string uses SSL mode `sslmode=require` and pooler parameters.
 - Upstash Redis connection string uses TLS `rediss://` scheme with secure token authentication.
 
@@ -42,6 +47,7 @@ All security headers have been centralized in `frontend/next.config.js` to elimi
 ## 3. Realtime & Network Isolation
 
 ### 3.1 Localhost Exposure Elimination
+
 - In previous versions, client code in `agentReachClient.ts` attempted to open WebSocket connections to `ws://localhost:3001` when deployed to production HTTPS.
 - In production, modern browsers trigger mixed-content security blocks and connection refusal errors.
 - Fixed: Client returns a safe in-memory no-op socket in production when an external companion server is unconfigured, preventing socket connection leaks and console security warnings.
@@ -85,4 +91,3 @@ All security headers have been centralized in `frontend/next.config.js` to elimi
 | **Secret Security** | **PASS** | Purged `NEXT_PUBLIC_FIRECRAWL_API_KEY`, template-only k8s secrets, `.env` gitignored. |
 | **CI/CD Security** | **PASS** | GitHub Actions status checks, Trivy scanning, automated Playwright verification. |
 | **HTTPS / TLS** | **PASS** | TLS 1.3 enforced, HTTP-to-HTTPS redirect in Edge middleware. |
-

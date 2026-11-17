@@ -15,12 +15,12 @@ Secondary stores may receive derived events, search indexes, or cached summaries
 ```mermaid
 graph TD
     Client[Web & Mobile Client] --> Gateway[Next.js API & Express Backend]
-    
+
     Gateway -->|Transactional / Authoritative| PG[(Neon PostgreSQL)]
     Gateway -->|High-Volume Append Logs| Mongo[(MongoDB Atlas)]
     Gateway -->|Push Notifications| Firebase[Firebase Admin / FCM]
     Gateway -->|Media Assets & CDN| Cloudinary[Cloudinary Storage]
-    
+
     PG -.->|Domain Events / Outbox| Mongo
     PG -.->|Broadcast| Socket[Socket.io Realtime]
 ```
@@ -68,6 +68,7 @@ graph TD
 ## 4. Conflict Resolution Strategy
 
 If an existing legacy subsystem attempts to read or write business state in a conflicting manner:
+
 1. PostgreSQL is treated as the ground truth.
 2. MongoDB state is resynchronized from PostgreSQL via non-blocking domain events or reconciliation scripts.
 3. No destructive schema migrations are performed.
