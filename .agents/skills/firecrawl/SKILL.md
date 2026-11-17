@@ -8,11 +8,13 @@ description: Firecrawl Agent Integration Skill for web searching, scraping, craw
 This skill enables Antigravity and AI agents to search, scrape, crawl, and extract clean web content using the Firecrawl Cloud API & local Firecrawl services.
 
 ## Firecrawl API Configuration
+
 - **API Key**: Loaded securely from the `FIRECRAWL_API_KEY` environment variable in `.env` / secret manager. Never commit raw API keys into repository files.
 - **Base API Endpoint**: `https://api.firecrawl.dev/v1` (configurable via `FIRECRAWL_BASE_URL`)
 - **Authentication Header**: `Authorization: Bearer <FIRECRAWL_API_KEY>`
 
 ### Authentication Example
+
 ```bash
 curl -X POST https://api.firecrawl.dev/v1/scrape \
   -H "Authorization: Bearer $FIRECRAWL_API_KEY" \
@@ -21,6 +23,7 @@ curl -X POST https://api.firecrawl.dev/v1/scrape \
 ```
 
 In Node.js / Next.js server runtime:
+
 ```javascript
 const apiKey = process.env.FIRECRAWL_API_KEY;
 const baseUrl = process.env.FIRECRAWL_BASE_URL || 'https://api.firecrawl.dev/v1';
@@ -38,7 +41,9 @@ const res = await fetch(`${baseUrl}/scrape`, {
 ## API Capabilities
 
 ### 1. Scrape URL (`POST /v1/scrape`)
+
 Scrapes a single target URL and returns clean Markdown, HTML, and metadata.
+
 ```json
 {
   "url": "https://example.com",
@@ -48,7 +53,9 @@ Scrapes a single target URL and returns clean Markdown, HTML, and metadata.
 ```
 
 ### 2. Search Web (`POST /v1/search`)
+
 Searches the web for articles, Christian blogs, devotionals, or NGO opportunities.
+
 ```json
 {
   "query": "Christian sermon study grace redemption",
@@ -57,7 +64,9 @@ Searches the web for articles, Christian blogs, devotionals, or NGO opportunitie
 ```
 
 ### 3. Crawl Domain (`POST /v1/crawl`)
+
 Recursively crawls a website domain with depth and page limit.
+
 ```json
 {
   "url": "https://example.org",
@@ -67,10 +76,13 @@ Recursively crawls a website domain with depth and page limit.
 ```
 
 ### 4. Structured LLM Extraction (`POST /v1/extract`)
+
 Extracts JSON data according to a specified schema.
 
 ## Local Platform Integration Endpoints
+
 In the KCM Church Platform, Firecrawl intelligence endpoints are accessible via:
+
 - `POST /api/firecrawl/scrape`: Direct URL Scrape
 - `POST /api/firecrawl/sermon-research`: Sermon Research & Pastor Outline Brief
 - `GET/POST /api/firecrawl/church-news`: Scrape & View Christian News Feed
