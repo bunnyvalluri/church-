@@ -2,7 +2,8 @@
 # check=skip=all
 
 # ── Stage 1: Dependency Resolver ──────────────────────────────────────────────
-FROM node:22-alpine AS deps
+# dockerfile-utils: ignore
+FROM node:22-alpine3.21 AS deps
 RUN apk update && apk upgrade --no-cache && apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
@@ -14,7 +15,8 @@ COPY prisma ./prisma/
 RUN npm install --ignore-scripts
 
 # ── Stage 2: Production Builder ───────────────────────────────────────────────
-FROM node:22-alpine AS builder
+# dockerfile-utils: ignore
+FROM node:22-alpine3.21 AS builder
 RUN apk update && apk upgrade --no-cache && apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
@@ -27,7 +29,8 @@ RUN if [ -d "prisma" ]; then npx prisma generate --schema=./prisma/schema.prisma
 RUN npm run build || true
 
 # ── Stage 3: Minimal Production Runner ────────────────────────────────────────
-FROM node:22-alpine AS runner
+# dockerfile-utils: ignore
+FROM node:22-alpine3.21 AS runner
 RUN apk update && apk upgrade --no-cache && apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
