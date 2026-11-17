@@ -1,6 +1,5 @@
 # syntax=docker/dockerfile:1
 # check=skip=all
-# check=skip=critical_high_vulnerabilities
 
 FROM nginx:alpine
 
