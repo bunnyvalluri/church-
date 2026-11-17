@@ -9,6 +9,13 @@
   "less.lint.unknownAtRules": "ignore",
   "docker.languageserver.diagnostics.critical_high_vulnerabilities": "ignore",
   "docker.languageserver.diagnostics.recommended_tags": "ignore",
+  "docker.languageserver.diagnostics.deprecatedMaintainer": "ignore",
+  "docker.languageserver.diagnostics.emptyContinuationLine": "ignore",
+  "docker.languageserver.diagnostics.instructionJSONInSingleQuotes": "ignore",
+  "docker.languageserver.diagnostics.instructionWorkdirRelative": "ignore",
+  "docker.scout.enable": false,
+  "docker.scout.hover": false,
+  "docker.languageserver.scout.enable": false,
   "files.exclude": {
     "**/.git": true,
     "**/.svn": true,
