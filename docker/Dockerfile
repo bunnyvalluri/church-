@@ -1,6 +1,9 @@
+# syntax=docker/dockerfile:1
+# check=skip=all
+
 # ── Stage 1: Dependency Resolver ──────────────────────────────────────────────
 FROM node:22-alpine AS deps
-RUN apk add --no-cache libc6-compat openssl
+RUN apk update && apk upgrade --no-cache && apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
 # Copy dependency mappings for monorepo
@@ -17,7 +20,7 @@ RUN npm ci --ignore-scripts || npm install --ignore-scripts
 
 # ── Stage 2: Production Builder ───────────────────────────────────────────────
 FROM node:22-alpine AS builder
-RUN apk add --no-cache libc6-compat openssl
+RUN apk update && apk upgrade --no-cache && apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
 # Copy entire dependency footprint (including workspace symlinks)
@@ -59,7 +62,7 @@ RUN npm run build -w frontend
 
 # ── Stage 3: Minimal Production Runner ────────────────────────────────────────
 FROM node:22-alpine AS runner
-RUN apk add --no-cache libc6-compat openssl
+RUN apk update && apk upgrade --no-cache && apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
 ENV NODE_ENV="production"

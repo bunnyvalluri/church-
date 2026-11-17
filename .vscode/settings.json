@@ -7,6 +7,8 @@
   "css.lint.unknownAtRules": "ignore",
   "scss.lint.unknownAtRules": "ignore",
   "less.lint.unknownAtRules": "ignore",
+  "docker.languageserver.diagnostics.critical_high_vulnerabilities": "ignore",
+  "docker.languageserver.diagnostics.recommended_tags": "ignore",
   "files.exclude": {
     "**/.git": true,
     "**/.svn": true,

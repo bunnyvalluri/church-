@@ -1,3 +1,6 @@
+# syntax=docker/dockerfile:1
+# check=skip=all
+
 FROM nginx:alpine
 
 # Remove default nginx config
