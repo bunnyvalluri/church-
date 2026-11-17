@@ -449,7 +449,7 @@ export default function ChurchGalleryPage() {
   const { selectedBranchId, setSelectedBranchId } = useBranch();
 
   // Top-Level Media Section Tab: "photos" | "videos" | "pastor" | "all"
-  const [activeMediaTab, setActiveMediaTab] = useState<"photos" | "videos" | "pastor" | "all">("all");
+  const [activeMediaTab, setActiveMediaTab] = useState<"photos" | "videos" | "pastor" | "all">("photos");
 
   // ══════════════════════ PHOTO GALLERY STATE ══════════════════════
   const [items, setItems] = useState<GalleryItem[]>(CURATED_GALLERY_ITEMS);
@@ -463,9 +463,9 @@ export default function ChurchGalleryPage() {
   const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
 
-  // Progressive batch rendering for photos
-  const INITIAL_BATCH = 24;
-  const BATCH_SIZE = 16;
+  // Progressive batch rendering for photos (fast loading of complete church moments)
+  const INITIAL_BATCH = 40;
+  const BATCH_SIZE = 24;
   const [displayCount, setDisplayCount] = useState(INITIAL_BATCH);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
@@ -941,32 +941,7 @@ export default function ChurchGalleryPage() {
 
             {/* Quick Media Switcher Tabs in Hero — Liquid Glass Segmented Pill */}
             <div className="inline-flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 rounded-3xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-2xl border border-slate-200/80 dark:border-white/10 shadow-2xl shadow-purple-950/10 max-w-full mx-auto">
-              {/* 0. Pastor Spotlight Tab */}
-              <button
-                onClick={handleSwitchToPastor}
-                className={`relative inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-2xl font-extrabold text-xs sm:text-sm whitespace-nowrap transition-all duration-300 ${
-                  activeMediaTab === "pastor"
-                    ? "bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 text-white shadow-lg shadow-purple-600/30 ring-2 ring-purple-400/40"
-                    : "text-slate-700 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50/80 dark:hover:bg-purple-950/30"
-                }`}
-              >
-                <Crown className={`w-4 h-4 shrink-0 ${activeMediaTab === "pastor" ? "text-amber-300 fill-amber-300" : "text-amber-500"}`} />
-                <span>Pastor Spotlight</span>
-                <span
-                  className={`px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-mono font-black shrink-0 ${
-                    activeMediaTab === "pastor"
-                      ? "bg-white/25 text-white"
-                      : "bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300"
-                  }`}
-                >
-                  {PASTOR_MEDIA_ITEMS.length}
-                </span>
-                {activeMediaTab === "pastor" && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping absolute -top-1 -right-1" />
-                )}
-              </button>
-
-              {/* 1. Photo Gallery Tab */}
+              {/* 1. Photo Gallery Tab — PRIMARY & ON TOP */}
               <button
                 onClick={handleSwitchToPhotoGallery}
                 className={`relative inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-2xl font-extrabold text-xs sm:text-sm whitespace-nowrap transition-all duration-300 ${
@@ -986,9 +961,34 @@ export default function ChurchGalleryPage() {
                 >
                   {filteredItems.length}+
                 </span>
+                {activeMediaTab === "photos" && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping absolute -top-1 -right-1" />
+                )}
               </button>
 
-              {/* 2. Video Theater Tab */}
+              {/* 2. Pastor Spotlight Tab */}
+              <button
+                onClick={handleSwitchToPastor}
+                className={`relative inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-2xl font-extrabold text-xs sm:text-sm whitespace-nowrap transition-all duration-300 ${
+                  activeMediaTab === "pastor"
+                    ? "bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 text-white shadow-lg shadow-purple-600/30 ring-2 ring-purple-400/40"
+                    : "text-slate-700 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50/80 dark:hover:bg-purple-950/30"
+                }`}
+              >
+                <Crown className={`w-4 h-4 shrink-0 ${activeMediaTab === "pastor" ? "text-amber-300 fill-amber-300" : "text-amber-500"}`} />
+                <span>Pastor Spotlight</span>
+                <span
+                  className={`px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-mono font-black shrink-0 ${
+                    activeMediaTab === "pastor"
+                      ? "bg-white/25 text-white"
+                      : "bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300"
+                  }`}
+                >
+                  {PASTOR_MEDIA_ITEMS.length}
+                </span>
+              </button>
+
+              {/* 3. Video Theater Tab */}
               <button
                 onClick={handleSwitchToVideoTheater}
                 className={`relative inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-2xl font-extrabold text-xs sm:text-sm whitespace-nowrap transition-all duration-300 ${
@@ -1010,7 +1010,7 @@ export default function ChurchGalleryPage() {
                 </span>
               </button>
 
-              {/* 3. All Media Tab */}
+              {/* 4. All Media Tab */}
               <button
                 onClick={handleSwitchToAllMedia}
                 className={`relative inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-2xl font-extrabold text-xs sm:text-sm whitespace-nowrap transition-all duration-300 ${
@@ -1037,16 +1037,7 @@ export default function ChurchGalleryPage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════════════
-           PASTOR SPOTLIGHT & SPRITE REEL SHOWCASE SECTION
-      ══════════════════════════════════════════════════════════════════════════════ */}
-      {(activeMediaTab === "all" || activeMediaTab === "pastor") && (
-        <div className="container mx-auto px-4 sm:px-6">
-          <PastorSpriteSection language={currentLang} onToast={showToast} />
-        </div>
-      )}
-
-      {/* ══════════════════════════════════════════════════════════════════════════════
-           FIRST SECTION: 📸 HIGH-RESOLUTION PHOTO GALLERY & BLESSING MOMENTS
+           PRIMARY SECTION: 📸 HIGH-RESOLUTION CHURCH PHOTO GALLERY (ON TOP)
       ══════════════════════════════════════════════════════════════════════════════ */}
       {(activeMediaTab === "all" || activeMediaTab === "photos") && (
         <main ref={photoGalleryRef} className="container mx-auto px-4 sm:px-6 py-10 sm:py-14">
@@ -1434,7 +1425,16 @@ export default function ChurchGalleryPage() {
       )}
 
       {/* ══════════════════════════════════════════════════════════════════════════════
-           SECOND SECTION: 🎬 VIDEO THEATER & LIVE BROADCAST ARCHIVE (USER REQUESTED UX)
+           SECOND SECTION: 👑 PASTOR SPOTLIGHT & SPRITE REEL SHOWCASE
+      ══════════════════════════════════════════════════════════════════════════════ */}
+      {(activeMediaTab === "all" || activeMediaTab === "pastor") && (
+        <div id="pastor-spotlight-section" className="container mx-auto px-4 sm:px-6 py-12">
+          <PastorSpriteSection language={currentLang} onToast={showToast} />
+        </div>
+      )}
+
+      {/* ══════════════════════════════════════════════════════════════════════════════
+           THIRD SECTION: 🎬 VIDEO THEATER & LIVE BROADCAST ARCHIVE
       ══════════════════════════════════════════════════════════════════════════════ */}
       {(activeMediaTab === "all" || activeMediaTab === "videos") && (
         <section
@@ -2423,7 +2423,7 @@ const GalleryCardImage = React.memo(function GalleryCardImage({
         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1440px) 33vw, 25vw"
         loading={priority ? "eager" : "lazy"}
         priority={priority}
-        className={`object-contain z-10 transform-gpu group-hover:scale-105 transition-all duration-300 ease-out drop-shadow-md ${
+        className={`object-cover z-10 transform-gpu group-hover:scale-105 transition-all duration-300 ease-out drop-shadow-md ${
           isLoaded ? "opacity-100" : "opacity-0"
         }`}
         onLoad={() => {

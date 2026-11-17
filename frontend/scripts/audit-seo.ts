@@ -67,7 +67,7 @@ assert(church.email === "kingofchristministries23@gmail.com", "Official church e
 const website = websiteSchema();
 assert(website["@type"] === "WebSite", "WebSite schema type is WebSite");
 assert(website["@id"] === "https://kcmchurch.vercel.app/#website", "WebSite entity @id is https://kcmchurch.vercel.app/#website");
-assert(website.name === "Kingdom of Christ Ministries", "WebSite name matches primary organization");
+assert(website.name === "Kcm church" || website.name === "Kingdom of Christ Ministries", "WebSite name matches church brand name");
 assert(website.publisher["@id"] === ORGANIZATION_ID, "WebSite publisher connects to primary organization @id");
 
 // 3. Dedicated Branch Location Schema Verification

@@ -55,8 +55,8 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Kingdom of Christ Ministries | Faith, Worship & Community in Hyderabad",
-    template: "%s | Kingdom of Christ Ministries",
+    default: "Kcm church | Kingdom of Christ Ministries",
+    template: "%s | Kcm church",
   },
   description:
     "Kingdom of Christ Ministries — a Christ-centred church community in Jeedimetla & Bahadurpally, Hyderabad. Join us for worship, sermons, prayer, ministries, events and community outreach.",
@@ -86,25 +86,25 @@ export const metadata: Metadata = {
     apple: [{ url: "/logo.png", type: "image/png" }],
     shortcut: "/logo.png",
   },
-  applicationName: "Kingdom of Christ Ministries",
+  applicationName: "Kcm church",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Kingdom of Christ Ministries",
+    title: "Kcm church",
   },
   other: {
     "mobile-web-app-capable": "yes",
-    "site_name": "Kingdom of Christ Ministries",
+    "site_name": "Kcm church",
   },
   alternates: {
     canonical: SITE_URL,
   },
   openGraph: {
-    title: "Kingdom of Christ Ministries | Faith, Worship & Community",
+    title: "Kcm church | Kingdom of Christ Ministries",
     description:
       "Kingdom of Christ Ministries — a Christ-centred church in Jeedimetla & Bahadurpally, Hyderabad. Worship, sermons, prayer, ministries and community outreach.",
     url: SITE_URL,
-    siteName: "Kingdom of Christ Ministries",
+    siteName: "Kcm church",
     type: "website",
     locale: "en_IN",
     images: [
@@ -118,7 +118,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Kingdom of Christ Ministries | Hyderabad",
+    title: "Kcm church | Kingdom of Christ Ministries",
     description:
       "A Christ-centred church in Jeedimetla & Bahadurpally, Hyderabad. Join us for worship, sermons, prayer and community.",
     images: [`${SITE_URL}/logo.png`],
@@ -154,6 +154,12 @@ export default function RootLayout({
 
         {/* Explicit color-scheme declaration to prevent Samsung Internet forced auto-dark mode inversion */}
         <meta name="color-scheme" content="light dark" />
+
+        {/* Google Site Name & Branding signals: ensure crawlers recognize Kcm church instead of hosting platform */}
+        <meta name="site_name" content="Kcm church" />
+        <meta property="og:site_name" content="Kcm church" />
+        <meta name="application-name" content="Kcm church" />
+        <meta name="apple-mobile-web-app-title" content="Kcm church" />
 
         {/* Global Schema.org structured data — Church + WebSite + FAQ (for Google AI Overviews) */}
         {/* Google Search Central: Standalone WebSite Schema for Site Name Definition */}

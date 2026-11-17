@@ -86,7 +86,7 @@ export function constructMetadata({
       title: fullTitle,
       description,
       url: canonical,
-      siteName: SITE_NAME,
+      siteName: "Kcm church",
       type: ogType,
       locale: "en_IN",
       images: [{ url: ogImage, width: 1200, height: 630, alt: title }],
@@ -103,7 +103,7 @@ export function constructMetadata({
 // ── Page-specific metadata presets ────────────────────────────────────────────
 export const PAGE_METADATA = {
   home: constructMetadata({
-    title: "Kingdom of Christ Ministries | KCM",
+    title: "Kcm church | Kingdom of Christ Ministries",
     description:
       "Official website of Kingdom of Christ Ministries (KCM). Discover our church, worship services, ministries, locations, sermons, events, prayer support, community programs, and ways to get involved.",
     path: "/",
@@ -257,11 +257,23 @@ export const PAGE_METADATA = {
     keywords: ["Bahadurpally church", "Gandimaisamma church", "Kingdom of Christ Bahadurpally"],
   }),
   gallery: constructMetadata({
-    title: "KCM Gallery",
+    title: "Kcm church Gallery | Official Church Photos & Moments",
     description:
-      "Explore photo highlights from worship services, baptisms, conventions, youth festivals, and outreach events at Kingdom of Christ Ministries in Hyderabad.",
+      "Explore official high-resolution photo highlights, family blessing festivals, revival worship services, and community moments from Kcm church in Hyderabad.",
     path: "/gallery",
-    keywords: ["KCM gallery", "church photos Hyderabad", "Kingdom of Christ photos"],
+    ogImage: `${SITE_URL}/images/events/family-blessing-poster-1.jpg`,
+    keywords: [
+      "Kcm church gallery",
+      "Kcm church photos",
+      "KCM Church photos",
+      "KCM church photos Hyderabad",
+      "Kingdom of Christ Ministries photos",
+      "Kcm church images",
+      "church gallery Hyderabad",
+      "Subhash Nagar church photos",
+      "Bahadurpally church photos",
+      "Shapur Nagar church photos",
+    ],
   }),
   resources: constructMetadata({
     title: "Resources",

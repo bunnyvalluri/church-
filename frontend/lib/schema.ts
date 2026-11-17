@@ -21,8 +21,10 @@ export function churchSchema() {
     "@context": "https://schema.org",
     "@type": ["Church", "Organization"],
     "@id": ORGANIZATION_ID,
-    name: "Kingdom of Christ Ministries",
+    name: "Kcm church",
     alternateName: [
+      "Kingdom of Christ Ministries",
+      "KCM Church",
       "KCM",
       "KCM Ministries",
       "KCM Church",
@@ -177,7 +179,7 @@ export function websiteSchema() {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "@id": WEBSITE_ID,
-    name: "Kingdom of Christ Ministries",
+    name: "Kcm church",
     alternateName: [
       "KCM Church",
       "Kingdom of Christ Ministries Church",
@@ -262,7 +264,7 @@ export function branchLocationSchema(branch: BranchLocation) {
     parentOrganization: {
       "@type": "Church",
       "@id": ORGANIZATION_ID,
-      name: "Kingdom of Christ Ministries",
+      name: "Kcm church",
       url: SITE_URL,
     },
     address: {
