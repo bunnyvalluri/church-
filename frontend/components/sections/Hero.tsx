@@ -24,54 +24,54 @@ function getHeroIcon(name: string): LucideIcon {
 }
 
 // ── Color scheme configuration ─────────────────────────────────────────────────
-const COLOR_SCHEMES: Record<string, { border: string; glow: string; num: string; icon: string }> = {
+const COLOR_SCHEMES: Record<string, { border: string; glow: string; iconBg: string; iconColor: string }> = {
   violet: {
-    border: "from-violet-500/30 to-indigo-500/10 dark:from-violet-500/40 dark:to-indigo-500/10",
-    glow: "group-hover:shadow-violet-500/20",
-    num: "from-violet-600 to-indigo-600 dark:from-violet-400 dark:to-indigo-400",
-    icon: "bg-gradient-to-br from-violet-500 to-indigo-600 shadow-lg shadow-violet-500/20",
+    border: "border-purple-200/80 dark:border-purple-500/20",
+    glow: "group-hover:shadow-purple-500/15",
+    iconBg: "bg-purple-500/10 dark:bg-purple-500/20",
+    iconColor: "text-purple-600 dark:text-purple-400",
   },
   emerald: {
-    border: "from-emerald-500/30 to-teal-500/10 dark:from-emerald-500/40 dark:to-teal-500/10",
-    glow: "group-hover:shadow-emerald-500/20",
-    num: "from-emerald-600 to-teal-600 dark:from-emerald-400 dark:to-teal-400",
-    icon: "bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg shadow-emerald-500/20",
+    border: "border-emerald-200/80 dark:border-emerald-500/20",
+    glow: "group-hover:shadow-emerald-500/15",
+    iconBg: "bg-emerald-500/10 dark:bg-emerald-500/20",
+    iconColor: "text-emerald-600 dark:text-emerald-400",
   },
   amber: {
-    border: "from-amber-500/30 to-orange-500/10 dark:from-amber-500/40 dark:to-orange-500/10",
-    glow: "group-hover:shadow-amber-500/20",
-    num: "from-amber-600 to-orange-600 dark:from-amber-400 dark:to-orange-400",
-    icon: "bg-gradient-to-br from-amber-500 to-orange-600 shadow-lg shadow-amber-500/20",
+    border: "border-amber-200/80 dark:border-amber-500/20",
+    glow: "group-hover:shadow-amber-500/15",
+    iconBg: "bg-amber-500/10 dark:bg-amber-500/20",
+    iconColor: "text-amber-600 dark:text-amber-400",
   },
   rose: {
-    border: "from-rose-500/30 to-red-500/10 dark:from-rose-500/40 dark:to-red-500/10",
-    glow: "group-hover:shadow-rose-500/20",
-    num: "from-rose-600 to-red-600 dark:from-rose-400 dark:to-red-400",
-    icon: "bg-gradient-to-br from-rose-500 to-red-600 shadow-lg shadow-rose-500/20",
+    border: "border-rose-200/80 dark:border-rose-500/20",
+    glow: "group-hover:shadow-rose-500/15",
+    iconBg: "bg-rose-500/10 dark:bg-rose-500/20",
+    iconColor: "text-rose-600 dark:text-rose-400",
   },
   blue: {
-    border: "from-blue-500/30 to-cyan-500/10 dark:from-blue-500/40 dark:to-cyan-500/10",
-    glow: "group-hover:shadow-blue-500/20",
-    num: "from-blue-600 to-cyan-600 dark:from-blue-400 dark:to-cyan-400",
-    icon: "bg-gradient-to-br from-blue-500 to-cyan-600 shadow-lg shadow-blue-500/20",
+    border: "border-blue-200/80 dark:border-blue-500/20",
+    glow: "group-hover:shadow-blue-500/15",
+    iconBg: "bg-blue-500/10 dark:bg-blue-500/20",
+    iconColor: "text-blue-600 dark:text-blue-400",
   },
   teal: {
-    border: "from-teal-500/30 to-emerald-500/10 dark:from-teal-500/40 dark:to-emerald-500/10",
-    glow: "group-hover:shadow-teal-500/20",
-    num: "from-teal-600 to-emerald-600 dark:from-teal-400 dark:to-emerald-400",
-    icon: "bg-gradient-to-br from-teal-500 to-emerald-600 shadow-lg shadow-teal-500/20",
+    border: "border-teal-200/80 dark:border-teal-500/20",
+    glow: "group-hover:shadow-teal-500/15",
+    iconBg: "bg-teal-500/10 dark:bg-teal-500/20",
+    iconColor: "text-teal-600 dark:text-teal-400",
   },
   orange: {
-    border: "from-orange-500/30 to-red-500/10 dark:from-orange-500/40 dark:to-red-500/10",
-    glow: "group-hover:shadow-orange-500/20",
-    num: "from-orange-600 to-red-600 dark:from-orange-400 dark:to-red-400",
-    icon: "bg-gradient-to-br from-orange-500 to-red-600 shadow-lg shadow-orange-500/20",
+    border: "border-orange-200/80 dark:border-orange-500/20",
+    glow: "group-hover:shadow-orange-500/15",
+    iconBg: "bg-orange-500/10 dark:bg-orange-500/20",
+    iconColor: "text-orange-600 dark:text-orange-400",
   },
   purple: {
-    border: "from-purple-500/30 to-fuchsia-500/10 dark:from-purple-500/40 dark:to-fuchsia-500/10",
-    glow: "group-hover:shadow-purple-500/20",
-    num: "from-purple-600 to-fuchsia-600 dark:from-purple-400 dark:to-fuchsia-400",
-    icon: "bg-gradient-to-br from-purple-500 to-fuchsia-600 shadow-lg shadow-purple-500/20",
+    border: "border-purple-200/80 dark:border-purple-500/20",
+    glow: "group-hover:shadow-purple-500/15",
+    iconBg: "bg-purple-500/10 dark:bg-purple-500/20",
+    iconColor: "text-purple-600 dark:text-purple-400",
   },
 };
 
@@ -118,34 +118,28 @@ const StatCard = memo(function StatCard({ stat, isInView, index }: { stat: SiteS
             transition: { type: "spring", stiffness: 60, damping: 14 },
           },
         }}
-        whileHover={{ y: -6, scale: 1.015 }}
+        whileHover={{ y: -4, scale: 1.01 }}
         whileTap={{ scale: 0.98 }}
-        className="relative group rounded-2xl p-[1px] bg-gradient-to-b from-white/60 to-white/15 dark:from-white/15 dark:to-transparent h-full"
+        className={`relative group rounded-2xl h-full min-h-[140px] sm:min-h-[156px] bg-white/80 dark:bg-[#0c1021]/80 backdrop-blur-xl border ${colors.border} shadow-sm hover:shadow-lg ${colors.glow} transition-all duration-300 p-4 sm:p-5 md:p-6 flex flex-col items-center justify-center text-center`}
       >
-        {/* Glow layer */}
+        {/* Icon Capsule */}
         <div
-          className={`absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl -z-10 shadow-lg ${colors.glow}`}
-        />
-        {/* Border glow */}
-        <div
-          className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${colors.border} opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10`}
-        />
+          className={`w-11 h-11 sm:w-12 sm:h-12 md:w-14 md:h-14 ${colors.iconBg} ${colors.iconColor} rounded-2xl flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform duration-300 ring-1 ring-inset ring-black/5 dark:ring-white/10`}
+        >
+          <Icon className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7" />
+        </div>
 
-        <div className="bg-white/60 dark:bg-slate-950/60 backdrop-blur-2xl rounded-2xl p-5 md:p-8 h-full border border-white/40 dark:border-white/5 flex flex-col items-center justify-center text-center transition-all duration-500">
-          <div
-            className={`w-12 h-12 md:w-14 md:h-14 ${colors.icon} rounded-2xl flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform duration-300`}
-          >
-            <Icon className="h-6 w-6 md:h-7 md:w-7 text-white" />
-          </div>
-          <div
-            className={`text-2xl md:text-4xl font-black mb-1.5 font-heading bg-gradient-to-r ${colors.num} bg-clip-text text-transparent`}
-            suppressHydrationWarning
-          >
-            {animatedValue}
-          </div>
-          <div className="text-slate-500 dark:text-gray-400 font-bold uppercase tracking-widest text-[9px] md:text-xs">
-            {label}
-          </div>
+        {/* High-Contrast Crisp Metric Number (No Muddy Clip or Red) */}
+        <div
+          className="text-2xl sm:text-3xl md:text-4xl font-black mb-1 font-outfit text-slate-900 dark:text-white tracking-tight"
+          suppressHydrationWarning
+        >
+          {animatedValue}
+        </div>
+
+        {/* Readable Label — Multi-line wrapping with zero truncation */}
+        <div className="text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider text-[9.5px] sm:text-[11px] font-outfit text-center leading-tight px-1 min-h-[2.4em] flex items-center justify-center">
+          {label}
         </div>
       </motion.div>
     </a>
@@ -155,11 +149,11 @@ const StatCard = memo(function StatCard({ stat, isInView, index }: { stat: SiteS
 // ── Skeleton Loaders ───────────────────────────────────────────────────────────
 function StatCardSkeleton() {
   return (
-    <div className="rounded-2xl p-[1px] bg-gradient-to-b from-white/60 to-white/15 dark:from-white/15 dark:to-transparent animate-pulse">
-      <div className="bg-white/60 dark:bg-slate-950/60 backdrop-blur-2xl rounded-2xl p-5 md:p-8 h-full border border-white/40 dark:border-white/5 flex flex-col items-center justify-center text-center">
-        <div className="w-12 h-12 md:w-14 md:h-14 bg-slate-200 dark:bg-slate-800 rounded-2xl mb-4 md:mb-6" />
-        <div className="h-8 w-20 bg-slate-200 dark:bg-slate-800 rounded-lg mb-2" />
-        <div className="h-3 w-24 bg-slate-100 dark:bg-slate-900 rounded" />
+    <div className="rounded-2xl p-[1px] bg-gradient-to-b from-white/60 to-white/15 dark:from-white/15 dark:to-transparent animate-pulse min-h-[140px] sm:min-h-[156px]">
+      <div className="bg-white/60 dark:bg-slate-950/60 backdrop-blur-2xl rounded-2xl p-4 sm:p-5 md:p-6 h-full border border-white/40 dark:border-white/5 flex flex-col items-center justify-center text-center">
+        <div className="w-11 h-11 sm:w-12 sm:h-12 md:w-14 md:h-14 bg-slate-200 dark:bg-slate-800 rounded-2xl mb-3 sm:mb-4" />
+        <div className="h-7 sm:h-8 md:h-9 w-20 bg-slate-200 dark:bg-slate-800 rounded-lg mb-1" />
+        <div className="h-3 w-20 bg-slate-100 dark:bg-slate-900 rounded" />
       </div>
     </div>
   );
@@ -201,7 +195,7 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
       ? t.hero.prayerBoxSub
       : hero?.badgeText ?? "Kingdom of Christ Ministries (KCM) • Official Website";
 
-  const headline =
+  const rawHeadline =
     language === "te" && (hero as any)?.headlineTe
       ? (hero as any).headlineTe
       : language === "hi" && (hero as any)?.headlineHi
@@ -210,7 +204,7 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
       ? t.hero.welcome
       : hero?.headline ?? t.hero.welcome ?? "Welcome to";
 
-  const churchName =
+  const rawChurchName =
     language === "te" && (hero as any)?.subheadlineTe
       ? (hero as any).subheadlineTe
       : language === "hi" && (hero as any)?.subheadlineHi
@@ -220,6 +214,37 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
       : hero?.subheadline ?? t.hero.churchName ?? "Kingdom of Christ";
 
   const ministriesText = t.hero.ministries ?? "Ministries";
+
+  // 🛡️ Senior UI/UX Architectural Normalization:
+  // Prevent duplicate "Ministries / MINISTRIES" or inverted church name hierarchy
+  let headline = rawHeadline;
+  let churchName = rawChurchName;
+  let showMinistriesBanner = true;
+
+  if (
+    churchName.toLowerCase().trim() === "ministries" ||
+    churchName.toLowerCase().trim() === ministriesText.toLowerCase().trim()
+  ) {
+    if (headline.toLowerCase().includes("kingdom of christ")) {
+      headline =
+        headline.replace(/kingdom of christ/i, "").trim() ||
+        (language === "te" ? "స్వాగతం" : language === "hi" ? "स्वागत है" : "Welcome to");
+    }
+    churchName =
+      language === "te"
+        ? "కింగ్డమ్ ఆఫ్ క్రైస్ట్"
+        : language === "hi"
+        ? "किंगडम ऑफ क्राइस्ट"
+        : "Kingdom of Christ";
+  } else if (headline.toLowerCase().includes(churchName.toLowerCase())) {
+    headline =
+      headline.replace(new RegExp(churchName, "gi"), "").trim() ||
+      (language === "te" ? "స్వాగతం" : language === "hi" ? "स्वागत है" : "Welcome to");
+  }
+
+  if (churchName.toLowerCase().endsWith(ministriesText.toLowerCase())) {
+    showMinistriesBanner = false;
+  }
 
   const subtitle =
     language === "te" && (hero as any)?.subtitleTe
@@ -259,12 +284,18 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
       ? "प्राथना अनुरोध"
       : hero?.ctaTertiaryText ?? "Prayer Request";
 
+  const ctaTertiaryShort =
+    language === "te" ? "ప్రార్థన" : language === "hi" ? "प्रार्थना" : "Prayer";
+
   const ctaNgoText =
     language === "te"
       ? (hero as any)?.ctaNgoTextTe || (t.hero as any)?.ctaNgo || "NGO పోర్టల్ సందర్శించండి"
       : language === "hi"
       ? (hero as any)?.ctaNgoTextHi || (t.hero as any)?.ctaNgo || "NGO पोर्टल पर जाएं"
       : (hero as any)?.ctaNgoText ?? (t.hero as any)?.ctaNgo ?? "Visit NGO Portal";
+
+  const ctaNgoShort =
+    language === "te" ? "KCM NGO" : language === "hi" ? "KCM NGO" : "KCM NGO";
 
   const ctaNgoHref = (hero as any)?.ctaNgoHref ?? "/ngo";
 
@@ -274,6 +305,9 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
       : language === "hi"
       ? "संपर्क करें"
       : "Contact Us";
+
+  const ctaContactShort =
+    language === "te" ? "సంప్రదించండి" : language === "hi" ? "संपर्क" : "Contact";
 
   return (
     <section
@@ -297,14 +331,14 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
         >
           {/* Live pulsing tag badge */}
           <motion.div variants={itemVariants} className="flex justify-center mb-4 min-[360px]:mb-6 md:mb-8">
-            <div className="inline-flex items-center gap-2.5 px-4 min-[360px]:px-5 md:px-6 py-1.5 min-[360px]:py-2 md:py-2.5 bg-white/40 dark:bg-black/40 backdrop-blur-md border border-gray-200/50 dark:border-white/10 rounded-full text-foreground shadow-sm hover:border-primary/30 transition-all duration-300">
+            <div className="inline-flex items-center gap-2 px-3.5 sm:px-4 py-1.5 sm:py-2 bg-slate-100/90 dark:bg-white/[0.06] backdrop-blur-md border border-slate-200/90 dark:border-white/10 rounded-full text-slate-700 dark:text-slate-300 shadow-xs hover:border-purple-400/40 transition-all duration-300">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
               </span>
               <span
                 suppressHydrationWarning
-                className="font-extrabold tracking-wider text-[10px] md:text-xs uppercase font-outfit text-gray-700 dark:text-gray-200"
+                className="font-bold tracking-wider text-[10px] sm:text-xs uppercase font-outfit"
               >
                 {badgeText}
               </span>
@@ -315,97 +349,110 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
           <motion.h1
             suppressHydrationWarning
             variants={itemVariants}
-            className="font-black text-foreground mb-4 leading-[1.15] sm:leading-[1.1] drop-shadow-sm font-outfit tracking-tighter"
-            style={{
-              fontSize: "clamp(1.65rem, 6.5vw, 5.25rem)",
-              overflowWrap: "anywhere",
-              wordBreak: "normal",
-            }}
+            className="font-black text-foreground mb-3 sm:mb-4 leading-[1.1] sm:leading-[1.08] font-outfit tracking-tight"
           >
-            <span suppressHydrationWarning className="text-gray-900 dark:text-white">
-              {headline}{" "}
+            <span
+              suppressHydrationWarning
+              className="block text-slate-600 dark:text-slate-300 font-semibold text-base sm:text-xl md:text-2xl tracking-normal mb-1 sm:mb-2"
+            >
+              {headline}
             </span>
             <span
               suppressHydrationWarning
-              className="block mt-1 sm:mt-2 bg-gradient-to-r from-amber-500 via-rose-500 to-indigo-600 dark:from-amber-300 dark:via-rose-300 dark:to-indigo-300 bg-clip-text text-transparent pb-1 bg-[length:200%_auto] animate-shimmer text-indigo-600 dark:text-indigo-200"
+              className="block font-black tracking-tight"
               style={{
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
+                fontSize: "clamp(2.1rem, 7.5vw, 4.75rem)",
+                lineHeight: 1.05,
               }}
             >
-              {churchName}
+              <span 
+                className="bg-gradient-to-r from-slate-950 via-violet-950 to-indigo-900 dark:from-white dark:via-purple-100 dark:to-indigo-200 bg-clip-text text-transparent"
+                style={{
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              >
+                {churchName}
+              </span>
             </span>
-            <span
-              suppressHydrationWarning
-              className="block font-black mt-1 pb-1 leading-normal uppercase tracking-[0.15em] sm:tracking-[0.2em] bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 dark:from-indigo-300 dark:via-purple-300 dark:to-blue-300 bg-clip-text text-transparent text-indigo-600 dark:text-indigo-300"
-              style={{
-                fontSize: "clamp(1rem, 3.2vw, 2.25rem)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-            >
-              {ministriesText}
-            </span>
+            {showMinistriesBanner && (
+              <span
+                suppressHydrationWarning
+                className="block font-extrabold mt-2 sm:mt-2.5 leading-none uppercase tracking-[0.25em] sm:tracking-[0.3em] text-violet-600 dark:text-violet-400 text-xs sm:text-sm md:text-base font-outfit"
+              >
+                {ministriesText}
+              </span>
+            )}
           </motion.h1>
 
           {/* Subtitle */}
           <motion.p
             suppressHydrationWarning
             variants={itemVariants}
-            className="text-slate-700 dark:text-gray-200 mb-8 md:mb-10 max-w-2xl mx-auto leading-relaxed font-semibold px-4"
-            style={{ fontSize: "clamp(0.95rem, 2.5vw, 1.15rem)" }}
+            className="text-slate-600 dark:text-slate-300 mt-3 sm:mt-4 mb-6 sm:mb-8 md:mb-10 max-w-2xl mx-auto leading-relaxed font-medium text-sm sm:text-base md:text-lg px-4"
           >
             {subtitle}
           </motion.p>
 
-          {/* CTA Buttons */}
+          {/* CTA Actions: Clean High-Conversion Visual Hierarchy */}
           <motion.div
             variants={itemVariants}
-            className="grid grid-cols-1 min-[380px]:grid-cols-2 sm:flex sm:flex-row sm:flex-wrap gap-2.5 sm:gap-3.5 md:gap-4 justify-center items-center mb-10 sm:mb-16 md:mb-24 max-w-5xl mx-auto px-3 sm:px-4"
+            className="flex flex-col items-center justify-center gap-3 sm:gap-3.5 mb-8 sm:mb-12 md:mb-16 max-w-xl mx-auto px-4 w-full"
           >
-            <Link
-              href={hero?.ctaPrimaryHref ?? "#services"}
-              className="w-full sm:w-auto min-h-[42px] sm:min-h-[48px] group relative px-4 sm:px-7 md:px-8 py-2.5 sm:py-3.5 md:py-4 bg-gradient-to-r from-indigo-600 via-blue-600 to-indigo-700 hover:from-indigo-500 hover:to-blue-600 text-white rounded-xl sm:rounded-2xl text-xs sm:text-sm md:text-base font-extrabold overflow-hidden shadow-lg sm:shadow-xl shadow-indigo-600/30 hover:shadow-indigo-600/50 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-all duration-300 text-center flex items-center justify-center gap-1.5 sm:gap-2 border border-indigo-400/30"
-            >
-              <div className="absolute inset-0 bg-white/20 group-hover:translate-x-full -translate-x-full transition-transform duration-500 ease-out skew-x-12" />
-              <span className="relative flex items-center justify-center gap-1.5 sm:gap-2">
-                <Church className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                {ctaPrimaryText}
-                <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 group-hover:translate-x-1 transition-transform" />
-              </span>
-            </Link>
-            <Link
-              href={ctaSecondaryHref}
-              className="w-full sm:w-auto min-h-[42px] sm:min-h-[48px] group relative px-4 sm:px-7 md:px-8 py-2.5 sm:py-3.5 md:py-4 bg-gradient-to-r from-amber-500 via-amber-600 to-orange-600 hover:from-amber-400 hover:via-amber-500 hover:to-orange-500 text-white rounded-xl sm:rounded-2xl text-xs sm:text-sm md:text-base font-extrabold overflow-hidden shadow-lg sm:shadow-xl shadow-amber-500/25 hover:shadow-amber-500/40 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 transition-all duration-300 text-center flex items-center justify-center gap-1.5 sm:gap-2 border border-amber-300/30"
-            >
-              <div className="absolute inset-0 bg-white/20 group-hover:translate-x-full -translate-x-full transition-transform duration-500 ease-out skew-x-12" />
-              <span className="relative flex items-center justify-center gap-1.5 sm:gap-2">
-                <Images className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                {ctaSecondaryText}
-              </span>
-            </Link>
-            <Link
-              href={ctaNgoHref}
-              className="w-full sm:w-auto min-h-[42px] sm:min-h-[48px] group relative px-4 sm:px-7 md:px-8 py-2.5 sm:py-3.5 md:py-4 bg-gradient-to-r from-rose-500 via-fuchsia-600 to-purple-600 hover:from-rose-400 hover:via-fuchsia-500 hover:to-purple-500 text-white rounded-xl sm:rounded-2xl text-xs sm:text-sm md:text-base font-extrabold overflow-hidden shadow-lg sm:shadow-xl shadow-purple-600/30 hover:shadow-purple-600/50 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 transition-all duration-300 text-center flex items-center justify-center gap-1.5 sm:gap-2 border border-pink-400/30"
-            >
-              <div className="absolute inset-0 bg-white/20 group-hover:translate-x-full -translate-x-full transition-transform duration-500 ease-out skew-x-12" />
-              <span className="relative flex items-center justify-center gap-1.5 sm:gap-2">
-                <Globe className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                {ctaNgoText}
-                <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 group-hover:translate-x-1 transition-transform" />
-              </span>
-            </Link>
-            <Link
-              href="/contact"
-              className="w-full sm:w-auto min-h-[42px] sm:min-h-[48px] group relative px-4 sm:px-7 md:px-8 py-2.5 sm:py-3.5 md:py-4 bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 hover:from-emerald-500 hover:via-teal-500 hover:to-cyan-500 text-white rounded-xl sm:rounded-2xl text-xs sm:text-sm md:text-base font-extrabold overflow-hidden shadow-lg sm:shadow-xl shadow-emerald-600/25 hover:shadow-emerald-600/40 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 transition-all duration-300 text-center flex items-center justify-center gap-1.5 sm:gap-2 border border-emerald-400/30"
-            >
-              <div className="absolute inset-0 bg-white/20 group-hover:translate-x-full -translate-x-full transition-transform duration-500 ease-out skew-x-12" />
-              <span className="relative flex items-center justify-center gap-1.5 sm:gap-2">
-                <Phone className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                {ctaContactText}
-                <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 group-hover:translate-x-1 transition-transform" />
-              </span>
-            </Link>
+            {/* Primary & Secondary Action Pair */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full max-w-md mx-auto">
+              {/* Primary: Plan A Visit / Join Worship */}
+              <Link
+                href={hero?.ctaPrimaryHref ?? "#services"}
+                className="w-full sm:flex-1 min-h-[48px] px-6 sm:px-8 py-3.5 bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 hover:from-violet-500 hover:to-indigo-500 text-white rounded-2xl text-sm sm:text-base font-extrabold shadow-lg shadow-violet-600/30 hover:shadow-violet-600/50 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 border border-violet-400/30 select-none"
+              >
+                <Church className="h-4 w-4" />
+                <span>{ctaPrimaryText}</span>
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+
+              {/* Secondary: Watch Gallery */}
+              <Link
+                href={ctaSecondaryHref}
+                className="w-full sm:flex-1 min-h-[48px] px-6 sm:px-8 py-3.5 bg-white dark:bg-white/[0.08] hover:bg-slate-50 dark:hover:bg-white/[0.14] text-slate-800 dark:text-white rounded-2xl text-sm sm:text-base font-bold shadow-sm border border-slate-200/90 dark:border-white/15 hover:border-violet-300 dark:hover:border-violet-400/40 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 select-none"
+              >
+                <Images className="h-4 w-4 text-violet-600 dark:text-violet-400" />
+                <span>{ctaSecondaryText}</span>
+              </Link>
+            </div>
+
+            {/* Balanced Supporting Quick Actions (Symmetrical 3-Column Pill Strip - No Orphans) */}
+            <div className="grid grid-cols-3 gap-2 w-full max-w-md mx-auto pt-0.5">
+              <Link
+                href="/prayer"
+                aria-label={`Prayer: ${ctaTertiaryText}`}
+                className="flex items-center justify-center gap-1.5 py-2 px-1.5 sm:px-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 bg-slate-100/90 dark:bg-white/[0.05] hover:bg-rose-50 dark:hover:bg-rose-950/30 border border-slate-200/80 dark:border-white/10 hover:border-rose-300 dark:hover:border-rose-500/40 hover:text-rose-700 dark:hover:text-rose-300 transition-all select-none min-h-[38px] active:scale-95"
+              >
+                <Heart className="h-3.5 w-3.5 text-rose-500 shrink-0" />
+                <span className="hidden sm:inline truncate">{ctaTertiaryText}</span>
+                <span className="sm:hidden whitespace-nowrap">{ctaTertiaryShort}</span>
+              </Link>
+
+              <Link
+                href={ctaNgoHref}
+                aria-label={`NGO: ${ctaNgoText}`}
+                className="flex items-center justify-center gap-1.5 py-2 px-1.5 sm:px-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 bg-slate-100/90 dark:bg-white/[0.05] hover:bg-violet-50 dark:hover:bg-violet-950/30 border border-slate-200/80 dark:border-white/10 hover:border-violet-300 dark:hover:border-violet-500/40 hover:text-violet-700 dark:hover:text-violet-300 transition-all select-none min-h-[38px] active:scale-95"
+              >
+                <Globe className="h-3.5 w-3.5 text-violet-500 shrink-0" />
+                <span className="hidden sm:inline truncate">{ctaNgoText}</span>
+                <span className="sm:hidden whitespace-nowrap">{ctaNgoShort}</span>
+              </Link>
+
+              <Link
+                href="/contact"
+                aria-label={`Contact: ${ctaContactText}`}
+                className="flex items-center justify-center gap-1.5 py-2 px-1.5 sm:px-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 bg-slate-100/90 dark:bg-white/[0.05] hover:bg-emerald-50 dark:hover:bg-emerald-950/30 border border-slate-200/80 dark:border-white/10 hover:border-emerald-300 dark:hover:border-emerald-500/40 hover:text-emerald-700 dark:hover:text-emerald-300 transition-all select-none min-h-[38px] active:scale-95"
+              >
+                <Phone className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                <span className="hidden sm:inline truncate">{ctaContactText}</span>
+                <span className="sm:hidden whitespace-nowrap">{ctaContactShort}</span>
+              </Link>
+            </div>
           </motion.div>
 
           {/* Stats Grid */}

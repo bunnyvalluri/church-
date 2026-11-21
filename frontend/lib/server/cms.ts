@@ -11,17 +11,37 @@ import {
 // Cached results are served instantly without hitting the DB on every request.
 const CACHE_TTL = 300; // seconds
 
+/**
+ * Safeguard database queries with a strict timeout to prevent cold Neon connections
+ * or unhandled query locks from hanging server-side rendering.
+ */
+async function withTimeout<T>(promise: Promise<T>, ms = 4000, fallback: T): Promise<T> {
+  let timer: NodeJS.Timeout;
+  const timeoutPromise = new Promise<T>((resolve) => {
+    timer = setTimeout(() => {
+      console.warn(`[SERVER/CMS] Query timed out after ${ms}ms, returning fallback.`);
+      resolve(fallback);
+    }, ms);
+  });
+  try {
+    return await Promise.race([promise, timeoutPromise]);
+  } catch (err) {
+    console.error("[SERVER/CMS] Query exception:", err);
+    return fallback;
+  } finally {
+    clearTimeout(timer!);
+  }
+}
+
 export const getHeroContent = unstable_cache(
   async () => {
-    try {
-      const hero = await (prisma as any).homepageHero.findUnique({
-        where: { id: "hero" },
-      });
-      return hero || HERO_FALLBACK;
-    } catch (err) {
-      console.error("[SERVER/CMS] getHeroContent error:", err);
-      return HERO_FALLBACK;
-    }
+    return withTimeout(
+      (prisma as any).homepageHero
+        .findUnique({ where: { id: "hero" } })
+        .then((hero: any) => hero || HERO_FALLBACK),
+      4000,
+      HERO_FALLBACK
+    );
   },
   ["cms-hero"],
   { revalidate: CACHE_TTL, tags: ["cms-hero"] }
@@ -29,16 +49,16 @@ export const getHeroContent = unstable_cache(
 
 export const getStatistics = unstable_cache(
   async () => {
-    try {
-      const stats = await (prisma as any).siteStatistic.findMany({
-        where: { isActive: true },
-        orderBy: { displayOrder: "asc" },
-      });
-      return stats.length > 0 ? stats : STATS_FALLBACK;
-    } catch (err) {
-      console.error("[SERVER/CMS] getStatistics error:", err);
-      return STATS_FALLBACK;
-    }
+    return withTimeout(
+      (prisma as any).siteStatistic
+        .findMany({
+          where: { isActive: true },
+          orderBy: { displayOrder: "asc" },
+        })
+        .then((stats: any) => (stats?.length > 0 ? stats : STATS_FALLBACK)),
+      4000,
+      STATS_FALLBACK
+    );
   },
   ["cms-statistics"],
   { revalidate: CACHE_TTL, tags: ["cms-statistics"] }
@@ -46,15 +66,13 @@ export const getStatistics = unstable_cache(
 
 export const getAboutContent = unstable_cache(
   async () => {
-    try {
-      const about = await (prisma as any).aboutConfig.findUnique({
-        where: { id: "about" },
-      });
-      return about || ABOUT_FALLBACK;
-    } catch (err) {
-      console.error("[SERVER/CMS] getAboutContent error:", err);
-      return ABOUT_FALLBACK;
-    }
+    return withTimeout(
+      (prisma as any).aboutConfig
+        .findUnique({ where: { id: "about" } })
+        .then((about: any) => about || ABOUT_FALLBACK),
+      4000,
+      ABOUT_FALLBACK
+    );
   },
   ["cms-about"],
   { revalidate: CACHE_TTL, tags: ["cms-about"] }
@@ -62,16 +80,16 @@ export const getAboutContent = unstable_cache(
 
 export const getContacts = unstable_cache(
   async () => {
-    try {
-      const contacts = await (prisma as any).siteContact.findMany({
-        where: { isActive: true },
-        orderBy: { displayOrder: "asc" },
-      });
-      return contacts.length > 0 ? contacts : CONTACT_FALLBACK;
-    } catch (err) {
-      console.error("[SERVER/CMS] getContacts error:", err);
-      return CONTACT_FALLBACK;
-    }
+    return withTimeout(
+      (prisma as any).siteContact
+        .findMany({
+          where: { isActive: true },
+          orderBy: { displayOrder: "asc" },
+        })
+        .then((contacts: any) => (contacts?.length > 0 ? contacts : CONTACT_FALLBACK)),
+      4000,
+      CONTACT_FALLBACK
+    );
   },
   ["cms-contacts"],
   { revalidate: CACHE_TTL, tags: ["cms-contacts"] }
@@ -79,15 +97,16 @@ export const getContacts = unstable_cache(
 
 export const getPastors = unstable_cache(
   async () => {
-    try {
-      const pastors = await (prisma as any).pastor.findMany({
-        orderBy: { displayOrder: "asc" },
-      });
-      return pastors;
-    } catch (err) {
-      console.error("[SERVER/CMS] getPastors error:", err);
-      return [];
-    }
+    return withTimeout(
+      (prisma as any).pastor
+        .findMany({
+          where: { isActive: true },
+          orderBy: { displayOrder: "asc" },
+        })
+        .then((pastors: any) => pastors || []),
+      4000,
+      []
+    );
   },
   ["cms-pastors"],
   { revalidate: CACHE_TTL, tags: ["cms-pastors"] }
@@ -95,19 +114,19 @@ export const getPastors = unstable_cache(
 
 export const getServices = unstable_cache(
   async () => {
-    try {
-      const services = await (prisma as any).churchService.findMany({
-        where: { status: "PUBLISHED" },
-        orderBy: { displayOrder: "asc" },
-        include: {
-          branch: { select: { id: true, name: true } },
-        },
-      });
-      return services;
-    } catch (err) {
-      console.error("[SERVER/CMS] getServices error:", err);
-      return [];
-    }
+    return withTimeout(
+      (prisma as any).churchService
+        .findMany({
+          where: { status: "PUBLISHED" },
+          orderBy: { displayOrder: "asc" },
+          include: {
+            branch: { select: { id: true, name: true } },
+          },
+        })
+        .then((services: any) => services || []),
+      4000,
+      []
+    );
   },
   ["cms-services"],
   { revalidate: CACHE_TTL, tags: ["cms-services"] }
@@ -115,25 +134,24 @@ export const getServices = unstable_cache(
 
 export const getEvents = unstable_cache(
   async () => {
-    try {
-      const events = await (prisma as any).event.findMany({
-        where: {
-          status: "PUBLISHED",
-          date: { gte: new Date() },
-        },
-        orderBy: { date: "asc" },
-        take: 6,
-        include: {
-          branch: { select: { name: true } },
-        },
-      });
-      return events;
-    } catch (err) {
-      console.error("[SERVER/CMS] getEvents error:", err);
-      return [];
-    }
+    return withTimeout(
+      (prisma as any).event
+        .findMany({
+          where: {
+            status: "PUBLISHED",
+            date: { gte: new Date() },
+          },
+          orderBy: { date: "asc" },
+          take: 6,
+          include: {
+            branch: { select: { name: true } },
+          },
+        })
+        .then((events: any) => events || []),
+      4000,
+      []
+    );
   },
   ["cms-events"],
   { revalidate: CACHE_TTL, tags: ["cms-events"] }
 );
-

@@ -474,7 +474,9 @@ export default function EventsPage() {
         const res = await fetch(url);
         if (res.ok && isMounted) {
           const data = await res.json();
-          if (data.success && isMounted) setEvents(data.events);
+          if (data.success && isMounted) {
+            setEvents(Array.isArray(data.events) ? data.events : []);
+          }
         }
       } catch { /* fail silently */ }
       finally { if (isMounted) setIsLoading(false); }

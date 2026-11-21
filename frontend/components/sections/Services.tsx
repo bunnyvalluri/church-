@@ -7,7 +7,7 @@ import {
   MapPin, Clock, Flame, Star, Loader2, RefreshCw,
   Sparkles, ChevronRight, Globe, Shield,
 } from "lucide-react";
-import { useState, useEffect, useCallback, useRef, memo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef, memo, forwardRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getSharedSocket } from "@/lib/socketClient";
 
@@ -34,12 +34,12 @@ function getIcon(name: string): React.ElementType {
 
 // ── Fallback gradient map if cardColor is a Tailwind class ────────────────────────
 const GRADIENT_FALLBACKS: Record<string, string> = {
-  "from-blue-500 to-cyan-500": "linear-gradient(135deg, #3b82f6, #06b6d4)",
-  "from-violet-500 to-purple-600": "linear-gradient(135deg, #8b5cf6, #9333ea)",
-  "from-green-500 to-emerald-500": "linear-gradient(135deg, #22c55e, #10b981)",
-  "from-yellow-500 to-orange-500": "linear-gradient(135deg, #eab308, #f97316)",
-  "from-pink-500 to-rose-500": "linear-gradient(135deg, #ec4899, #f43f5e)",
-  "from-purple-600 to-violet-500": "linear-gradient(135deg, #9333ea, #8b5cf6)",
+  "from-blue-500 to-cyan-500": "linear-gradient(135deg, #4f46e5, #0ea5e9)",
+  "from-violet-500 to-purple-600": "linear-gradient(135deg, #7c3aed, #6366f1)",
+  "from-green-500 to-emerald-500": "linear-gradient(135deg, #059669, #10b981)",
+  "from-yellow-500 to-orange-500": "linear-gradient(135deg, #f59e0b, #d97706)",
+  "from-pink-500 to-rose-500": "linear-gradient(135deg, #e11d48, #be185d)",
+  "from-purple-600 to-violet-500": "linear-gradient(135deg, #8b5cf6, #7c3aed)",
 };
 
 function resolveGradient(cardColor: string): { gradient: string; topBorder: string } {
@@ -324,31 +324,103 @@ function translateTag(tag: string, lang?: string): string {
   return tag;
 }
 
+// ── Curated Fallback Services (Zero Empty-State Guarantee) ──────────────────────
+const FALLBACK_SERVICES: ChurchService[] = [
+  {
+    id: "fallback-shapur",
+    slug: "shapur-sunday-service",
+    title: "Sunday Evening Service",
+    shortDescription: "Experience uplifting worship, prayer, and the Word of God at Shapur Nagar.",
+    description: "Join us every Sunday evening for Spirit-filled praise, inspiring preaching from the Holy Scriptures, and personal healing ministry.",
+    icon: "Church",
+    iconColor: "from-blue-500 to-indigo-600",
+    cardColor: "",
+    badgeColor: "",
+    serviceType: "WORSHIP",
+    occurrence: "Every Sunday - 6:00 PM – 9:00 PM\nEvery Friday at 6:30 PM – 8:30 PM: Fasting, Healing & Anointing Service - \"Aradhana\"",
+    frequency: "WEEKLY",
+    location: "Shapur Nagar",
+    featured: true,
+    status: "PUBLISHED",
+    displayOrder: 1,
+    branch: { id: "b-shapur", name: "Shapur Nagar" },
+    tags: ["worship", "healing", "prayer"],
+  },
+  {
+    id: "fallback-subhash",
+    slug: "subhash-nagar-service",
+    title: "Sunday Worship & Thursday Prayer",
+    shortDescription: "Morning worship celebrations and Thursday evening fasting prayer at Subhash Nagar.",
+    description: "Experience God's power in two Sunday morning worship services and Thursday evening healing and deliverance prayers.",
+    icon: "Sparkles",
+    iconColor: "from-purple-500 to-violet-600",
+    cardColor: "",
+    badgeColor: "",
+    serviceType: "WORSHIP",
+    occurrence: "Every Sunday (1st Service) - 6:00 AM – 8:30 AM\nEvery Sunday (2nd Service) - 9:30 AM – 12:30 PM\nEvery Thursday - 6:30 PM – 8:30 PM: Fasting, Healing & Anointing Service",
+    frequency: "WEEKLY",
+    location: "Subhash Nagar",
+    featured: true,
+    status: "PUBLISHED",
+    displayOrder: 2,
+    branch: { id: "b-subhash", name: "Subhash Nagar" },
+    tags: ["worship", "healing", "fasting"],
+  },
+  {
+    id: "fallback-bahadurpally",
+    slug: "sunday-worship-service",
+    title: "Sunday Worship & Prayer Meetings",
+    shortDescription: "Anointed Sunday morning gathering and midweek fellowship at Bahadurpally.",
+    description: "Join the Bahadurpally campus family for gospel preaching, praise, and community prayer meetings.",
+    icon: "Users",
+    iconColor: "from-emerald-500 to-teal-600",
+    cardColor: "",
+    badgeColor: "",
+    serviceType: "WORSHIP",
+    occurrence: "Every Sunday - 10:00 AM – 1:00 PM\nEvery Tuesday - 7:00 PM – 8:30 PM: Prayer Meeting",
+    frequency: "WEEKLY",
+    location: "Bahadurpally",
+    featured: false,
+    status: "PUBLISHED",
+    displayOrder: 3,
+    branch: { id: "b-bahadurpally", name: "Bahadurpally" },
+    tags: ["worship", "fellowship", "prayer"],
+  },
+];
+
 // ── Memoized Service Card Component ───────────────────────────────────────────
-const ServiceCard = memo(function ServiceCard({
-  service,
-  index,
-  isExpanded,
-  onToggleExpand,
-}: {
-  service: ChurchService;
-  index: number;
-  isExpanded: boolean;
-  onToggleExpand: (id: string) => void;
-}) {
-  const { language, isTelugu, isHindi } = useLanguage();
-  const Icon = getIcon(service.icon);
-  const { gradient } = resolveGradient(service.cardColor);
-  const scheduleLabels = buildScheduleLabels(service);
+const ServiceCard = memo(
+  forwardRef<
+    HTMLDivElement,
+    {
+      service: ChurchService;
+      index: number;
+      isExpanded: boolean;
+      onToggleExpand: (id: string) => void;
+    }
+  >(function ServiceCard(
+    {
+      service,
+      index,
+      isExpanded,
+      onToggleExpand,
+    },
+    ref
+  ) {
+    const { language, isTelugu, isHindi } = useLanguage();
+    const Icon = getIcon(service.icon);
+    const { gradient } = resolveGradient(service.cardColor);
+    const scheduleLabels = buildScheduleLabels(service);
 
-  const translatedTitle = translateTitle(service.title, language);
-  const translatedShortDesc = translateDescription(service.shortDescription || service.description, service.slug, true, language);
-  const translatedLongDesc = translateDescription(service.description, service.slug, false, language);
-  const translatedLocation = translateLocation(service.location || service.branch?.name, language);
+    const translatedTitle = translateTitle(service.title, language);
+    const translatedShortDesc = translateDescription(service.shortDescription || service.description, service.slug, true, language);
+    const translatedLongDesc = translateDescription(service.description, service.slug, false, language);
+    const translatedLocation = translateLocation(service.location || service.branch?.name, language);
 
-  return (
-    <motion.div
-      layout
+    return (
+      <motion.div
+        ref={ref}
+        layout
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
@@ -367,21 +439,6 @@ const ServiceCard = memo(function ServiceCard({
         }
       }}
     >
-      {/* Top Badges: Location & Featured */}
-      <div className="absolute top-4 right-4 flex items-center flex-wrap justify-end gap-1.5 z-20">
-        {translatedLocation && (
-          <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold text-violet-700 dark:text-violet-300 bg-violet-50 dark:bg-violet-950/40 border border-violet-200 dark:border-violet-800/50 shadow-sm backdrop-blur-sm">
-            <MapPin className="w-3 h-3 text-violet-600 dark:text-violet-400 shrink-0" />
-            <span className="truncate max-w-[140px] sm:max-w-none">{translatedLocation}</span>
-          </div>
-        )}
-        {service.featured && (
-          <div className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-amber-700 bg-amber-50 dark:bg-amber-400/10 dark:text-amber-300 border border-amber-200 dark:border-amber-400/20">
-            <Star className="w-3 h-3 fill-current" /> {isTelugu ? "ప్రత్యేకమైనది" : isHindi ? "विशेष" : "Featured"}
-          </div>
-        )}
-      </div>
-
       {/* Top border glow on hover */}
       <div
         className="absolute top-0 inset-x-0 h-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-t-3xl"
@@ -389,37 +446,60 @@ const ServiceCard = memo(function ServiceCard({
       />
 
       <div className="relative z-10">
-        {/* Icon */}
-        <div
-          className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg services-icon"
-          style={{ background: gradient }}
-        >
-          <Icon className="h-8 w-8" style={{ color: service.iconColor || "#ffffff" }} />
+        {/* Card Header: Icon + Location / Featured Badges */}
+        <div className="flex items-start justify-between gap-3 mb-5">
+          <div
+            className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center shadow-xs services-icon shrink-0 group-hover:scale-105 transition-transform duration-300"
+            style={{ background: gradient }}
+          >
+            <Icon className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
+          </div>
+
+          <div className="flex items-center gap-1.5 flex-wrap justify-end pt-1">
+            {translatedLocation && (
+              <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold text-violet-700 dark:text-violet-300 bg-violet-50 dark:bg-violet-950/40 border border-violet-200/80 dark:border-violet-800/50 shadow-2xs">
+                <MapPin className="w-3 h-3 text-violet-600 dark:text-violet-400 shrink-0" />
+                <span className="truncate max-w-[130px] sm:max-w-none">{translatedLocation}</span>
+              </div>
+            )}
+            {service.featured && (
+              <div className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-amber-700 bg-amber-50 dark:bg-amber-400/10 dark:text-amber-300 border border-amber-200/80 dark:border-amber-400/20 shadow-2xs">
+                <Star className="w-3 h-3 fill-current text-amber-500" />
+                <span>{isTelugu ? "ప్రత్యేకమైనది" : isHindi ? "विशेष" : "Featured"}</span>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Title */}
-        <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white tracking-tight group-hover:text-[hsl(var(--primary))] dark:group-hover:text-[hsl(var(--primary))] transition-colors duration-300">
+        <h3 className="text-lg sm:text-xl font-bold mb-3 text-slate-900 dark:text-white tracking-tight group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors duration-300 font-outfit">
           {translatedTitle}
         </h3>
 
-        {/* Schedule badges */}
+        {/* Schedule Timings — Elegant Structured Tiles with Clock Icon */}
         {scheduleLabels.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-4">
-            {scheduleLabels.map((label, idx) => (
-              <div
-                key={idx}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-white text-xs font-semibold"
-                style={{ background: gradient }}
-              >
-                <span>⏰</span>
-                <span>{translateScheduleBadge(label.replace(/^⏰\s*/, ""), language)}</span>
-              </div>
-            ))}
+          <div className="space-y-2 mb-4">
+            {scheduleLabels.map((label, idx) => {
+              const cleanText = translateScheduleBadge(label.replace(/^⏰\s*/, ""), language);
+              return (
+                <div
+                  key={idx}
+                  className="flex items-start gap-2.5 p-2.5 rounded-xl bg-slate-50/90 dark:bg-white/[0.04] border border-slate-200/80 dark:border-white/10 group-hover:border-violet-300 dark:group-hover:border-violet-500/30 transition-all duration-200"
+                >
+                  <div className="w-6 h-6 rounded-lg bg-violet-500/10 dark:bg-violet-500/20 text-violet-600 dark:text-violet-400 flex items-center justify-center shrink-0 mt-0.5">
+                    <Clock className="w-3.5 h-3.5" />
+                  </div>
+                  <span className="text-xs sm:text-[13px] font-semibold text-slate-800 dark:text-slate-200 leading-snug flex-1 font-sans">
+                    {cleanText}
+                  </span>
+                </div>
+              );
+            })}
           </div>
         )}
 
         {/* Description */}
-        <p className="text-slate-600 dark:text-white/60 leading-relaxed text-sm">
+        <p className="text-slate-600 dark:text-white/60 leading-relaxed text-xs sm:text-sm font-sans mb-3">
           {translatedShortDesc}
         </p>
 
@@ -433,7 +513,7 @@ const ServiceCard = memo(function ServiceCard({
               transition={{ duration: 0.3 }}
               className="overflow-hidden"
             >
-              <div className="mt-4 pt-4 border-t border-slate-100 dark:border-white/[0.06] space-y-2">
+              <div className="pt-3 border-t border-slate-100 dark:border-white/[0.06] space-y-2 mb-3">
                 {translatedLongDesc && (
                   <p className="text-slate-500 dark:text-white/50 text-xs leading-relaxed">
                     {translatedLongDesc}
@@ -441,13 +521,13 @@ const ServiceCard = memo(function ServiceCard({
                 )}
                 {translatedLocation && (
                   <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-white/40">
-                    <MapPin className="w-3 h-3 shrink-0" />
+                    <MapPin className="w-3 h-3 shrink-0 text-violet-500" />
                     <span>{translatedLocation}</span>
                   </div>
                 )}
                 {service.branch && (
                   <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-white/40">
-                    <Globe className="w-3 h-3 shrink-0" />
+                    <Globe className="w-3 h-3 shrink-0 text-violet-500" />
                     <span>
                       {translateLocation(service.branch.name, language)} {isTelugu ? "శాఖ" : isHindi ? "शाखा" : "Branch"}
                     </span>
@@ -470,29 +550,33 @@ const ServiceCard = memo(function ServiceCard({
           )}
         </AnimatePresence>
 
-        {/* Expand hint */}
-        <div className="flex items-center gap-1 mt-3 text-xs text-[hsl(var(--primary)/0.7)] font-medium">
-          <ChevronRight
-            className={`w-3.5 h-3.5 transition-transform duration-200 ${isExpanded ? "rotate-90" : ""}`}
-          />
-          <span>
-            {isExpanded
-              ? isTelugu
-                ? "తక్కువ"
+        {/* Expand hint Button */}
+        <div className="pt-1">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-violet-50 hover:bg-violet-100/80 dark:bg-white/[0.04] dark:hover:bg-white/[0.08] text-violet-700 dark:text-violet-300 text-xs font-bold transition-all select-none">
+            <span>
+              {isExpanded
+                ? isTelugu
+                  ? "తక్కువ వివరాలు"
+                  : isHindi
+                  ? "कम विवरण"
+                  : "Less info"
+                : isTelugu
+                ? "మరిన్ని వివరాలు"
                 : isHindi
-                ? "कम"
-                : "Less"
-              : isTelugu
-              ? "మరిన్ని వివరాలు"
-              : isHindi
-              ? "अधिक जानकारी"
-              : "More info"}
+                ? "अधिक जानकारी"
+                : "More info"}
+            </span>
+            <ChevronRight
+              className={`w-3.5 h-3.5 transition-transform duration-200 ${isExpanded ? "rotate-90" : "group-hover:translate-x-0.5"}`}
+            />
           </span>
         </div>
       </div>
     </motion.div>
   );
-});
+}));
+
+ServiceCard.displayName = "ServiceCard";
 
 export default function Services({ initialServices = [] }: { initialServices?: ChurchService[] }) {
   const { t } = useLanguage();
@@ -505,6 +589,10 @@ export default function Services({ initialServices = [] }: { initialServices?: C
   const handleToggleExpand = useCallback((id: string) => {
     setExpandedId((prev) => (prev === id ? null : id));
   }, []);
+
+  const displayServices = useMemo(() => {
+    return services.length > 0 ? services : FALLBACK_SERVICES;
+  }, [services]);
 
   // ── Fetch published services ────────────────────────────────────────────────────
   const fetchServices = useCallback(async () => {
@@ -601,11 +689,9 @@ export default function Services({ initialServices = [] }: { initialServices?: C
             {t.services.subtitle}
           </p>
           <div className="flex items-center justify-center gap-2 mt-6">
-            <div className="w-2 h-2 rounded-full bg-[hsl(var(--primary)/0.3)]" />
-            <div className="w-8 h-[2px] bg-gradient-to-r from-[hsl(var(--primary)/0.3)] to-[hsl(var(--primary))]" />
-            <div className="w-3 h-3 rounded-full bg-[hsl(var(--primary))] shadow-[0_0_10px_hsl(var(--primary)/0.4)]" />
-            <div className="w-8 h-[2px] bg-gradient-to-l from-[hsl(var(--primary)/0.3)] to-[hsl(var(--primary))]" />
-            <div className="w-2 h-2 rounded-full bg-[hsl(var(--primary)/0.3)]" />
+            <div className="w-12 h-[1.5px] bg-gradient-to-r from-transparent to-violet-500/40" />
+            <div className="w-2 h-2 rounded-full bg-violet-600 dark:bg-violet-400" />
+            <div className="w-12 h-[1.5px] bg-gradient-to-l from-transparent to-violet-500/40" />
           </div>
         </motion.div>
 
@@ -630,29 +716,21 @@ export default function Services({ initialServices = [] }: { initialServices?: C
           </div>
         )}
 
-        {/* Services Grid */}
-        {!loading && !error && (
-          <>
-            {services.length === 0 ? (
-              <div className="text-center py-20 text-slate-400 dark:text-white/30 text-sm">
-                No services published yet.
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
-                <AnimatePresence mode="popLayout">
-                  {services.map((service, index) => (
-                    <ServiceCard
-                      key={service.id}
-                      service={service}
-                      index={index}
-                      isExpanded={expandedId === service.id}
-                      onToggleExpand={handleToggleExpand}
-                    />
-                  ))}
-                </AnimatePresence>
-              </div>
-            )}
-          </>
+        {/* Services Grid — 100% Guaranteed Display with Real Timings */}
+        {!loading && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
+            <AnimatePresence mode="popLayout">
+              {displayServices.map((service: ChurchService, index: number) => (
+                <ServiceCard
+                  key={service.id}
+                  service={service}
+                  index={index}
+                  isExpanded={expandedId === service.id}
+                  onToggleExpand={handleToggleExpand}
+                />
+              ))}
+            </AnimatePresence>
+          </div>
         )}
 
 

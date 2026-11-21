@@ -1217,8 +1217,8 @@ model EventNotification {
 
 model HomepageHero {
   id                 String   @id @default("hero")
-  headline           String   @default("Welcome to Kingdom of Christ")
-  subheadline        String   @default("Ministries")
+  headline           String   @default("Welcome to")
+  subheadline        String   @default("Kingdom of Christ")
   subtitle           String   @db.Text @default("A place of Love, Faith, and Miracles")
   badgeText          String   @default("We are here for you 24/7") @map("badge_text")
   ctaPrimaryText     String   @default("Join Worship") @map("cta_primary_text")

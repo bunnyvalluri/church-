@@ -16,35 +16,13 @@ function getIcon(name: string): LucideIcon {
   return ICON_MAP[name] || Heart;
 }
 
-// ── Branch colour scheme ──────────────────────────────────────────────────────
-const BRANCH_STYLES: Record<
-  number,
-  { card: string; title: string; icon: string; time: string; badge: string }
-> = {
-  0: {
-    card: "bg-blue-500/5 hover:bg-blue-500/10 dark:bg-blue-500/[0.02] dark:hover:bg-blue-500/5 border-blue-500/15 hover:border-blue-500/35 dark:border-blue-500/10 dark:hover:border-blue-500/25 hover:shadow-blue-500/5 dark:hover:shadow-blue-500/10 border-l-4 border-l-blue-500/80 dark:border-l-blue-400/80 backdrop-blur-md",
-    title: "text-blue-900 dark:text-blue-200 group-hover/loc:text-blue-700 dark:group-hover/loc:text-blue-100",
-    icon: "text-blue-600 dark:text-blue-400",
-    time: "text-blue-800 dark:text-blue-300",
-    badge: "bg-blue-500/10 dark:bg-blue-500/20 text-blue-900 dark:text-blue-200 border border-blue-500/20 dark:border-blue-500/30",
-  },
-  1: {
-    card: "bg-rose-500/5 hover:bg-rose-500/10 dark:bg-rose-500/[0.02] dark:hover:bg-rose-500/5 border-rose-500/15 hover:border-rose-500/35 dark:border-rose-500/10 dark:hover:border-rose-500/25 hover:shadow-rose-500/5 dark:hover:shadow-rose-500/10 border-l-4 border-l-rose-500/80 dark:border-l-rose-400/80 backdrop-blur-md",
-    title: "text-rose-900 dark:text-rose-200 group-hover/loc:text-rose-700 dark:group-hover/loc:text-rose-100",
-    icon: "text-rose-600 dark:text-rose-400",
-    time: "text-rose-800 dark:text-rose-300",
-    badge: "bg-rose-500/10 dark:bg-rose-500/20 text-rose-900 dark:text-rose-200 border border-rose-500/20 dark:border-rose-500/30",
-  },
-  2: {
-    card: "bg-emerald-500/5 hover:bg-emerald-500/10 dark:bg-emerald-500/[0.02] dark:hover:bg-emerald-500/5 border-emerald-500/15 hover:border-emerald-500/35 dark:border-emerald-500/10 dark:hover:border-emerald-500/25 hover:shadow-emerald-500/5 dark:hover:shadow-emerald-500/10 border-l-4 border-l-emerald-500/80 dark:border-l-emerald-400/80 backdrop-blur-md",
-    title: "text-emerald-900 dark:text-emerald-200 group-hover/loc:text-emerald-700 dark:group-hover/loc:text-emerald-100",
-    icon: "text-emerald-600 dark:text-emerald-400",
-    time: "text-emerald-800 dark:text-emerald-300",
-    badge: "bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-900 dark:text-emerald-200 border border-emerald-500/20 dark:border-emerald-500/30",
-  },
-};
-
-// ── Skeleton Components ───────────────────────────────────────────────────────
+// ── Core Values Theming (Harmonious brand palette) ───────────────────────────
+const VALUE_THEMES = [
+  { gradient: "from-violet-600 to-indigo-600", glow: "shadow-violet-500/20" },
+  { gradient: "from-purple-600 via-fuchsia-600 to-pink-600", glow: "shadow-pink-500/20" },
+  { gradient: "from-indigo-600 to-blue-600", glow: "shadow-indigo-500/20" },
+  { gradient: "from-teal-600 to-emerald-600", glow: "shadow-teal-500/20" },
+];
 function ValueCardSkeleton() {
   return (
     <div className="animate-pulse bg-white dark:bg-white/[0.02] rounded-3xl p-8 border border-slate-100 dark:border-white/[0.06] shadow-sm">
@@ -69,8 +47,6 @@ function PastorSkeleton() {
 
 // ── Branch Location Card ──────────────────────────────────────────────────────
 const BranchCard = memo(function BranchCard({ contact, idx, language }: { contact: SiteContact; idx: number; language: string }) {
-  const style = BRANCH_STYLES[idx % 3] ?? BRANCH_STYLES[0];
-
   const name =
     language === "te" && contact.branchNameTe
       ? contact.branchNameTe
@@ -104,22 +80,26 @@ const BranchCard = memo(function BranchCard({ contact, idx, language }: { contac
       aria-label={`Select branch ${name}`}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
-      className={`group/loc ${style.card} border rounded-2xl p-4 md:p-5 transition-all duration-300 cursor-pointer hover:shadow-sm min-h-[44px] focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none`}
+      className="group/loc bg-white/90 hover:bg-white dark:bg-white/[0.03] dark:hover:bg-white/[0.06] border border-slate-200/90 dark:border-white/10 hover:border-violet-400/50 dark:hover:border-violet-400/40 rounded-2xl p-3.5 sm:p-4 transition-all duration-200 cursor-pointer shadow-xs hover:shadow-sm min-h-[44px] focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none flex items-center justify-between"
     >
-      <p className="font-bold mb-1 tracking-wide flex items-center justify-between text-sm">
-        <span className="flex items-center gap-2">
-          <MapPin className={`w-3.5 h-3.5 ${style.icon} group-hover/loc:scale-110 transition-transform`} />
-          <span className={`transition-colors duration-200 ${style.title}`}>{name}</span>
-        </span>
-        <span
-          className={`text-[10px] ${style.badge} px-2 py-0.5 rounded font-normal opacity-0 group-hover/loc:opacity-100 transition-opacity duration-200`}
-        >
-          {language === "te" ? "మ్యాప్ చూడండి" : language === "hi" ? "मानचित्र देखें" : "View Map →"}
-        </span>
-      </p>
-      {contact.serviceHours && (
-        <p className={`${style.time} text-xs transition-colors duration-200`}>{contact.serviceHours}</p>
-      )}
+      <div className="flex items-center gap-3 min-w-0">
+        <div className="w-8 h-8 rounded-xl bg-violet-500/10 dark:bg-violet-500/20 text-violet-600 dark:text-violet-400 flex items-center justify-center shrink-0 group-hover/loc:scale-105 transition-transform">
+          <MapPin className="w-4 h-4" />
+        </div>
+        <div className="min-w-0">
+          <p className="font-bold text-sm sm:text-base text-slate-900 dark:text-white tracking-tight truncate font-outfit">
+            {name}
+          </p>
+          {contact.serviceHours && (
+            <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium leading-tight font-sans">
+              {contact.serviceHours}
+            </p>
+          )}
+        </div>
+      </div>
+      <span className="text-[11px] font-bold text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-500/10 px-2.5 py-1 rounded-full border border-violet-200/60 dark:border-violet-500/20 group-hover/loc:bg-violet-600 group-hover/loc:text-white transition-all shrink-0 ml-2">
+        {language === "te" ? "మ్యాప్" : language === "hi" ? "मानचित्र" : "View Map →"}
+      </span>
     </div>
   );
 });
@@ -263,9 +243,9 @@ export default function About({ initialAboutData, initialContactsData, initialPa
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-40px" }}
           transition={{ duration: 0.5, ease: [0.21, 0.47, 0.32, 0.98] }}
-          className="max-w-3xl mx-auto text-center mb-14 sm:mb-18"
+          className="max-w-3xl mx-auto text-center mb-10 sm:mb-14"
         >
-          <span className="inline-block text-xs font-bold uppercase tracking-[0.25em] text-[hsl(var(--primary))] mb-3 px-4 py-1.5 rounded-full bg-[hsl(var(--primary)/0.08)] border border-[hsl(var(--primary)/0.15)]">
+          <span className="inline-block text-xs font-bold uppercase tracking-[0.25em] text-violet-600 dark:text-violet-400 mb-3 px-4 py-1.5 rounded-full bg-violet-500/10 dark:bg-violet-500/15 border border-violet-500/20 dark:border-violet-500/30 font-outfit">
             {aboutLoading ? "..." : sectionBadge}
           </span>
           {aboutLoading ? (
@@ -276,13 +256,19 @@ export default function About({ initialAboutData, initialContactsData, initialPa
             </div>
           ) : (
             <>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black mb-4 text-slate-900 dark:text-white tracking-tight">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black mb-3 sm:mb-4 text-slate-900 dark:text-white tracking-tight font-outfit">
                 {heading.split(" ").slice(0, -1).join(" ")}{" "}
-                <span className="bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary-gradient-end))] bg-clip-text text-transparent">
+                <span 
+                  className="bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 dark:from-violet-400 dark:via-purple-300 dark:to-indigo-300 bg-clip-text text-transparent"
+                  style={{
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                  }}
+                >
                   {heading.split(" ").slice(-1)[0]}
                 </span>
               </h2>
-              <p className="text-sm sm:text-base md:text-lg text-slate-600 dark:text-white/60 px-4 leading-relaxed">
+              <p className="text-sm sm:text-base md:text-lg text-slate-600 dark:text-slate-300 px-4 leading-relaxed font-sans">
                 {subtitle}
               </p>
             </>
@@ -295,14 +281,15 @@ export default function About({ initialAboutData, initialContactsData, initialPa
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-40px" }}
           transition={{ duration: 0.5, delay: 0.05 }}
-          className="max-w-4xl mx-auto mb-14 sm:mb-18"
+          className="max-w-4xl mx-auto mb-10 sm:mb-14"
         >
-          <div className="relative bg-white dark:bg-white/[0.02] rounded-[2rem] p-8 sm:p-10 md:p-12 border border-slate-100 dark:border-white/[0.06] shadow-sm overflow-hidden">
-            <div className="absolute left-0 top-6 bottom-6 w-1 bg-gradient-to-b from-transparent via-[hsl(var(--primary))] to-transparent rounded-full" />
-            <div className="relative z-10 pl-3 sm:pl-4">
-              <h3 className="text-xl sm:text-2xl font-bold mb-4 text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
-                <span className="text-2xl">✝️</span>
-                {aboutLoading ? "..." : missionTitle}
+          <div className="relative bg-white dark:bg-white/[0.03] rounded-3xl p-6 sm:p-9 md:p-11 border border-slate-200/90 dark:border-white/10 shadow-sm overflow-hidden">
+            <div className="relative z-10">
+              <h3 className="text-lg sm:text-xl md:text-2xl font-black mb-3 sm:mb-4 text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5 sm:gap-3 font-outfit">
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 text-white flex items-center justify-center shadow-xs shadow-violet-600/25 shrink-0">
+                  <Church className="w-4 h-4 text-white" />
+                </div>
+                <span>{aboutLoading ? "..." : missionTitle}</span>
               </h3>
               {aboutLoading ? (
                 <div className="animate-pulse space-y-2">
@@ -311,7 +298,7 @@ export default function About({ initialAboutData, initialContactsData, initialPa
                   <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-4/5" />
                 </div>
               ) : (
-                <p className="text-sm sm:text-base md:text-lg text-slate-600 dark:text-white/70 leading-relaxed">
+                <p className="text-xs sm:text-sm md:text-base text-slate-600 dark:text-slate-300 leading-relaxed font-sans">
                   {missionText}
                 </p>
               )}
@@ -319,33 +306,32 @@ export default function About({ initialAboutData, initialContactsData, initialPa
           </div>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6">
+        {/* Core Values: Elegant Responsive Card Architecture */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 md:gap-6">
           {aboutLoading
             ? Array.from({ length: 4 }).map((_, i) => <ValueCardSkeleton key={i} />)
             : values.map((value, index) => {
                 const Icon = value.icon;
+                const theme = VALUE_THEMES[index % VALUE_THEMES.length];
                 return (
                   <motion.div
                     key={index}
-                    initial={{ opacity: 0, y: 24 }}
+                    initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, margin: "-30px" }}
-                    transition={{ duration: 0.4, delay: index * 0.06, ease: [0.21, 0.47, 0.32, 0.98] }}
-                    className="group relative bg-white dark:bg-white/[0.02] rounded-3xl p-6 sm:p-8 border border-slate-100 dark:border-white/[0.06] shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden"
+                    transition={{ duration: 0.4, delay: index * 0.05, ease: [0.21, 0.47, 0.32, 0.98] }}
+                    className="group relative bg-white/95 dark:bg-white/[0.03] rounded-2xl sm:rounded-3xl p-3.5 sm:p-6 border border-slate-200/90 dark:border-white/10 shadow-xs hover:shadow-md hover:-translate-y-1 transition-all duration-300 overflow-hidden active:scale-[0.99] flex flex-row sm:flex-col items-start gap-3.5 sm:gap-4 justify-start"
                   >
                     <div
-                      className={`absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r ${value.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-t-3xl`}
-                    />
-                    <div className="relative z-10">
-                      <div
-                        className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br ${value.gradient} flex items-center justify-center mb-5 shadow-md services-icon`}
-                      >
-                        <Icon className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
-                      </div>
-                      <h3 className="text-lg sm:text-xl font-bold mb-2.5 text-slate-900 dark:text-white tracking-tight">
+                      className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-gradient-to-br ${theme.gradient} flex items-center justify-center shadow-xs ${theme.glow} text-white shrink-0 group-hover:scale-105 transition-transform`}
+                    >
+                      <Icon className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <h3 className="text-sm sm:text-base md:text-lg font-black mb-1 text-slate-900 dark:text-white tracking-tight font-outfit">
                         {value.title}
                       </h3>
-                      <p className="text-slate-600 dark:text-white/60 leading-relaxed text-xs sm:text-sm">
+                      <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-xs sm:text-sm font-sans">
                         {value.description}
                       </p>
                     </div>
@@ -368,47 +354,66 @@ export default function About({ initialAboutData, initialContactsData, initialPa
               {pastorsLoading ? (
                 <PastorSkeleton />
               ) : primaryPastor ? (
-                <div className="flex flex-col items-center text-center mb-10 pb-10 border-b border-slate-200/80 dark:border-white/10">
-                  <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden border-4 border-white dark:border-white/10 shadow-xl mb-4 relative hover:scale-105 transition-transform duration-300 bg-slate-900">
+                <div className="flex flex-col items-center text-center mb-8 sm:mb-10 pb-8 sm:pb-10 border-b border-slate-200/80 dark:border-white/10">
+                  <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden border-4 border-white dark:border-white/10 shadow-xl mb-4 relative hover:scale-105 transition-transform duration-300 bg-slate-900 ring-2 ring-violet-500/20">
                     <Image
                       src={primaryPastor.image ?? "/pastor.png"}
                       alt={primaryPastor.name}
                       fill
                       sizes="(max-width: 640px) 96px, 112px"
                       className="object-cover"
-                      priority
+                      loading="lazy"
+                      decoding="async"
+                      quality={80}
                     />
                   </div>
-                  <p className="text-indigo-600 dark:text-amber-400 font-bold uppercase tracking-[0.2em] text-xs mb-1.5">
+                  <span className="inline-block text-[11px] font-extrabold uppercase tracking-[0.25em] text-violet-600 dark:text-violet-400 px-3 py-1 rounded-full bg-violet-50 dark:bg-violet-500/10 border border-violet-200/60 dark:border-violet-500/20 font-outfit mb-2">
                     {ledByLabel}
-                  </p>
-                  <h3 className="text-xl sm:text-2xl md:text-3xl font-extrabold mb-1.5 tracking-tight text-slate-900 dark:text-white">
+                  </span>
+                  <h3 className="text-base sm:text-lg font-bold tracking-tight text-slate-600 dark:text-slate-300 font-outfit">
                     {pastorTitle}
                   </h3>
-                  <p className="text-lg sm:text-2xl md:text-3xl font-black tracking-wide text-amber-600 dark:text-amber-300">
+                  <p className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-slate-900 dark:text-white font-outfit mt-0.5">
                     {pastorName}
                   </p>
-                  <p className="text-xs sm:text-sm text-slate-500 dark:text-white/50 mt-1">
+                  <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium mt-1 font-sans">
                     {pastorDesignation}
                   </p>
                 </div>
               ) : (
-                <div className="flex flex-col items-center text-center mb-10 pb-10 border-b border-slate-200/80 dark:border-white/10">
-                  <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden border-4 border-white dark:border-white/10 shadow-xl mb-4 relative hover:scale-105 transition-transform duration-300 bg-slate-900">
-                    <Image src="/pastor.png" alt="Bishop Kurra Kristhu Raju" fill sizes="112px" className="object-cover" priority />
+                <div className="flex flex-col items-center text-center mb-8 sm:mb-10 pb-8 sm:pb-10 border-b border-slate-200/80 dark:border-white/10">
+                  <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden border-4 border-white dark:border-white/10 shadow-xl mb-4 relative hover:scale-105 transition-transform duration-300 bg-slate-900 ring-2 ring-violet-500/20">
+                    <Image
+                      src="/pastor.png"
+                      alt="Bishop Kurra Kristhu Raju"
+                      fill
+                      sizes="112px"
+                      className="object-cover"
+                      loading="lazy"
+                      decoding="async"
+                      quality={80}
+                    />
                   </div>
-                  <p className="text-indigo-600 dark:text-amber-400 font-bold uppercase tracking-[0.2em] text-xs mb-1.5">{ledByLabel}</p>
-                  <h3 className="text-xl sm:text-2xl md:text-3xl font-extrabold mb-1.5 tracking-tight text-slate-900 dark:text-white">{t.about.pastor}</h3>
-                  <p className="text-lg sm:text-2xl md:text-3xl font-black tracking-wide text-amber-600 dark:text-amber-300">{t.about.pastorName}</p>
+                  <span className="inline-block text-[11px] font-extrabold uppercase tracking-[0.25em] text-violet-600 dark:text-violet-400 px-3 py-1 rounded-full bg-violet-50 dark:bg-violet-500/10 border border-violet-200/60 dark:border-violet-500/20 font-outfit mb-2">
+                    {ledByLabel}
+                  </span>
+                  <h3 className="text-base sm:text-lg font-bold tracking-tight text-slate-600 dark:text-slate-300 font-outfit">
+                    {t.about.pastor}
+                  </h3>
+                  <p className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-slate-900 dark:text-white font-outfit mt-0.5">
+                    {t.about.pastorName}
+                  </p>
                 </div>
               )}
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-14">
                 {/* Contact Details */}
                 <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
-                  <h3 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6 tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
-                    <span className="text-indigo-600 dark:text-indigo-400">📍</span>
-                    {t.hero.ctaPrimary}
+                  <h3 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6 tracking-tight text-slate-900 dark:text-white flex items-center gap-2 font-outfit">
+                    <div className="w-7 h-7 rounded-lg bg-violet-500/10 dark:bg-violet-500/20 text-violet-600 dark:text-violet-400 flex items-center justify-center shrink-0">
+                      <MapPin className="w-3.5 h-3.5" />
+                    </div>
+                    <span>{t.hero.ctaPrimary}</span>
                   </h3>
                   {contactsLoading ? (
                     <div className="animate-pulse space-y-2 w-full mb-6">
@@ -424,7 +429,7 @@ export default function About({ initialAboutData, initialContactsData, initialPa
                         role="button"
                         tabIndex={0}
                         aria-label={`View ${primaryContact.branchName} contact details`}
-                        className="space-y-1 text-slate-500 dark:text-slate-400 mb-6 text-xs sm:text-sm leading-relaxed border-l-2 border-slate-200 dark:border-white/10 pl-3.5 cursor-pointer hover:text-violet-600 dark:hover:text-amber-300 transition-colors select-none outline-none focus-visible:ring-1 focus-visible:ring-violet-500 rounded"
+                        className="p-3.5 sm:p-4 rounded-2xl bg-slate-50/80 dark:bg-white/[0.03] border border-slate-200/80 dark:border-white/10 mb-4 text-xs sm:text-sm leading-relaxed text-slate-600 dark:text-slate-300 cursor-pointer hover:border-violet-400/50 dark:hover:border-violet-400/40 hover:bg-slate-100/80 dark:hover:bg-white/[0.06] transition-all select-none outline-none focus-visible:ring-2 focus-visible:ring-violet-500 w-full text-center lg:text-left"
                       >
                         {(
                           language === "te" && primaryContact.addressTe
@@ -438,24 +443,26 @@ export default function About({ initialAboutData, initialContactsData, initialPa
                             <p key={i}>{line}</p>
                           ))}
                       </div>
-                      <div className="flex flex-col gap-2.5 w-full sm:w-auto">
+                      <div className="flex flex-col gap-2.5 w-full">
                         {primaryContact.phones.map((phone, i) => (
                           <a
                             key={i}
                             href={`tel:${phone.number.replace(/\s/g, "")}`}
-                            className="inline-flex items-center gap-2.5 bg-white/60 hover:bg-white dark:bg-white/[0.03] dark:hover:bg-white/[0.08] px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-2xl border border-slate-200/80 dark:border-white/[0.08] hover:border-violet-400 dark:hover:border-amber-400/50 transition-all duration-200 cursor-pointer w-full group/phone shadow-sm"
+                            className="inline-flex items-center justify-between bg-white hover:bg-slate-50 dark:bg-white/[0.03] dark:hover:bg-white/[0.06] px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-2xl border border-slate-200/90 dark:border-white/10 hover:border-violet-400 dark:hover:border-violet-400/50 transition-all duration-200 cursor-pointer w-full group/phone shadow-2xs"
                           >
-                            <Phone className="w-4 h-4 text-violet-600 dark:text-amber-300 group-hover/phone:scale-110 transition-transform flex-shrink-0" />
-                            <div className="flex flex-wrap sm:flex-nowrap items-center gap-1.5 min-w-0">
-                              <span className="text-xs min-[380px]:text-sm md:text-base font-bold tracking-tight text-slate-900 dark:text-white whitespace-nowrap">
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <div className="w-7 h-7 rounded-lg bg-violet-500/10 dark:bg-violet-500/20 text-violet-600 dark:text-violet-400 flex items-center justify-center shrink-0 group-hover/phone:scale-110 transition-transform">
+                                <Phone className="w-3.5 h-3.5" />
+                              </div>
+                              <span className="text-xs sm:text-sm md:text-base font-bold tracking-tight text-slate-900 dark:text-white truncate font-sans">
                                 {phone.number}
                               </span>
-                              {phone.label && (
-                                <span className="text-[10px] sm:text-xs font-semibold text-slate-500 dark:text-white/60 whitespace-nowrap">
-                                  ({phone.label})
-                                </span>
-                              )}
                             </div>
+                            {phone.label && (
+                              <span className="text-[10px] sm:text-xs font-semibold text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-500/10 px-2 py-0.5 rounded-full border border-violet-200/60 dark:border-violet-500/20 whitespace-nowrap">
+                                {phone.label}
+                              </span>
+                            )}
                           </a>
                         ))}
                       </div>
@@ -465,8 +472,11 @@ export default function About({ initialAboutData, initialContactsData, initialPa
 
                 {/* Branch Locations */}
                 <div>
-                  <h3 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6 text-center lg:text-left tracking-tight text-slate-950 dark:text-white">
-                    {t.services.title}
+                  <h3 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6 text-center lg:text-left tracking-tight text-slate-950 dark:text-white font-outfit flex items-center justify-center lg:justify-start gap-2">
+                    <div className="w-7 h-7 rounded-lg bg-violet-500/10 dark:bg-violet-500/20 text-violet-600 dark:text-violet-400 flex items-center justify-center shrink-0">
+                      <Church className="w-3.5 h-3.5" />
+                    </div>
+                    <span>{t.services.title}</span>
                   </h3>
                   {contactsLoading ? (
                     <div className="space-y-2.5">

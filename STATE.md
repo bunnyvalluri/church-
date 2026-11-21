@@ -1,76 +1,30 @@
-# STATE.md — Dynamic Loop Engineering State Registry
-## Kingdom of Christ Ministries (KCM) Church Platform
+# Project State: KCM Portal UI/UX Overhaul
 
-> **System Health**: `OPTIMAL`  
-> **Last State Reconciliation**: 2026-10-02T13:46:46.427Z
-> **Status**: TECHNICAL SEO & PRODUCTION AUDIT COMPLETE (30/30 PHASES)
-> **Google Search Console**: Ownership Verified, Sitemap Submitted
-> **Canonical Domain**: https://kcmchurch.vercel.app
-> **Cross-Platform Compatibility**: `Fully Certified (All OS, Browsers, Viewports 320px–3840px, PWA, Offline-First)`  
-> **Auth Architecture**: `Fully Audited & Hardened — Production Direct PostgreSQL + Bcrypt (12 rounds) + HttpOnly HMAC Edge Session + Rate Limiting (Anti-Brute-Force)`  
-> **Email Delivery Engine**: `Operational — 20 Faith-Centered Templates (A–T), Multi-Transport (Resend/SMTP/Mock), Neon PostgreSQL Audit Logging, Live Studio`  
+## Status: COMPLETE & VERIFIED
 
----
+### 1. Google SERP Name ("Vercel" -> "kcm church")
+- Injected `WebSite` JSON-LD schema into `<head>` conforming strictly to Google Search Central documentation.
+- Declared `"name": "Kcm church"`, `"alternateName": ["kcm church", "Kcm church", "KCM Church", "Kingdom of Christ Ministries"]`.
+- Added `<meta name="site_name" content="Kcm church">`, `og:site_name`, `application-name`, and `apple-mobile-web-app-title`.
 
-## 1. Production 7-Loop Health Matrix
+### 2. Typography & Font System
+- Eliminated Times New Roman fallback across the entire application by configuring `adjustFontFallback: false` in `next/font/google` loaders in [frontend/app/layout.tsx](file:///c:/K.C.M-Portal/frontend/app/layout.tsx).
+- Configured robust system sans-serif fallback stacks (`Segoe UI`, `Roboto`, `system-ui`, `-apple-system`) in [frontend/app/globals.css](file:///c:/K.C.M-Portal/frontend/app/globals.css) and [frontend/tailwind.config.ts](file:///c:/K.C.M-Portal/frontend/tailwind.config.ts).
 
-| Loop Name | Status | Last Execution | Active Jobs | Failed Jobs | Total Processed | DLQ Count |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **1. Event Automation Loop** | `HEALTHY` | 2026-08-01T07:45:00.000Z | 0 | 0 | 1,420 | 0 |
-| **2. Sermon Automation Loop** | `HEALTHY` | 2026-08-01T07:46:00.000Z | 0 | 0 | 850 | 0 |
-| **3. Security Audit Loop** | `ACTIVE` | 2026-08-01T07:48:00.000Z | 0 | 0 | 89,410 | 0 |
-| **4. Upload Verification Loop** | `HEALTHY` | 2026-08-01T07:00:00.000Z | 0 | 0 | 3,240 | 0 |
-| **5. Notification Loop** | `HEALTHY` | 2026-08-01T07:47:30.000Z | 0 | 0 | 12,850 | 0 |
-| **6. Deployment Health Loop** | `HEALTHY` | 2026-08-01T07:45:00.000Z | 0 | 0 | 420 | 0 |
-| **7. Database Audit Loop** | `HEALTHY` | 2026-08-01T06:00:00.000Z | 0 | 0 | 1,180 | 0 |
-| **8. Agent Reach Intelligence Loop** | `HEALTHY` | 2026-08-01T09:25:00.000Z | 0 | 0 | 50 | 0 |
+### 3. Mobile Navigation Drawer
+- Relocated Language and Mode preferences to the top of the drawer directly under the header.
+- Added 1-tap Sun/Moon icon toggle to the header.
+- Replaced inverted pitch-black / white Mode toggles with intuitive Amber (Light) and Violet (Dark) cards with live dot indicators.
+- Replaced the blue-to-emerald gradient on Language with cohesive Royal Violet.
+- Redesigned active navigation items to use Royal Violet instead of crimson red.
+- Redesigned YouTube banner into a sophisticated dark frosted glass card.
 
----
+### 4. Hero Section & Stat Cards
+- Removed global `.bg-clip-text` override in `globals.css` that hijacked gradients.
+- Eliminated blood-red text on "Kingdom of Christ" and stat numbers (`1,000+`, etc.).
+- Replaced 2x2 candy buttons with high-conversion 2-tier design: Primary `Join Worship` + Secondary `Watch Gallery` + compact supporting pills.
 
-## 2. Branch Compliance Status Matrix
-
-Monitored Branches: **Shapur Nagar**, **Subhash Nagar**, **Bahadurpally**
-
-| Branch Name | Branch ID | Compliance Score | Weekly Report | Media Uploads | Attendance Sync | Last Audit |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Shapur Nagar** | `branch_shapur_01` | **85.0%** | `CURRENT` | `CURRENT` | `SYNCHRONIZED` | 2026-08-01 |
-| **Subhash Nagar** | `branch_subhash_02` | **85.0%** | `CURRENT` | `CURRENT` | `SYNCHRONIZED` | 2026-08-01 |
-| **Bahadurpally** | `branch_bahadur_03` | **85.0%** | `CURRENT` | `CURRENT` | `SYNCHRONIZED` | 2026-08-01 |
-
----
-
-## 3. Security Audit State Summary
-
-- **JWT Signature Status**: `VALID` (Zero forged signature attempts)
-- **RBAC Audit**: Enforced across 100% of protected routes
-- **File Upload Sanitization**: MIME type magic-byte inspection enabled (`image/jpeg`, `image/png`, `image/webp`, `application/pdf`, `video/mp4`, `audio/mpeg`)
-- **Rate Limit Violations (24h)**: 0
-- **Suspicious Activity Counter**: 0 active security alerts
-
----
-
-## 4. Active Queue Telemetry (BullMQ / In-Memory)
-
-```json
-{
-  "redis_connected": true,
-  "queues": {
-    "eventUploadQueue": { "waiting": 0, "active": 0, "completed": 1420, "failed": 0 },
-    "sermonAutomationQueue": { "waiting": 0, "active": 0, "completed": 850, "failed": 0 },
-    "securityAuditQueue": { "waiting": 0, "active": 0, "completed": 89410, "failed": 0 },
-    "uploadVerificationQueue": { "waiting": 0, "active": 0, "completed": 3240, "failed": 0 },
-    "notificationQueue": { "waiting": 0, "active": 0, "completed": 12850, "failed": 0 },
-    "deploymentHealthQueue": { "waiting": 0, "active": 0, "completed": 420, "failed": 0 },
-    "databaseAuditQueue": { "waiting": 0, "active": 0, "completed": 1180, "failed": 0 }
-  }
-```
-
----
-
-## 5. OpenClaw Specialized AI Skill Deployment Status
-
-- **GitHub Repository Status**: `PUSHED` (`origin/main` commit `cb2e126`)
-- **Vercel Deployment**: `TRIGGERED & ACTIVE`
-- **Total Registered AI Skills**: 19 across 6 Domains
-- **Admin Control Center**: Live at `/admin/openclaw-orchestrator`
-
+### 5. Portal Preferences Modal
+- Modern sans-serif typography enforced.
+- Replaced clown/red gradients on Dark Mode and Save & Close with Royal Violet to Sapphire Blue gradients.
+- Default theme initialized to `Purple Glory` (violet).

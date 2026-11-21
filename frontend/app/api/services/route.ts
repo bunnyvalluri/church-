@@ -110,10 +110,20 @@ export async function GET(req: Request) {
       prisma.churchService.count({ where }),
     ]);
 
-    return NextResponse.json({ success: true, services, total });
+    return NextResponse.json(
+      { success: true, services, total },
+      {
+        headers: !admin
+          ? { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300" }
+          : undefined,
+      }
+    );
   } catch (err: any) {
     console.error("[API/SERVICES/GET]", err);
-    return NextResponse.json({ error: err.message || "Failed to load services." }, { status: 500 });
+    return NextResponse.json(
+      { success: false, services: [], total: 0, error: err.message || "Failed to load services." },
+      { status: 500 }
+    );
   }
 }
 

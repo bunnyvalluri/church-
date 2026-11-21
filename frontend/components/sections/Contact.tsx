@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import {
-  Mail, Phone, MapPin, Send, Clock, RefreshCw, User, HelpCircle, MessageSquare, CheckCircle2, Sparkles, Copy, Check, ArrowRight
+  Mail, Phone, MapPin, Send, Clock, RefreshCw, User, HelpCircle, MessageSquare, CheckCircle2, Sparkles, Copy, Check, ArrowRight, Heart, Calendar, Users, HandHeart, ExternalLink
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/components/providers/LanguageProvider";
@@ -44,28 +44,26 @@ function ContactInfoSkeleton() {
 // ── Info Row Component ────────────────────────────────────────────────────────
 function InfoRow({
   icon,
-  gradient,
   title,
   children,
 }: {
   icon: React.ReactNode;
-  gradient: string;
+  gradient?: string;
   title: string;
   children: React.ReactNode;
 }) {
   return (
     <div className="group flex items-start gap-3 sm:gap-4">
       <div
-        className={`relative w-11 h-11 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-gradient-to-br ${gradient} flex items-center justify-center flex-shrink-0 shadow-md sm:shadow-lg transition-transform duration-300 group-hover:scale-110`}
+        className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-violet-500/10 dark:bg-violet-500/20 text-violet-600 dark:text-violet-400 border border-violet-200/60 dark:border-violet-500/20 flex items-center justify-center flex-shrink-0 transition-transform duration-200 group-hover:scale-105"
       >
-        <div className="absolute inset-0 rounded-xl sm:rounded-2xl opacity-0 group-hover:opacity-40 transition-opacity duration-300 blur-md bg-inherit" />
-        <div className="scale-90 sm:scale-100">{icon}</div>
+        {icon}
       </div>
-      <div className="flex-1 min-w-0 pt-0.5 sm:pt-1">
-        <h4 className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-white/40 mb-1">
+      <div className="flex-1 min-w-0 pt-0.5">
+        <h4 className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-white/40 mb-1 font-outfit">
           {title}
         </h4>
-        <div className="text-slate-800 dark:text-white/90 text-sm leading-relaxed">
+        <div className="text-slate-800 dark:text-white/90 text-sm leading-relaxed font-sans">
           {children}
         </div>
       </div>
@@ -74,9 +72,9 @@ function InfoRow({
 }
 
 // ── Main Contact Component ────────────────────────────────────────────────────
-export default function Contact() {
+export default function Contact({ initialContacts }: { initialContacts?: SiteContact[] }) {
   const { t, language } = useLanguage();
-  const { contacts, loading, error, refetch } = useContacts();
+  const { contacts, loading, error, refetch } = useContacts(initialContacts);
 
   const [selectedBranchIdx, setSelectedBranchIdx] = useState(0);
   const [formData, setFormData] = useState({
@@ -227,10 +225,7 @@ export default function Contact() {
           {/* ── Left Column: Contact Info + Map ── */}
           <div className="space-y-4 sm:space-y-6">
             {/* Contact Info Card */}
-            <div className="relative bg-white dark:bg-white/[0.03] rounded-3xl overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-white/[0.06] backdrop-blur-xl">
-              {/* Gradient accent bar at top */}
-              <div className={`h-1 w-full bg-gradient-to-r ${activeGradient} transition-all duration-500`} />
-
+            <div className="relative bg-white dark:bg-white/[0.03] rounded-3xl overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-200/80 dark:border-white/10 backdrop-blur-xl">
               <div className="p-4 sm:p-6 lg:p-8">
                 <h3 className="text-lg sm:text-xl font-bold mb-5 sm:mb-7 text-slate-900 dark:text-white tracking-tight">
                   {t.contact.infoTitle}
@@ -278,8 +273,7 @@ export default function Contact() {
                       <div className="space-y-6">
                         {/* Address */}
                         <InfoRow
-                          icon={<MapPin className="h-6 w-6 text-white" />}
-                          gradient="from-violet-500 to-purple-600"
+                          icon={<MapPin className="h-5 w-5 text-violet-600 dark:text-violet-400" />}
                           title={t.contact.address}
                         >
                           <a
@@ -302,8 +296,7 @@ export default function Contact() {
                         {/* Phones */}
                         {selectedContact.phones?.length > 0 && (
                           <InfoRow
-                            icon={<Phone className="h-6 w-6 text-white" />}
-                            gradient="from-emerald-500 to-teal-600"
+                            icon={<Phone className="h-5 w-5 text-violet-600 dark:text-violet-400" />}
                             title={t.contact.phone}
                           >
                             <div className="flex flex-col gap-2">
@@ -347,8 +340,7 @@ export default function Contact() {
                         {/* Email */}
                         {selectedContact.email && (
                           <InfoRow
-                            icon={<Mail className="h-6 w-6 text-white" />}
-                            gradient="from-blue-500 to-cyan-500"
+                            icon={<Mail className="h-5 w-5 text-violet-600 dark:text-violet-400" />}
                             title={t.contact.email}
                           >
                             <div className="flex items-center justify-between group/email">
@@ -383,8 +375,7 @@ export default function Contact() {
                         {/* Service Hours */}
                         {selectedContact.serviceHours && (
                           <InfoRow
-                            icon={<Clock className="h-6 w-6 text-white" />}
-                            gradient="from-pink-500 to-rose-500"
+                            icon={<Clock className="h-5 w-5 text-violet-600 dark:text-violet-400" />}
                             title={t.contact.hours}
                           >
                             <span className="font-medium text-sm">{selectedContact.serviceHours}</span>
@@ -420,76 +411,128 @@ export default function Contact() {
               </div>
             </div>
 
-            {/* Map Embed */}
+            {/* ── Seamless Campus Map Card (Clean Single Surface, Zero Double Moats, Edge-to-Edge Map) ── */}
             {!loading && !error && selectedContact && (
-              <div className="bg-white dark:bg-white/[0.03] rounded-3xl overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-white/[0.06] h-[18rem] relative group backdrop-blur-xl p-2">
-                <div className="absolute inset-2 rounded-2xl overflow-hidden bg-slate-900 flex flex-col items-center justify-center text-center p-4">
-                  {loadInteractiveMap ? (
-                    <>
-                      <a
-                        href={selectedContact.mapsUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="absolute inset-0 z-10 flex items-end p-4 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                      >
-                        <span className="text-white text-sm font-semibold flex items-center gap-2 bg-black/30 backdrop-blur-sm px-3 py-2 rounded-xl">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                            <polyline points="15 3 21 3 21 9" />
-                            <line x1="10" y1="14" x2="21" y2="3" />
-                          </svg>
-                          {t.contact.openMaps}
-                        </span>
-                      </a>
-                      <iframe
-                        src={(() => {
-                          if (
-                            selectedContact.embedUrl &&
-                            !selectedContact.embedUrl.includes("0x3bcb91e2f02d5555") &&
-                            !selectedContact.embedUrl.includes("0x0%3A0x0") &&
-                            !selectedContact.embedUrl.includes("0x0:0x0") &&
-                            !selectedContact.embedUrl.includes("6m8!1m7!") &&
-                            selectedContact.embedUrl.includes("output=embed")
-                          ) {
-                            return selectedContact.embedUrl;
-                          }
-                          const key = (selectedContact.branchKey || selectedContact.branchName || "").toLowerCase();
-                          if (key.includes("subhash")) {
-                            return "https://maps.google.com/maps?q=17.56500,78.43800&hl=en&z=16&output=embed";
-                          }
-                          if (key.includes("bahadur")) {
-                            return "https://maps.google.com/maps?q=17.567689,78.443963&hl=en&z=16&output=embed";
-                          }
-                          return "https://maps.google.com/maps?q=17.56771,78.44416&hl=en&z=16&output=embed";
-                        })()}
-                        title="Church Branch Map Location"
-                        width="100%"
-                        height="100%"
-                        style={{ border: 0 }}
-                        allowFullScreen
-                        loading="lazy"
-                        referrerPolicy="no-referrer"
-                      />
-                    </>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center h-full w-full space-y-3 z-10">
-                      <div className="w-12 h-12 rounded-2xl bg-primary/20 border border-primary/30 flex items-center justify-center text-primary">
-                        <MapPin className="w-6 h-6 text-primary" />
+              <div className="relative rounded-3xl overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-200/80 dark:border-white/10 bg-slate-100/90 dark:bg-white/[0.03] backdrop-blur-xl h-[20rem] flex flex-col group">
+                {loadInteractiveMap ? (
+                  /* ── Edge-to-Edge Live Interactive Map ── */
+                  <div className="relative w-full h-full">
+                    {/* Floating Header Scrim with Campus Badge & Controls */}
+                    <div className="absolute top-3 inset-x-3 z-20 flex items-center justify-between pointer-events-none">
+                      <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900/80 dark:bg-black/80 backdrop-blur-md text-white text-xs font-bold border border-white/20 shadow-md pointer-events-auto">
+                        <MapPin className="w-3.5 h-3.5 text-violet-400 shrink-0" />
+                        <span className="font-outfit">{selectedContact.branchName} Campus</span>
                       </div>
-                      <p className="text-xs sm:text-sm font-bold text-white max-w-xs line-clamp-1">
-                        {selectedContact.branchName}
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => setLoadInteractiveMap(true)}
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary hover:bg-primary/90 text-white text-xs font-bold shadow-lg shadow-primary/30 hover:scale-105 active:scale-95 transition-all"
-                      >
-                        <MapPin className="w-3.5 h-3.5" />
-                        <span>Interactive Map</span>
-                      </button>
+                      <div className="flex items-center gap-1.5 pointer-events-auto">
+                        <a
+                          href={selectedContact.mapsUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label="Open in Google Maps"
+                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-slate-900/80 dark:bg-black/80 hover:bg-slate-900 dark:hover:bg-black text-white text-[11px] font-bold border border-white/20 shadow-md backdrop-blur-md active:scale-95 transition-all"
+                        >
+                          <span>Open Maps</span>
+                          <ExternalLink className="w-3 h-3 text-violet-300" />
+                        </a>
+                        <button
+                          type="button"
+                          onClick={() => setLoadInteractiveMap(false)}
+                          aria-label="Collapse map preview"
+                          className="w-7 h-7 rounded-full bg-slate-900/80 dark:bg-black/80 hover:bg-slate-900 dark:hover:bg-black text-white text-xs font-bold border border-white/20 shadow-md backdrop-blur-md flex items-center justify-center active:scale-95 transition-all cursor-pointer"
+                          title="Close live map"
+                        >
+                          ✕
+                        </button>
+                      </div>
                     </div>
-                  )}
-                </div>
+
+                    {/* 100% Edge-to-Edge Map Frame — Zero padding, zero leaks */}
+                    <iframe
+                      src={(() => {
+                        if (
+                          selectedContact.embedUrl &&
+                          !selectedContact.embedUrl.includes("0x3bcb91e2f02d5555") &&
+                          !selectedContact.embedUrl.includes("0x0%3A0x0") &&
+                          !selectedContact.embedUrl.includes("0x0:0x0") &&
+                          !selectedContact.embedUrl.includes("6m8!1m7!") &&
+                          selectedContact.embedUrl.includes("output=embed")
+                        ) {
+                          return selectedContact.embedUrl;
+                        }
+                        const key = (selectedContact.branchKey || selectedContact.branchName || "").toLowerCase();
+                        if (key.includes("subhash")) {
+                          return "https://maps.google.com/maps?q=17.56500,78.43800&hl=en&z=16&output=embed";
+                        }
+                        if (key.includes("bahadur")) {
+                          return "https://maps.google.com/maps?q=17.567689,78.443963&hl=en&z=16&output=embed";
+                        }
+                        return "https://maps.google.com/maps?q=17.56771,78.44416&hl=en&z=16&output=embed";
+                      })()}
+                      title={`Map of Kingdom of Christ Ministries - ${selectedContact.branchName}`}
+                      width="100%"
+                      height="100%"
+                      style={{ border: 0 }}
+                      allowFullScreen
+                      loading="lazy"
+                      referrerPolicy="no-referrer"
+                      className="w-full h-full object-cover block"
+                    />
+                  </div>
+                ) : (
+                  /* ── Theme-Aware Elegant Map Preview (Seamless Single Container) ── */
+                  <div className="relative w-full h-full flex flex-col items-center justify-center p-6 bg-gradient-to-br from-slate-100 via-slate-50 to-violet-50/50 dark:from-slate-900/90 dark:via-[#0b0e1b] dark:to-violet-950/25 overflow-hidden text-center">
+                    {/* Subtle Map Dot-Grid Pattern */}
+                    <div 
+                      className="absolute inset-0 opacity-[0.08] dark:opacity-[0.12] bg-[radial-gradient(#8b5cf6_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" 
+                    />
+                    
+                    <div className="relative z-10 flex flex-col items-center max-w-sm mx-auto space-y-3.5">
+                      {/* Animated Location Beacon Pin */}
+                      <div className="relative">
+                        <div className="absolute -inset-2 rounded-2xl bg-violet-500/20 dark:bg-violet-500/30 blur-md animate-pulse" />
+                        <div className="relative w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 text-white flex items-center justify-center shadow-lg shadow-violet-600/30">
+                          <MapPin className="w-6 h-6 text-white" />
+                        </div>
+                      </div>
+
+                      <div>
+                        <span className="inline-block text-[11px] font-black uppercase tracking-[0.2em] text-violet-600 dark:text-violet-400 font-outfit">
+                          {selectedContact.branchName} Campus
+                        </span>
+                        <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-medium leading-relaxed mt-1 max-w-xs font-sans">
+                          {(() => {
+                            const lines = resolveAddress(selectedContact)
+                              .split("\n")
+                              .map((l) => l.trim().replace(/,+$/, ""))
+                              .filter((l) => l.length > 0 && !l.toLowerCase().includes("kingdom of christ"));
+                            return lines.slice(0, 2).join(", ") || resolveAddress(selectedContact).split("\n")[0];
+                          })()}
+                        </p>
+                      </div>
+
+                      {/* Action Button Pair (Balanced, High-Contrast) */}
+                      <div className="flex items-center gap-2 pt-1">
+                        <button
+                          type="button"
+                          onClick={() => setLoadInteractiveMap(true)}
+                          className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-xs font-extrabold shadow-md shadow-violet-600/25 hover:shadow-violet-600/40 active:scale-95 transition-all cursor-pointer font-sans"
+                        >
+                          <MapPin className="w-3.5 h-3.5" />
+                          <span>Explore Live Map</span>
+                        </button>
+                        <a
+                          href={selectedContact.mapsUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-white dark:bg-white/10 hover:bg-slate-50 dark:hover:bg-white/15 text-slate-800 dark:text-white text-xs font-bold border border-slate-200/90 dark:border-white/10 shadow-2xs active:scale-95 transition-all font-sans"
+                        >
+                          <span>Google Maps</span>
+                          <ExternalLink className="w-3.5 h-3.5 text-slate-400 dark:text-slate-300" />
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
@@ -502,9 +545,6 @@ export default function Contact() {
 
           {/* ── Right Column: Contact Form ── */}
           <div className="relative bg-white/95 dark:bg-[#0f0b21]/95 rounded-3xl overflow-hidden shadow-2xl shadow-slate-300/40 dark:shadow-[0_12px_50px_rgba(109,40,217,0.25)] border border-slate-200/80 dark:border-violet-500/25 backdrop-blur-2xl h-fit">
-            {/* Top animated gradient bar */}
-            <div className="h-1.5 w-full bg-gradient-to-r from-violet-600 via-purple-500 to-indigo-600 animate-shimmer" />
-
             <div className="p-4 sm:p-6 lg:p-8">
               {submitStatus === "success" ? (
                 /* ── Interactive Submission Confirmation Card ── */
@@ -547,31 +587,32 @@ export default function Contact() {
 
                   {/* Quick Subject Filter Chips */}
                   <div className="mb-5">
-                    <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-violet-300 mb-2">
+                    <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-violet-300 mb-2 font-outfit">
                       Quick Subject Select
                     </label>
                     <div className="flex flex-wrap gap-1.5 sm:gap-2">
                       {[
-                        { key: "general", label: t.contact.subjectGeneral, emoji: "💬" },
-                        { key: "prayer", label: t.contact.subjectPrayer, emoji: "✝️" },
-                        { key: "event", label: t.contact.subjectEvent, emoji: "🗓️" },
-                        { key: "membership", label: t.contact.subjectMembership, emoji: "🤝" },
-                        { key: "volunteer", label: t.contact.subjectVolunteer, emoji: "🙋" },
+                        { key: "general", label: t.contact.subjectGeneral, Icon: MessageSquare },
+                        { key: "prayer", label: t.contact.subjectPrayer, Icon: Heart },
+                        { key: "event", label: t.contact.subjectEvent, Icon: Calendar },
+                        { key: "membership", label: t.contact.subjectMembership, Icon: Users },
+                        { key: "volunteer", label: t.contact.subjectVolunteer, Icon: HandHeart },
                       ].map((chip) => {
                         const isSelected = formData.subject === chip.key;
+                        const ChipIcon = chip.Icon;
                         return (
                           <button
                             key={chip.key}
                             type="button"
                             onClick={() => setFormData((prev) => ({ ...prev, subject: chip.key }))}
                             className={cn(
-                              "px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-1.5 border",
+                              "px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-1.5 border select-none cursor-pointer",
                               isSelected
-                                ? "bg-violet-600 text-white border-violet-500 shadow-md shadow-violet-500/30 scale-[1.02]"
+                                ? "bg-violet-600 text-white border-violet-500 shadow-sm shadow-violet-500/30 scale-[1.02]"
                                 : "bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-gray-300 border-slate-200/80 dark:border-white/10 hover:bg-slate-200 dark:hover:bg-white/10"
                             )}
                           >
-                            <span>{chip.emoji}</span>
+                            <ChipIcon className={cn("w-3.5 h-3.5 shrink-0", isSelected ? "text-white" : "text-violet-600 dark:text-violet-400")} />
                             <span>{chip.label}</span>
                           </button>
                         );
@@ -583,14 +624,15 @@ export default function Contact() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {/* Name */}
                       <div className="space-y-1.5">
-                        <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-violet-300">
-                          {t.contact.name} <span className="text-rose-500">*</span>
+                        <label htmlFor="contact-form-name" className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-violet-300">
+                          {t.contact.name.replace(/\s*\*+$/, "")} <span className="text-rose-500">*</span>
                         </label>
                         <div className="relative group">
                           <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 dark:text-gray-400 group-focus-within:text-violet-500 dark:group-focus-within:text-violet-400 transition-colors">
                             <User className="w-4 h-4" />
                           </div>
                           <input
+                            id="contact-form-name"
                             type="text"
                             name="name"
                             value={formData.name}
@@ -619,14 +661,15 @@ export default function Contact() {
 
                       {/* Email */}
                       <div className="space-y-1.5">
-                        <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-violet-300">
-                          {t.contact.emailLabel} <span className="text-rose-500">*</span>
+                        <label htmlFor="contact-form-email" className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-violet-300">
+                          {t.contact.emailLabel.replace(/\s*\*+$/, "")} <span className="text-rose-500">*</span>
                         </label>
                         <div className="relative group">
                           <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 dark:text-gray-400 group-focus-within:text-violet-500 dark:group-focus-within:text-violet-400 transition-colors">
                             <Mail className="w-4 h-4" />
                           </div>
                           <input
+                            id="contact-form-email"
                             type="email"
                             name="email"
                             value={formData.email}
@@ -655,7 +698,7 @@ export default function Contact() {
 
                       {/* Phone */}
                       <div className="space-y-1.5">
-                        <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-violet-300">
+                        <label htmlFor="contact-form-phone" className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-violet-300">
                           {t.contact.phoneLabel}
                         </label>
                         <div className="relative group">
@@ -663,6 +706,7 @@ export default function Contact() {
                             <Phone className="w-4 h-4" />
                           </div>
                           <input
+                            id="contact-form-phone"
                             type="tel"
                             name="phone"
                             value={formData.phone}
@@ -676,14 +720,15 @@ export default function Contact() {
 
                       {/* Subject */}
                       <div className="space-y-1.5">
-                        <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-violet-300">
-                          {t.contact.subject} <span className="text-rose-500">*</span>
+                        <label htmlFor="contact-form-subject" className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-violet-300">
+                          {t.contact.subject.replace(/\s*\*+$/, "")} <span className="text-rose-500">*</span>
                         </label>
                         <div className="relative group">
                           <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 dark:text-gray-400 group-focus-within:text-violet-500 dark:group-focus-within:text-violet-400 transition-colors">
                             <HelpCircle className="w-4 h-4" />
                           </div>
                           <select
+                            id="contact-form-subject"
                             name="subject"
                             value={formData.subject}
                             onChange={handleChange}
@@ -714,8 +759,8 @@ export default function Contact() {
                     {/* Message */}
                     <div className="space-y-1.5">
                       <div className="flex items-center justify-between">
-                        <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-violet-300">
-                          {t.contact.message} <span className="text-rose-500">*</span>
+                        <label htmlFor="contact-form-message" className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-violet-300">
+                          {t.contact.message.replace(/\s*\*+$/, "")} <span className="text-rose-500">*</span>
                         </label>
                         <span className="text-[10px] font-bold text-slate-400 dark:text-gray-500">
                           {formData.message.length} / 500
@@ -726,6 +771,7 @@ export default function Contact() {
                           <MessageSquare className="w-4 h-4" />
                         </div>
                         <textarea
+                          id="contact-form-message"
                           name="message"
                           value={formData.message}
                           onChange={handleChange}

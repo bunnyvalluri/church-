@@ -177,14 +177,21 @@ export async function GET(request: NextRequest) {
       };
     });
 
-    return NextResponse.json({
-      success: true,
-      galleryItems: formattedItems,
-      images: formattedItems,
-      total: formattedItems.length,
-      nextCursor,
-      hasMore,
-    });
+    return NextResponse.json(
+      {
+        success: true,
+        galleryItems: formattedItems,
+        images: formattedItems,
+        total: formattedItems.length,
+        nextCursor,
+        hasMore,
+      },
+      {
+        headers: {
+          "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300",
+        },
+      }
+    );
   } catch (err: any) {
     console.error("[API/GALLERY/GET] Error:", err);
     // Graceful offline fallback

@@ -23,12 +23,12 @@ const config = {
     },
     extend: {
       fontFamily: {
-        sans: ["var(--font-inter)", "Noto Sans Telugu", "Noto Sans Devanagari", "Noto Sans", "sans-serif"],
-        heading: ["var(--font-outfit)", "Noto Sans Telugu", "Noto Sans Devanagari", "Noto Sans", "sans-serif"],
-        outfit: ["var(--font-outfit)", "Noto Sans Telugu", "Noto Sans Devanagari", "Noto Sans", "sans-serif"],
-        inter: ["var(--font-inter)", "Noto Sans Telugu", "Noto Sans Devanagari", "Noto Sans", "sans-serif"],
-        telugu: ["'Noto Sans Telugu'", "sans-serif"],
-        hindi: ["'Noto Sans Devanagari'", "sans-serif"],
+        sans: ["var(--font-inter, 'Segoe UI')", "system-ui", "-apple-system", "BlinkMacSystemFont", "'Segoe UI'", "Roboto", "Helvetica Neue", "Arial", "var(--font-noto-telugu)", "var(--font-noto-devanagari)", "sans-serif"],
+        heading: ["var(--font-outfit, 'Segoe UI')", "system-ui", "-apple-system", "BlinkMacSystemFont", "'Segoe UI'", "Roboto", "Helvetica Neue", "Arial", "var(--font-noto-telugu)", "var(--font-noto-devanagari)", "sans-serif"],
+        outfit: ["var(--font-outfit, 'Segoe UI')", "system-ui", "-apple-system", "BlinkMacSystemFont", "'Segoe UI'", "Roboto", "Helvetica Neue", "Arial", "var(--font-noto-telugu)", "var(--font-noto-devanagari)", "sans-serif"],
+        inter: ["var(--font-inter, 'Segoe UI')", "system-ui", "-apple-system", "BlinkMacSystemFont", "'Segoe UI'", "Roboto", "Helvetica Neue", "Arial", "var(--font-noto-telugu)", "var(--font-noto-devanagari)", "sans-serif"],
+        telugu: ["var(--font-noto-telugu)", "'Noto Sans Telugu'", "'Gautami'", "'Vani'", "'Segoe UI'", "sans-serif"],
+        hindi: ["var(--font-noto-devanagari)", "'Noto Sans Devanagari'", "'Mangal'", "'Nirmala UI'", "'Segoe UI'", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -42,19 +42,19 @@ const config = {
         },
         "gradient-start": "hsl(var(--primary-gradient-start))",
         "gradient-end": "hsl(var(--primary-gradient-end))",
-        // Dynamic Accent Theme Scale (Purple Glory, Emerald, Holy Blue, Crimson, Royal Gold, etc.)
+        // Royal Purple brand scale (True Purple, never mutated by dynamic theme)
         purple: {
-          50: "hsl(var(--purple-50-hsl, 258 94% 96%) / <alpha-value>)",
-          100: "hsl(var(--purple-100-hsl, 258 94% 90%) / <alpha-value>)",
-          200: "hsl(var(--purple-200-hsl, 258 94% 82%) / <alpha-value>)",
-          300: "hsl(var(--purple-300-hsl, 258 94% 74%) / <alpha-value>)",
-          400: "hsl(var(--purple-400-hsl, 258 94% 64%) / <alpha-value>)",
-          500: "hsl(var(--purple-500-hsl, 258 94% 56%) / <alpha-value>)",
-          600: "hsl(var(--purple-600-hsl, 258 94% 50%) / <alpha-value>)",
-          700: "hsl(var(--purple-700-hsl, 258 94% 40%) / <alpha-value>)",
-          800: "hsl(var(--purple-800-hsl, 258 94% 30%) / <alpha-value>)",
-          900: "hsl(var(--purple-900-hsl, 258 94% 20%) / <alpha-value>)",
-          950: "hsl(var(--purple-950-hsl, 258 94% 12%) / <alpha-value>)",
+          50: "#faf5ff",
+          100: "#f3e8ff",
+          200: "#e9d5ff",
+          300: "#d8b4fe",
+          400: "#c084fc",
+          500: "#a855f7",
+          600: "#9333ea",
+          700: "#7e22ce",
+          800: "#6b21a8",
+          900: "#581c87",
+          950: "#3b0764",
         },
         // High-contrast Indigo scale
         indigo: {

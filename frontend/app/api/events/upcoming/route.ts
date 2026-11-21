@@ -27,11 +27,18 @@ export async function GET(req: Request) {
       },
     });
 
-    return NextResponse.json({ success: true, events });
+    return NextResponse.json(
+      { success: true, events },
+      {
+        headers: {
+          "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300",
+        },
+      }
+    );
   } catch (err: any) {
     console.error("[API/EVENTS/UPCOMING/GET] Error:", err);
     return NextResponse.json(
-      { error: err.message || "Failed to load upcoming events." },
+      { success: false, events: [], error: err.message || "Failed to load upcoming events." },
       { status: 500 }
     );
   }

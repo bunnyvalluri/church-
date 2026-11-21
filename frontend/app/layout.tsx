@@ -17,6 +17,8 @@ const inter = Inter({
   variable: "--font-inter",
   display: "swap",
   preload: true,
+  adjustFontFallback: false,
+  fallback: ["Segoe UI", "-apple-system", "BlinkMacSystemFont", "Roboto", "Helvetica Neue", "Arial", "sans-serif"],
 });
 const outfit = Outfit({
   subsets: ["latin"],
@@ -24,6 +26,8 @@ const outfit = Outfit({
   display: "swap",
   preload: true,
   weight: ["400", "700", "900"],
+  adjustFontFallback: false,
+  fallback: ["Segoe UI", "-apple-system", "BlinkMacSystemFont", "Roboto", "Helvetica Neue", "Arial", "sans-serif"],
 });
 const notoTelugu = Noto_Sans_Telugu({
   subsets: ["telugu"],
@@ -31,6 +35,8 @@ const notoTelugu = Noto_Sans_Telugu({
   display: "swap",
   preload: false,
   weight: ["400", "700"],
+  adjustFontFallback: false,
+  fallback: ["Gautami", "Vani", "Segoe UI", "sans-serif"],
 });
 const notoDevanagari = Noto_Sans_Devanagari({
   subsets: ["devanagari"],
@@ -38,6 +44,8 @@ const notoDevanagari = Noto_Sans_Devanagari({
   display: "swap",
   preload: false,
   weight: ["400", "700"],
+  adjustFontFallback: false,
+  fallback: ["Nirmala UI", "Mangal", "Segoe UI", "sans-serif"],
 });
 
 export const viewport: Viewport = {
@@ -147,7 +155,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className="overflow-x-clip">
+    <html lang="en" suppressHydrationWarning className={`overflow-x-clip ${inter.variable} ${outfit.variable} ${notoTelugu.variable} ${notoDevanagari.variable}`}>
       <head>
         {/* Standard PWA mobile capability meta tag (supersedes deprecated apple-mobile-web-app-capable in modern Chromium) */}
         <meta name="mobile-web-app-capable" content="yes" />
@@ -166,7 +174,7 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(websiteSchema()),
+            __html: JSON.stringify(websiteSchema()).replace(/</g, "\\u003c"),
           }}
         />
         {/* Global Schema.org structured data — Church + FAQ */}

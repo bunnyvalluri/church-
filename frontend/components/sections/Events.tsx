@@ -1,24 +1,25 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
+import dynamic from "next/dynamic";
 import Image from "next/image";
+import Link from "next/link";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { cn } from "@/lib/utils";
 import {
   Calendar,
   MapPin,
   Clock,
   Sparkles,
   Loader2,
-  CheckCircle,
-  AlertCircle,
-  X,
-  QrCode,
-  User,
-  Mail,
-  Phone,
   Ticket,
+  Church,
+  ArrowRight,
+  Heart,
 } from "lucide-react";
 import { getSharedSocket } from "@/lib/socketClient";
+
+const EventRegisterModal = dynamic(() => import("./EventRegisterModal"), { ssr: false });
 
 interface DynamicEvent {
   id: string;
@@ -133,18 +134,15 @@ function CountdownTimer({ date, time }: { date: string; time?: string }) {
 }
 
 export default function Events({ initialEvents = [] }: { initialEvents?: DynamicEvent[] }) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [events, setEvents] = useState<DynamicEvent[]>(initialEvents);
   const [loading, setLoading] = useState(initialEvents.length === 0);
 
-  // Registration Modal state
+  // Pure authentic events from database only — zero synthetic or fake cards
+  const displayEvents = Array.isArray(events) ? events : [];
+
+  // Registration Modal state (Code-split into EventRegisterModal)
   const [registerEvent, setRegisterEvent] = useState<DynamicEvent | null>(null);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [regLoading, setRegLoading] = useState(false);
-  const [ticketData, setTicketData] = useState<any | null>(null);
-  const [regError, setRegError] = useState("");
 
   const fetchEvents = useCallback(async () => {
     try {
@@ -184,57 +182,6 @@ export default function Events({ initialEvents = [] }: { initialEvents?: Dynamic
     };
   }, [fetchEvents]);
 
-  const handleRegisterSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!registerEvent) return;
-
-    setRegLoading(true);
-    setRegError("");
-    try {
-      const res = await fetch(`/api/events/${registerEvent.id}/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, phone }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || "Failed to register.");
-      }
-
-      setTicketData({
-        ...data.registration,
-        isWaitlisted: data.isWaitlisted,
-      });
-
-      // Forward to Formspark for email notification
-      try {
-        const { submitToFormspark } = await import("@/lib/formspark");
-        await submitToFormspark({
-          formType: "Event RSVP Registration",
-          name,
-          email,
-          phone: phone || undefined,
-          eventTitle: registerEvent.title,
-          eventDate: registerEvent.date,
-          eventLocation: registerEvent.location,
-          subject: `Event RSVP: [${registerEvent.title}] from ${name}`,
-        });
-      } catch (fsErr) {
-        console.warn("[EVENTS] Formspark submit notice:", fsErr);
-      }
-
-      // Clear fields
-      setName("");
-      setEmail("");
-      setPhone("");
-    } catch (err: any) {
-      setRegError(err.message || "An error occurred during registration.");
-    } finally {
-      setRegLoading(false);
-    }
-  };
-
   // Format event date
   const formatEventDate = (dateStr: string) => {
     if (!dateStr) return "";
@@ -247,19 +194,6 @@ export default function Events({ initialEvents = [] }: { initialEvents?: Dynamic
       year: "numeric",
     });
   };
-
-  // Close modal on Escape key press
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && registerEvent) {
-        setRegisterEvent(null);
-        setTicketData(null);
-        setRegError("");
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [registerEvent]);
 
   return (
     <section id="events" className="py-14 sm:py-20 lg:py-24 bg-slate-50 dark:bg-transparent relative z-10 transition-colors duration-300">
@@ -285,16 +219,16 @@ export default function Events({ initialEvents = [] }: { initialEvents?: Dynamic
           </p>
         </div>
 
-        {/* Grid / Empty State */}
+        {/* Grid of Events — Rich Dynamic Content with 100% High-Conversion CTAs */}
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
             {[1, 2, 3].map((i) => (
               <div key={i} className="h-72 sm:h-96 bg-white dark:bg-white/[0.02] border border-slate-100 dark:border-white/[0.05] rounded-3xl animate-pulse" />
             ))}
           </div>
-        ) : events.length > 0 ? (
+        ) : displayEvents.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
-            {events.map((event, index) => {
+            {displayEvents.map((event, index) => {
               const displayImage = safeImgSrc(event.image);
               const branchName = event.branch?.name;
               
@@ -304,11 +238,11 @@ export default function Events({ initialEvents = [] }: { initialEvents?: Dynamic
               return (
                 <div
                   key={event.id}
-                  className="group bg-white dark:bg-slate-900/90 rounded-3xl overflow-hidden shadow-lg shadow-slate-200/50 dark:shadow-none hover:shadow-2xl dark:hover:shadow-indigo-500/10 transition-all duration-500 hover:-translate-y-1.5 border border-slate-200/80 dark:border-slate-800 dark:backdrop-blur-3xl flex flex-col justify-between"
+                  className="group bg-white dark:bg-slate-900/90 rounded-3xl overflow-hidden shadow-lg shadow-slate-200/50 dark:shadow-none hover:shadow-2xl dark:hover:shadow-indigo-500/10 transition-all duration-300 hover:-translate-y-1 border border-slate-200/80 dark:border-slate-800 dark:backdrop-blur-3xl flex flex-col justify-between"
                 >
                   <div>
                     {/* Image Banner with Smart Poster Canvas */}
-                    <div className="relative h-60 w-full overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-950/30 to-slate-950 flex items-center justify-center">
+                    <div className="relative h-56 sm:h-60 w-full overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-950/40 to-slate-950 flex items-center justify-center">
                       <div className="relative z-10 w-full h-full">
                         <Image
                           src={displayImage}
@@ -317,54 +251,70 @@ export default function Events({ initialEvents = [] }: { initialEvents?: Dynamic
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                           loading="lazy"
                           decoding="async"
-                          className="object-contain group-hover:scale-105 transition-transform duration-500 drop-shadow-md"
+                          className="object-cover group-hover:scale-105 transition-transform duration-500"
                         />
                       </div>
-                      <div className="absolute inset-0 z-10 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none" />
+                      <div className="absolute inset-0 z-10 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent pointer-events-none" />
                       
                       {branchName && (
-                        <span className="absolute bottom-3 left-3 z-20 bg-indigo-600/95 text-white text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-lg backdrop-blur-md shadow-sm">
+                        <span className="absolute bottom-3 left-3 z-20 bg-indigo-600/95 text-white text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-lg backdrop-blur-md shadow-xs border border-white/10 font-outfit">
                           {branchName}
                         </span>
                       )}
 
-                      {event.priority === "URGENT" && (
-                        <span className="absolute top-3 right-3 z-20 bg-rose-600 text-white text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-lg shadow-sm">
-                          URGENT
+                      {event.priority && (
+                        <span className={cn(
+                          "absolute top-3 right-3 z-20 text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-lg shadow-xs font-outfit border",
+                          event.priority === "URGENT"
+                            ? "bg-rose-600 text-white border-rose-400/30"
+                            : event.priority === "FEATURED"
+                            ? "bg-amber-500 text-slate-950 border-amber-300/40"
+                            : "bg-violet-600 text-white border-violet-400/30"
+                        )}>
+                          {event.priority}
                         </span>
                       )}
                     </div>
 
                     {/* Content */}
-                    <div className="p-6 space-y-4">
+                    <div className="p-5 sm:p-6 space-y-4">
                       {event.registrationRequired && typeof event.remainingSeats === "number" && (
                         <div className="flex items-center justify-end">
-                          <span className={`text-[10px] font-bold ${event.remainingSeats > 0 ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
+                          <span className={cn(
+                            "text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full font-outfit",
+                            event.remainingSeats > 0 ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" : "bg-rose-500/10 text-rose-600 dark:text-rose-400"
+                          )}>
                             {event.remainingSeats > 0 ? `${event.remainingSeats} seats left` : "Waitlist Open"}
                           </span>
                         </div>
                       )}
 
-                      <h3 className="text-lg font-black text-slate-900 dark:text-white line-clamp-1 tracking-tight">
+                      <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white line-clamp-2 tracking-tight font-outfit">
                         {event.title}
                       </h3>
 
-                      <p className="text-xs text-slate-700 dark:text-slate-200 whitespace-pre-wrap leading-relaxed font-medium">
+                      <p className="text-xs text-slate-600 dark:text-slate-300 line-clamp-2 leading-relaxed font-sans">
                         {event.shortDescription || event.description}
                       </p>
 
-                      {/* Event Details */}
-                      <div className="space-y-2.5 text-xs font-semibold text-slate-800 dark:text-slate-200">
+                      {/* Event Details Cluster */}
+                      <div className="space-y-2 pt-1 text-xs font-semibold text-slate-700 dark:text-slate-300 font-sans">
                         <div className="flex items-center gap-2.5">
-                          <Calendar className="h-4 w-4 text-indigo-600 dark:text-indigo-400 shrink-0" />
+                          <div className="w-6 h-6 rounded-lg bg-indigo-500/10 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                            <Calendar className="h-3.5 w-3.5" />
+                          </div>
                           <span>{formatEventDate(event.date)}</span>
                         </div>
                         <div className="flex items-center gap-2.5">
-                          <Clock className="h-4 w-4 text-indigo-600 dark:text-indigo-400 shrink-0" />
+                          <div className="w-6 h-6 rounded-lg bg-indigo-500/10 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                            <Clock className="h-3.5 w-3.5" />
+                          </div>
                           <span>{event.time}</span>
                         </div>
                         <div className="flex items-center gap-2.5">
-                          <MapPin className="h-4 w-4 text-indigo-600 dark:text-indigo-400 shrink-0" />
+                          <div className="w-6 h-6 rounded-lg bg-indigo-500/10 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                            <MapPin className="h-3.5 w-3.5" />
+                          </div>
                           <span className="truncate">{event.location}</span>
                         </div>
                       </div>
@@ -377,169 +327,82 @@ export default function Events({ initialEvents = [] }: { initialEvents?: Dynamic
                       )}
                     </div>
                   </div>
+
+                  {/* Card Action Button (Active High-Conversion Interface) */}
+                  <div className="p-5 sm:p-6 pt-0">
+                    {event.registrationRequired ? (
+                      <button
+                        type="button"
+                        onClick={() => setRegisterEvent(event)}
+                        className="w-full min-h-[42px] px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-extrabold text-xs shadow-md shadow-indigo-600/20 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer font-outfit"
+                      >
+                        <Ticket className="w-3.5 h-3.5" />
+                        <span>{language === "te" ? "రిజిస్టర్ చేసుకోండి" : language === "hi" ? "सीट आरक्षित करें" : "Reserve Free Ticket"}</span>
+                      </button>
+                    ) : (
+                      <Link
+                        href="#services"
+                        className="w-full min-h-[42px] px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200/90 dark:bg-white/[0.07] dark:hover:bg-white/[0.12] text-slate-800 dark:text-white font-extrabold text-xs border border-slate-200/80 dark:border-white/10 active:scale-95 transition-all flex items-center justify-center gap-2 select-none font-outfit"
+                      >
+                        <Church className="w-3.5 h-3.5 text-violet-600 dark:text-violet-400" />
+                        <span>{language === "te" ? "ఆరాధన సమయాలు →" : language === "hi" ? "आराधना समय →" : "View Service Times →"}</span>
+                      </Link>
+                    )}
+                  </div>
                 </div>
               );
             })}
           </div>
         ) : (
-          <div className="text-center py-16 px-4 bg-white dark:bg-white/[0.01] border border-slate-100 dark:border-white/[0.05] rounded-3xl max-w-md mx-auto shadow-sm backdrop-blur-sm">
-            <div className="w-16 h-16 bg-indigo-500/10 border border-indigo-500/20 text-indigo-500 rounded-2xl flex items-center justify-center mx-auto mb-4 animate-bounce">
-              <Calendar className="w-8 h-8" />
+          <div className="text-center py-12 px-6 bg-white dark:bg-white/[0.02] border border-slate-200/80 dark:border-white/10 rounded-3xl max-w-md mx-auto shadow-sm backdrop-blur-sm">
+            <div className="w-14 h-14 bg-violet-500/10 border border-violet-500/20 text-violet-600 dark:text-violet-400 rounded-2xl flex items-center justify-center mx-auto mb-3.5">
+              <Calendar className="w-7 h-7" />
             </div>
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">{t.events.noEventsTitle || "No Scheduled Events"}</h3>
-            <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-              {t.events.noEventsDesc || "Check back soon for upcoming worship services, conferences, and fellowships."}
+            <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1.5 font-outfit">
+              {t.events.noEventsTitle || (language === "te" ? "ప్రస్తుతం షెడ్యూల్ చేసిన ఈవెంట్లు లేవు" : language === "hi" ? "फिलहाल कोई निर्धारित कार्यक्रम नहीं हैं" : "No Scheduled Events")}
+            </h3>
+            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-4 font-sans max-w-xs mx-auto">
+              {t.events.noEventsDesc || (language === "te" ? "రాబోయే ప్రత్యేక ఆరాధనలు మరియు సమావేశాల వివరాలు ఇక్కడ ప్రచురించబడతాయి." : language === "hi" ? "आगामी विशेष आराधना और सम्मेलनों की जानकारी यहाँ प्रकाशित की जाएगी।" : "Special church conferences, youth conventions, and revival meetings will appear here when scheduled.")}
             </p>
+            <Link
+              href="#services"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold shadow-md shadow-violet-600/25 active:scale-95 transition-all"
+            >
+              <span>{language === "te" ? "వారపు ఆరాధన సమయాలు చూడండి" : language === "hi" ? "साप्ताहिक आराधना समय देखें" : "View Weekly Services"}</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
           </div>
         )}
 
-        {/* ── Registration & Ticket Modal ──────────────────────────────────────── */}
+        {/* ── Section Footer Action Bar ── */}
+        {displayEvents.length > 0 && (
+          <div className="mt-10 sm:mt-12 flex flex-col sm:flex-row items-center justify-center gap-3 max-w-xl mx-auto">
+            <Link
+              href="/events"
+              className="w-full sm:w-auto min-h-[44px] px-6 py-2.5 rounded-xl bg-white dark:bg-white/[0.06] hover:bg-slate-100 dark:hover:bg-white/10 text-slate-800 dark:text-white font-extrabold text-xs sm:text-sm border border-slate-200/90 dark:border-white/15 shadow-sm active:scale-95 transition-all flex items-center justify-center gap-2 font-outfit"
+            >
+              <Calendar className="w-4 h-4 text-violet-600 dark:text-violet-400" />
+              <span>{language === "te" ? "అన్ని ఈవెంట్లు చూడండి" : language === "hi" ? "सभी कार्यक्रम देखें" : "Browse All Events"}</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+            <Link
+              href="/prayer"
+              className="w-full sm:w-auto min-h-[44px] px-6 py-2.5 rounded-xl bg-violet-50 hover:bg-violet-100 dark:bg-violet-950/30 dark:hover:bg-violet-950/50 text-violet-700 dark:text-violet-300 font-extrabold text-xs sm:text-sm border border-violet-200/80 dark:border-violet-500/25 active:scale-95 transition-all flex items-center justify-center gap-2 font-outfit"
+            >
+              <Heart className="w-4 h-4 text-rose-500" />
+              <span>{language === "te" ? "ప్రార్థన విన్నపం" : language === "hi" ? "प्रार्थना अनुरोध" : "Need Prayer?"}</span>
+            </Link>
+          </div>
+        )}
+
+        {/* ── Code-Split Registration & Ticket Modal ── */}
         {registerEvent && (
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="modal-event-title"
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            style={{ backgroundColor: "rgba(9,10,26,0.65)", WebkitBackdropFilter: "blur(12px)", backdropFilter: "blur(12px)" }}
-          >
-            <div className="bg-white dark:bg-[#0f1021] border border-slate-200/50 dark:border-white/[0.06] rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
-              
-              <div className="border-b border-slate-100 dark:border-white/5 px-6 py-4 flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <div className="bg-gradient-to-br from-indigo-600 to-violet-600 p-2 rounded-xl">
-                    <Ticket className="w-4 h-4 text-white" />
-                  </div>
-                  <div>
-                    <h3 id="modal-event-title" className="text-sm font-black text-slate-900 dark:text-white">
-                      {ticketData ? "Ticket Issued" : "Reserve Ticket"}
-                    </h3>
-                    <p className="text-[10px] text-slate-400 font-medium line-clamp-1">{registerEvent.title}</p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => {
-                    setRegisterEvent(null);
-                    setTicketData(null);
-                    setRegError("");
-                  }}
-                  aria-label="Close modal"
-                  className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 text-slate-400 transition-all focus-visible:ring-2 focus-visible:ring-indigo-500"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-
-
-              <div className="p-6">
-                {!ticketData ? (
-                  /* Form */
-                  <form onSubmit={handleRegisterSubmit} className="space-y-4">
-                    <div className="space-y-1.5">
-                      <label className="text-[10px] font-black uppercase tracking-wider text-slate-500 flex items-center gap-1">
-                        <User className="w-3.5 h-3.5" /> Full Name *
-                      </label>
-                      <input
-                        required
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        placeholder="e.g. John Doe"
-                        className="w-full h-11 px-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-white/10 text-xs font-semibold text-slate-800 dark:text-white focus:outline-none"
-                      />
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="text-[10px] font-black uppercase tracking-wider text-slate-500 flex items-center gap-1">
-                        <Mail className="w-3.5 h-3.5" /> Email Address *
-                      </label>
-                      <input
-                        required
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="john@example.com"
-                        className="w-full h-11 px-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-white/10 text-xs font-semibold text-slate-800 dark:text-white focus:outline-none"
-                      />
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="text-[10px] font-black uppercase tracking-wider text-slate-500 flex items-center gap-1">
-                        <Phone className="w-3.5 h-3.5" /> Mobile Number
-                      </label>
-                      <input
-                        type="tel"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        placeholder="+91 98765 43210"
-                        className="w-full h-11 px-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-white/10 text-xs font-semibold text-slate-800 dark:text-white focus:outline-none"
-                      />
-                    </div>
-
-                    {regError && (
-                      <div className="p-3 bg-rose-50 dark:bg-rose-950/20 border border-rose-200/50 text-rose-600 rounded-xl text-xs font-semibold flex items-center gap-2">
-                        <AlertCircle className="w-4 h-4 shrink-0" />
-                        <p>{regError}</p>
-                      </div>
-                    )}
-
-                    <button
-                      type="submit"
-                      disabled={regLoading}
-                      className="w-full h-11 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-xs font-bold shadow-md hover:from-indigo-500 transition-all flex items-center justify-center gap-2"
-                    >
-                      {regLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Confirm Registration"}
-                    </button>
-                  </form>
-                ) : (
-                  /* QR PASS DISPLAY */
-                  <div className="space-y-5 text-center animate-in fade-in duration-300">
-                    <div className="mx-auto w-12 h-12 bg-emerald-500/10 rounded-full flex items-center justify-center text-emerald-500">
-                      <CheckCircle className="w-6 h-6" />
-                    </div>
-                    
-                    <div>
-                      <h4 className="text-sm font-black text-slate-800 dark:text-white">
-                        {ticketData.isWaitlisted ? "Waitlist Confirmed" : "Ticket Confirmed!"}
-                      </h4>
-                      <p className="text-[10px] text-slate-400 mt-1">
-                        {ticketData.isWaitlisted
-                          ? "We have added you to the waitlist and will email you if seats open up."
-                          : "We sent a confirmation email to you. Present this pass at entrance."}
-                      </p>
-                    </div>
-
-                    {!ticketData.isWaitlisted && ticketData.qrCode && (
-                      <div className="p-4 bg-white dark:bg-slate-950 border border-slate-100 dark:border-white/10 rounded-2xl inline-block shadow-sm">
-                        <Image src={ticketData.qrCode} alt="Ticket Code" width={160} height={160} className="mx-auto" />
-                        <p className="text-[9px] font-black text-slate-400 tracking-wider mt-2 flex items-center justify-center gap-1">
-                          <QrCode className="w-3.5 h-3.5 text-indigo-500" /> TICKET #{ticketData.id.toUpperCase()}
-                        </p>
-                      </div>
-                    )}
-
-                    <div className="p-3 bg-slate-50 dark:bg-slate-950/40 rounded-xl text-left text-[11px] text-slate-500 dark:text-slate-300 space-y-1">
-                      <p><strong>Name:</strong> {ticketData.name}</p>
-                      <p><strong>Email:</strong> {ticketData.email}</p>
-                      <p><strong>Venue:</strong> {registerEvent.location}</p>
-                      <p><strong>Date & Time:</strong> {formatEventDate(registerEvent.date)} at {registerEvent.time}</p>
-                    </div>
-
-                    <button
-                      onClick={() => {
-                        setRegisterEvent(null);
-                        setTicketData(null);
-                      }}
-                      className="w-full h-11 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-bold"
-                    >
-                      Done / Close
-                    </button>
-                  </div>
-                )}
-              </div>
-
-            </div>
-          </div>
+          <EventRegisterModal
+            event={registerEvent}
+            onClose={() => setRegisterEvent(null)}
+            formatEventDate={formatEventDate}
+          />
         )}
-
       </div>
     </section>
   );

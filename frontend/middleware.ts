@@ -43,6 +43,8 @@ const PUBLIC_PATHS = [
   '/api/sermons',
   '/api/events',
   '/api/contact',
+  '/api/services',
+  '/api/gallery',
   '/api/cms',
   '/api/health',
   '/api/ready',
@@ -301,7 +303,10 @@ export async function middleware(req: NextRequest) {
   if (PASTOR_API_PREFIXES.some((p) => pathname.startsWith(p))) {
     const isGetPublicPastorResource =
       req.method === 'GET' &&
-      (pathname.startsWith('/api/pastor/sermons') || pathname.startsWith('/api/pastor/announcements'));
+      (pathname === '/api/pastor' ||
+        pathname === '/api/pastor/' ||
+        pathname.startsWith('/api/pastor/sermons') ||
+        pathname.startsWith('/api/pastor/announcements'));
 
     if (!isGetPublicPastorResource) {
       if (!isAuthenticated) {

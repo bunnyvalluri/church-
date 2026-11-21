@@ -274,11 +274,14 @@ export function ColorThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<ColorTheme>("violet");
   const { resolvedTheme } = useTheme();
 
-  // Load initial theme from localStorage
+  // Load initial theme from localStorage (default to violet / Purple Glory)
   useEffect(() => {
     const saved = localStorage.getItem("kcm-color-theme") as ColorTheme;
-    if (saved && palettes[saved]) {
+    if (saved && palettes[saved] && saved !== "crimson") {
       setThemeState(saved);
+    } else {
+      setThemeState("violet");
+      localStorage.setItem("kcm-color-theme", "violet");
     }
   }, []);
 

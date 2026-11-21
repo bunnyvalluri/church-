@@ -12,12 +12,25 @@ export default function ThemeToggle() {
     setMounted(true);
   }, []);
 
+  const handleToggle = () => {
+    if (!mounted) return;
+    const next = (theme === "dark" || document.documentElement.classList.contains("dark")) ? "light" : "dark";
+    if (next === "dark") {
+      document.documentElement.classList.add("dark");
+      document.documentElement.classList.remove("light");
+    } else {
+      document.documentElement.classList.remove("dark");
+      document.documentElement.classList.add("light");
+    }
+    setTheme(next);
+  };
+
   // Always render the same DOM structure — use opacity to hide until mounted
   // This prevents the server/client DOM mismatch (hydration error)
   return (
     <button
       type="button"
-      onClick={() => mounted && setTheme(theme === "dark" ? "light" : "dark")}
+      onClick={handleToggle}
       className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800/90 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700/90 hover:scale-105 active:scale-95 transition-all shrink-0 shadow-sm cursor-pointer"
       aria-label="Toggle theme"
       suppressHydrationWarning

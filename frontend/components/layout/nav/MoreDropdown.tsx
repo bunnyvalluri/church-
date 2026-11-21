@@ -105,14 +105,14 @@ const MoreDropdown = memo(function MoreDropdown({
         aria-orientation="vertical"
         className={cn(
           // Position
-          "absolute right-0 mt-2 min-w-[200px]",
+          "absolute right-0 mt-2 min-w-[210px]",
           // Glass card
-          "bg-white/85 dark:bg-[#0d091e]/90 backdrop-blur-3xl",
-          "rounded-2xl border border-white/60 dark:border-white/15",
-          "shadow-[0_20px_50px_rgba(0,0,0,0.2)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.7)]",
-          "p-2 z-50 space-y-1",
+          "bg-white/95 dark:bg-[#0c0f1e]/95 backdrop-blur-2xl",
+          "rounded-2xl border border-slate-200/90 dark:border-white/10",
+          "shadow-[0_20px_50px_rgba(0,0,0,0.18)] dark:shadow-[0_25px_60px_rgba(0,0,0,0.7)]",
+          "p-1.5 z-50 space-y-0.5",
           // Animation — GPU: transform + opacity
-          "transition-all duration-300 cubic-bezier(0.16, 1, 0.3, 1) origin-top-right",
+          "transition-all duration-200 cubic-bezier(0.16, 1, 0.3, 1) origin-top-right",
           isOpen
             ? "opacity-100 translate-y-0 scale-100 pointer-events-auto"
             : "opacity-0 -translate-y-2 scale-95 pointer-events-none"
@@ -132,21 +132,15 @@ const MoreDropdown = memo(function MoreDropdown({
               role="menuitem"
               onClick={close}
               className={cn(
-                "apple-liquid-glass-btn relative flex items-center justify-between px-3 py-2.5 rounded-xl text-[13px] font-bold overflow-hidden",
-                "transition-all duration-300",
+                "relative flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold",
+                "transition-all duration-150 select-none",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
                 isActive
-                  ? cn(styles.activeText, styles.activeBg, "border", styles.liquidBorderGlow)
-                  : cn(
-                      "text-gray-700 dark:text-gray-200",
-                      "border border-transparent",
-                      "hover:bg-white/60 dark:hover:bg-white/10 hover:scale-[1.02]",
-                      styles.hoverText
-                    )
+                  ? "bg-violet-500/10 dark:bg-violet-500/20 text-violet-700 dark:text-violet-300 font-extrabold ring-1 ring-violet-500/30"
+                  : "text-slate-700 dark:text-slate-200 hover:bg-slate-100/90 dark:hover:bg-white/[0.06] hover:text-slate-900 dark:hover:text-white"
               )}
               aria-current={isActive ? "page" : undefined}
             >
-              <div className="apple-liquid-shimmer" />
               <div className="relative z-10 flex items-center gap-2.5">
                 {item.emoji ? (
                   <span className="text-sm" role="img" aria-hidden="true">
@@ -156,7 +150,7 @@ const MoreDropdown = memo(function MoreDropdown({
                   <Icon
                     className={cn(
                       "w-4 h-4 flex-shrink-0",
-                      isActive ? styles.activeText : "text-gray-400 dark:text-gray-500"
+                      isActive ? "text-violet-600 dark:text-violet-400" : "text-slate-400 dark:text-slate-500"
                     )}
                     aria-hidden="true"
                   />
@@ -165,10 +159,7 @@ const MoreDropdown = memo(function MoreDropdown({
               </div>
               {isActive && (
                 <span
-                  className={cn(
-                    "w-2 h-2 rounded-full relative z-10 animate-pulse",
-                    styles.activeIndicator
-                  )}
+                  className="w-1.5 h-1.5 rounded-full relative z-10 bg-violet-600 dark:bg-violet-400 animate-pulse"
                 />
               )}
             </Link>

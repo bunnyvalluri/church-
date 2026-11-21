@@ -119,13 +119,16 @@ function encodeSrc(src: string | null | undefined): string {
 // Robust, High-Performance YouTube Thumbnail component with automatic fallback chain & no-referrer
 const YouTubeThumbnail = React.memo(function YouTubeThumbnail({
   videoId,
+  thumbnail,
   alt,
   className = "w-full h-full object-cover",
 }: {
   videoId: string;
+  thumbnail?: string;
   alt: string;
   className?: string;
 }) {
+  const [useThumbnail, setUseThumbnail] = useState(Boolean(thumbnail));
   const [srcIndex, setSrcIndex] = useState(0);
 
   const fallbackUrls = [
@@ -136,7 +139,7 @@ const YouTubeThumbnail = React.memo(function YouTubeThumbnail({
     `https://img.youtube.com/vi/${videoId}/0.jpg`,
   ];
 
-  const currentSrc = fallbackUrls[srcIndex] || fallbackUrls[0];
+  const currentSrc = useThumbnail && thumbnail ? thumbnail : (fallbackUrls[srcIndex] || fallbackUrls[0]);
 
   return (
     <div className="relative w-full h-full bg-slate-900 overflow-hidden">
@@ -147,7 +150,9 @@ const YouTubeThumbnail = React.memo(function YouTubeThumbnail({
         decoding="async"
         referrerPolicy="no-referrer"
         onError={() => {
-          if (srcIndex < fallbackUrls.length - 1) {
+          if (useThumbnail) {
+            setUseThumbnail(false);
+          } else if (srcIndex < fallbackUrls.length - 1) {
             setSrcIndex((prev) => prev + 1);
           }
         }}
@@ -231,7 +236,7 @@ const GALLERY_I18N: Record<"en" | "te" | "hi", GalleryTranslations> = {
     titleMain: "Church",
     titleHighlight: "Photo Gallery & Video Theater",
     subtitle:
-      "Relive powerful revival services, explore 80+ church family blessing moments, and watch 44 live YouTube worship broadcasts.",
+      "Relive powerful revival services, explore 80+ church family blessing moments, and watch anointed video broadcasts.",
     allCategory: "All",
     categoryTranslations: {
       All: "All",
@@ -254,7 +259,7 @@ const GALLERY_I18N: Record<"en" | "te" | "hi", GalleryTranslations> = {
     viewCompact: "Compact Grid",
     savedPhotos: "Saved Favorites",
     searchPlaceholder: "Search 80+ photos...",
-    videoSearchPlaceholder: "Search 44 videos...",
+    videoSearchPlaceholder: "Search videos...",
     loadingPhotos: "Loading sacred moments...",
     noMomentsFound: "No sacred moments found",
     adjustSearchTip:
@@ -284,7 +289,7 @@ const GALLERY_I18N: Record<"en" | "te" | "hi", GalleryTranslations> = {
     titleMain: "చర్చి",
     titleHighlight: "ఫోటో గ్యాలరీ & వీడియో థియేటర్",
     subtitle:
-      "ఆధ్యాత్మిక పునరుజ్జీవ కూడికలు, 80+ కుటుంబ ఆశీర్వాద క్షణాలు, మరియు 44 యూట్యూబ్ ఆరాధన ప్రసారాలను చూడండి.",
+      "ఆధ్యాత్మిక పునరుజ్జీవ కూడికలు, 80+ కుటుంబ ఆశీర్వాద క్షణాలు, మరియు ఆత్మీయ వీడియో ప్రసారాలను చూడండి.",
     allCategory: "అన్నీ",
     categoryTranslations: {
       All: "అన్నీ",
@@ -336,7 +341,7 @@ const GALLERY_I18N: Record<"en" | "te" | "hi", GalleryTranslations> = {
     titleMain: "चर्च",
     titleHighlight: "फोटो गैलरी एवं वीडियो थिएटर",
     subtitle:
-      "आत्मिक पुनरुद्धार सभाएं, 80+ पारिवारिक आशीष के क्षण, और 44 यूट्यूब आराधना प्रसारण देखें।",
+      "आत्मिक पुनरुद्धार सभाएं, 80+ पारिवारिक आशीष के क्षण, और आत्मिक वीडियो प्रसारण देखें।",
     allCategory: "सभी",
     categoryTranslations: {
       All: "सभी",
@@ -485,6 +490,7 @@ export default function ChurchGalleryPage() {
   // ══════════════════════ VIDEO THEATER STATE ══════════════════════
   const [activeVideoId, setActiveVideoId] = useState<string>(GALLERY_VIDEO_ITEMS[0].id);
   const [isVideoPlaying, setIsVideoPlaying] = useState<boolean>(false);
+  const [videoPlaybackMode, setVideoPlaybackMode] = useState<"youtube" | "direct">("direct");
   const [videoFilterCategory, setVideoFilterCategory] = useState<VideoCategory>("All");
   const [videoSearchQuery, setVideoSearchQuery] = useState<string>("");
   const [playlistTab, setPlaylistTab] = useState<VideoCategory>("All");
@@ -936,7 +942,7 @@ export default function ChurchGalleryPage() {
             </h1>
 
             <p className="text-base sm:text-lg md:text-xl text-slate-600 dark:text-slate-300/90 leading-relaxed font-medium max-w-2xl mx-auto">
-              {gt.subtitle || "Relive powerful revival services, explore 80+ church family blessing moments, and watch 44 live YouTube worship broadcasts."}
+              {gt.subtitle || "Relive powerful revival services, explore 80+ church family blessing moments, and watch anointed video broadcasts."}
             </p>
 
             {/* Quick Media Switcher Tabs in Hero — Liquid Glass Segmented Pill */}
@@ -1457,7 +1463,7 @@ export default function ChurchGalleryPage() {
                     Video Theater & Worship Broadcasts
                   </h2>
                   <p className="text-slate-600 dark:text-slate-400 text-sm sm:text-base leading-relaxed">
-                    Watch 44 live YouTube video recordings of KCM Sunday services, revival blessings, Christmas celebrations, and spiritual messages.
+                    Watch official broadcast video recordings of KCM Sunday services, revival blessings, and anointing messages.
                   </p>
                 </div>
 
@@ -1545,7 +1551,7 @@ export default function ChurchGalleryPage() {
                   <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
                   <input
                     type="text"
-                    placeholder={gt.videoSearchPlaceholder || "Search 44 videos..."}
+                    placeholder={gt.videoSearchPlaceholder || "Search videos..."}
                     value={videoSearchQuery}
                     onChange={(e) => setVideoSearchQuery(e.target.value)}
                     className="w-full pl-10 pr-9 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs sm:text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-rose-500 transition-all text-slate-900 dark:text-white placeholder:text-slate-400"
@@ -1576,15 +1582,26 @@ export default function ChurchGalleryPage() {
                     style={{ aspectRatio: "16/9" }}
                   >
                     {isVideoPlaying ? (
-                      <iframe
-                        ref={cinemaIframeRef}
-                        key={activeVideo.id + "-playing"}
-                        src={`https://www.youtube-nocookie.com/embed/${activeVideo.videoId}?autoplay=1&playsinline=1&controls=1&fs=1&rel=0&iv_load_policy=3&enablejsapi=1`}
-                        title={activeVideo.title}
-                        className="absolute inset-0 w-full h-full"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
-                        allowFullScreen
-                      />
+                      videoPlaybackMode === "direct" ? (
+                        <video
+                          key={activeVideo.id + "-direct"}
+                          src={activeVideo.directVideoUrl || "/gallery/pastor/pastor-video.mp4"}
+                          controls
+                          autoPlay
+                          playsInline
+                          className="absolute inset-0 w-full h-full object-contain"
+                        />
+                      ) : (
+                        <iframe
+                          ref={cinemaIframeRef}
+                          key={activeVideo.id + "-playing"}
+                          src={`https://www.youtube.com/embed/${activeVideo.videoId}?autoplay=1&playsinline=1&controls=1&fs=1&rel=0&modestbranding=1`}
+                          title={activeVideo.title}
+                          className="absolute inset-0 w-full h-full border-0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+                          allowFullScreen
+                        />
+                      )
                     ) : (
                       <div
                         className="absolute inset-0 w-full h-full group cursor-pointer"
@@ -1593,6 +1610,7 @@ export default function ChurchGalleryPage() {
                         {/* High-definition Cover Thumbnail */}
                         <YouTubeThumbnail
                           videoId={activeVideo.videoId}
+                          thumbnail={activeVideo.thumbnail}
                           alt={activeVideo.title}
                           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                         />
@@ -1656,6 +1674,38 @@ export default function ChurchGalleryPage() {
 
                     {/* Interactive Player Action Buttons */}
                     <div className="flex flex-wrap items-center gap-2">
+                      {/* Dual-Stream Mode Switcher: Direct HD First, YouTube Next */}
+                      <div className="flex items-center bg-slate-100 dark:bg-slate-800/80 p-0.5 rounded-xl border border-slate-200 dark:border-slate-700 min-h-[40px]">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setVideoPlaybackMode("direct");
+                            setIsVideoPlaying(true);
+                          }}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all cursor-pointer ${
+                            videoPlaybackMode === "direct"
+                              ? "bg-violet-600 text-white shadow-xs"
+                              : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
+                          }`}
+                        >
+                          Direct HD
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setVideoPlaybackMode("youtube");
+                            setIsVideoPlaying(true);
+                          }}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all cursor-pointer ${
+                            videoPlaybackMode === "youtube"
+                              ? "bg-red-600 text-white shadow-xs"
+                              : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
+                          }`}
+                        >
+                          YouTube Stream
+                        </button>
+                      </div>
+
                       {/* Play / Pause Toggle Button */}
                       <button
                         onClick={isVideoPlaying ? pauseCinemaVideo : playCinemaVideo}
@@ -1775,10 +1825,10 @@ export default function ChurchGalleryPage() {
 
                   {/* Toggle Filter Tabs on Playlist */}
                   <div className="p-2.5 bg-slate-100/90 dark:bg-slate-800/80 border-b border-slate-200/80 dark:border-slate-800">
-                    <div className="grid grid-cols-3 gap-1 p-1 bg-slate-200/80 dark:bg-slate-900/90 rounded-2xl border border-slate-300/60 dark:border-slate-700/60 w-full">
+                    <div className="grid grid-cols-4 gap-1 p-1 bg-slate-200/80 dark:bg-slate-900/90 rounded-2xl border border-slate-300/60 dark:border-slate-700/60 w-full">
                       <button
                         onClick={() => setPlaylistTab("All")}
-                        className={`w-full py-1.5 px-1 rounded-xl text-[11px] font-black transition-all flex items-center justify-center gap-1 ${
+                        className={`w-full py-1.5 px-0.5 rounded-xl text-[10px] font-black transition-all flex items-center justify-center gap-0.5 ${
                           playlistTab === "All"
                             ? "bg-rose-600 text-white shadow-md shadow-rose-600/30"
                             : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
@@ -1790,25 +1840,36 @@ export default function ChurchGalleryPage() {
                       </button>
 
                       <button
-                        onClick={() => setPlaylistTab("Revival & Blessings")}
-                        className={`w-full py-1.5 px-1 rounded-xl text-[11px] font-black transition-all flex items-center justify-center gap-1 ${
-                          playlistTab === "Revival & Blessings"
+                        onClick={() => setPlaylistTab("Faith & Miracles")}
+                        className={`w-full py-1.5 px-0.5 rounded-xl text-[10px] font-black transition-all flex items-center justify-center gap-0.5 ${
+                          playlistTab === "Faith & Miracles"
                             ? "bg-amber-600 text-white shadow-md shadow-amber-600/30"
                             : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                         }`}
                       >
-                        <span>Revival</span>
+                        <span>Faith</span>
                       </button>
 
                       <button
-                        onClick={() => setPlaylistTab("Christmas Events")}
-                        className={`w-full py-1.5 px-1 rounded-xl text-[11px] font-black transition-all flex items-center justify-center gap-1 ${
-                          playlistTab === "Christmas Events"
+                        onClick={() => setPlaylistTab("Healing & Deliverance")}
+                        className={`w-full py-1.5 px-0.5 rounded-xl text-[10px] font-black transition-all flex items-center justify-center gap-0.5 ${
+                          playlistTab === "Healing & Deliverance"
                             ? "bg-rose-600 text-white shadow-md shadow-rose-600/30"
                             : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                         }`}
                       >
-                        <span>Christmas</span>
+                        <span>Healing</span>
+                      </button>
+
+                      <button
+                        onClick={() => setPlaylistTab("Holy Spirit & Revival")}
+                        className={`w-full py-1.5 px-0.5 rounded-xl text-[10px] font-black transition-all flex items-center justify-center gap-0.5 ${
+                          playlistTab === "Holy Spirit & Revival"
+                            ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
+                            : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                        }`}
+                      >
+                        <span>Revival</span>
                       </button>
                     </div>
                   </div>
@@ -1834,7 +1895,7 @@ export default function ChurchGalleryPage() {
                             className="relative flex-shrink-0 rounded-xl overflow-hidden bg-slate-950 border border-black/10 dark:border-white/10 shadow-sm"
                             style={{ width: 96, aspectRatio: "16/9" }}
                           >
-                            <YouTubeThumbnail videoId={item.videoId} alt={localizedTitle} />
+                            <YouTubeThumbnail videoId={item.videoId} thumbnail={item.thumbnail} alt={localizedTitle} />
                             <div
                               className={`absolute inset-0 flex items-center justify-center transition-colors ${
                                 isActive ? "bg-black/25" : "bg-black/45 group-hover:bg-black/25"
@@ -1905,7 +1966,7 @@ export default function ChurchGalleryPage() {
 
               {filteredVideos.length > 0 ? (
                 <div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
                     {filteredVideos.slice(0, videoDisplayCount).map((video, idx) => {
                       const isCurrent = activeVideo.id === video.id;
                       const localizedTitle = getLocalizedVideoTitle(video, language);
@@ -1922,7 +1983,7 @@ export default function ChurchGalleryPage() {
                         >
                           {/* 16:9 Thumbnail Box */}
                           <div className="relative w-full overflow-hidden bg-slate-950" style={{ aspectRatio: "16/9" }}>
-                            <YouTubeThumbnail videoId={video.videoId} alt={localizedTitle} />
+                            <YouTubeThumbnail videoId={video.videoId} thumbnail={video.thumbnail} alt={localizedTitle} />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
 
                             {/* Play Ring */}
@@ -2031,6 +2092,28 @@ export default function ChurchGalleryPage() {
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
+                  {/* Dual-Stream Mode Toggle: Direct HD First, YouTube Next */}
+                  <div className="flex items-center bg-white/10 p-0.5 rounded-xl border border-white/10 text-xs font-bold mr-1">
+                    <button
+                      type="button"
+                      onClick={() => setVideoPlaybackMode("direct")}
+                      className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
+                        videoPlaybackMode === "direct" ? "bg-violet-600 text-white shadow-xs" : "text-white/70 hover:text-white"
+                      }`}
+                    >
+                      Direct HD
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setVideoPlaybackMode("youtube")}
+                      className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
+                        videoPlaybackMode === "youtube" ? "bg-red-600 text-white shadow-xs" : "text-white/70 hover:text-white"
+                      }`}
+                    >
+                      YouTube
+                    </button>
+                  </div>
+
                   <button
                     onClick={() => setVideoModalIndex((i) => (i !== null ? Math.max(0, i - 1) : 0))}
                     disabled={videoModalIndex === 0}
@@ -2068,17 +2151,26 @@ export default function ChurchGalleryPage() {
               {/* Video Display */}
               <div className="flex-1 flex items-center justify-center p-2 sm:p-6 overflow-hidden">
                 <div className="w-full max-w-5xl">
-                  <div className="relative w-full rounded-2xl overflow-hidden shadow-2xl" style={{ paddingTop: "56.25%" }}>
-                    <iframe
-                      key={vid.id + "-modal"}
-                      src={`https://www.youtube-nocookie.com/embed/${vid.videoId}?enablejsapi=1&playsinline=1&controls=1&fs=1&rel=0&autoplay=1`}
-                      title={localizedTitle}
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
-                      referrerPolicy="strict-origin-when-cross-origin"
-                      allowFullScreen
-                      className="absolute inset-0 w-full h-full rounded-2xl"
-                      style={{ border: 0 }}
-                    />
+                  <div className="relative w-full rounded-2xl overflow-hidden shadow-2xl bg-black" style={{ paddingTop: "56.25%" }}>
+                    {videoPlaybackMode === "direct" ? (
+                      <video
+                        key={vid.id + "-modal-direct"}
+                        src={vid.directVideoUrl || "/gallery/pastor/pastor-video.mp4"}
+                        controls
+                        autoPlay
+                        playsInline
+                        className="absolute inset-0 w-full h-full object-contain"
+                      />
+                    ) : (
+                      <iframe
+                        key={vid.id + "-modal"}
+                        src={`https://www.youtube.com/embed/${vid.videoId}?autoplay=1&playsinline=1&controls=1&fs=1&rel=0&modestbranding=1`}
+                        title={localizedTitle}
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+                        allowFullScreen
+                        className="absolute inset-0 w-full h-full rounded-2xl border-0"
+                      />
+                    )}
                   </div>
                   <div className="mt-4 space-y-1">
                     <div className="flex items-center gap-2">
@@ -2106,7 +2198,7 @@ export default function ChurchGalleryPage() {
                           : "border-white/10 opacity-50 hover:opacity-100 hover:border-white/40"
                       }`}
                     >
-                      <YouTubeThumbnail videoId={v.videoId} alt={v.title} />
+                      <YouTubeThumbnail videoId={v.videoId} thumbnail={v.thumbnail} alt={v.title} />
                     </button>
                   ))}
                 </div>

@@ -9,14 +9,26 @@ import { useTheme } from "next-themes";
 
 interface PaletteToggleProps {
   showPreferences?: boolean;
+  variant?: "icon" | "pill";
 }
 
-export default function PaletteToggle({ showPreferences = false }: PaletteToggleProps) {
+export default function PaletteToggle({ showPreferences = false, variant = "icon" }: PaletteToggleProps) {
   const { theme: colorTheme, setTheme: setColorTheme } = useColorTheme();
   const { language, setLanguage } = useLanguage();
   const { theme: mode, setTheme: setMode } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+
+  const handleModeSwitch = (newMode: "light" | "dark") => {
+    if (newMode === "dark") {
+      document.documentElement.classList.add("dark");
+      document.documentElement.classList.remove("light");
+    } else {
+      document.documentElement.classList.remove("dark");
+      document.documentElement.classList.add("light");
+    }
+    setMode(newMode);
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -101,15 +113,28 @@ export default function PaletteToggle({ showPreferences = false }: PaletteToggle
   return (
     <div className="relative inline-block text-left shrink-0">
       {/* Settings Toggle Button */}
-      <button
-        onClick={() => setIsOpen(true)}
-        className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800/90 backdrop-blur-md border border-gray-200 dark:border-gray-700 text-purple-600 dark:text-purple-300 hover:bg-gray-200 dark:hover:bg-gray-700/90 hover:scale-105 active:scale-95 transition-all shadow-sm group cursor-pointer relative shrink-0"
-        title="Preferences & Theme Settings (Ctrl+K)"
-        type="button"
-        aria-label="Open preferences modal"
-      >
-        <Settings className="w-4.5 h-4.5 group-hover:rotate-45 transition-transform duration-500 text-purple-600 dark:text-purple-300" />
-      </button>
+      {variant === "pill" ? (
+        <button
+          onClick={() => setIsOpen(true)}
+          className="px-2.5 py-1 flex items-center gap-1.5 rounded-full bg-violet-100 hover:bg-violet-200/80 dark:bg-white/10 dark:hover:bg-white/15 text-violet-700 dark:text-violet-300 text-[11px] font-bold transition-all active:scale-95 cursor-pointer shadow-2xs border border-violet-200/60 dark:border-white/10"
+          title="Theme Colors & Font Size (Ctrl+K)"
+          type="button"
+          aria-label="Open portal preferences and color themes"
+        >
+          <Palette className="w-3.5 h-3.5 text-violet-600 dark:text-violet-400" />
+          <span>Colors</span>
+        </button>
+      ) : (
+        <button
+          onClick={() => setIsOpen(true)}
+          className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800/90 backdrop-blur-md border border-gray-200 dark:border-gray-700 text-purple-600 dark:text-purple-300 hover:bg-gray-200 dark:hover:bg-gray-700/90 hover:scale-105 active:scale-95 transition-all shadow-sm group cursor-pointer relative shrink-0"
+          title="Preferences & Theme Settings (Ctrl+K)"
+          type="button"
+          aria-label="Open preferences modal"
+        >
+          <Settings className="w-4.5 h-4.5 group-hover:rotate-45 transition-transform duration-500 text-purple-600 dark:text-purple-300" />
+        </button>
+      )}
 
       {/* Senior UI/UX Centered Preferences Modal */}
       {isOpen && mounted && createPortal(
@@ -121,17 +146,17 @@ export default function PaletteToggle({ showPreferences = false }: PaletteToggle
           />
 
           {/* Modal Container */}
-          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[999999] w-[92vw] max-w-md rounded-3xl bg-white dark:bg-[#12132A] border border-slate-200 dark:border-white/10 shadow-2xl shadow-purple-500/10 p-5 sm:p-6 backdrop-blur-2xl animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto custom-scrollbar">
+          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[999999] w-[92vw] max-w-md rounded-3xl bg-white dark:bg-[#101328] border border-slate-200 dark:border-white/10 shadow-2xl shadow-violet-500/10 p-5 sm:p-6 backdrop-blur-2xl animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto custom-scrollbar font-sans">
             
             {/* Header */}
             <div className="flex items-center justify-between pb-3.5 mb-3.5 border-b border-slate-100 dark:border-white/10 shrink-0">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-md shadow-purple-500/20 text-white shrink-0">
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-violet-600 via-indigo-600 to-blue-600 flex items-center justify-center shadow-md shadow-violet-500/25 text-white shrink-0">
                   <Settings className="w-5 h-5 animate-spin-slow" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h3 className="text-base font-black text-slate-900 dark:text-white tracking-tight leading-snug">
+                    <h3 className="text-base font-black text-slate-900 dark:text-white tracking-tight leading-snug font-outfit">
                       Portal Preferences
                     </h3>
                     <kbd className="hidden sm:inline-block px-1.5 py-0.5 rounded bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/10 text-[10px] font-mono text-slate-500 dark:text-gray-400 font-bold">
@@ -157,8 +182,8 @@ export default function PaletteToggle({ showPreferences = false }: PaletteToggle
               {/* Language Selector */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-300 flex items-center gap-1.5">
-                    <Globe className="w-3.5 h-3.5 text-indigo-500" /> Language
+                  <label className="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-300 flex items-center gap-1.5 font-outfit">
+                    <Globe className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" /> Language
                   </label>
                   <kbd className="hidden sm:inline-block text-[9px] font-mono px-1.5 py-0.5 rounded bg-slate-100 dark:bg-white/10 text-slate-400 dark:text-gray-400">
                     Alt+L
@@ -172,14 +197,14 @@ export default function PaletteToggle({ showPreferences = false }: PaletteToggle
                         key={lang.code}
                         type="button"
                         onClick={() => setLanguage(lang.code as any)}
-                        className={`py-2 px-2.5 rounded-xl border text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                        className={`py-2 px-2.5 rounded-xl border text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 select-none active:scale-[0.98] ${
                           isActive
-                            ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white border-transparent shadow-md"
-                            : "bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-800 dark:text-white hover:bg-slate-100 dark:hover:bg-white/10"
+                            ? "bg-violet-600 text-white font-bold shadow-md shadow-violet-600/25 border-violet-500"
+                            : "bg-slate-50 dark:bg-white/5 border-slate-200/90 dark:border-white/10 text-slate-800 dark:text-white hover:bg-slate-100 dark:hover:bg-white/10 font-medium"
                         }`}
                       >
-                        <span className="font-extrabold text-[10px] opacity-75">{lang.short}</span>
-                        <span>{lang.label}</span>
+                        <span className={`font-black text-[10px] px-1.5 py-0.5 rounded uppercase tracking-wider ${isActive ? "bg-white/20 text-white" : "bg-slate-200/70 dark:bg-white/10 text-slate-500 dark:text-slate-400"}`}>{lang.short}</span>
+                        <span className="font-sans">{lang.label}</span>
                       </button>
                     );
                   })}
@@ -189,37 +214,39 @@ export default function PaletteToggle({ showPreferences = false }: PaletteToggle
               {/* Mode Toggle */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-300 flex items-center gap-1.5">
+                  <label className="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-300 flex items-center gap-1.5 font-outfit">
                     <Sun className="w-3.5 h-3.5 text-amber-500" /> Mode / Appearance
                   </label>
                   <kbd className="hidden sm:inline-block text-[9px] font-mono px-1.5 py-0.5 rounded bg-slate-100 dark:bg-white/10 text-slate-400 dark:text-gray-400">
                     Alt+D
                   </kbd>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-2.5">
                   <button
                     type="button"
-                    onClick={() => setMode("light")}
-                    className={`py-2 px-3 rounded-xl border text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2 ${
+                    onClick={() => handleModeSwitch("light")}
+                    className={`py-2.5 px-3 rounded-xl border text-xs transition-all cursor-pointer flex items-center justify-center gap-2 select-none active:scale-[0.98] ${
                       mode === "light"
-                        ? "bg-slate-900 text-white border-transparent shadow-md"
-                        : "bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-800 dark:text-white hover:bg-slate-100 dark:hover:bg-white/10"
+                        ? "bg-amber-50/90 dark:bg-amber-950/30 text-amber-900 dark:text-amber-200 border-amber-300 dark:border-amber-500/50 ring-2 ring-amber-400/30 font-bold shadow-sm"
+                        : "bg-slate-50 dark:bg-white/5 border-slate-200/90 dark:border-white/10 text-slate-800 dark:text-white hover:bg-slate-100 dark:hover:bg-white/10 font-medium"
                     }`}
                   >
-                    <Sun className="w-3.5 h-3.5 text-amber-500" />
-                    <span>Light Mode</span>
+                    <Sun className={`w-4 h-4 ${mode === "light" ? "text-amber-500 fill-amber-400/40 stroke-[2.2]" : "text-slate-400"}`} />
+                    <span className="font-sans">Light Mode</span>
+                    {mode === "light" && <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />}
                   </button>
                   <button
                     type="button"
-                    onClick={() => setMode("dark")}
-                    className={`py-2 px-3 rounded-xl border text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2 ${
+                    onClick={() => handleModeSwitch("dark")}
+                    className={`py-2.5 px-3 rounded-xl border text-xs transition-all cursor-pointer flex items-center justify-center gap-2 select-none active:scale-[0.98] ${
                       mode === "dark"
-                        ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white border-transparent shadow-md"
-                        : "bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-800 dark:text-white hover:bg-slate-100 dark:hover:bg-white/10"
+                        ? "bg-violet-950/40 text-violet-700 dark:text-violet-200 border-violet-400 dark:border-violet-500/50 ring-2 ring-violet-500/30 font-bold shadow-sm"
+                        : "bg-slate-50 dark:bg-white/5 border-slate-200/90 dark:border-white/10 text-slate-800 dark:text-white hover:bg-slate-100 dark:hover:bg-white/10 font-medium"
                     }`}
                   >
-                    <Moon className="w-3.5 h-3.5 text-indigo-300" />
-                    <span>Dark Mode</span>
+                    <Moon className={`w-4 h-4 ${mode === "dark" ? "text-violet-500 dark:text-violet-300 fill-violet-400/30 stroke-[2.2]" : "text-slate-400"}`} />
+                    <span className="font-sans">Dark Mode</span>
+                    {mode === "dark" && <span className="w-1.5 h-1.5 rounded-full bg-violet-400" />}
                   </button>
                 </div>
               </div>
@@ -228,8 +255,8 @@ export default function PaletteToggle({ showPreferences = false }: PaletteToggle
             {/* Color Theme Palette */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-300 flex items-center gap-1.5">
-                  <Palette className="w-3.5 h-3.5 text-purple-500" /> Color Accent Theme
+                <label className="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-300 flex items-center gap-1.5 font-outfit">
+                  <Palette className="w-3.5 h-3.5 text-violet-500" /> Color Accent Theme
                 </label>
                 <span className="hidden sm:inline-block text-[9px] font-mono text-slate-400 dark:text-gray-400">
                   Alt + 1-5
@@ -244,9 +271,9 @@ export default function PaletteToggle({ showPreferences = false }: PaletteToggle
                       onClick={() => {
                         setColorTheme(item.code as ColorTheme);
                       }}
-                      className={`w-full flex items-center justify-between p-2.5 rounded-2xl transition-all text-left cursor-pointer border ${
+                      className={`w-full flex items-center justify-between p-2.5 rounded-2xl transition-all text-left cursor-pointer border select-none ${
                         isActive
-                          ? "bg-purple-500/15 dark:bg-purple-500/25 border-purple-500/60 shadow-sm"
+                          ? "bg-violet-500/10 dark:bg-violet-500/20 border-violet-500/60 shadow-sm ring-1 ring-violet-500/40"
                           : "bg-slate-50/80 dark:bg-white/5 border-slate-200/80 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10"
                       }`}
                       type="button"
@@ -260,21 +287,21 @@ export default function PaletteToggle({ showPreferences = false }: PaletteToggle
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
-                            <span className="block text-xs font-black text-slate-900 dark:text-white">
+                            <span className="block text-xs font-black text-slate-900 dark:text-white font-sans">
                               {item.label}
                             </span>
                             <kbd className="hidden sm:inline-block text-[9px] font-mono px-1 rounded bg-slate-200/60 dark:bg-white/10 text-slate-500 dark:text-gray-400">
                               Alt+{item.keyNum}
                             </kbd>
                           </div>
-                          <span className="block text-[10px] text-slate-500 dark:text-slate-300 font-medium">
+                          <span className="block text-[10px] text-slate-500 dark:text-slate-300 font-medium font-sans">
                             {item.desc}
                           </span>
                         </div>
                       </div>
 
                       {isActive && (
-                        <div className="w-5 h-5 rounded-full bg-purple-600 text-white flex items-center justify-center shadow-md shrink-0">
+                        <div className="w-5 h-5 rounded-full bg-violet-600 text-white flex items-center justify-center shadow-md shrink-0">
                           <Check className="w-3 h-3 stroke-[3]" />
                         </div>
                       )}
@@ -285,8 +312,8 @@ export default function PaletteToggle({ showPreferences = false }: PaletteToggle
             </div>
 
             {/* Laptop / PC Keyboard Shortcuts Footer Legend (Hidden on Mobile) */}
-            <div className="hidden sm:block mt-4 p-3 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200/60 dark:border-white/10 text-[11px] text-slate-600 dark:text-gray-400 space-y-1.5">
-              <span className="font-extrabold text-[10px] uppercase tracking-wider text-slate-400 dark:text-gray-400 block mb-1">
+            <div className="hidden sm:block mt-4 p-3 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200/60 dark:border-white/10 text-[11px] text-slate-600 dark:text-gray-400 space-y-1.5 font-sans">
+              <span className="font-extrabold text-[10px] uppercase tracking-wider text-slate-400 dark:text-gray-400 block mb-1 font-outfit">
                 ⌨ Laptop / PC Keyboard Shortcuts
               </span>
               <div className="grid grid-cols-2 gap-1 text-[10px]">
@@ -297,11 +324,11 @@ export default function PaletteToggle({ showPreferences = false }: PaletteToggle
               </div>
             </div>
 
-            {/* Done Button */}
+            {/* Done Button (Royal Violet & Sapphire Gradient, No Blotchy Red) */}
             <div className="mt-3.5 pt-3 border-t border-slate-100 dark:border-white/10 shrink-0">
               <button
                 onClick={() => setIsOpen(false)}
-                className="w-full py-3 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white rounded-xl font-bold text-xs shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 active:scale-[0.99] transition-all cursor-pointer"
+                className="w-full py-3 bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 hover:from-violet-500 hover:to-indigo-500 text-white rounded-xl font-bold text-xs shadow-lg shadow-violet-500/25 hover:shadow-violet-500/40 active:scale-[0.99] transition-all cursor-pointer font-sans select-none"
               >
                 Save & Close
               </button>

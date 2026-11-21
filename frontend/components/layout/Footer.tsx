@@ -13,7 +13,8 @@ import {
   ExternalLink, 
   Heart, 
   ShieldCheck,
-  Building2
+  Building2,
+  HandHeart
 } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useState, useEffect } from "react";
@@ -48,13 +49,13 @@ const LINK_MAP: Record<string, { te: string; hi: string }> = {
   "Mission": { te: "ధ్యేయం & దర్శనం", hi: "मिशन और विजन" },
   "Sermons": { te: "ప్రసంగాలు", hi: "प्रवचन" },
   "Events": { te: "కార్యక్రమాలు", hi: "कार्यक्रम" },
-  "Prayer": { te: "ప్రార్థన", hi: "प्रార్థना" },
+  "Prayer": { te: "ప్రార్థన", hi: "प्रार्थना" },
   "Small Groups": { te: "చిన్న గుంపులు", hi: "छोटे समूह" },
   "Volunteer": { te: "వాలంటీర్", hi: "स्वयंसेवक" },
   "Give": { te: "కానుకలు", hi: "दान दें" },
   "Membership": { te: "సభ్యత్వం", hi: "सदस्यता" },
   "Contact Us": { te: "సంప్రదించండి", hi: "संपर्क करें" },
-  "Visit Us": { te: "మమ్మల్ని సందర్శించండి", hi: "हमसे मिलें" },
+  "Visit Us": { te: "మమ్మల్ని సందర్శించండి", hi: "हमసే మిలే" },
   "Services": { te: "ఆరాధన సమయాలు", hi: "सेवा का समय" },
   "Locations": { te: "ప్రాంతాలు", hi: "स्थान" },
 };
@@ -85,10 +86,10 @@ function NavLink({
         href={targetHref}
         target={item.openInNew ? "_blank" : undefined}
         rel={item.openInNew ? "noopener noreferrer" : undefined}
-        className="group inline-flex items-center gap-1.5 text-xs sm:text-sm text-slate-400 hover:text-white transition-all duration-200"
+        className="group inline-flex items-center gap-2 text-xs sm:text-[13px] text-slate-400 hover:text-white transition-colors duration-200 py-0.5"
       >
-        <ChevronRight className="w-3.5 h-3.5 text-purple-400 opacity-0 -translate-x-1.5 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 shrink-0" />
-        <span className="group-hover:translate-x-0.5 transition-transform duration-200">{label}</span>
+        <span className="w-1 h-1 rounded-full bg-slate-600 group-hover:bg-purple-400 group-hover:scale-125 transition-all duration-200 shrink-0" />
+        <span className="group-hover:translate-x-0.5 transition-transform duration-200 font-medium">{label}</span>
       </Link>
     </li>
   );
@@ -144,20 +145,25 @@ export default function Footer() {
     connect: t?.links?.connect || "Connect",
   };
 
-  const socialLinks = [
-    {
-      name: "YouTube",
-      href: footer?.youtubeUrl || "https://youtube.com/@kcmchurchshapur7107?si=NbnoJjdl5lqt7fkO",
-      icon: Youtube,
-      className: "bg-red-600/15 border-red-500/30 text-[#FF0000] hover:bg-[#FF0000] hover:text-white hover:border-[#FF0000] hover:shadow-red-600/40 shadow-xs",
-    },
-  ];
+  const viewOnMapsText =
+    mounted && language === "te"
+      ? "గూగుల్ మ్యాప్‌లో చూడండి"
+      : mounted && language === "hi"
+      ? "गूगल मैप पर देखें"
+      : "View on Google Maps";
+
+  const officialSocialsText =
+    mounted && language === "te"
+      ? "సోషల్ మీడియా"
+      : mounted && language === "hi"
+      ? "सोशल मीडिया"
+      : "Official Broadcasts";
 
   return (
     <footer className="relative bg-[#060813] text-slate-300 border-t border-purple-500/20 overflow-hidden font-sans">
       {/* 🌌 Ambient Luxury Glows */}
-      <div className="absolute top-0 left-1/4 -translate-y-1/2 w-[600px] h-[350px] bg-purple-600/12 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 translate-y-1/2 w-[550px] h-[350px] bg-indigo-600/10 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-0 left-1/4 -translate-y-1/2 w-[600px] h-[350px] bg-purple-600/12 rounded-full blur-[140px] pointer-events-none contain-paint" />
+      <div className="absolute bottom-0 right-1/4 translate-y-1/2 w-[550px] h-[350px] bg-indigo-600/10 rounded-full blur-[140px] pointer-events-none contain-paint" />
       <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03] pointer-events-none" />
 
       {/* Top Gradient Accent Line with subtle glow */}
@@ -168,11 +174,11 @@ export default function Footer() {
       <div className="container max-w-7xl mx-auto px-4 sm:px-6 pt-16 pb-12 relative z-10">
         
         {/* 🌟 Pre-Footer: Connect & Ministry Quick Action Banner */}
-        <div className="mb-16 p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-purple-950/60 via-indigo-950/40 to-slate-900/60 border border-purple-500/25 backdrop-blur-xl relative overflow-hidden shadow-2xl shadow-purple-950/30">
+        <div className="mb-16 p-6 sm:p-8 lg:p-9 rounded-3xl bg-gradient-to-r from-purple-950/60 via-indigo-950/40 to-slate-900/60 border border-purple-500/25 backdrop-blur-xl relative overflow-hidden shadow-2xl shadow-purple-950/30">
           <div className="absolute -top-12 -right-12 w-64 h-64 bg-purple-500/15 rounded-full blur-3xl pointer-events-none" />
           
           <div className="flex flex-col lg:flex-row items-center justify-between gap-6 relative z-10">
-            <div className="text-center lg:text-left space-y-2">
+            <div className="text-center lg:text-left space-y-2.5">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/20 border border-purple-400/30 text-purple-300 text-xs font-black uppercase tracking-wider shadow-xs">
                 <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
                 <span>
@@ -199,37 +205,75 @@ export default function Footer() {
               </p>
             </div>
 
-            <div className="flex flex-wrap items-center justify-center gap-3 shrink-0">
+            {/* ── Responsive Action Hierarchy: High-Conversion Quick Actions ── */}
+            <div className="flex flex-wrap items-center justify-center lg:justify-end gap-3 w-full lg:w-auto shrink-0 pt-2 lg:pt-0">
+              {/* Primary Action: Prayer Request */}
               <Link
                 href="/prayer"
-                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs sm:text-sm shadow-lg shadow-purple-600/30 transition-all hover:scale-105 active:scale-95 flex items-center gap-2"
+                aria-label="Submit a prayer request"
+                className="flex-1 sm:flex-none h-11 sm:h-12 px-6 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-violet-600 hover:from-purple-500 hover:to-indigo-500 text-white font-extrabold text-xs sm:text-sm shadow-lg shadow-purple-600/30 hover:shadow-purple-600/50 transition-all hover:scale-[1.02] sm:hover:scale-105 active:scale-95 flex items-center justify-center gap-2 select-none shrink-0"
               >
-                <span>🙏</span>
-                <span>{mounted && language === "te" ? "ప్రార్థన విజ్ఞాపన" : mounted && language === "hi" ? "प्रार्थना अनुरोध" : "Prayer Request"}</span>
+                <HandHeart className="w-4 h-4 text-white shrink-0" />
+                <span className="whitespace-nowrap font-bold">
+                  {mounted && language === "te"
+                    ? "ప్రార్థన విజ్ఞాపన"
+                    : mounted && language === "hi"
+                    ? "प्रार्थना अनुरोध"
+                    : "Prayer Request"}
+                </span>
               </Link>
+
+              {/* Secondary Action: Donate (80G) */}
               <Link
                 href="/ngo/donations"
-                className="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm border border-white/20 transition-all hover:scale-105 active:scale-95 flex items-center gap-2"
+                aria-label="Donate to KCM NGO (80G Tax Exempt)"
+                className="flex-1 sm:flex-none h-11 sm:h-12 px-5 rounded-2xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-100 hover:text-white font-bold text-xs sm:text-sm border border-rose-500/30 transition-all hover:scale-[1.02] sm:hover:scale-105 active:scale-95 flex items-center justify-center gap-2 select-none shrink-0 shadow-xs"
               >
-                <Heart className="w-4 h-4 text-pink-400" />
-                <span>{mounted && language === "te" ? "కానుకలు (80G)" : mounted && language === "hi" ? "दान दें (80G)" : "Donate (80G)"}</span>
+                <Heart className="w-4 h-4 text-rose-400 shrink-0" />
+                <span className="whitespace-nowrap font-bold">
+                  {mounted && language === "te" ? (
+                    <>
+                      <span className="sm:hidden">కానుకలు</span>
+                      <span className="hidden sm:inline">కానుకలు (80G)</span>
+                    </>
+                  ) : mounted && language === "hi" ? (
+                    <>
+                      <span className="sm:hidden">दान दें</span>
+                      <span className="hidden sm:inline">दान दें (80G)</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="sm:hidden">Donate</span>
+                      <span className="hidden sm:inline">Donate (80G)</span>
+                    </>
+                  )}
+                </span>
               </Link>
+
+              {/* Tertiary Action: Campuses */}
               <Link
                 href="/locations"
-                className="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/15 text-slate-300 hover:text-white font-semibold text-xs sm:text-sm border border-white/10 transition-all hover:scale-105 active:scale-95 flex items-center gap-1.5"
+                aria-label="View our church branch locations"
+                className="flex-1 sm:flex-none h-11 sm:h-12 px-5 rounded-2xl bg-white/[0.05] hover:bg-white/[0.12] text-slate-200 hover:text-white font-bold text-xs sm:text-sm border border-white/15 transition-all hover:scale-[1.02] sm:hover:scale-105 active:scale-95 flex items-center justify-center gap-2 select-none shrink-0"
               >
-                <Building2 className="w-3.5 h-3.5 text-purple-400" />
-                <span>{mounted && language === "te" ? "శాఖలు" : mounted && language === "hi" ? "शाखाएं" : "Campuses"}</span>
+                <Building2 className="w-4 h-4 text-purple-400 shrink-0" />
+                <span className="whitespace-nowrap font-bold">
+                  {mounted && language === "te"
+                    ? "శాఖలు"
+                    : mounted && language === "hi"
+                    ? "शाखाएं"
+                    : "Campuses"}
+                </span>
               </Link>
             </div>
           </div>
         </div>
 
-        {/* 🏛️ Main Footer Columns: 4 (Brand) + 5 (Links) + 3 (Connect) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8">
+        {/* 🏛️ Main Footer Columns: Perfectly Balanced 4 + 4 + 4 Grid (Zero Empty Space) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-8 items-start">
           
-          {/* 1. Brand & Mission Column (Span 4) */}
-          <div className="lg:col-span-4 space-y-5">
+          {/* ── 1. Brand & Mission Column (Span 4) ── */}
+          <div className="lg:col-span-4 space-y-4">
             <Link href="/" className="inline-flex items-center gap-3.5 group">
               <div className="relative w-14 h-14 rounded-2xl overflow-hidden border border-purple-500/40 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-md p-1 shadow-lg shadow-purple-600/20 group-hover:border-purple-400 group-hover:scale-105 transition-all duration-300">
                 <Image
@@ -237,6 +281,9 @@ export default function Footer() {
                   alt="Kingdom of Christ Ministries Logo"
                   fill
                   sizes="56px"
+                  loading="lazy"
+                  decoding="async"
+                  quality={80}
                   className="object-contain p-0.5"
                 />
               </div>
@@ -250,10 +297,12 @@ export default function Footer() {
               </div>
             </Link>
 
-            {/* Scripture Quote Glass Card */}
-            <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-md relative hover:border-purple-500/30 transition-colors shadow-xs">
-              <Quote className="w-4 h-4 text-purple-400 mb-1.5 opacity-70" />
-              <p className="text-xs text-slate-300 italic leading-relaxed font-serif">
+            {/* Scripture Quote Card */}
+            <div className="flex items-start gap-3 p-4 rounded-2xl bg-white/[0.03] hover:bg-white/[0.05] border border-white/[0.08] hover:border-purple-500/30 transition-all shadow-xs group">
+              <div className="w-8 h-8 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center shrink-0 mt-0.5 group-hover:scale-105 transition-transform">
+                <Quote className="w-4 h-4" />
+              </div>
+              <p className="flex-1 text-xs text-slate-300 italic leading-relaxed font-serif pt-0.5">
                 {tagline}
               </p>
             </div>
@@ -264,61 +313,51 @@ export default function Footer() {
                 href={footer.mapsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group flex items-start gap-3 p-3.5 rounded-2xl bg-white/[0.02] hover:bg-white/[0.06] border border-white/[0.06] hover:border-purple-500/40 transition-all text-xs text-slate-300 hover:text-white"
+                className="group flex items-start gap-3 p-4 rounded-2xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.08] hover:border-purple-500/40 transition-all text-xs text-slate-300 hover:text-white shadow-xs"
               >
-                <div className="w-8 h-8 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center shrink-0 mt-0.5 group-hover:scale-110 group-hover:bg-purple-500/20 transition-all">
-                  <MapPin className="h-4 w-4 text-purple-400" />
+                <div className="w-8 h-8 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center shrink-0 mt-0.5 group-hover:scale-105 group-hover:bg-purple-500/20 transition-all">
+                  <MapPin className="h-4 w-4" />
                 </div>
                 <div className="flex-1">
-                  <span className="block leading-relaxed font-medium">{footer.address}</span>
+                  <span className="block leading-relaxed font-medium text-slate-300 group-hover:text-white transition-colors">{footer.address}</span>
                   <span className="inline-flex items-center gap-1 text-[11px] text-purple-400 group-hover:text-purple-300 font-bold mt-1.5">
-                    <span>
-                      {mounted && language === "te"
-                        ? "గూగుల్ మ్యాప్‌లో చూడండి"
-                        : mounted && language === "hi"
-                        ? "गूगल मैप पर देखें"
-                        : "View on Google Maps"}
-                    </span>
+                    <span>{viewOnMapsText}</span>
                     <ExternalLink className="w-3 h-3" />
                   </span>
                 </div>
               </a>
             )}
 
-            {/* Social Links Row */}
-            <div className="pt-1">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500 block mb-2.5">
-                {mounted && language === "te" ? "సోషల్ మీడియా" : mounted && language === "hi" ? "सोशल मीडिया" : "Official Socials"}
+            {/* Social Broadcast Badge */}
+            <div className="pt-0.5">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-2">
+                {officialSocialsText}
               </span>
-              <div className="flex items-center gap-2.5 flex-wrap">
-                {socialLinks.map((social) => {
-                  const Icon = social.icon;
-                  return (
-                    <a
-                      key={social.name}
-                      href={social.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={social.name}
-                      className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg group border ${social.className}`}
-                    >
-                      <Icon className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
-                    </a>
-                  );
-                })}
-              </div>
+              <a
+                href={footer?.youtubeUrl || "https://youtube.com/@kcmchurchshapur7107?si=NbnoJjdl5lqt7fkO"}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="YouTube Channel"
+                className="inline-flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-red-600/10 hover:bg-red-600/20 border border-red-500/30 text-red-400 hover:text-red-300 text-xs font-semibold transition-all hover:scale-[1.02] shadow-xs group"
+              >
+                <div className="w-6 h-6 rounded-lg bg-red-600 text-white flex items-center justify-center shrink-0 shadow-sm shadow-red-600/40 group-hover:scale-105 transition-transform">
+                  <Youtube className="w-3.5 h-3.5 fill-current" />
+                </div>
+                <span>Watch Live Sermons & Worship</span>
+                <ExternalLink className="w-3 h-3 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+              </a>
             </div>
           </div>
 
-          {/* 2. Directory Navigation Columns (Span 5 total - 3 sub-columns) */}
-          <div className="lg:col-span-5 grid grid-cols-2 sm:grid-cols-3 gap-6 sm:gap-8">
+          {/* ── 2. Directory Navigation (Span 4) — Balanced 2x2 Layout ── */}
+          <div className="lg:col-span-4 grid grid-cols-2 gap-x-6 gap-y-7 pt-1">
             {/* About Group */}
             <div>
-              <h4 className="text-white font-extrabold text-xs tracking-[0.2em] uppercase flex items-center gap-2 mb-4 font-outfit">
-                <span className="w-1.5 h-1.5 rounded-full bg-purple-500 shadow-xs shadow-purple-500" />
+              <h4 className="text-white font-extrabold text-xs tracking-[0.18em] uppercase flex items-center gap-2 mb-3.5 font-outfit">
+                <span className="w-1.5 h-1.5 rounded-full bg-purple-400 shadow-xs shadow-purple-400" />
                 <span>{sectionLabels.about}</span>
               </h4>
-              <ul className="space-y-2.5">
+              <ul className="space-y-2">
                 {navigation.about?.map((item) => (
                   <NavLink
                     key={item.id}
@@ -332,11 +371,11 @@ export default function Footer() {
 
             {/* Resources Group */}
             <div>
-              <h4 className="text-white font-extrabold text-xs tracking-[0.2em] uppercase flex items-center gap-2 mb-4 font-outfit">
-                <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 shadow-xs shadow-indigo-500" />
+              <h4 className="text-white font-extrabold text-xs tracking-[0.18em] uppercase flex items-center gap-2 mb-3.5 font-outfit">
+                <span className="w-1.5 h-1.5 rounded-full bg-purple-400 shadow-xs shadow-purple-400" />
                 <span>{sectionLabels.resources}</span>
               </h4>
-              <ul className="space-y-2.5">
+              <ul className="space-y-2">
                 {navigation.resources?.map((item) => (
                   <NavLink
                     key={item.id}
@@ -349,12 +388,12 @@ export default function Footer() {
             </div>
 
             {/* Get Involved Group */}
-            <div className="col-span-2 sm:col-span-1">
-              <h4 className="text-white font-extrabold text-xs tracking-[0.2em] uppercase flex items-center gap-2 mb-4 font-outfit">
-                <span className="w-1.5 h-1.5 rounded-full bg-pink-500 shadow-xs shadow-pink-500" />
+            <div>
+              <h4 className="text-white font-extrabold text-xs tracking-[0.18em] uppercase flex items-center gap-2 mb-3.5 font-outfit">
+                <span className="w-1.5 h-1.5 rounded-full bg-purple-400 shadow-xs shadow-purple-400" />
                 <span>{sectionLabels.involved}</span>
               </h4>
-              <ul className="space-y-2.5">
+              <ul className="space-y-2">
                 {navigation.involved?.map((item) => (
                   <NavLink
                     key={item.id}
@@ -365,18 +404,14 @@ export default function Footer() {
                 ))}
               </ul>
             </div>
-          </div>
 
-          {/* 3. Connect & Helpline Support Column (Span 3) */}
-          <div className="lg:col-span-3 space-y-4">
+            {/* Connect Group */}
             <div>
-              <h4 className="text-white font-extrabold text-xs tracking-[0.2em] uppercase flex items-center gap-2 mb-4 font-outfit">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shadow-xs shadow-amber-400" />
+              <h4 className="text-white font-extrabold text-xs tracking-[0.18em] uppercase flex items-center gap-2 mb-3.5 font-outfit">
+                <span className="w-1.5 h-1.5 rounded-full bg-purple-400 shadow-xs shadow-purple-400" />
                 <span>{sectionLabels.connect}</span>
               </h4>
-              
-              {/* Quick Connect Navigation Links */}
-              <ul className="grid grid-cols-2 gap-2 mb-4">
+              <ul className="space-y-2">
                 {navigation.connect?.map((item) => (
                   <NavLink
                     key={item.id}
@@ -387,67 +422,88 @@ export default function Footer() {
                 ))}
               </ul>
             </div>
+          </div>
 
-            {/* Helpline & Office Phone Cards */}
-            <div className="pt-2 border-t border-white/[0.08] space-y-2.5">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-purple-400 block mb-1">
-                {mounted && language === "te" ? "హెల్ప్‌లైన్ & ఆఫీస్" : mounted && language === "hi" ? "हेल्पलाइन और कार्यालय" : "Helpline & Office"}
-              </span>
+          {/* ── 3. Helpline, Pastoral Office & Accreditations (Span 4) ── */}
+          <div className="lg:col-span-4 space-y-3.5 pt-1">
+            <div>
+              <h4 className="text-white font-extrabold text-xs tracking-[0.18em] uppercase flex items-center gap-2 mb-1.5 font-outfit">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shadow-xs shadow-amber-400" />
+                <span>
+                  {mounted && language === "te"
+                    ? "హెల్ప్‌లైన్ & ఆఫీస్"
+                    : mounted && language === "hi"
+                    ? "हेल्पलाइन और कार्यालय"
+                    : "Helpline & Office"}
+                </span>
+              </h4>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                {mounted && language === "te"
+                  ? "ప్రార్థన మరియు కౌన్సెలింగ్ కొరకు మా పాస్టర్స్ మరియు ఆఫీస్ సిబ్బంది అందుబాటులో ఉంటారు."
+                  : mounted && language === "hi"
+                  ? "प्रार्थना सहायता और परामर्श के लिए हमारे पादरी और कार्यालय से संपर्क करें।"
+                  : "Direct pastoral support, emergency prayer cell, and church office guidance."}
+              </p>
+            </div>
 
-              <div className="space-y-2">
-                {footer?.phones?.map((phone, i) => (
-                  <a
-                    key={i}
-                    href={`tel:${phone.number.replace(/\s/g, "")}`}
-                    className="group flex items-center justify-between gap-2 p-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.06] hover:border-purple-500/40 transition-all text-xs text-slate-200 hover:text-white"
-                  >
-                    <div className="flex items-center gap-2 min-w-0">
-                      <div className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 ${
-                        i === 0 ? "bg-amber-500/20 text-amber-400" : "bg-purple-500/20 text-purple-400"
-                      }`}>
-                        <Phone className="h-3 w-3" />
-                      </div>
-                      <span className="font-bold text-xs whitespace-nowrap tracking-tight">{phone.number}</span>
+            <div className="space-y-2">
+              {footer?.phones?.map((phone, i) => (
+                <a
+                  key={i}
+                  href={`tel:${phone.number.replace(/\s/g, "")}`}
+                  className="group flex items-center justify-between gap-3 p-3 rounded-2xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.08] hover:border-purple-500/40 transition-all text-xs text-slate-200 hover:text-white shadow-xs"
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
+                      i === 0 
+                        ? "bg-amber-500/15 border border-amber-500/25 text-amber-400" 
+                        : "bg-purple-500/15 border border-purple-500/25 text-purple-400"
+                    }`}>
+                      <Phone className="h-3.5 w-3.5" />
                     </div>
-                    {phone.label && (
-                      <span className={`text-[10px] px-2 py-0.5 rounded-md font-semibold shrink-0 ${
-                        i === 0 
-                          ? "bg-amber-500/15 text-amber-300 border border-amber-500/25" 
-                          : "bg-white/5 text-slate-400 border border-white/10"
-                      }`}>
-                        {phone.label}
-                      </span>
-                    )}
-                  </a>
-                ))}
-              </div>
+                    <span className="font-bold text-xs sm:text-sm tracking-tight text-white group-hover:text-purple-200 transition-colors">
+                      {phone.number}
+                    </span>
+                  </div>
+                  {phone.label && (
+                    <span className={`text-[10px] sm:text-[11px] px-2.5 py-1 rounded-lg font-semibold shrink-0 tracking-wide uppercase ${
+                      i === 0 
+                        ? "bg-amber-500/15 text-amber-300 border border-amber-500/30" 
+                        : "bg-white/5 text-slate-300 border border-white/10"
+                    }`}>
+                      {phone.label}
+                    </span>
+                  )}
+                </a>
+              ))}
 
               {/* Email Card */}
               {footer?.email && (
                 <a
                   href={`mailto:${footer.email}`}
-                  className="group flex items-center gap-2.5 p-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.06] hover:border-purple-500/40 transition-all text-xs text-slate-200 hover:text-white"
+                  className="group flex items-center gap-3 p-3 rounded-2xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.08] hover:border-purple-500/40 transition-all text-xs text-slate-200 hover:text-white shadow-xs"
                 >
-                  <div className="w-6 h-6 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center shrink-0">
-                    <Mail className="h-3 w-3" />
+                  <div className="w-7 h-7 rounded-lg bg-purple-500/15 border border-purple-500/25 text-purple-400 flex items-center justify-center shrink-0">
+                    <Mail className="h-3.5 w-3.5" />
                   </div>
-                  <span className="text-[11px] font-medium break-all leading-tight text-slate-300 group-hover:text-white">
+                  <span className="text-xs font-medium break-all leading-tight text-slate-300 group-hover:text-white transition-colors">
                     {footer.email}
                   </span>
                 </a>
               )}
 
               {/* Statutory Trust Badge */}
-              <div className="pt-1">
+              <div className="pt-0.5">
                 <Link
-                  href="/about/story#80g"
+                  href="/about/story#statutory"
                   title="View Official Statutory Approvals & 80G Tax-Exemption Certificates"
-                  className="flex items-center gap-2 p-2.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 hover:border-purple-500/40 text-[11px] text-purple-200 hover:text-white transition-all group cursor-pointer active:scale-95"
+                  className="flex items-center gap-2.5 p-3 rounded-2xl bg-purple-500/10 hover:bg-purple-500/15 border border-purple-500/20 hover:border-purple-500/40 text-xs text-purple-200 hover:text-white transition-all group cursor-pointer shadow-xs"
                 >
                   <ShieldCheck className="w-4 h-4 text-amber-400 shrink-0 group-hover:scale-110 transition-transform" />
                   <span className="font-semibold leading-tight">
                     Regd. Society 206/2012 • 80G Certified
                   </span>
+                  <ChevronRight className="w-3.5 h-3.5 text-purple-400 ml-auto opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
                 </Link>
               </div>
             </div>
@@ -456,77 +512,44 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* ── Bottom Legal, Developer Credit & Compliance Bar ── */}
-      <div className="border-t border-white/[0.08] bg-black/40">
-        <div
-          className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-6 pb-28 sm:pb-8"
-        >
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+      {/* ── Bottom Legal, Developer Credit & Compliance Bar (Pixel-Perfect Alignment) ── */}
+      <div className="border-t border-white/[0.08] bg-black/50 backdrop-blur-md">
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-5 pb-28 sm:pb-7">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
             
-            {/* Left group — Copyright + Credits */}
-            <div className="flex flex-col items-center lg:items-start gap-2 text-center lg:text-left">
-              <p className="text-xs text-slate-400 leading-relaxed">
-                {mounted ? copyright : `© ${currentYear} Kingdom of Christ Ministries. All rights reserved.`}
-              </p>
-
-              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2 pt-0.5">
-                <a
-                  href="https://valluri-rahul-portfolio.vercel.app/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/30 text-purple-300 hover:text-purple-200 font-bold text-xs tracking-wide transition-all shadow-xs hover:scale-105"
-                >
-                  <span>✦ Developed by VALLURI RAHUL ✦</span>
-                </a>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-slate-300 select-none">
-                  <IndiaFlag className="w-3.5 h-3.5 flex-shrink-0" />
-                  <span>India</span>
-                </span>
-                <Link
-                  href="/ngo/donations"
-                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 active:bg-emerald-500/30 border border-emerald-500/20 text-emerald-400 hover:text-emerald-300 text-xs font-medium transition-all active:scale-95 cursor-pointer"
-                  title="80G Tax-Exempt Donations"
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  <span>80G Tax-Exempt Certified</span>
-                </Link>
-              </div>
+            {/* Left: Copyright & Location indicator */}
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2.5 text-xs text-slate-400">
+              <span>{mounted ? copyright : `© ${currentYear} Kingdom of Christ Ministries. All rights reserved.`}</span>
+              <span className="hidden sm:inline text-slate-600 select-none">•</span>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-[11px] font-medium text-slate-300">
+                <IndiaFlag className="w-3.5 h-3.5 shrink-0" />
+                <span>Hyderabad, India</span>
+              </span>
             </div>
 
-            {/* Right group — Legal links */}
-            <div className="flex flex-wrap items-center justify-center lg:justify-end gap-x-5 gap-y-2 text-xs font-semibold text-slate-400">
-              <Link
-                href="/privacy"
-                className="hover:text-white transition-colors"
-              >
-                {mounted && language === "te"
-                  ? "గోప్యతా విధానం"
-                  : mounted && language === "hi"
-                  ? "गोपनीयता नीति"
-                  : "Privacy Policy"}
+            {/* Right: Legal links & Developer Credit cleanly aligned on a single baseline */}
+            <div className="flex flex-wrap items-center justify-center lg:justify-end gap-x-4 gap-y-2 text-xs font-medium text-slate-400">
+              <Link href="/privacy" className="hover:text-purple-300 transition-colors">
+                {mounted && language === "te" ? "గోప్యతా విధానం" : mounted && language === "hi" ? "गोपनीयता नीति" : "Privacy Policy"}
               </Link>
-              <span className="text-slate-700 select-none">•</span>
-              <Link
-                href="/terms"
-                className="hover:text-white transition-colors"
-              >
-                {mounted && language === "te"
-                  ? "సేవా నిబంధనలు"
-                  : mounted && language === "hi"
-                  ? "सेवा की शर्तें"
-                  : "Terms of Service"}
+              <span className="text-slate-600 select-none">•</span>
+              <Link href="/terms" className="hover:text-purple-300 transition-colors">
+                {mounted && language === "te" ? "సేవా నిబంధనలు" : mounted && language === "hi" ? "सेवा की शर्तें" : "Terms of Service"}
               </Link>
-              <span className="text-slate-700 select-none">•</span>
-              <Link
-                href="/about/story"
-                className="hover:text-white transition-colors"
-              >
-                {mounted && language === "te"
-                  ? "చరిత్ర & చట్టబద్ధత"
-                  : mounted && language === "hi"
-                  ? "इतिहास और दस्तावेज"
-                  : "ROC & Statutory Docs"}
+              <span className="text-slate-600 select-none">•</span>
+              <Link href="/about/story#statutory" className="hover:text-purple-300 transition-colors">
+                {mounted && language === "te" ? "చట్టబద్ధత & పత్రాలు" : mounted && language === "hi" ? "दस्तावेज और प्रमाणन" : "ROC & Statutory Docs"}
               </Link>
+              <span className="hidden sm:inline text-slate-600 select-none">•</span>
+              <a
+                href="https://valluri-rahul-portfolio.vercel.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/30 hover:border-purple-400/50 text-purple-300 hover:text-purple-200 text-xs font-bold tracking-wide transition-all shadow-xs hover:scale-105 active:scale-95"
+                title="Designed & Developed by VALLURI RAHUL"
+              >
+                <span>✦ Developed by VALLURI RAHUL ✦</span>
+              </a>
             </div>
 
           </div>

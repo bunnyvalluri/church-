@@ -4,7 +4,7 @@
 // ─── Content Security Policy ────────────────────────────────────────────────
 const ContentSecurityPolicy = `
   default-src 'self';
-  script-src 'self' 'unsafe-inline' https://checkout.razorpay.com https://www.googletagmanager.com https://apis.google.com https://*.firebaseapp.com https://accounts.google.com https://www.youtube.com https://s.ytimg.com https://*.youtube.com https://*.ytimg.com https://vercel.live;
+  script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com https://www.googletagmanager.com https://apis.google.com https://*.firebaseapp.com https://accounts.google.com https://www.youtube.com https://s.ytimg.com https://*.youtube.com https://*.ytimg.com https://vercel.live;
   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com https://vercel.live;
   font-src 'self' https://fonts.gstatic.com https://vercel.live https://assets.vercel.com;
   img-src 'self' data: blob: https://res.cloudinary.com https://firebasestorage.googleapis.com https://images.unsplash.com https://lh3.googleusercontent.com https://*.googleusercontent.com https://basemaps.cartocdn.com https://*.basemaps.cartocdn.com https://i.ytimg.com https://*.ytimg.com https://img.youtube.com https://*.youtube.com https://youtube.com https://*.googlevideo.com https://*.google.com https://*.google-analytics.com https://www.google-analytics.com https://vercel.live https://vercel.com;

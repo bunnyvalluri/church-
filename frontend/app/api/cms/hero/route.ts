@@ -15,8 +15,8 @@ export const dynamic = "force-dynamic";
 // Default hero fallback (matches current hardcoded values)
 const HERO_DEFAULTS = {
   id: "hero",
-  headline: "Welcome to Kingdom of Christ",
-  subheadline: "Ministries",
+  headline: "Welcome to",
+  subheadline: "Kingdom of Christ",
   subtitle: "A place of Love, Faith, and Miracles — where every soul finds hope, purpose, and community.",
   badgeText: "We are here for you 24/7",
   ctaPrimaryText: "Join Worship",

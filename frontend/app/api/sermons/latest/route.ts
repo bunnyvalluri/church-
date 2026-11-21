@@ -30,11 +30,18 @@ export async function GET(req: Request) {
       },
     });
 
-    return NextResponse.json({ success: true, sermons });
+    return NextResponse.json(
+      { success: true, sermons },
+      {
+        headers: {
+          "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300",
+        },
+      }
+    );
   } catch (err: any) {
     console.error('[API/SERMONS/LATEST] Error:', err);
     return NextResponse.json(
-      { error: err?.message || 'Database error occurred while fetching latest sermons' },
+      { success: false, sermons: [], error: err?.message || 'Database error occurred while fetching latest sermons' },
       { status: 500 }
     );
   }

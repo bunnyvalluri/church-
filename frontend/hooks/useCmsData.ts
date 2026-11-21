@@ -18,6 +18,25 @@ import type {
 
 // ── Generic fetch hook ─────────────────────────────────────────────────────────
 
+// Global in-flight request deduplication map to prevent multiple components from duplicate parallel fetches
+const inFlightRequests = new Map<string, Promise<any>>();
+// Memory cache across hook instances (SWR pattern)
+const memoryCache = new Map<string, { data: any; timestamp: number }>();
+
+function validateCmsData<T>(candidate: any, fallback: T): T {
+  if (candidate === null || candidate === undefined) return fallback;
+  if (Array.isArray(fallback)) {
+    return (Array.isArray(candidate) ? candidate : fallback) as unknown as T;
+  }
+  if (typeof fallback === "object" && fallback !== null) {
+    if (typeof candidate !== "object" || candidate === null || Array.isArray(candidate)) {
+      return fallback;
+    }
+    return { ...fallback, ...candidate };
+  }
+  return candidate as T;
+}
+
 interface UseCmsFetchOptions<T> {
   revalidateMs?: number; // How often to recheck (0 = no revalidation)
   initialData?: T; // Initial data from server component to bypass initial fetch loading state
@@ -29,48 +48,124 @@ export function useCmsFetch<T>(
   options: UseCmsFetchOptions<T> = {}
 ): { data: T; loading: boolean; error: string | null; refetch: () => void } {
   const { revalidateMs = 60000, initialData } = options;
-  const [data, setData] = useState<T>(initialData ?? fallback);
-  const [loading, setLoading] = useState(initialData === undefined);
+  const [data, setData] = useState<T>(() => {
+    if (initialData !== undefined) return validateCmsData(initialData, fallback);
+    const cached = memoryCache.get(url);
+    if (cached) return validateCmsData(cached.data, fallback);
+    return fallback;
+  });
+  const [loading, setLoading] = useState<boolean>(() => {
+    if (initialData !== undefined) return false;
+    const cached = memoryCache.get(url);
+    if (cached && Date.now() - cached.timestamp < revalidateMs) return false;
+    return true;
+  });
   const [error, setError] = useState<string | null>(null);
-  const cacheRef = useRef<{ data: T; timestamp: number } | null>(null);
-
-  const fetch_ = useCallback(async (force = false) => {
-    // Serve from cache if valid
-    if (!force && cacheRef.current) {
-      const age = Date.now() - cacheRef.current.timestamp;
-      if (age < revalidateMs) {
-        setData(cacheRef.current.data);
-        setLoading(false);
-        return;
-      }
-    }
-
-    try {
-      setError(null);
-      const res = await fetch(url, {
-        headers: { "Cache-Control": "no-cache" },
-        next: { revalidate: 60 },
-      } as RequestInit);
-
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const json = await res.json();
-      const result = json.data ?? fallback;
-
-      cacheRef.current = { data: result, timestamp: Date.now() };
-      setData(result);
-    } catch (err: any) {
-      console.error(`[useCmsFetch] ${url}:`, err);
-      setError(err.message || "Failed to load content");
-      // Keep showing cached or fallback data
-      if (!cacheRef.current) setData(fallback);
-    } finally {
-      setLoading(false);
-    }
-  }, [url, fallback, revalidateMs]);
+  const isMountedRef = useRef<boolean>(true);
 
   useEffect(() => {
-    // If we have initial data, we don't immediately fetch on mount unless it's a revalidation strategy, 
-    // but for now, we just skip it to prevent waterfalls.
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
+  const fetch_ = useCallback(
+    async (force = false) => {
+      // Serve from memory cache if valid and not forced
+      const cached = memoryCache.get(url);
+      if (!force && cached) {
+        const age = Date.now() - cached.timestamp;
+        if (age < revalidateMs) {
+          if (isMountedRef.current) {
+            setData(validateCmsData(cached.data, fallback));
+            setLoading(false);
+          }
+          return;
+        }
+      }
+
+      if (isMountedRef.current) {
+        setLoading(true);
+        setError(null);
+      }
+
+      try {
+        // Request deduplication: reuse active in-flight promise if one is already running
+        let requestPromise = inFlightRequests.get(url);
+        if (!requestPromise || force) {
+          requestPromise = (async () => {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 8000); // 8-second safety timeout
+
+            try {
+              const res = await fetch(url, {
+                signal: controller.signal,
+                headers: { "Cache-Control": "no-cache" },
+                next: { revalidate: 60 },
+              } as RequestInit);
+
+              clearTimeout(timeoutId);
+
+              if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText || "Request failed"}`);
+              const json = await res.json();
+
+              // Safe payload extraction across various API schema conventions
+              let extracted: any = json;
+              if (json && typeof json === "object") {
+                if ("data" in json && json.data !== undefined) {
+                  extracted = json.data;
+                } else if ("pastors" in json && Array.isArray(json.pastors)) {
+                  extracted = json.pastors;
+                } else if ("services" in json && Array.isArray(json.services)) {
+                  extracted = json.services;
+                } else if ("events" in json && Array.isArray(json.events)) {
+                  extracted = json.events;
+                } else if ("sermons" in json && Array.isArray(json.sermons)) {
+                  extracted = json.sermons;
+                } else if ("galleryItems" in json && Array.isArray(json.galleryItems)) {
+                  extracted = json.galleryItems;
+                }
+              }
+
+              return extracted;
+            } finally {
+              clearTimeout(timeoutId);
+              inFlightRequests.delete(url);
+            }
+          })();
+
+          inFlightRequests.set(url, requestPromise);
+        }
+
+        const rawResult = await requestPromise;
+        const validated = validateCmsData(rawResult, fallback);
+
+        memoryCache.set(url, { data: validated, timestamp: Date.now() });
+
+        if (isMountedRef.current) {
+          setData(validated);
+          setError(null);
+        }
+      } catch (err: any) {
+        console.warn(`[useCmsFetch] ${url}:`, err?.message || err);
+        if (isMountedRef.current) {
+          setError(err?.message || "Failed to load content");
+          const existing = memoryCache.get(url);
+          if (!existing) {
+            setData(fallback);
+          }
+        }
+      } finally {
+        if (isMountedRef.current) {
+          setLoading(false);
+        }
+      }
+    },
+    [url, fallback, revalidateMs]
+  );
+
+  useEffect(() => {
     if (initialData === undefined) {
       fetch_();
     }
@@ -83,8 +178,8 @@ export function useCmsFetch<T>(
 
 export const HERO_FALLBACK: HeroContent = {
   id: "hero",
-  headline: "Welcome to Kingdom of Christ",
-  subheadline: "Ministries",
+  headline: "Welcome to",
+  subheadline: "Kingdom of Christ",
   subtitle: "A place of Love, Faith, and Miracles",
   badgeText: "We are here for you 24/7",
   ctaPrimaryText: "Join Worship",

@@ -47,9 +47,9 @@ const MemberLoginButton = memo(function MemberLoginButton({
       className={cn(baseClasses, sizeClasses)}
       aria-label={label}
     >
-      {/* Liquid background gradient layer */}
+      {/* Liquid background gradient layer (Pure Violet to Indigo/Blue, no red) */}
       <span
-        className="absolute inset-0 bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 group-hover:from-violet-500 group-hover:to-indigo-500 transition-all duration-300"
+        className="absolute inset-0 bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 group-hover:from-violet-500 group-hover:to-blue-500 transition-all duration-300"
         aria-hidden="true"
       />
 
