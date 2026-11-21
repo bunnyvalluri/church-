@@ -192,7 +192,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://apis.google.com" />
         <link rel="dns-prefetch" href="https://checkout.razorpay.com" />
       </head>
-      <body suppressHydrationWarning className={`${inter.variable} ${outfit.variable} ${notoTelugu.variable} ${notoDevanagari.variable} font-sans relative min-h-screen bg-background overflow-x-clip selection:bg-primary/30 selection:text-primary pt-safe pb-safe pl-safe pr-safe`}>
+      <body suppressHydrationWarning className={`${inter.variable} ${outfit.variable} ${notoTelugu.variable} ${notoDevanagari.variable} font-sans relative min-h-screen bg-background overflow-x-clip selection:bg-primary/30 selection:text-primary`}>
         {/* Google Analytics 4 */}
         <GoogleAnalytics />
 

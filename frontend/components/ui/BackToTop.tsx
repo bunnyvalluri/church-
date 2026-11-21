@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { ArrowUp, ArrowDown } from "lucide-react";
+import { ArrowUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function BackToTop() {
@@ -34,7 +34,9 @@ export default function BackToTop() {
       const scrollY = window.scrollY;
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
       
-      setVisible(docHeight > 200);
+      // Senior UX Principle: Floating Action Button should only appear after the user has scrolled down into content (scrollY > 350)
+      // Never show at the top of the page, avoiding cognitive clutter and visual collision with hero/cards.
+      setVisible(scrollY > 350 && docHeight > 400);
       setProgress(docHeight > 0 ? Math.min((scrollY / docHeight) * 100, 100) : 0);
       ticking = false;
     };
@@ -53,20 +55,11 @@ export default function BackToTop() {
 
   if (isExcludedPage) return null;
 
-  const isNearTop = progress < 50;
-
-  const handleScrollAction = () => {
-    if (isNearTop) {
-      window.scrollTo({
-        top: document.documentElement.scrollHeight,
-        behavior: "smooth",
-      });
-    } else {
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth",
-      });
-    }
+  const handleScrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   };
 
   if (!mounted) return null;
@@ -81,27 +74,27 @@ export default function BackToTop() {
     <AnimatePresence>
       {visible && (
         <motion.button
-          initial={{ opacity: 0, scale: 0.4, y: 24 }}
+          initial={{ opacity: 0, scale: 0.5, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.4, y: 24 }}
-          transition={{ type: "spring", damping: 22, stiffness: 280 }}
-          whileHover={{ scale: 1.12 }}
-          whileTap={{ scale: 0.88 }}
-          onClick={handleScrollAction}
-          aria-label={isNearTop ? "Scroll to bottom" : "Scroll to top"}
-          title={isNearTop ? "Scroll to bottom" : "Scroll to top"}
-          className="fixed bottom-safe left-3 min-[360px]:left-4 sm:bottom-6 sm:left-6 z-40 w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center group"
-          style={{ filter: "drop-shadow(0 6px 20px rgba(139,92,246,0.4))" }}
+          exit={{ opacity: 0, scale: 0.5, y: 20 }}
+          transition={{ type: "spring", damping: 20, stiffness: 300 }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={handleScrollToTop}
+          aria-label="Scroll to top of page"
+          title="Back to top"
+          className="fixed bottom-safe right-4 sm:bottom-6 sm:right-6 z-40 w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center group cursor-pointer"
+          style={{ filter: "drop-shadow(0 6px 20px rgba(139,92,246,0.45))" }}
         >
-          {/* Glassmorphism base */}
-          <span className="absolute inset-0 rounded-full bg-gray-950/80 dark:bg-gray-900/85 backdrop-blur-xl border border-white/[0.08]" />
+          {/* Glassmorphism high-contrast base */}
+          <span className="absolute inset-0 rounded-full bg-slate-900/90 dark:bg-slate-950/90 backdrop-blur-xl border border-white/15 dark:border-purple-500/30" />
 
-          {/* Purple inner glow */}
-          <span className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-500/20 via-transparent to-indigo-500/10 pointer-events-none" />
+          {/* Purple inner accent glow */}
+          <span className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-500/25 via-transparent to-indigo-500/15 pointer-events-none" />
 
           {/* Scroll progress ring */}
           <svg
-            className="absolute inset-0 w-full h-full -rotate-90"
+            className="absolute inset-0 w-full h-full -rotate-90 pointer-events-none"
             viewBox={`0 0 ${size} ${size}`}
             fill="none"
           >
@@ -110,7 +103,7 @@ export default function BackToTop() {
               cx={size / 2}
               cy={size / 2}
               r={radius}
-              stroke="rgba(255,255,255,0.06)"
+              stroke="rgba(255,255,255,0.12)"
               strokeWidth="2.5"
             />
             {/* Progress arc */}
@@ -123,37 +116,23 @@ export default function BackToTop() {
               strokeLinecap="round"
               strokeDasharray={circumference}
               strokeDashoffset={strokeDashoffset}
-              style={{ transition: "stroke-dashoffset 0.2s ease" }}
+              style={{ transition: "stroke-dashoffset 0.15s ease" }}
             />
             <defs>
               <linearGradient id="btt-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#a855f7" />
-                <stop offset="100%" stopColor="#6366f1" />
+                <stop offset="0%" stopColor="#c084fc" />
+                <stop offset="100%" stopColor="#818cf8" />
               </linearGradient>
             </defs>
           </svg>
 
-          {/* Animated Directional Icon */}
-          <motion.div
-            key={isNearTop ? "down" : "up"}
-            initial={{ rotate: isNearTop ? -180 : 180, opacity: 0 }}
-            animate={{ rotate: 0, opacity: 1 }}
-            exit={{ rotate: isNearTop ? 180 : -180, opacity: 0 }}
-            transition={{ duration: 0.25 }}
-            className="relative z-10"
-          >
-            {isNearTop ? (
-              <ArrowDown
-                className="w-[15px] h-[15px] sm:w-[17px] sm:h-[17px] text-white"
-                strokeWidth={2.8}
-              />
-            ) : (
-              <ArrowUp
-                className="w-[15px] h-[15px] sm:w-[17px] sm:h-[17px] text-white"
-                strokeWidth={2.8}
-              />
-            )}
-          </motion.div>
+          {/* Icon */}
+          <div className="relative z-10">
+            <ArrowUp
+              className="w-4 h-4 sm:w-5 sm:h-5 text-white group-hover:-translate-y-0.5 transition-transform duration-200"
+              strokeWidth={2.75}
+            />
+          </div>
         </motion.button>
       )}
     </AnimatePresence>

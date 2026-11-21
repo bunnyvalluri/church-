@@ -37,13 +37,19 @@ if (!config.isOffline && config.uri) {
     if (!globalForMongo._mongoClientPromise) {
       client = new MongoClient(config.uri, options);
       globalForMongo._mongoClientInstance = client;
-      globalForMongo._mongoClientPromise = client.connect();
+      globalForMongo._mongoClientPromise = client.connect().catch((err) => {
+        console.warn("[MONGODB] Dev connection notice:", err.message);
+        return null as any;
+      });
     }
     client = globalForMongo._mongoClientInstance!;
     clientPromise = globalForMongo._mongoClientPromise;
   } else {
     client = new MongoClient(config.uri, options);
-    clientPromise = client.connect();
+    clientPromise = client.connect().catch((err) => {
+      console.warn("[MONGODB] Connection notice:", err.message);
+      return null as any;
+    });
   }
 
   // Graceful shutdown registration
@@ -75,6 +81,7 @@ export async function getMongoDb(): Promise<Db | null> {
 
   try {
     const connectedClient = await clientPromise;
+    if (!connectedClient) return null;
     return connectedClient.db(currentConfig.dbName);
   } catch (err: any) {
     console.error("[MONGODB] Database connection acquisition error:", err.message);
@@ -92,7 +99,8 @@ export async function getMongoClient(): Promise<MongoClient | null> {
   }
 
   try {
-    return await clientPromise;
+    const connectedClient = await clientPromise;
+    return connectedClient || null;
   } catch (err: any) {
     console.error("[MONGODB] Client acquisition error:", err.message);
     return null;

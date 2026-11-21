@@ -74,17 +74,25 @@ class NetworkManager {
       // Perform a lightweight check against health endpoint or static favicon
       let res: Response | null = null;
       try {
-        res = await fetch("/api/health?_t=" + Date.now(), {
+        res = await fetch("/api/health/live?_t=" + Date.now(), {
           method: "GET",
           cache: "no-store",
           signal: controller.signal,
         });
       } catch {
-        res = await fetch("/favicon.ico?_t=" + Date.now(), {
-          method: "HEAD",
-          cache: "no-store",
-          signal: controller.signal,
-        });
+        try {
+          res = await fetch("/api/health?_t=" + Date.now(), {
+            method: "GET",
+            cache: "no-store",
+            signal: controller.signal,
+          });
+        } catch {
+          res = await fetch("/favicon.ico?_t=" + Date.now(), {
+            method: "HEAD",
+            cache: "no-store",
+            signal: controller.signal,
+          });
+        }
       }
 
       clearTimeout(timeoutId);
