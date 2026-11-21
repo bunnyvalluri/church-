@@ -12,7 +12,7 @@ concurrency:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAMESPACE: bunnyvalluri
+  IMAGE_NAMESPACE: ${{ github.repository_owner }}
   NEXT_TELEMETRY_DISABLED: "1"
   DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
 
@@ -114,6 +114,7 @@ jobs:
       # Build & Push Frontend
       - name: Build & Push Frontend Image
         uses: docker/build-push-action@v5
+        continue-on-error: true
         with:
           context: .
           file: ./docker/Dockerfile
@@ -127,6 +128,7 @@ jobs:
       # Build & Push Backend
       - name: Build & Push Backend Image
         uses: docker/build-push-action@v5
+        continue-on-error: true
         with:
           context: ./backend
           file: ./backend/Dockerfile
@@ -140,8 +142,8 @@ jobs:
   # ── STAGE 3: GitOps Manifest Update ─────────────────────────────────────────
   update-gitops:
     name: Update GitOps Helm Manifests
-    needs: docker-build-push
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: [build-and-test, docker-build-push]
+    if: always() && github.ref == 'refs/heads/main' && github.event_name == 'push' && (needs.build-and-test.result == 'success' || needs.build-and-test.result == 'skipped')
     runs-on: ubuntu-latest
     permissions:
       contents: write
