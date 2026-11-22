@@ -1084,14 +1084,21 @@ export default function ContactPage() {
 
       {/* ── FAQ & Spiritual Support Accordion ── */}
       <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center gap-2 text-xs font-bold text-orange-600 dark:text-orange-400 uppercase tracking-widest bg-orange-100 dark:bg-orange-500/10 px-3.5 py-1.5 rounded-full mb-3">
-            <HelpCircle className="w-4 h-4" />
+        <div className="text-center max-w-2xl mx-auto mb-10">
+          <div className="inline-flex items-center gap-2 text-xs font-extrabold text-[#f95700] dark:text-orange-400 uppercase tracking-widest bg-orange-500/10 dark:bg-orange-500/15 border border-orange-500/20 px-3.5 py-1.5 rounded-full mb-3 shadow-xs">
+            <HelpCircle className="w-3.5 h-3.5" />
             <span>{isTe ? "తరచుగా అడిగే ప్రశ్నలు" : isHi ? "अक्सर पूछे जाने वाले प्रश्न" : "Frequently Asked Questions"}</span>
           </div>
-          <h3 className="text-3xl font-black text-slate-900 dark:text-white font-outfit">
+          <h3 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white font-outfit tracking-tight">
             {isTe ? "సాధారణ ప్రశ్నలు & పాస్టరల్ మద్దతు" : isHi ? "सामान्य प्रश्न और पादरी सहायता" : "Common Inquiries & Pastoral Support"}
           </h3>
+          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-2.5 font-medium leading-relaxed">
+            {isTe 
+              ? "చర్చి సేవలు, ప్రార్థన అభ్యర్థనలు మరియు సమాజ పరిచర్య గురించిన ముఖ్యమైన సమాధానాలు." 
+              : isHi 
+              ? "चर्च सेवाओं, प्रार्थना और सामुदायिक पहलों से संबंधित महत्वपूर्ण उत्तर।" 
+              : "Essential answers regarding our sanctuary services, pastoral intercession, and fellowship outreach."}
+          </p>
         </div>
 
         <div className="space-y-3.5">
@@ -1100,18 +1107,33 @@ export default function ContactPage() {
             return (
               <div
                 key={index}
-                className="rounded-2xl border border-slate-200/90 dark:border-white/10 bg-white dark:bg-[#0c0e22]/90 overflow-hidden shadow-sm transition-all"
+                className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
+                  isOpen 
+                    ? "border-orange-500/50 dark:border-orange-500/50 bg-white dark:bg-[#0c0e22] shadow-md shadow-orange-500/5" 
+                    : "border-slate-200/90 dark:border-white/10 bg-white/90 dark:bg-[#0c0e22]/90 hover:border-orange-300 dark:hover:border-white/20 shadow-xs"
+                }`}
               >
                 <button
                   type="button"
                   onClick={() => setOpenFaq(isOpen ? null : index)}
-                  className="w-full p-5 text-left font-bold text-sm sm:text-base text-slate-900 dark:text-white flex items-center justify-between gap-4 cursor-pointer hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                  className="w-full p-4 sm:p-5 text-left font-bold text-sm sm:text-base text-slate-900 dark:text-white flex items-start justify-between gap-4 cursor-pointer hover:bg-slate-50/60 dark:hover:bg-white/5 transition-colors"
                 >
-                  <span>{faq.q}</span>
-                  <ChevronDown className={`w-4 h-4 text-[#f95700] shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
+                  <div className="flex items-start gap-3 sm:gap-3.5 min-w-0">
+                    <span className="w-6 h-6 sm:w-7 sm:h-7 rounded-xl flex items-center justify-center text-[10px] sm:text-xs font-black bg-orange-500/10 text-[#f95700] dark:bg-orange-500/15 dark:text-orange-400 shrink-0 mt-0.5">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <span className="leading-snug pt-0.5">{faq.q}</span>
+                  </div>
+                  <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
+                    isOpen 
+                      ? "bg-[#f95700] text-white" 
+                      : "bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-slate-400"
+                  }`}>
+                    <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
+                  </div>
                 </button>
                 {isOpen && (
-                  <div className="px-5 pb-5 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed border-t border-slate-100 dark:border-white/5 pt-3">
+                  <div className="px-5 pb-5 pl-13 sm:pl-15 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed border-t border-slate-100 dark:border-white/5 pt-3.5 animate-in fade-in duration-200">
                     {faq.a}
                   </div>
                 )}
@@ -1121,18 +1143,23 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* ── 24/7 Urgent Prayer & Emergency Hotline Strip ── */}
-      <section className="bg-gradient-to-r from-orange-600 via-[#f95700] to-orange-700 text-white py-10 sm:py-12">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left">
+      {/* ── 24/7 Urgent Prayer & Emergency Hotline Strip (Deep Sanctuary Atmosphere & True Brand Contrast) ── */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#ea580c] via-[#f95700] to-[#c2410c] text-white py-12 sm:py-16 shadow-2xl">
+        {/* Ambient Spatial Glows */}
+        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-white/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-black/15 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-8 text-center lg:text-left">
             <div>
-              <span className="text-xs font-extrabold uppercase tracking-widest text-orange-200">
-                {isTe ? "24/7 తక్షణ ఆధ్యాత్మిక సంరక్షణ" : isHi ? "24/7 तत्काल आध्यात्मिक देखभाल" : "24/7 Immediate Spiritual Care"}
+              <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-black/20 backdrop-blur-md border border-white/20 text-white text-[11px] font-extrabold uppercase tracking-widest shadow-xs mb-3">
+                <Sparkles className="w-3.5 h-3.5 text-yellow-300" />
+                <span>{isTe ? "24/7 తక్షణ ఆధ్యాత్మిక సంరక్షణ" : isHi ? "24/7 तत्काल आध्यात्मिक देखभाल" : "24/7 Immediate Spiritual Care"}</span>
               </span>
-              <h4 className="text-2xl sm:text-3xl font-black mt-1 font-outfit">
+              <h4 className="text-2xl sm:text-3xl lg:text-4xl font-black mt-1 font-outfit tracking-tight">
                 {isTe ? "అత్యవసర ప్రార్థన లేదా హాస్పిటల్ విజిట్ కావాలా?" : isHi ? "क्या आपको तत्काल प्रार्थना या अस्पताल में प्रार्थना की आवश्यकता है?" : "Need Urgent Prayer or Hospital Visitation?"}
               </h4>
-              <p className="text-xs sm:text-sm text-orange-100 mt-1 max-w-xl">
+              <p className="text-xs sm:text-sm text-orange-100/90 mt-2 max-w-xl leading-relaxed font-medium">
                 {isTe 
                   ? "మీ అవసరాలను దేవుని సన్నిధిలో ప్రార్థించడానికి మా పాస్టరల్ ప్రార్థన బృందం రాత్రింబవళ్ళు సిద్ధంగా ఉంది." 
                   : isHi 
@@ -1140,22 +1167,27 @@ export default function ContactPage() {
                   : "Our pastoral prayer team is standing by day and night to lift your needs before God."}
               </p>
             </div>
-            <div className="flex flex-wrap items-center justify-center gap-3 shrink-0">
+
+            {/* Quick Urgent Action Buttons: Symmetrical, High-Contrast, WCAG 48px Target */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full sm:w-auto shrink-0">
               <a
                 href="tel:+919704090069"
-                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-white text-orange-700 hover:bg-orange-50 font-black text-xs shadow-lg transition-all hover:scale-105 active:scale-95"
+                className="h-12 min-h-[48px] px-6 rounded-2xl bg-white hover:bg-orange-50 text-slate-900 font-black text-xs shadow-xl shadow-black/15 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2.5 whitespace-nowrap"
               >
-                <Phone className="w-4 h-4 text-orange-600" />
+                <Phone className="w-4 h-4 text-[#f95700] shrink-0" />
                 <span>{isTe ? "హాట్‌లైన్‌కు కాల్ చేయండి" : isHi ? "तुरंत कॉल करें" : "Call Hotline Now"}</span>
               </a>
+
               <a
                 href={whatsappUrgentUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-black/30 hover:bg-black/40 text-white border border-white/20 font-black text-xs transition-all hover:scale-105 active:scale-95"
+                className="h-12 min-h-[48px] px-6 rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-black text-xs shadow-xl shadow-black/15 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2.5 whitespace-nowrap"
               >
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 fill-current text-white shrink-0" viewBox="0 0 24 24">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+                </svg>
                 <span>{isTe ? "వాట్సాప్ అర్జెంట్ డెస్క్" : isHi ? "व्हाट्सएप तत्काल डेस्क" : "WhatsApp Urgent Desk"}</span>
-                <ArrowRight className="w-3.5 h-3.5" />
               </a>
             </div>
           </div>
