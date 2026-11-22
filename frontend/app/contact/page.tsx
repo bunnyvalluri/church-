@@ -934,38 +934,38 @@ export default function ContactPage() {
             </p>
           </div>
 
-          {/* Branch Switcher: Responsive Segmented Control Bar (Zero Vertical Stacking on Mobile!) */}
-          <div className="max-w-2xl mx-auto mb-10 sm:mb-12">
-            <div className="grid grid-cols-3 gap-1.5 p-1.5 rounded-2xl bg-slate-200/70 dark:bg-white/5 border border-slate-300/60 dark:border-white/10 shadow-inner">
-              {branches.map((branch, idx) => {
-                const isActive = selectedBranchIdx === idx;
-                return (
-                  <button
-                    key={branch.id}
-                    type="button"
-                    onClick={() => setSelectedBranchIdx(idx)}
-                    className={`px-2 sm:px-4 py-2.5 sm:py-3 rounded-xl font-black text-xs sm:text-sm transition-all duration-200 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 cursor-pointer text-center ${
-                      isActive
-                        ? "bg-[#f95700] text-white shadow-md shadow-orange-500/25 scale-[1.01]"
-                        : "text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white hover:bg-white/50 dark:hover:bg-white/10"
-                    }`}
-                  >
-                    <div className="flex items-center gap-1 sm:gap-1.5 truncate">
-                      <MapPin className={`w-3.5 h-3.5 shrink-0 ${isActive ? "text-white" : "text-[#f95700]"}`} />
-                      <span className="truncate">{branch.name}</span>
-                    </div>
-                    <span
-                      className={`text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 rounded-md font-bold uppercase tracking-wider shrink-0 ${
-                        isActive 
-                          ? "bg-white/20 text-white" 
-                          : "bg-slate-300/60 dark:bg-white/10 text-slate-600 dark:text-slate-400"
+          {/* Branch Switcher: Authentic Segmented Campus Control */}
+          <div className="flex justify-center mb-10 sm:mb-12 px-2">
+            <div className="inline-flex items-center p-1.5 rounded-2xl bg-slate-200/80 dark:bg-white/10 border border-slate-300/70 dark:border-white/10 backdrop-blur-md shadow-inner max-w-full overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                {branches.map((branch, idx) => {
+                  const isActive = selectedBranchIdx === idx;
+                  return (
+                    <button
+                      key={branch.id}
+                      type="button"
+                      onClick={() => setSelectedBranchIdx(idx)}
+                      className={`h-11 sm:h-12 px-3.5 sm:px-5 rounded-xl font-extrabold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap shrink-0 ${
+                        isActive
+                          ? "bg-[#f95700] text-white shadow-md shadow-orange-500/30"
+                          : "text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white hover:bg-white/60 dark:hover:bg-white/10"
                       }`}
                     >
-                      {branch.badge}
-                    </span>
-                  </button>
-                );
-              })}
+                      <MapPin className={`w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 ${isActive ? "text-white" : "text-[#f95700]"}`} />
+                      <span>{branch.name}</span>
+                      <span
+                        className={`hidden md:inline-flex text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${
+                          isActive 
+                            ? "bg-white/20 text-white" 
+                            : "bg-slate-300/70 dark:bg-white/10 text-slate-600 dark:text-slate-400"
+                        }`}
+                      >
+                        {branch.badge}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
 
