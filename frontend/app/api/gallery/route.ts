@@ -96,8 +96,10 @@ export async function GET(request: NextRequest) {
         },
       });
 
+      let allMergedItems: any[] = [...CURATED_GALLERY_ITEMS];
+
       if (dbItems && dbItems.length > 0) {
-        items = dbItems.map((item) => ({
+        const dbMapped = dbItems.map((item) => ({
           id: item.id,
           title: item.title,
           description: item.description || "",
@@ -107,39 +109,43 @@ export async function GET(request: NextRequest) {
           category: item.category,
           branchId: item.branchId,
           branchName: item.branch?.name || (item.branchId ? "Subhash Nagar" : "Main Church"),
-          type: "image",
-          createdAt: item.createdAt,
+          type: "image" as const,
+          createdAt: typeof item.createdAt === "string" ? item.createdAt : item.createdAt.toISOString(),
         }));
-      } else {
-        // Fallback to curated static data
-        let fallback = [...CURATED_GALLERY_ITEMS];
-        if (branchId && branchId !== "all") {
-          fallback = fallback.filter((it) => isBranchMatch(it.branchId, it.branchName, branchId));
-        }
-        if (category && category !== "ALL" && category !== "All Moments" && category !== "All") {
-          fallback = fallback.filter(
-            (it) => it.category.toLowerCase() === category.toLowerCase()
-          );
-        }
-        if (searchQuery) {
-          fallback = fallback.filter(
-            (it) =>
-              it.title.toLowerCase().includes(searchQuery) ||
-              it.description.toLowerCase().includes(searchQuery) ||
-              it.category.toLowerCase().includes(searchQuery)
-          );
-        }
-        if (sortParam === "desc" || sortParam === "order-desc" || sortParam === "newest") {
-          fallback.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-        } else if (sortParam === "title-asc") {
-          fallback.sort((a, b) => a.title.localeCompare(b.title));
-        } else if (sortParam === "title-desc") {
-          fallback.sort((a, b) => b.title.localeCompare(a.title));
-        } else {
-          fallback.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
-        }
-        items = fallback.slice(0, limit + 1);
+
+        // Merge: keep DB items and append any curated items (Shapur Nagar & Bahadurpalli) not in DB
+        const dbUrls = new Set(dbMapped.map((it) => it.url));
+        const missingCurated = CURATED_GALLERY_ITEMS.filter((it) => !dbUrls.has(it.url));
+        allMergedItems = [...dbMapped, ...missingCurated];
       }
+
+      let fallback = allMergedItems;
+      if (branchId && branchId !== "all") {
+        fallback = fallback.filter((it) => isBranchMatch(it.branchId, it.branchName, branchId));
+      }
+      if (category && category !== "ALL" && category !== "All Moments" && category !== "All") {
+        fallback = fallback.filter(
+          (it) => it.category.toLowerCase() === category.toLowerCase()
+        );
+      }
+      if (searchQuery) {
+        fallback = fallback.filter(
+          (it) =>
+            it.title.toLowerCase().includes(searchQuery) ||
+            it.description.toLowerCase().includes(searchQuery) ||
+            it.category.toLowerCase().includes(searchQuery)
+        );
+      }
+      if (sortParam === "desc" || sortParam === "order-desc" || sortParam === "newest") {
+        fallback.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      } else if (sortParam === "title-asc") {
+        fallback.sort((a, b) => a.title.localeCompare(b.title));
+      } else if (sortParam === "title-desc") {
+        fallback.sort((a, b) => b.title.localeCompare(a.title));
+      } else {
+        fallback.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+      }
+      items = fallback.slice(0, limit + 1);
     }
 
     const hasMore = items.length > limit;

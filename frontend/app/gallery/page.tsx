@@ -674,6 +674,9 @@ export default function ChurchGalleryPage() {
     const result = items.filter((item) => {
       if (activeCategory !== "All" && item.category !== activeCategory) return false;
       if (favoritesOnly && !favorites.has(item.id)) return false;
+      if (selectedBranch !== "all" && !isBranchMatch(item.branchId, item.branchName, selectedBranch)) {
+        return false;
+      }
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
         const loc = getLocalizedItem(item, language, gt);
@@ -895,10 +898,10 @@ export default function ChurchGalleryPage() {
     }
   };
 
-  // Subhash Nagar event stats
-  const subhashPhotosCount = items.filter(
-    (i) => i.branchName?.includes("Subhash") || i.url.includes("subhash-nagar")
-  ).length;
+  // Branch photo stats
+  const subhashPhotosCount = items.filter((i) => isBranchMatch(i.branchId, i.branchName, "subhash")).length;
+  const shapurPhotosCount = items.filter((i) => isBranchMatch(i.branchId, i.branchName, "shapur")).length;
+  const bahadurPhotosCount = items.filter((i) => isBranchMatch(i.branchId, i.branchName, "bahadur")).length;
 
   const currentLightboxLocalized = currentLightboxItem
     ? getLocalizedItem(currentLightboxItem, language, gt)
@@ -1113,16 +1116,16 @@ export default function ChurchGalleryPage() {
                 )}
               </div>
 
-              {/* Controls Group: 2-column grid on mobile, row on desktop */}
-              <div className="grid grid-cols-2 md:flex md:flex-nowrap items-center gap-2">
+              {/* Controls Group: Full-width on mobile for 100% visible text, row on tablet/desktop */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full md:w-auto">
                 {/* Branch Dropdown */}
-                <div className="relative flex items-center bg-slate-50 dark:bg-white/[0.04] border border-slate-200/90 dark:border-white/10 rounded-xl px-2.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
-                  <MapPin className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400 shrink-0 mr-1.5" />
+                <div className="relative flex items-center bg-slate-50 dark:bg-white/[0.04] border border-slate-200/90 dark:border-white/10 rounded-xl px-3 py-2.5 sm:py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 w-full sm:w-auto">
+                  <MapPin className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400 shrink-0 mr-2" />
                   <select
                     value={selectedBranch}
                     onChange={(e) => setSelectedBranch(e.target.value)}
                     aria-label="Filter photos by church branch"
-                    className="bg-transparent text-slate-900 dark:text-white font-bold focus:outline-none cursor-pointer pr-6 text-xs sm:text-sm w-full truncate appearance-none"
+                    className="bg-transparent text-slate-900 dark:text-white font-bold focus:outline-none cursor-pointer pr-8 text-xs sm:text-sm w-full appearance-none"
                   >
                     <option value="all" className="bg-white text-slate-900 dark:bg-slate-900 dark:text-white">
                       {gt.allBranches} ({items.length})
@@ -1131,23 +1134,23 @@ export default function ChurchGalleryPage() {
                       {gt.subhashBranch} ({subhashPhotosCount})
                     </option>
                     <option value="cmskewevf0000lz9gnoh1n8ve" className="bg-white text-slate-900 dark:bg-slate-900 dark:text-white">
-                      {gt.shapurBranch}
+                      {gt.shapurBranch} ({shapurPhotosCount})
                     </option>
                     <option value="cmrgwqhc30002fsk8ncn255w5" className="bg-white text-slate-900 dark:bg-slate-900 dark:text-white">
-                      {gt.bahadurBranch}
+                      {gt.bahadurBranch} ({bahadurPhotosCount})
                     </option>
                   </select>
-                  <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2 pointer-events-none" />
+                  <ChevronDown className="w-4 h-4 text-slate-400 absolute right-2.5 pointer-events-none" />
                 </div>
 
                 {/* Sort Dropdown */}
-                <div className="relative flex items-center bg-slate-50 dark:bg-white/[0.04] border border-slate-200/90 dark:border-white/10 rounded-xl px-2.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
-                  <ArrowUpDown className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0 mr-1.5" />
+                <div className="relative flex items-center bg-slate-50 dark:bg-white/[0.04] border border-slate-200/90 dark:border-white/10 rounded-xl px-3 py-2.5 sm:py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 w-full sm:w-auto">
+                  <ArrowUpDown className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0 mr-2" />
                   <select
                     value={sortOrder}
                     onChange={(e) => setSortOrder(e.target.value as any)}
                     aria-label="Sort gallery photos"
-                    className="bg-transparent text-slate-900 dark:text-white font-bold focus:outline-none cursor-pointer pr-6 text-xs sm:text-sm w-full truncate appearance-none"
+                    className="bg-transparent text-slate-900 dark:text-white font-bold focus:outline-none cursor-pointer pr-8 text-xs sm:text-sm w-full appearance-none"
                   >
                     <option value="order-asc" className="bg-white text-slate-900 dark:bg-slate-900 dark:text-white">
                       {gt.sortOrderAsc.replace("{count}", items.length.toString())}
@@ -1159,7 +1162,7 @@ export default function ChurchGalleryPage() {
                       {gt.sortTitleAsc}
                     </option>
                   </select>
-                  <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2 pointer-events-none" />
+                  <ChevronDown className="w-4 h-4 text-slate-400 absolute right-2.5 pointer-events-none" />
                 </div>
 
                 {/* View Layout Switcher (Desktop) */}
