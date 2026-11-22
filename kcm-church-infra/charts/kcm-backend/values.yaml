@@ -5,7 +5,7 @@ api:
   replicaCount: 2
   image:
     repository: ghcr.io/bunnyvalluri/kcm-backend
-    tag: "2bc5de48b0ab648f68e4920b0cf3f7defc21d563"
+    tag: "f53417567b47394dd7a7a12e3aefecbf9952b4da"
     pullPolicy: IfNotPresent
   port: 3001
   resources:
