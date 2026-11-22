@@ -83,7 +83,7 @@ export default function BackToTop() {
           onClick={handleScrollToTop}
           aria-label="Scroll to top of page"
           title="Back to top"
-          className="fixed bottom-safe right-4 sm:bottom-6 sm:right-6 z-40 w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center group cursor-pointer"
+          className="fixed bottom-4 left-4 sm:bottom-6 sm:left-6 z-40 w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center group cursor-pointer select-none"
           style={{ filter: "drop-shadow(0 6px 20px rgba(139,92,246,0.45))" }}
         >
           {/* Glassmorphism high-contrast base */}
@@ -132,6 +132,12 @@ export default function BackToTop() {
               className="w-4 h-4 sm:w-5 sm:h-5 text-white group-hover:-translate-y-0.5 transition-transform duration-200"
               strokeWidth={2.75}
             />
+          </div>
+
+          {/* Desktop Hover Tooltip (Positioned to the right of the button) */}
+          <div className="absolute left-full top-1/2 -translate-y-1/2 ml-3 px-2.5 py-1 bg-slate-900/95 text-white text-[11px] font-bold rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none border border-white/10 hidden sm:block font-outfit">
+            Back to top ↑
+            <span className="absolute left-[-4px] top-1/2 -translate-y-1/2 border-t-[4px] border-t-transparent border-b-[4px] border-b-transparent border-r-[4px] border-r-slate-900/95" />
           </div>
         </motion.button>
       )}

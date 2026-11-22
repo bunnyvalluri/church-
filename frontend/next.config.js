@@ -134,6 +134,14 @@ const nextConfig = {
         source: '/(logo.png|grid.svg|manifest.json|image-sitemap.xml)',
         headers: [{ key: 'Cache-Control', value: 'public, max-age=86400, stale-while-revalidate=604800' }],
       },
+      {
+        source: '/.well-known/:path*',
+        headers: [
+          { key: 'Content-Type', value: 'application/json; charset=utf-8' },
+          { key: 'Cache-Control', value: 'public, max-age=86400, immutable' },
+          { key: 'Access-Control-Allow-Origin', value: '*' },
+        ],
+      },
       // Payment API routes — strict no-cache + tightest CSP
       {
         source: '/api/donations/:path*',
@@ -204,7 +212,7 @@ const nextConfig = {
     ];
   },
 
-  // -- Health Check Rewrites for Root Probes --
+  // -- Health Check & System Rewrites for Root Probes --
   async rewrites() {
     return [
       { source: '/health', destination: '/api/health' },
@@ -212,6 +220,7 @@ const nextConfig = {
       { source: '/health/ready', destination: '/api/health/ready' },
       { source: '/health/version', destination: '/api/health/version' },
       { source: '/health/dependencies', destination: '/api/health/dependencies' },
+      { source: '/.well-known/appspecific/com.chrome.devtools.json', destination: '/api/devtools' },
     ];
   },
 };

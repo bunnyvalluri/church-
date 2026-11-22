@@ -48,6 +48,8 @@ const PUBLIC_PATHS = [
   '/api/cms',
   '/api/health',
   '/api/ready',
+  '/api/devtools',
+  '/.well-known',
   '/health',
   '/_next',
   '/favicon',
@@ -90,8 +92,8 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(httpsUrl, 301);
   }
 
-  // Always allow static files & next internals
-  if (pathname.startsWith('/_next/') || pathname.includes('.')) {
+  // Always allow static files, well-known probes & next internals
+  if (pathname.startsWith('/_next/') || pathname.startsWith('/.well-known/') || pathname.includes('.')) {
     return NextResponse.next();
   }
 

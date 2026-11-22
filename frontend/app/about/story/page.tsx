@@ -40,11 +40,11 @@ import {
   HelpCircle,
   Clock,
   Layers,
-  Sparkle
+  Sparkle,
+  Home
 } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import Footer from "@/components/layout/Footer";
-import BackToHome from "@/components/ui/BackToHome";
 import Navbar from "@/components/layout/Navbar";
 
 export default function OurStoryPage() {
@@ -460,10 +460,27 @@ export default function OurStoryPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             
-            {/* Top Navigation Pill */}
-            <div className="mb-4 sm:mb-6 flex justify-center">
-              <BackToHome label={pageT.backToHome || (t as any)?.nav?.home || (language === "te" ? "హోమ్" : language === "hi" ? "होम" : "Home")} />
-            </div>
+            {/* Inline Breadcrumb Navigation */}
+            <nav aria-label="Breadcrumb" className="mb-5 sm:mb-6 flex justify-center">
+              <ol className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/70 dark:bg-slate-900/70 backdrop-blur-md border border-purple-200/60 dark:border-slate-800 text-xs font-semibold text-slate-600 dark:text-slate-400 shadow-xs">
+                <li className="inline-flex items-center">
+                  <Link href="/" className="inline-flex items-center gap-1 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">
+                    <Home className="h-3.5 w-3.5" />
+                    <span>{pageT.breadcrumbHome || (t as any)?.nav?.home || (language === "te" ? "హోమ్" : language === "hi" ? "होम" : "Home")}</span>
+                  </Link>
+                </li>
+                <li className="flex items-center text-slate-400 dark:text-slate-600">/</li>
+                <li className="inline-flex items-center">
+                  <Link href="/about" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors">
+                    {pageT.breadcrumbAbout || (language === "te" ? "మా గురించి" : language === "hi" ? "हमारे बारे में" : "About")}
+                  </Link>
+                </li>
+                <li className="flex items-center text-slate-400 dark:text-slate-600">/</li>
+                <li className="text-purple-700 dark:text-purple-300 font-bold truncate max-w-[140px] sm:max-w-none">
+                  {pageT.breadcrumbCurrent || (language === "te" ? "మా చరిత్ర" : language === "hi" ? "हमारी कहानी" : "Our Story")}
+                </li>
+              </ol>
+            </nav>
             
             {/* Verified Organization Emblem Badge — Clean, Responsive & Symmetrical */}
             <div className="inline-flex items-center gap-2 px-3.5 sm:px-4 py-1.5 sm:py-2 bg-purple-100/90 dark:bg-purple-950/70 border border-purple-200/90 dark:border-purple-500/30 rounded-full text-purple-900 dark:text-purple-200 text-xs sm:text-sm font-extrabold tracking-wide mb-5 sm:mb-6 shadow-xs backdrop-blur-md animate-fade-in font-outfit">

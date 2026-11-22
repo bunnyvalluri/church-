@@ -1,26 +1,26 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
-import BackToHome from "@/components/ui/BackToHome";
 import {
   MapPin,
   Clock,
   Phone,
   Navigation,
-  ExternalLink,
   Church,
-  BookOpen,
-  Users,
-  Map as MapIcon,
   Youtube,
   Sunrise,
   Heart,
-  Crown,
-  Star,
   Sparkles,
+  Home,
+  CheckCircle2,
+  Calendar,
+  ChevronRight,
+  ExternalLink,
+  Users
 } from "lucide-react";
 
 export default function LocationsPage() {
@@ -51,7 +51,8 @@ export default function LocationsPage() {
           ? "शापुर नगर शाखा"
           : "Shapur Nagar Branch",
         title: t.services?.shapur?.title || "Shapur Prayer Service",
-        description: t.services?.shapur?.desc || "Join us for powerful worship and prayer at our Shapur location.",
+        subtitle: isTelugu ? "ప్రధాన ఆరాధనా కేంద్రం" : isHindi ? "मुख्य आराधना केंद्र" : "Main Church & Apostolic Sanctuary",
+        description: t.services?.shapur?.desc || "Join us for powerful worship and prayer at our Shapur main campus.",
         address: isTelugu
           ? "15-201, వివేకానంద నగర్, శ్రీనివాస్ నగర్, జీడిమెట్ల, హైదరాబాద్, తెలంగాణ 500055"
           : isHindi
@@ -63,21 +64,26 @@ export default function LocationsPage() {
         services: [
           {
             day: isTelugu ? "శుక్రవారం" : isHindi ? "शुक्रवार" : "Friday",
-            time: "6:00 PM",
-            type: isTelugu ? "ప్రార్థన కూడిక" : isHindi ? "प्रार्थना सभा" : "Prayer Meeting",
+            time: "6:00 PM – 8:30 PM",
+            type: isTelugu ? "ఉపవాస & స్వస్థత ప్రార్థన కూడిక" : isHindi ? "उपवास एवं चंगाई प्रार्थना सभा" : "Fasting & Healing Prayer",
+            dayBadge: "bg-purple-600 text-white shadow-xs",
+            border: "border-l-purple-500",
           },
           {
             day: isTelugu ? "ఆదివారం" : isHindi ? "रविवार" : "Sunday",
-            time: "6:00 PM",
-            type: isTelugu ? "ఆరాధన సేవ" : isHindi ? "आराधना सेवा" : "Worship Service",
+            time: "6:00 PM – 8:30 PM",
+            type: isTelugu ? "సాయంకాల ఆరాధన సేవ" : isHindi ? "शाम की आराधना सेवा" : "Sunday Evening Worship Service",
+            dayBadge: "bg-indigo-600 text-white shadow-xs",
+            border: "border-l-indigo-500",
           },
         ],
-        serviceBorder: "border-l-amber-500",
-        badgeBg: "bg-amber-600 text-white border border-amber-500 font-black shadow-xs",
-        btnColor: "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md shadow-blue-600/20",
+        accent: "from-amber-500 via-orange-500 to-amber-600",
+        badgeBg: "bg-amber-500/15 text-amber-800 dark:text-amber-200 border border-amber-300 dark:border-amber-700/80 font-black",
+        badgeText: isTelugu ? "ప్రధాన మందిరం" : isHindi ? "मुख्य Sanctuary" : "Main Hub",
+        btnColor: "bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 hover:from-amber-700 hover:to-orange-700 text-white shadow-lg shadow-amber-600/25",
         isMain: true,
         Icon: Church,
-        iconBg: "bg-amber-500/10 dark:bg-amber-500/20 border border-amber-500/30 text-amber-600 dark:text-amber-400 shadow-xs",
+        iconBg: "bg-amber-500/10 dark:bg-amber-500/20 border-amber-200/80 dark:border-amber-800/60 text-amber-600 dark:text-amber-400",
       },
       {
         id: "subhash",
@@ -87,6 +93,7 @@ export default function LocationsPage() {
           ? "सुभाष नगर शाखा"
           : "Subhash Nagar Branch",
         title: t.services?.subhash?.title || "Subhash Nagar Morning Prayer",
+        subtitle: isTelugu ? "ఉదయకాల ఆరాధన & అభిషేక కూడిక" : isHindi ? "सुबह की आराधना एवं अभिषेक सभा" : "Morning Watch Tower & Anointing Services",
         description: `${t.services?.subhash?.desc || "Start your Sunday with early morning worship and powerful prayer."} ${t.services?.subhash?.secondDesc || ""}`,
         address: isTelugu
           ? "సుభాష్ నగర్, జీడిమెట్ల, LP 119, హైదరాబాద్, తెలంగాణ 500055"
@@ -100,24 +107,31 @@ export default function LocationsPage() {
             day: isTelugu ? "ఆదివారం" : isHindi ? "रविवार" : "Sunday",
             time: "5:45 AM – 8:30 AM",
             type: isTelugu ? "ఆదివారం ఉదయకాల ప్రార్థన (వాచ్ టవర్)" : isHindi ? "रविवार सुबह की प्रार्थना (वॉच टॉवर)" : "Sunday Morning Watch Tower",
+            dayBadge: "bg-purple-600 text-white shadow-xs",
+            border: "border-l-purple-500",
           },
           {
             day: isTelugu ? "ఆదివారం" : isHindi ? "रविवार" : "Sunday",
             time: "8:30 AM – 10:30 AM",
-            type: isTelugu ? "రెండవ ఆరాధన" : isHindi ? "दूसरी आराधना सेवा" : "Second Worship Service",
+            type: isTelugu ? "రెండవ ఆరాధన సేవ" : isHindi ? "दूसरी आराधना सेवा" : "Second Worship Service",
+            dayBadge: "bg-blue-600 text-white shadow-xs",
+            border: "border-l-blue-500",
           },
           {
             day: isTelugu ? "గురువారం" : isHindi ? "गुरुवार" : "Thursday",
-            time: "6:30 PM",
+            time: "6:30 PM – 9:00 PM",
             type: isTelugu ? "ఆయిల్ అభిషేక ప్రార్థనా సేవ" : isHindi ? "तेल अभिषेक प्रार्थना सेवा" : "Oil Anointing Prayer Service",
+            dayBadge: "bg-teal-600 text-white shadow-xs",
+            border: "border-l-teal-500",
           },
         ],
-        serviceBorder: "border-l-orange-500",
-        badgeBg: "bg-orange-600 text-white border border-orange-500 font-black shadow-xs",
-        btnColor: "bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-md shadow-emerald-600/20",
+        accent: "from-purple-500 via-indigo-500 to-cyan-500",
+        badgeBg: "bg-purple-500/15 text-purple-800 dark:text-purple-200 border border-purple-300 dark:border-purple-700/80 font-black",
+        badgeText: isTelugu ? "మిడ్‌వీక్ కేంద్రం" : isHindi ? "मध्य-सप्ताह केंद्र" : "Midweek Campus",
+        btnColor: "bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-700 hover:to-indigo-700 text-white shadow-lg shadow-purple-600/25",
         isMain: false,
         Icon: Sunrise,
-        iconBg: "bg-orange-500/10 dark:bg-orange-500/20 border border-orange-500/30 text-orange-600 dark:text-orange-400 shadow-xs",
+        iconBg: "bg-purple-500/10 dark:bg-purple-500/20 border-purple-200/80 dark:border-purple-800/60 text-purple-600 dark:text-purple-400",
       },
       {
         id: "bahadur",
@@ -127,6 +141,7 @@ export default function LocationsPage() {
           ? "बहादुरपल्ली नगर शाखा"
           : "Bahadurpally Nagar Branch",
         title: t.services?.bahadur?.title || "Bahadurpally Afternoon Service",
+        subtitle: isTelugu ? "మధ్యాహ్న ఆరాధన & ప్రత్యేక ప్రార్థన" : isHindi ? "दोपहर आराधना एवं विशेष प्रार्थना" : "Afternoon Service & Monthly Breakthrough",
         description: `${t.services?.bahadur?.desc || "Afternoon worship and fellowship at our Bahadurpally location."} ${t.services?.bahadur?.tuesdayDesc || ""}`,
         address: isTelugu
           ? "బహదూర్‌పల్లి, హైదరాబాద్, తెలంగాణ 500043"
@@ -139,20 +154,25 @@ export default function LocationsPage() {
           {
             day: isTelugu ? "ఆదివారం" : isHindi ? "रविवार" : "Sunday",
             time: "11:00 AM – 1:00 PM",
-            type: isTelugu ? "మధ్యాహ్న ఆరాధన" : isHindi ? "दोपहर आराधना सेवा" : "Afternoon Worship Service",
+            type: isTelugu ? "మధ్యాహ్న ఆరాధన సేవ" : isHindi ? "दोपहर आराधना सेवा" : "Afternoon Worship Service",
+            dayBadge: "bg-rose-600 text-white shadow-xs",
+            border: "border-l-rose-500",
           },
           {
             day: isTelugu ? "2వ మంగళవారం" : isHindi ? "दूसरा मंगलवार" : "2nd Tuesday",
-            time: "11:00 AM",
-            type: isTelugu ? "నెలవారీ ప్రత్యేక ప్రార్థన" : isHindi ? "मासिक विशेष प्रार्थना" : "Monthly Special Prayer",
+            time: "11:00 AM – 1:30 PM",
+            type: isTelugu ? "నెలవారీ ప్రత్యేక ప్రార్థన" : isHindi ? "मासिक विशेष प्रार्थना" : "Monthly Special Breakthrough",
+            dayBadge: "bg-indigo-600 text-white shadow-xs",
+            border: "border-l-indigo-500",
           },
         ],
-        serviceBorder: "border-l-rose-500",
-        badgeBg: "bg-purple-600 text-white border border-purple-500 font-black shadow-xs",
-        btnColor: "bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white shadow-md shadow-pink-600/20",
+        accent: "from-pink-500 via-rose-500 to-purple-600",
+        badgeBg: "bg-rose-500/15 text-rose-800 dark:text-rose-200 border border-rose-300 dark:border-rose-700/80 font-black",
+        badgeText: isTelugu ? "నెలవారీ కేంద్రం" : isHindi ? "मासिक केंद्र" : "Special Fellowship",
+        btnColor: "bg-gradient-to-r from-pink-600 via-rose-600 to-purple-600 hover:from-pink-700 hover:to-rose-700 text-white shadow-lg shadow-pink-600/25",
         isMain: false,
         Icon: Heart,
-        iconBg: "bg-purple-500/10 dark:bg-purple-500/20 border border-purple-500/30 text-purple-600 dark:text-purple-400 shadow-xs",
+        iconBg: "bg-rose-500/10 dark:bg-rose-500/20 border-rose-200/80 dark:border-rose-800/60 text-rose-600 dark:text-rose-400",
       },
     ];
 
@@ -165,6 +185,7 @@ export default function LocationsPage() {
       id: b.id,
       name: b.name.endsWith("Branch") ? b.name : `${b.name} Branch`,
       title: `${b.name} Service & Fellowship`,
+      subtitle: "Community Church Hub",
       description: `Worship, community outreach, and prayer services at our ${b.name} location.`,
       address: b.name,
       phone: "+91 97040 90069",
@@ -174,14 +195,17 @@ export default function LocationsPage() {
           day: isTelugu ? "ఆదివారం" : isHindi ? "रविवार" : "Sunday",
           time: "10:00 AM",
           type: isTelugu ? "ఆరాధన సేవ" : isHindi ? "आराधना सेवा" : "Worship Service",
+          dayBadge: "bg-purple-600 text-white shadow-xs",
+          border: "border-l-purple-500",
         },
       ],
-      serviceBorder: "border-l-amber-500",
-      badgeBg: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20",
-      btnColor: "bg-amber-600 hover:bg-amber-700 text-white shadow-md shadow-amber-600/20",
+      accent: "from-purple-500 to-indigo-500",
+      badgeBg: "bg-purple-500/15 text-purple-700 dark:text-purple-300 border border-purple-300 dark:border-purple-700",
+      badgeText: "Campus",
+      btnColor: "bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-lg shadow-purple-600/25",
       isMain: false,
-      Icon: MapIcon,
-      iconBg: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
+      Icon: Church,
+      iconBg: "bg-purple-500/10 dark:bg-purple-500/20 border-purple-200/80 dark:border-purple-800/60 text-purple-600 dark:text-purple-400",
     }));
 
     return [...defaultBranches, ...extraBranches];
@@ -195,43 +219,87 @@ export default function LocationsPage() {
       <Navbar />
 
       {/* 🌌 Hero Header - Adaptive Light/Dark Theme */}
-      <section className="relative pt-28 pb-16 md:pt-36 md:pb-24 bg-gradient-to-b from-indigo-50/90 via-purple-50/40 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 border-b border-slate-200/60 dark:border-white/[0.06] overflow-hidden transition-colors duration-300">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.04] dark:opacity-15 pointer-events-none" />
-        <div className="absolute -top-32 -right-32 w-96 h-96 bg-purple-500/10 dark:bg-purple-600/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-indigo-500/10 dark:bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
+      <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 bg-gradient-to-b from-purple-50/80 via-indigo-50/40 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 border-b border-purple-100/80 dark:border-slate-800/80 overflow-hidden shadow-xs transition-colors duration-300">
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-25 dark:opacity-15 pointer-events-none" />
+        <div className="absolute -top-32 -right-32 w-96 h-96 bg-purple-400/20 dark:bg-purple-600/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-indigo-400/20 dark:bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
 
         <div className="container mx-auto px-4 relative z-10 text-center">
-          <div className="mb-5 flex justify-center">
-            <BackToHome label={t?.nav?.home || "Home"} />
-          </div>
+          
+          {/* Inline Breadcrumb Navigation */}
+          <nav aria-label="Breadcrumb" className="mb-5 flex justify-center">
+            <ol className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/70 dark:bg-slate-900/70 backdrop-blur-md border border-purple-200/60 dark:border-slate-800 text-xs font-semibold text-slate-600 dark:text-slate-400 shadow-2xs">
+              <li className="inline-flex items-center">
+                <Link href="/" className="inline-flex items-center gap-1 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">
+                  <Home className="h-3.5 w-3.5" />
+                  <span>{t?.nav?.home || (isTelugu ? "హోమ్" : isHindi ? "होम" : "Home")}</span>
+                </Link>
+              </li>
+              <li className="flex items-center text-slate-400 dark:text-slate-600">/</li>
+              <li className="inline-flex items-center">
+                <Link href="/about" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors">
+                  {isTelugu ? "మా గురించి" : isHindi ? "हमारे बारे में" : "About"}
+                </Link>
+              </li>
+              <li className="flex items-center text-slate-400 dark:text-slate-600">/</li>
+              <li className="text-purple-700 dark:text-purple-300 font-bold" aria-current="page">
+                {isTelugu ? "ప్రాంతాలు" : isHindi ? "स्थान" : "Locations"}
+              </li>
+            </ol>
+          </nav>
 
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-100/90 dark:bg-purple-900/60 border border-purple-200 dark:border-purple-500/30 text-xs font-extrabold uppercase tracking-wider text-purple-700 dark:text-purple-300 mb-5 backdrop-blur-md shadow-xs">
-            <MapPin className="w-4 h-4 text-purple-600 dark:text-amber-300" />
-            <span className="font-extrabold tracking-wider">
+          {/* Eyebrow Badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 dark:bg-purple-500/20 border border-purple-200/90 dark:border-purple-800/80 text-purple-900 dark:text-purple-200 font-extrabold text-xs sm:text-sm mb-6 shadow-2xs backdrop-blur-md">
+            <MapPin className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+            <span className="font-extrabold tracking-wider uppercase">
               {isTelugu
                 ? "హైదరాబాద్‌లోని 3 బ్రాంచ్ ప్రాంతాలు"
                 : isHindi
                 ? "हैदराबाद में 3 शाखा स्थान"
                 : "3 Branch Locations Across Hyderabad"}
             </span>
+            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
           </div>
 
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight mb-4 font-serif text-slate-900 dark:text-white">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight mb-5 font-outfit text-slate-900 dark:text-white leading-tight">
             {isTelugu ? "మా ప్రాంతాలు & ఆరాధనలు" : isHindi ? "हमारे स्थान और आराधना" : "Our Locations & Services"}
           </h1>
 
-          <p className="text-sm sm:text-base md:text-lg text-slate-600 dark:text-slate-300 font-medium max-w-2xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-lg md:text-xl text-slate-600 dark:text-slate-300 font-medium max-w-2xl mx-auto leading-relaxed mb-10">
             {isTelugu
               ? "హైదరాబాద్ అంతటా మా బ్రాంచ్‌లలో ఒకదానిలో మాతో చేరి దేవుని ఆశీర్వాదాలను పొందుకోవచ్చు."
               : isHindi
               ? "हैदराबाद में हमारी शाखाओं में से किसी एक में हमसे जुड़ें और परमेश्वर के आशीर्वाद का अनुभव करें।"
               : "Join us at any of our branches across Hyderabad to fellowship and grow in faith."}
           </p>
+
+          {/* Quick Hub Navigation Bar: Uniform Geometry & Clean Campus Chips */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 max-w-3xl mx-auto w-full px-2">
+            {branches.map((b) => {
+              const BIcon = b.Icon;
+              return (
+                <a
+                  key={b.id}
+                  href={`#${b.id}`}
+                  className="w-full min-h-[48px] px-3.5 py-2.5 rounded-2xl bg-white/95 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/90 dark:border-slate-800 text-xs sm:text-sm font-extrabold text-slate-800 dark:text-slate-200 hover:border-purple-400 dark:hover:border-purple-500/60 shadow-xs hover:shadow-md transition-all active:scale-95 flex items-center justify-between group"
+                >
+                  <div className="flex items-center gap-2.5 min-w-0 pr-1">
+                    <div className={`w-7 h-7 rounded-xl ${b.iconBg} border flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}>
+                      <BIcon className="w-3.5 h-3.5" />
+                    </div>
+                    <span className="truncate font-black">{b.name}</span>
+                  </div>
+                  <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 group-hover:translate-x-0.5 transition-all shrink-0" />
+                </a>
+              );
+            })}
+          </div>
+
         </div>
       </section>
 
       {/* 🏙️ Main Locations Grid */}
-      <main className="container mx-auto px-4 py-12 md:py-16 max-w-7xl relative z-10">
+      <main className="container mx-auto px-4 py-16 md:py-24 max-w-7xl relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 items-stretch">
           {branches.map((branch) => {
             const BranchIcon = branch.Icon;
@@ -239,77 +307,69 @@ export default function LocationsPage() {
               <div
                 key={branch.id}
                 id={branch.id}
-                className="scroll-mt-28 bg-white dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-xl dark:hover:border-purple-500/30 transition-all duration-300 flex flex-col justify-between group"
+                className="scroll-mt-32 relative bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-6 sm:p-7 shadow-md hover:shadow-2xl transition-all duration-300 flex flex-col justify-between group overflow-hidden hover:-translate-y-1.5"
               >
+                {/* Top Accent Gradient Ribbon */}
+                <div className={`absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r ${branch.accent} opacity-85 group-hover:opacity-100 transition-opacity`} />
+
                 <div>
-                  <div className="flex items-center justify-between gap-2 mb-5">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${branch.iconBg}`}>
-                        <BranchIcon className="w-6 h-6" />
-                      </div>
-                      <div>
-                        <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white font-serif">
-                          {branch.name}
-                        </h2>
-                      </div>
+                  {/* Card Header: Row 1 Top Meta (Icon Halo on left, Campus Badge on right) */}
+                  <div className="flex items-center justify-between gap-3 mb-4">
+                    <div className={`w-12 h-12 sm:w-13 sm:h-13 rounded-2xl flex items-center justify-center border shadow-2xs group-hover:scale-110 transition-transform shrink-0 ${branch.iconBg}`}>
+                      <BranchIcon className="w-6 h-6 sm:w-6.5 sm:h-6.5" />
                     </div>
-                    {branch.isMain && (
-                      <span className="px-3 py-1 rounded-full bg-amber-500/15 text-amber-700 dark:bg-amber-600 dark:text-white text-[10px] font-black border border-amber-300 dark:border-amber-500 uppercase tracking-wider shadow-xs">
-                        {isTelugu ? "ప్రధాన మందిరం" : isHindi ? "मुख्य Sanctuary" : "Main Hub"}
+                    {branch.badgeText && (
+                      <span className={`px-3 py-1 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-wider shadow-2xs shrink-0 ${branch.badgeBg}`}>
+                        {branch.badgeText}
                       </span>
                     )}
                   </div>
 
-                  <p className="text-slate-600 dark:text-slate-400 text-xs sm:text-sm leading-relaxed mb-6">
+                  {/* Card Header: Row 2 Full-Width Title & Subtitle (Zero Text Crushing) */}
+                  <div className="mb-4">
+                    <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white font-outfit tracking-tight group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors leading-tight mb-1">
+                      {branch.name}
+                    </h2>
+                    <p className="text-xs sm:text-sm font-bold text-slate-500 dark:text-slate-400">
+                      {branch.subtitle}
+                    </p>
+                  </div>
+
+                  <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-sm leading-relaxed mb-6 font-normal">
                     {branch.description}
                   </p>
 
-                  {/* Service Schedule */}
+                  {/* Service Schedule — Clean Left-to-Right Hierarchy */}
                   <div className="space-y-3 mb-6">
-                    <h3 className="text-xs uppercase font-bold text-slate-500 dark:text-slate-400 tracking-wider flex items-center gap-1.5">
-                      <Clock className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-                      {isTelugu ? "ఆరాధన సమయాలు" : isHindi ? "आराधना समय" : "Service Schedule"}
-                    </h3>
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-xs uppercase font-black text-slate-500 dark:text-slate-400 tracking-wider flex items-center gap-1.5 font-outfit">
+                        <Clock className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                        <span>{isTelugu ? "ఆరాధన సమయాలు" : isHindi ? "आराधना समय" : "Service Schedule"}</span>
+                      </h3>
+                      <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                        <CheckCircle2 className="w-3 h-3" />
+                        <span>All Welcome</span>
+                      </span>
+                    </div>
+
                     <div className="space-y-2.5">
                       {branch.services.map((srv: any, idx: number) => {
-                        const serviceColors = [
-                          {
-                            border: "border-l-purple-500",
-                            badgeBg: "bg-purple-600 text-white",
-                            typeText: "text-slate-900 dark:text-white font-bold",
-                            timeText: "text-slate-600 dark:text-slate-300 font-semibold",
-                          },
-                          {
-                            border: "border-l-indigo-500",
-                            badgeBg: "bg-indigo-600 text-white",
-                            typeText: "text-slate-900 dark:text-white font-bold",
-                            timeText: "text-slate-600 dark:text-slate-300 font-semibold",
-                          },
-                          {
-                            border: "border-l-violet-500",
-                            badgeBg: "bg-violet-600 text-white",
-                            typeText: "text-slate-900 dark:text-white font-bold",
-                            timeText: "text-slate-600 dark:text-slate-300 font-semibold",
-                          },
-                          {
-                            border: "border-l-purple-600",
-                            badgeBg: "bg-purple-700 text-white",
-                            typeText: "text-slate-900 dark:text-white font-bold",
-                            timeText: "text-slate-600 dark:text-slate-300 font-semibold",
-                          },
-                        ];
-                        const color = serviceColors[idx % serviceColors.length];
                         return (
                           <div
                             key={idx}
-                            className={`p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/90 border border-slate-200/70 dark:border-slate-700/80 border-l-4 ${color.border} flex items-center justify-between text-xs shadow-xs`}
+                            className={`p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 border-l-4 ${srv.border || "border-l-purple-500"} shadow-2xs hover:border-slate-300 dark:hover:border-slate-600 transition-all`}
                           >
-                            <span className={`px-2.5 py-1 rounded-xl font-black text-[11px] text-white ${color.badgeBg} shadow-xs border border-white/10 shrink-0`}>
-                              {srv.day}
-                            </span>
-                            <div className="text-right pl-2">
-                              <div className={`text-xs sm:text-sm ${color.typeText}`}>{srv.type}</div>
-                              <div className={`text-[11px] ${color.timeText}`}>{srv.time}</div>
+                            <div className="flex items-center justify-between gap-2 mb-1">
+                              <span className={`px-2 py-0.5 rounded-md font-black text-[10px] uppercase tracking-wider ${srv.dayBadge || "bg-purple-600 text-white"}`}>
+                                {srv.day}
+                              </span>
+                              <div className="flex items-center gap-1 text-[11px] font-extrabold text-slate-700 dark:text-slate-300">
+                                <Clock className="w-3 h-3 text-purple-500 shrink-0" />
+                                <span>{srv.time}</span>
+                              </div>
+                            </div>
+                            <div className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white leading-snug">
+                              {srv.type}
                             </div>
                           </div>
                         );
@@ -317,37 +377,37 @@ export default function LocationsPage() {
                     </div>
                   </div>
 
-                  {/* Address & Contacts */}
-                  <div className="mb-6 text-xs sm:text-sm space-y-2">
-                    <div className="flex items-start gap-2.5 text-slate-700 dark:text-slate-200 font-medium">
+                  {/* Physical Address & Direct Pastoral Contact */}
+                  <div className="mb-6 space-y-2.5 text-xs text-slate-600 dark:text-slate-300 border-t border-slate-100 dark:border-slate-800/80 pt-4 font-medium">
+                    <div className="flex items-start gap-2.5">
                       <MapPin className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0 mt-0.5" />
                       <span className="leading-relaxed">{branch.address}</span>
                     </div>
-                    <div className="flex items-center gap-2.5 text-slate-800 dark:text-slate-100 font-bold pt-1">
+                    <div className="flex items-center gap-2.5 font-bold text-slate-800 dark:text-slate-100 pt-0.5">
                       <Phone className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0" />
                       <a href="tel:+919704090069" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors">
-                        +91 97040 90069 (Senior Pastor)
+                        +91 97040 90069 (Church Office & Pastoral Help)
                       </a>
                     </div>
                   </div>
                 </div>
 
                 {/* Actions: View Details + Direct Google Maps Navigation */}
-                <div className="pt-4 border-t border-slate-100 dark:border-slate-800 mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <div className="pt-4 border-t border-slate-100 dark:border-slate-800/80 mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   <a
                     href={`/locations/${branch.id === "shapur" ? "shapur-nagar" : branch.id === "subhash" ? "subhash-nagar" : branch.id === "bahadur" ? "bahadurpally" : branch.id}`}
-                    className="w-full py-2.5 px-3 rounded-xl bg-purple-50 dark:bg-purple-950/50 hover:bg-purple-100 dark:hover:bg-purple-900/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 text-xs font-bold transition-all flex items-center justify-center gap-1.5 active:scale-95"
+                    className="min-h-[46px] w-full py-2.5 px-3 rounded-2xl bg-slate-50 dark:bg-slate-800/90 hover:bg-purple-50 dark:hover:bg-purple-950/40 text-slate-800 dark:text-slate-200 hover:text-purple-700 dark:hover:text-purple-300 border border-slate-200 dark:border-slate-700 text-xs font-black transition-all flex items-center justify-center gap-1.5 active:scale-[0.98] cursor-pointer shadow-2xs"
                   >
-                    <Church className="w-3.5 h-3.5" />
+                    <Church className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                     <span>{isTelugu ? "వివరాలు చూడండి" : isHindi ? "विवरण देखें" : "Branch Details"}</span>
                   </a>
                   <a
                     href={branch.mapUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`w-full py-2.5 px-3 rounded-xl ${branch.btnColor} text-xs font-bold transition-all flex items-center justify-center gap-1.5 active:scale-95`}
+                    className={`min-h-[46px] w-full py-2.5 px-3 rounded-2xl ${branch.btnColor} text-xs font-black transition-all flex items-center justify-center gap-1.5 active:scale-[0.98] cursor-pointer shadow-md`}
                   >
-                    <Navigation className="w-3.5 h-3.5" />
+                    <Navigation className="w-4 h-4" />
                     <span>{isTelugu ? "దిశలను పొందండి" : isHindi ? "दिशा-निर्देश" : "Get Directions"}</span>
                   </a>
                 </div>
@@ -356,30 +416,64 @@ export default function LocationsPage() {
           })}
         </div>
 
-        {/* 📺 Live Streaming Banner - Adaptive Light & Dark theme */}
-        <div className="max-w-4xl mx-auto mt-14 sm:mt-16 bg-gradient-to-br from-red-50/80 via-white to-purple-50/40 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 text-slate-900 dark:text-white border border-red-100 dark:border-slate-800 rounded-3xl p-6 sm:p-10 text-center shadow-md dark:shadow-2xl relative">
-          <div className="w-14 h-14 bg-red-600 text-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-red-600/30">
-            <Youtube className="w-7 h-7 text-white" />
+        {/* 📺 Live Streaming Media Showcase — Executive Tone-on-Tone Card */}
+        <div className="max-w-4xl mx-auto mt-16 sm:mt-20 bg-gradient-to-br from-red-50/90 via-white to-purple-50/50 dark:from-slate-900/95 dark:via-red-950/20 dark:to-slate-900/95 text-slate-900 dark:text-white border border-red-200/80 dark:border-slate-800 rounded-3xl p-8 sm:p-12 text-center shadow-2xl shadow-red-600/5 relative overflow-hidden group">
+          {/* Top Accent Gradient Ribbon */}
+          <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-red-600 via-rose-500 to-red-600 opacity-90" />
+
+          {/* Ambient Glow Orbs */}
+          <div className="absolute -top-24 -right-24 w-72 h-72 bg-red-500/10 dark:bg-red-600/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-purple-500/10 dark:bg-purple-600/10 rounded-full blur-3xl pointer-events-none" />
+
+          <div className="relative z-10">
+            {/* Live Broadcast Eyebrow Badge */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-500/10 dark:bg-red-500/20 text-red-700 dark:text-red-300 border border-red-200/80 dark:border-red-800/80 text-xs font-black uppercase tracking-wider mb-5 shadow-2xs backdrop-blur-md">
+              <span className="w-2.5 h-2.5 rounded-full bg-red-600 animate-pulse shadow-xs" />
+              <span>{isTelugu ? "గ్లోబల్ ఆన్‌లైన్ మినిస్ట్రీ" : isHindi ? "ग्लोबल ऑनलाइन सेवकाई" : "Global Live Broadcast & Ministry"}</span>
+            </div>
+
+            {/* Tone-on-Tone YouTube Luminous Halo */}
+            <div className="w-16 h-16 sm:w-18 sm:h-18 rounded-3xl bg-red-500/10 dark:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-200/80 dark:border-red-800/80 flex items-center justify-center mx-auto mb-5 shadow-sm group-hover:scale-110 transition-transform">
+              <Youtube className="w-8 h-8 sm:w-9 sm:h-9" />
+            </div>
+
+            <h3 className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 dark:text-white mb-3 font-outfit tracking-tight leading-tight">
+              {isTelugu ? "లైవ్ ఆరాధన కూడా అందుబాటులో ఉంది" : isHindi ? "लाइव आराधना भी उपलब्ध है" : "Live Streaming Available"}
+            </h3>
+
+            <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 max-w-xl mx-auto mb-6 leading-relaxed font-normal">
+              {isTelugu
+                ? "ఒకవేళ మీరు స్వయంగా రాలేకపోతే, మా అధికారిక యూట్యూబ్ ఛానెల్‌లో ప్రతి ఆదివారం మరియు శుక్రవారం ప్రత్యక్ష ఆరాధనలో పాలుపొందవచ్చు."
+                : isHindi
+                ? "यदि आप व्यक्तिगत रूप से नहीं आ सकते हैं, तो आप हमारे आधिकारिक YouTube चैनल पर प्रत्येक रविवार और शुक्रवार लाइव स्ट्रीम में शामिल हो सकते हैं।"
+                : "If you are unable to join us in person, stream our Sunday Worship Services and special prayer meetings live on our official YouTube channel."}
+            </p>
+
+            {/* Quick Broadcast Timing Pills */}
+            <div className="inline-flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-8">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/80 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 text-xs font-bold text-slate-700 dark:text-slate-300 shadow-2xs">
+                <Clock className="w-3.5 h-3.5 text-red-500" />
+                <span>Sundays: 6:00 PM • Fridays: 6:00 PM</span>
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/80 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 text-xs font-bold text-slate-700 dark:text-slate-300 shadow-2xs">
+                <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                <span>Full HD 1080p Stream</span>
+              </span>
+            </div>
+
+            <div>
+              <a
+                href="https://youtube.com/@kcmchurchshapur7107?si=NbnoJjdl5lqt7fkO"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="min-h-[50px] inline-flex items-center gap-2.5 px-8 py-3.5 bg-gradient-to-r from-red-600 via-rose-600 to-red-700 hover:from-red-700 hover:to-rose-700 text-white font-black text-sm rounded-2xl transition-all shadow-xl shadow-red-600/30 hover:scale-105 active:scale-[0.98] cursor-pointer"
+              >
+                <Youtube className="w-5 h-5" />
+                <span>{isTelugu ? "యూట్యూబ్ లో చూడండి" : isHindi ? "YouTube पर देखें" : "Watch Live on YouTube"}</span>
+                <ExternalLink className="w-4 h-4 ml-0.5 opacity-80" />
+              </a>
+            </div>
           </div>
-          <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-900 dark:text-white mb-2 font-serif">
-            {isTelugu ? "లైవ్ ఆరాధన కూడా అందుబాటులో ఉంది" : isHindi ? "लाइव आराधना भी उपलब्ध है" : "Live Streaming Available"}
-          </h3>
-          <p className="text-xs sm:text-sm md:text-base text-slate-600 dark:text-slate-300 max-w-xl mx-auto mb-6 leading-relaxed">
-            {isTelugu
-              ? "ఒకవేళ మీరు స్వయంగా రాలేకపోతే, మా యూట్యూబ్ ఛానెల్‌లో ప్రతి ఆదివారం ప్రత్యక్ష ఆరాధనలో పాలుపొందవచ్చు."
-              : isHindi
-              ? "यदि आप व्यक्तिगत रूप से नहीं आ सकते हैं, तो आप हमारे YouTube चैनल पर प्रत्येक रविवार लाइव स्ट्रीम में शामिल हो सकते हैं।"
-              : "If you are unable to join us in person, stream our Sunday Worship Services live on our official YouTube channel."}
-          </p>
-          <a
-            href="https://youtube.com/@kcmchurchshapur7107?si=NbnoJjdl5lqt7fkO"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-bold text-xs sm:text-sm rounded-xl transition-all shadow-md shadow-red-600/25 hover:scale-105 active:scale-95"
-          >
-            <Youtube className="w-4 h-4" />
-            <span>{isTelugu ? "యూట్యూబ్ లో చూడండి" : isHindi ? "YouTube पर देखें" : "Watch Live on YouTube"}</span>
-          </a>
         </div>
       </main>
 

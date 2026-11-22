@@ -24,12 +24,14 @@ import {
   UserCheck,
   ChevronRight,
   Flame,
-  Globe
+  Globe,
+  Home,
+  HeartHandshake,
+  Zap
 } from "lucide-react";
 
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import BackToHome from "@/components/ui/BackToHome";
 
 export default function SmallGroupsPage() {
   const { language, t } = useLanguage();
@@ -49,19 +51,78 @@ export default function SmallGroupsPage() {
   const [isLeaderSuccess, setIsLeaderSuccess] = useState(false);
   const [leaderForm, setLeaderForm] = useState({ name: "", email: "", phone: "", groupIdea: "" });
 
-  // Localized categories
+  // Localized categories with bespoke icons
   const categories = useMemo(
     () => [
-      { id: "all", label: language === "te" ? "అన్ని గ్రూపులు" : language === "hi" ? "सभी समूह" : "All Groups" },
-      { id: "young-adults", label: language === "te" ? "యువజనులు" : language === "hi" ? "युवा" : "Young Adults" },
-      { id: "women", label: language === "te" ? "స్త్రీలు" : language === "hi" ? "महिलाएं" : "Women" },
-      { id: "men", label: language === "te" ? "పురుషులు" : language === "hi" ? "पुरुष" : "Men" },
-      { id: "couples", label: language === "te" ? "దంపతులు" : language === "hi" ? "दंपति" : "Couples" },
-      { id: "bible-study", label: language === "te" ? "బైబిల్ స్టడీ" : language === "hi" ? "बाइबिल अध्ययन" : "Bible Study" },
-      { id: "prayer", label: language === "te" ? "ప్రార్థన" : language === "hi" ? "प्रार्थना" : "Prayer" },
+      { id: "all", label: language === "te" ? "అన్ని గ్రూపులు" : language === "hi" ? "सभी समूह" : "All Groups", icon: Users },
+      { id: "young-adults", label: language === "te" ? "యువజనులు" : language === "hi" ? "युवा" : "Young Adults", icon: Zap },
+      { id: "women", label: language === "te" ? "స్త్రీలు" : language === "hi" ? "महिलाएं" : "Women", icon: Heart },
+      { id: "men", label: language === "te" ? "పురుషులు" : language === "hi" ? "पुरुष" : "Men", icon: ShieldCheck },
+      { id: "couples", label: language === "te" ? "దంపతులు" : language === "hi" ? "दंपति" : "Couples", icon: Sparkles },
+      { id: "bible-study", label: language === "te" ? "బైబిల్ స్టడీ" : language === "hi" ? "बाइबिल अध्ययन" : "Bible Study", icon: BookOpen },
+      { id: "prayer", label: language === "te" ? "ప్రార్థన" : language === "hi" ? "प्रार्थना" : "Prayer", icon: Flame },
     ],
     [language]
   );
+
+  // Category visual themes for cards
+  const getCategoryTheme = (categoryId: string) => {
+    switch (categoryId) {
+      case "young-adults":
+        return {
+          accent: "from-violet-500 to-indigo-500",
+          badge: "bg-violet-500/10 text-violet-700 dark:text-violet-300 border-violet-200/80 dark:border-violet-800/80",
+          iconBox: "bg-violet-500/10 dark:bg-violet-500/20 text-violet-600 dark:text-violet-400 border-violet-200/80 dark:border-violet-800/80",
+        };
+      case "women":
+        return {
+          accent: "from-pink-500 to-rose-500",
+          badge: "bg-pink-500/10 text-pink-700 dark:text-pink-300 border-pink-200/80 dark:border-pink-800/80",
+          iconBox: "bg-pink-500/10 dark:bg-pink-500/20 text-pink-600 dark:text-pink-400 border-pink-200/80 dark:border-pink-800/80",
+        };
+      case "men":
+        return {
+          accent: "from-blue-500 to-cyan-500",
+          badge: "bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-200/80 dark:border-blue-800/80",
+          iconBox: "bg-blue-500/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 border-blue-200/80 dark:border-blue-800/80",
+        };
+      case "couples":
+        return {
+          accent: "from-amber-500 to-orange-500",
+          badge: "bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-200/80 dark:border-amber-800/80",
+          iconBox: "bg-amber-500/10 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 border-amber-200/80 dark:border-amber-800/80",
+        };
+      case "bible-study":
+        return {
+          accent: "from-purple-500 to-indigo-500",
+          badge: "bg-purple-500/10 text-purple-700 dark:text-purple-300 border-purple-200/80 dark:border-purple-800/80",
+          iconBox: "bg-purple-500/10 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 border-purple-200/80 dark:border-purple-800/80",
+        };
+      case "prayer":
+        return {
+          accent: "from-rose-500 to-orange-500",
+          badge: "bg-rose-500/10 text-rose-700 dark:text-rose-300 border-rose-200/80 dark:border-rose-800/80",
+          iconBox: "bg-rose-500/10 dark:bg-rose-500/20 text-rose-600 dark:text-rose-400 border-rose-200/80 dark:border-rose-800/80",
+        };
+      default:
+        return {
+          accent: "from-purple-500 to-indigo-500",
+          badge: "bg-purple-500/10 text-purple-700 dark:text-purple-300 border-purple-200/80 dark:border-purple-800/80",
+          iconBox: "bg-purple-500/10 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 border-purple-200/80 dark:border-purple-800/80",
+        };
+    }
+  };
+
+  const getFormatBadgeStyle = (format: string) => {
+    const f = format.toLowerCase();
+    if (f.includes("in-person") || f.includes("ప్రత్యక్ష") || f.includes("प्रत्यक्ष")) {
+      return "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-200/80 dark:border-emerald-800/80";
+    }
+    if (f.includes("online") || f.includes("ఆన్‌లైన్") || f.includes("ऑनलाइन")) {
+      return "bg-sky-500/10 text-sky-700 dark:text-sky-300 border-sky-200/80 dark:border-sky-800/80";
+    }
+    return "bg-purple-500/10 text-purple-700 dark:text-purple-300 border-purple-200/80 dark:border-purple-800/80";
+  };
 
   // Localized days
   const days = useMemo(
@@ -288,10 +349,21 @@ export default function SmallGroupsPage() {
 
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
-            {/* Back to Home Button */}
-            <div className="mb-6 flex justify-center">
-              <BackToHome label={(t as any)?.nav?.home || (language === "te" ? "హోమ్" : language === "hi" ? "होम" : "Home")} />
-            </div>
+            {/* Inline Breadcrumb Navigation */}
+            <nav aria-label="Breadcrumb" className="mb-5 flex justify-center">
+              <ol className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/70 dark:bg-slate-900/70 backdrop-blur-md border border-purple-200/60 dark:border-slate-800 text-xs font-semibold text-slate-600 dark:text-slate-400 shadow-2xs">
+                <li className="inline-flex items-center">
+                  <Link href="/" className="inline-flex items-center gap-1 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">
+                    <Home className="w-3.5 h-3.5" />
+                    <span>{(t as any)?.nav?.home || (language === "te" ? "హోమ్" : language === "hi" ? "होम" : "Home")}</span>
+                  </Link>
+                </li>
+                <li className="text-slate-400 dark:text-slate-600">/</li>
+                <li className="text-purple-700 dark:text-purple-300 font-bold" aria-current="page">
+                  {sg.title || (language === "te" ? "చిన్న సమూహాలు" : language === "hi" ? "छोटे समूह" : "Small Groups")}
+                </li>
+              </ol>
+            </nav>
 
             {/* Pill Header */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-100/90 dark:bg-white/10 backdrop-blur-md border border-purple-200/90 dark:border-white/20 text-purple-800 dark:text-purple-200 font-extrabold text-xs sm:text-sm mb-6 shadow-sm">
@@ -305,7 +377,7 @@ export default function SmallGroupsPage() {
               </span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-6 font-serif text-slate-900 dark:text-white">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight mb-6 text-slate-900 dark:text-white leading-tight font-outfit">
               {sg.title || (language === "te" ? "చిన్న సమూహాలు (సెల్ గ్రూపులు)" : language === "hi" ? "छोटे समूह (सेल ग्रुप्स)" : "Small Groups")}
             </h1>
 
@@ -318,22 +390,41 @@ export default function SmallGroupsPage() {
                   : "Connect with believers, share faith journeys, and build lifelong friendships in a welcoming home group.")}
             </p>
 
-            {/* Quick Stats Bar */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 max-w-3xl mx-auto pt-6 border-t border-purple-200/60 dark:border-slate-800">
-              <div className="p-4 rounded-2xl bg-white/95 dark:bg-slate-900/80 backdrop-blur-md border border-purple-100 dark:border-slate-800 shadow-md shadow-purple-900/5 dark:shadow-black/20 hover:scale-[1.02] transition-transform">
-                <div className="text-2xl sm:text-3xl font-black text-purple-600 dark:text-purple-400 mb-0.5">6+</div>
+            {/* Quick Stats Bar — Executive Tone-on-Tone Frosted Glassmorphism */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 max-w-4xl mx-auto pt-8 border-t border-purple-200/60 dark:border-slate-800/80">
+              <div className="relative bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 rounded-2xl sm:rounded-3xl shadow-lg shadow-purple-900/5 dark:shadow-black/20 hover:scale-[1.02] transition-all duration-300 flex flex-col items-center text-center group overflow-hidden">
+                <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-purple-500 to-indigo-500 opacity-80" />
+                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-purple-500/10 dark:bg-purple-500/20 border border-purple-200/60 dark:border-purple-800/60 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                  <Users className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                </div>
+                <div className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight mb-0.5">6+</div>
                 <div className="text-xs font-bold text-slate-700 dark:text-slate-300">{language === "te" ? "చురుకైన గ్రూపులు" : language === "hi" ? "सक्रिय समूह" : "Active Groups"}</div>
               </div>
-              <div className="p-4 rounded-2xl bg-white/95 dark:bg-slate-900/80 backdrop-blur-md border border-purple-100 dark:border-slate-800 shadow-md shadow-purple-900/5 dark:shadow-black/20 hover:scale-[1.02] transition-transform">
-                <div className="text-2xl sm:text-3xl font-black text-indigo-600 dark:text-indigo-400 mb-0.5">150+</div>
+
+              <div className="relative bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 rounded-2xl sm:rounded-3xl shadow-lg shadow-indigo-900/5 dark:shadow-black/20 hover:scale-[1.02] transition-all duration-300 flex flex-col items-center text-center group overflow-hidden">
+                <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-indigo-500 to-cyan-500 opacity-80" />
+                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-indigo-500/10 dark:bg-indigo-500/20 border border-indigo-200/60 dark:border-indigo-800/60 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                  <HeartHandshake className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                </div>
+                <div className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight mb-0.5">150+</div>
                 <div className="text-xs font-bold text-slate-700 dark:text-slate-300">{language === "te" ? "సహవాస సభ్యులు" : language === "hi" ? "समूह सदस्य" : "Group Members"}</div>
               </div>
-              <div className="p-4 rounded-2xl bg-white/95 dark:bg-slate-900/80 backdrop-blur-md border border-purple-100 dark:border-slate-800 shadow-md shadow-purple-900/5 dark:shadow-black/20 hover:scale-[1.02] transition-transform">
-                <div className="text-2xl sm:text-3xl font-black text-pink-600 dark:text-pink-400 mb-0.5">3</div>
+
+              <div className="relative bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 rounded-2xl sm:rounded-3xl shadow-lg shadow-pink-900/5 dark:shadow-black/20 hover:scale-[1.02] transition-all duration-300 flex flex-col items-center text-center group overflow-hidden">
+                <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-pink-500 to-rose-500 opacity-80" />
+                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-pink-500/10 dark:bg-pink-500/20 border border-pink-200/60 dark:border-pink-800/60 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                  <MapPin className="w-5 h-5 text-pink-600 dark:text-pink-400" />
+                </div>
+                <div className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight mb-0.5">3</div>
                 <div className="text-xs font-bold text-slate-700 dark:text-slate-300">{language === "te" ? "ప్రాంతీయ కేంద్రాలు" : language === "hi" ? "केंद्रीय स्थान" : "Hub Locations"}</div>
               </div>
-              <div className="p-4 rounded-2xl bg-white/95 dark:bg-slate-900/80 backdrop-blur-md border border-purple-100 dark:border-slate-800 shadow-md shadow-purple-900/5 dark:shadow-black/20 hover:scale-[1.02] transition-transform">
-                <div className="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400 mb-0.5">100%</div>
+
+              <div className="relative bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 rounded-2xl sm:rounded-3xl shadow-lg shadow-emerald-900/5 dark:shadow-black/20 hover:scale-[1.02] transition-all duration-300 flex flex-col items-center text-center group overflow-hidden">
+                <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-500 opacity-80" />
+                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-200/60 dark:border-emerald-800/60 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                  <Sparkles className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                </div>
+                <div className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight mb-0.5">100%</div>
                 <div className="text-xs font-bold text-slate-700 dark:text-slate-300">{language === "te" ? "హృదయపూర్వక ఆహ్వానం" : language === "hi" ? "खुला स्वागत" : "Welcome"}</div>
               </div>
             </div>
@@ -345,10 +436,14 @@ export default function SmallGroupsPage() {
       <section className="py-16 md:py-24 relative z-10 bg-white dark:bg-slate-950 border-b border-slate-200/80 dark:border-slate-800/80">
         <div className="container mx-auto px-4 max-w-6xl">
           <div className="text-center max-w-3xl mx-auto mb-14">
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-4 font-serif">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-purple-500/10 dark:bg-purple-500/20 border border-purple-200/80 dark:border-purple-800/80 text-purple-700 dark:text-purple-300 rounded-full text-xs font-bold uppercase tracking-wider mb-4 shadow-2xs">
+              <Users className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+              <span>{language === "te" ? "కమ్యూనిటీ విలువ" : language === "hi" ? "सामुदायिक लाभ" : "Community Life"}</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white mb-4 tracking-tight font-outfit">
               {sg.whyTitle || (language === "te" ? "చిన్న సమూహంలో ఎందుకు చేరాలి?" : language === "hi" ? "छोटे समूह में क्यों शामिल हों?" : "Why Join a Small Group?")}
             </h2>
-            <p className="text-slate-600 dark:text-slate-400 text-base sm:text-lg leading-relaxed font-light">
+            <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base md:text-lg leading-relaxed font-normal">
               {sg.whyDesc ||
                 (language === "te"
                   ? "మనం ఏకాకులుగా జీవించడానికి సృష్టించబడలేదు. సెల్ గ్రూపులు మన సంఘానికి జీవనాడి—ఇక్కడే నిజమైన సంబంధాలు ఏర్పడతాయి మరియు ఆత్మీయ ఎదుగుదల సాధ్యమవుతుంది."
@@ -358,15 +453,16 @@ export default function SmallGroupsPage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="p-8 rounded-3xl bg-slate-50 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-all">
-              <div className="w-14 h-14 rounded-2xl bg-purple-600 text-white shadow-lg shadow-purple-600/30 flex items-center justify-center mb-6">
-                <Heart className="w-7 h-7 text-white" />
+          <div className="grid md:grid-cols-3 gap-6 sm:gap-8">
+            <div className="relative p-6 sm:p-8 rounded-3xl bg-slate-50 dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden group">
+              <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-purple-500 to-indigo-500 opacity-80" />
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-purple-500/10 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 border border-purple-200/60 dark:border-purple-800/60 flex items-center justify-center mb-6 group-hover:scale-105 transition-transform shadow-2xs">
+                <Heart className="w-6 h-6 sm:w-7 sm:h-7 text-purple-600 dark:text-purple-400" />
               </div>
-              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3 font-serif">
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3 tracking-tight font-outfit">
                 {sg.connectTitle || (language === "te" ? "యథార్థమైన అనుబంధం" : language === "hi" ? "सच्चा जुड़ाव" : "Genuine Connection")}
               </h3>
-              <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed font-medium">
+              <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed font-normal">
                 {sg.connectDesc ||
                   (language === "te"
                     ? "విశ్వాసంలో ఉన్నవారితో బలమైన స్నేహాన్ని నిర్మించుకోండి మరియు రోజువారీ జీవితంలో పరస్పర సహకారాన్ని పొందండి."
@@ -376,14 +472,15 @@ export default function SmallGroupsPage() {
               </p>
             </div>
 
-            <div className="p-8 rounded-3xl bg-slate-50 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-all">
-              <div className="w-14 h-14 rounded-2xl bg-indigo-600 text-white shadow-lg shadow-indigo-600/30 flex items-center justify-center mb-6">
-                <BookOpen className="w-7 h-7 text-white" />
+            <div className="relative p-6 sm:p-8 rounded-3xl bg-slate-50 dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden group">
+              <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-indigo-500 to-cyan-500 opacity-80" />
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-indigo-500/10 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60 flex items-center justify-center mb-6 group-hover:scale-105 transition-transform shadow-2xs">
+                <BookOpen className="w-6 h-6 sm:w-7 sm:h-7 text-indigo-600 dark:text-indigo-400" />
               </div>
-              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3 font-serif">
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3 tracking-tight font-outfit">
                 {sg.growTitle || (language === "te" ? "ఆత్మీయ ఎదుగుదల" : language === "hi" ? "आत्मिक विकास" : "Spiritual Growth")}
               </h3>
-              <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed font-medium">
+              <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed font-normal">
                 {sg.growDesc ||
                   (language === "te"
                     ? "స్నేహపూర్వక వాతావరణంలో దేవుని వాక్యాన్ని లోతుగా అర్థం చేసుకుంటూ ఆధ్యాత్మికంగా పరిపక్వత చెందండి."
@@ -393,14 +490,15 @@ export default function SmallGroupsPage() {
               </p>
             </div>
 
-            <div className="p-8 rounded-3xl bg-slate-50 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-all">
-              <div className="w-14 h-14 rounded-2xl bg-pink-600 text-white shadow-lg shadow-pink-600/30 flex items-center justify-center mb-6">
-                <Coffee className="w-7 h-7 text-white" />
+            <div className="relative p-6 sm:p-8 rounded-3xl bg-slate-50 dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden group">
+              <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-pink-500 to-rose-500 opacity-80" />
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-pink-500/10 dark:bg-pink-500/20 text-pink-600 dark:text-pink-400 border border-pink-200/60 dark:border-pink-800/60 flex items-center justify-center mb-6 group-hover:scale-105 transition-transform shadow-2xs">
+                <Coffee className="w-6 h-6 sm:w-7 sm:h-7 text-pink-600 dark:text-pink-400" />
               </div>
-              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3 font-serif">
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3 tracking-tight font-outfit">
                 {sg.supportTitle || (language === "te" ? "ప్రార్థన & ఆదరణ" : language === "hi" ? "प्रार्थना और देखभाल" : "Prayer & Care")}
               </h3>
-              <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed font-medium">
+              <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed font-normal">
                 {sg.supportDesc ||
                   (language === "te"
                     ? "జీవితంలోని సంతోషాలలో మరియు కష్టాలలో విశ్వాస కుటుంబంగా ఒకరికొకరు తోడుగా నిలబడండి."
@@ -418,7 +516,7 @@ export default function SmallGroupsPage() {
         <div className="container mx-auto px-4 max-w-6xl">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
             <div>
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-2 font-serif">
+              <h2 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white mb-2 tracking-tight font-outfit">
                 {sg.find || (language === "te" ? "మీ గ్రూపును కనుగొనండి" : language === "hi" ? "अपना समूह खोजें" : "Find Your Group")}
               </h2>
               <p className="text-slate-600 dark:text-slate-400 text-sm sm:text-base">
@@ -451,114 +549,134 @@ export default function SmallGroupsPage() {
             </div>
           </div>
 
-          {/* Category Filter Pills */}
-          <div className="flex flex-wrap items-center gap-2 mb-6 pb-1">
-            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mr-2 flex items-center gap-1">
-              <Filter className="w-3 h-3" /> {language === "te" ? "వర్గం:" : language === "hi" ? "श्रेणी:" : "Category:"}
-            </span>
-            {categories.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setSelectedCategory(cat.id)}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                  selectedCategory === cat.id
-                    ? "bg-purple-600 text-white font-semibold shadow-md shadow-purple-600/20 scale-105"
-                    : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-purple-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700"
-                }`}
-              >
-                {cat.label}
-              </button>
-            ))}
+          {/* Category Filter Track — Horizontal Smooth Swipe on Mobile, Clean Wrap on Desktop */}
+          <div className="space-y-4 mb-10">
+            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth py-1 -mx-4 px-4 sm:mx-0 sm:px-0">
+              <span className="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5 shrink-0 mr-1">
+                <Filter className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                <span>{language === "te" ? "వర్గం:" : language === "hi" ? "श्रेणी:" : "Category:"}</span>
+              </span>
+              {categories.map((cat) => {
+                const CatIcon = cat.icon;
+                const isActive = selectedCategory === cat.id;
+                return (
+                  <button
+                    key={cat.id}
+                    onClick={() => setSelectedCategory(cat.id)}
+                    className={`min-h-[38px] px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 flex items-center gap-2 shrink-0 cursor-pointer select-none active:scale-95 ${
+                      isActive
+                        ? "bg-purple-600 text-white shadow-md shadow-purple-600/30 ring-2 ring-purple-400/40 scale-[1.02]"
+                        : "bg-white dark:bg-slate-800/90 text-slate-700 dark:text-slate-200 hover:bg-purple-50 dark:hover:bg-purple-950/40 border border-slate-200/90 dark:border-slate-700/80 hover:border-purple-300 dark:hover:border-purple-700/60 shadow-2xs"
+                    }`}
+                  >
+                    <CatIcon className={`w-3.5 h-3.5 ${isActive ? "text-white" : "text-purple-600 dark:text-purple-400"}`} />
+                    <span>{cat.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Day Filter Sub-row */}
+            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1 -mx-4 px-4 sm:mx-0 sm:px-0">
+              <span className="text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 mr-2 shrink-0">
+                {language === "te" ? "వారం రోజు:" : language === "hi" ? "दिन:" : "Day:"}
+              </span>
+              {days.map((d) => {
+                const isActive = selectedDay === d.id;
+                return (
+                  <button
+                    key={d.id}
+                    onClick={() => setSelectedDay(d.id)}
+                    className={`min-h-[32px] px-3 py-1 rounded-lg text-xs font-bold transition-all duration-150 shrink-0 cursor-pointer select-none ${
+                      isActive
+                        ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-xs"
+                        : "bg-slate-200/80 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700"
+                    }`}
+                  >
+                    {d.label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
-          {/* Day Filter Sub-row */}
-          <div className="flex flex-wrap items-center gap-2 mb-10 text-xs text-slate-500 dark:text-slate-400">
-            <span className="font-semibold uppercase tracking-wider mr-1">{language === "te" ? "వారం రోజు:" : language === "hi" ? "दिन:" : "Day:"}</span>
-            {days.map((d) => (
-              <button
-                key={d.id}
-                onClick={() => setSelectedDay(d.id)}
-                className={`px-3 py-1 rounded-lg font-bold transition-colors ${
-                  selectedDay === d.id
-                    ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-xs"
-                    : "bg-slate-200/80 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700"
-                }`}
-              >
-                {d.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Group Cards Grid */}
+          {/* Group Cards Grid — Executive Tone-on-Tone Glassmorphic Cards */}
           {filteredGroups.length > 0 ? (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
               {filteredGroups.map((group) => {
                 const IconComponent = group.icon;
+                const theme = getCategoryTheme(group.categoryId);
+                const formatStyle = getFormatBadgeStyle(group.format);
+
                 return (
                   <div
                     key={group.id}
-                    className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col hover:-translate-y-1 group"
+                    className="relative bg-white dark:bg-slate-900/90 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-6 sm:p-7 shadow-md hover:shadow-2xl transition-all duration-300 flex flex-col justify-between hover:-translate-y-1.5 group overflow-hidden"
                   >
-                    {/* Header Banner - Elegant Light & Dark Gradient Accent */}
-                    <div className="bg-gradient-to-r from-purple-50/90 via-indigo-50/40 to-slate-50 dark:from-slate-800/90 dark:via-slate-800 dark:to-slate-850 p-6 border-b border-purple-100/90 dark:border-slate-800 flex items-center justify-between">
-                      <div>
-                        <span className="inline-block px-3 py-1 rounded-full bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300 border border-purple-200/90 dark:border-purple-700/50 text-[11px] font-extrabold uppercase tracking-wider mb-2 shadow-xs">
+                    {/* Top Accent Gradient Ribbon */}
+                    <div className={`absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r ${theme.accent}`} />
+
+                    <div>
+                      {/* Card Top: High-Contrast Category Badge & Tone-on-Tone Icon Halo */}
+                      <div className="flex items-center justify-between gap-3 mb-4">
+                        <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wider border shadow-2xs ${theme.badge}`}>
                           {group.categoryLabel}
                         </span>
-                        <h3 className="text-xl font-bold font-serif text-slate-900 dark:text-white leading-tight">
-                          {group.title}
-                        </h3>
+                        
+                        <div className={`w-11 h-11 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center border group-hover:scale-110 transition-transform shadow-xs ${theme.iconBox}`}>
+                          <IconComponent className="w-5 h-5 sm:w-6 sm:h-6" />
+                        </div>
                       </div>
-                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-600 to-indigo-600 text-white flex items-center justify-center shrink-0 shadow-md shadow-purple-600/20 group-hover:scale-105 transition-transform">
-                        <IconComponent className="w-6 h-6 text-white" />
+
+                      {/* Group Title */}
+                      <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mb-2.5 tracking-tight font-outfit group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors leading-snug">
+                        {group.title}
+                      </h3>
+
+                      {/* Format and Member Tags */}
+                      <div className="flex items-center justify-between gap-2 mb-4 text-xs font-bold">
+                        <span className={`px-2.5 py-1 rounded-lg border font-bold text-xs ${formatStyle}`}>
+                          {group.format}
+                        </span>
+                        <span className="text-slate-600 dark:text-slate-300 flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800/80 px-2.5 py-1 rounded-lg border border-slate-200/60 dark:border-slate-700/60 font-semibold">
+                          <UserCheck className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                          <span>{group.members}</span>
+                        </span>
                       </div>
+
+                      {/* Group Description */}
+                      <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed mb-6 font-normal">
+                        {group.description}
+                      </p>
                     </div>
 
-                    {/* Card Body */}
-                    <div className="p-6 flex-1 flex flex-col justify-between">
-                      <div>
-                        <div className="flex items-center justify-between gap-2 mb-4 text-xs">
-                          <span className="px-2.5 py-1 rounded-lg bg-purple-50/70 dark:bg-slate-800 text-purple-700 dark:text-purple-300 border border-purple-200/60 dark:border-slate-700 font-semibold">
-                            {group.format}
-                          </span>
-                          <span className="text-slate-600 dark:text-slate-300 font-semibold flex items-center gap-1">
-                            <UserCheck className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
-                            {group.members}
+                    {/* Card Footer: Metadata and Ergonomic Join Action */}
+                    <div>
+                      <div className="space-y-2.5 text-xs text-slate-600 dark:text-slate-300 border-t border-slate-100 dark:border-slate-800/80 pt-4 mb-5 font-medium">
+                        <div className="flex items-center gap-2.5">
+                          <Calendar className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0" />
+                          <span className="font-bold text-slate-900 dark:text-white">{group.time}</span>
+                        </div>
+                        <div className="flex items-center gap-2.5">
+                          <MapPin className="w-4 h-4 text-rose-500 shrink-0" />
+                          <span>{group.location}</span>
+                        </div>
+                        <div className="flex items-center gap-2.5">
+                          <Users className="w-4 h-4 text-indigo-500 shrink-0" />
+                          <span>
+                            {language === "te" ? "నాయకత్వం: " : language === "hi" ? "नेतृत्व: " : "Led by: "}
+                            <strong className="text-slate-900 dark:text-white font-bold">{group.leader}</strong>
                           </span>
                         </div>
-
-                        <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed mb-6 font-medium">
-                          {group.description}
-                        </p>
                       </div>
 
-                      <div>
-                        <div className="space-y-2 text-xs text-slate-600 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800 pt-4 mb-6">
-                          <div className="flex items-center gap-2.5">
-                            <Calendar className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0" />
-                            <span className="font-semibold text-slate-800 dark:text-slate-200">{group.time}</span>
-                          </div>
-                          <div className="flex items-center gap-2.5">
-                            <MapPin className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0" />
-                            <span>{group.location}</span>
-                          </div>
-                          <div className="flex items-center gap-2.5">
-                            <Users className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0" />
-                            <span>
-                              {language === "te" ? "నాయకత్వం: " : language === "hi" ? "नेतृत्व: " : "Led by: "}
-                              <strong className="text-slate-800 dark:text-slate-200 font-bold">{group.leader}</strong>
-                            </span>
-                          </div>
-                        </div>
-
-                        <button
-                          onClick={() => setActiveModalGroup(group)}
-                          className="w-full py-3 px-4 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-2 shadow-sm hover:shadow-md active:scale-98"
-                        >
-                          <span>{language === "te" ? "ఈ గ్రూపులో చేరండి" : language === "hi" ? "इस समूह में शामिल हों" : "Join This Group"}</span>
-                          <ChevronRight className="w-4 h-4" />
-                        </button>
-                      </div>
+                      <button
+                        onClick={() => setActiveModalGroup(group)}
+                        className="w-full py-3.5 px-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-2xl font-black text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-2 shadow-md shadow-purple-600/20 hover:shadow-lg active:scale-[0.98] cursor-pointer group/btn"
+                      >
+                        <span>{language === "te" ? "ఈ గ్రూపులో చేరండి" : language === "hi" ? "इस समूह में शामिल हों" : "Join This Group"}</span>
+                        <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                      </button>
                     </div>
                   </div>
                 );
@@ -590,61 +708,123 @@ export default function SmallGroupsPage() {
         </div>
       </section>
 
-      {/* 🚀 Start a Group Section - Adaptive Light/Dark CTA Card */}
-      <section className="py-20 relative z-10 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white border-t border-purple-100/80 dark:border-slate-800/80">
+      {/* 🚀 Start a Group Section - Senior-Grade Tone-on-Tone CTA Deck */}
+      <section className="py-16 sm:py-24 relative z-10 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white border-t border-slate-200/80 dark:border-slate-800/80">
         <div className="container mx-auto px-4 max-w-5xl">
-          <div className="bg-gradient-to-br from-purple-50/90 via-indigo-50/50 to-white dark:from-slate-900 dark:via-purple-950/40 dark:to-slate-900 border border-purple-200/90 dark:border-purple-700/40 rounded-3xl p-8 sm:p-12 text-center shadow-xl shadow-purple-900/5 dark:shadow-black/30 relative overflow-hidden text-slate-900 dark:text-white">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-600 to-indigo-600 border border-purple-400 text-white shadow-lg shadow-purple-600/30 flex items-center justify-center mx-auto mb-6">
-              <PlusCircle className="w-7 h-7 text-white" />
-            </div>
+          <div className="relative rounded-3xl p-6 sm:p-10 md:p-14 bg-gradient-to-b from-purple-50/90 via-white to-indigo-50/60 dark:from-slate-900/95 dark:via-purple-950/20 dark:to-slate-900/95 border border-purple-200/80 dark:border-purple-800/50 shadow-2xl shadow-purple-900/5 dark:shadow-black/40 overflow-hidden text-center">
+            {/* Top Accent Ribbon */}
+            <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-purple-500 via-indigo-500 to-purple-500 opacity-90" />
+            
+            {/* Ambient Background Glow Orbs */}
+            <div className="absolute -top-24 -right-24 w-72 h-72 bg-purple-500/10 dark:bg-purple-600/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-indigo-500/10 dark:bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
 
-            <h2 className="text-3xl sm:text-4xl font-extrabold mb-4 font-serif text-slate-900 dark:text-white">
-              {sg.startTitle || (language === "te" ? "చిన్న సమూహాన్ని నడిపించాలనుకుంటున్నారా?" : language === "hi" ? "एक छोटे समूह का नेतृत्व करने में रुचि रखते हैं?" : "Interested in Leading a Small Group?")}
-            </h2>
-
-            <p className="text-slate-600 dark:text-slate-200 text-base sm:text-lg max-w-2xl mx-auto mb-10 font-medium leading-relaxed">
-              {sg.startDesc ||
-                (language === "te"
-                  ? "మీరు విజయవంతంగా సమూహాన్ని నడిపించడానికి అవసరమైన శిక్షణ, అధ్యయన సామగ్రి మరియు నిరంతర సహకారాన్ని మేము అందిస్తాము."
-                  : language === "hi"
-                  ? "हम आपको एक संपन्न सामुदायिक समूह का नेतृत्व करने में मदद करने के लिए प्रशिक्षण, अध्ययन सामग्री और निरंतर मार्गदर्शन प्रदान करते हैं।"
-                  : "We provide training, study materials, and ongoing coaching to help you facilitate a thriving community group.")}
-            </p>
-
-            <div className="grid sm:grid-cols-3 gap-4 max-w-3xl mx-auto mb-10 text-left">
-              <div className="p-5 rounded-2xl bg-white/95 dark:bg-white/10 backdrop-blur-md border border-purple-100 dark:border-white/15 shadow-sm hover:shadow-md transition-shadow">
-                <div className="text-purple-700 dark:text-purple-300 text-xs font-black uppercase tracking-wider mb-1">{language === "te" ? "దశ 1" : language === "hi" ? "चरण 1" : "Step 1"}</div>
-                <div className="font-bold text-sm text-slate-900 dark:text-white mb-0.5">{language === "te" ? "ఆసక్తిని తెలియజేయండి" : language === "hi" ? "रुचि व्यक्त करें" : "Express Interest"}</div>
-                <div className="text-xs text-slate-500 dark:text-slate-300 font-medium">{language === "te" ? "చిన్న దరఖాస్తును సమర్పించండి" : language === "hi" ? "लीडर फॉर्म भरें" : "Submit a quick leader form"}</div>
+            <div className="relative z-10">
+              {/* Purposeful Section Badge */}
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-purple-500/10 dark:bg-purple-500/20 border border-purple-200/80 dark:border-purple-800/80 text-purple-700 dark:text-purple-300 rounded-full text-xs font-bold uppercase tracking-wider mb-5 shadow-2xs">
+                <Sparkles className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                <span>{language === "te" ? "నాయకత్వ అవకాశం" : language === "hi" ? "नेतृत्व अवसर" : "Leadership Opportunity"}</span>
               </div>
-              <div className="p-5 rounded-2xl bg-white/95 dark:bg-white/10 backdrop-blur-md border border-purple-100 dark:border-white/15 shadow-sm hover:shadow-md transition-shadow">
-                <div className="text-purple-700 dark:text-purple-300 text-xs font-black uppercase tracking-wider mb-1">{language === "te" ? "దశ 2" : language === "hi" ? "चरण 2" : "Step 2"}</div>
-                <div className="font-bold text-sm text-slate-900 dark:text-white mb-0.5">{language === "te" ? "అవగాహన & శిక్షణ" : language === "hi" ? "प्रशिक्षण प्राप्त करें" : "Orientation"}</div>
-                <div className="text-xs text-slate-500 dark:text-slate-300 font-medium">{language === "te" ? "అధ్యయన గైడ్‌లు & మద్దతు పొందండి" : language === "hi" ? "गाइड और सहयोग पाएं" : "Receive study guides & support"}</div>
-              </div>
-              <div className="p-5 rounded-2xl bg-white/95 dark:bg-white/10 backdrop-blur-md border border-purple-100 dark:border-white/15 shadow-sm hover:shadow-md transition-shadow">
-                <div className="text-purple-700 dark:text-purple-300 text-xs font-black uppercase tracking-wider mb-1">{language === "te" ? "దశ 3" : language === "hi" ? "चरण 3" : "Step 3"}</div>
-                <div className="font-bold text-sm text-slate-900 dark:text-white mb-0.5">{language === "te" ? "గ్రూపును ప్రారంభించండి" : language === "hi" ? "समूह शुरू करें" : "Launch Your Group"}</div>
-                <div className="text-xs text-slate-500 dark:text-slate-300 font-medium">{language === "te" ? "స్నేహితులు & ఇరుగుపొరుగు వారిని ఆహ్వానించండి" : language === "hi" ? "मित्रों को आमंत्रित करें" : "Gather friends & neighbors"}</div>
-              </div>
-            </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button
-                onClick={() => setIsLeaderModalOpen(true)}
-                className="px-8 py-3.5 bg-purple-600 hover:bg-purple-700 text-white rounded-2xl font-bold text-sm transition-all shadow-lg shadow-purple-600/30 flex items-center justify-center gap-2 group hover:scale-105"
-              >
-                <span>{sg.becomeLeader || (language === "te" ? "గ్రూప్ లీడర్‌గా దరఖాస్తు చేసుకోండి" : language === "hi" ? "ग्रुप लीडर के लिए आवेदन करें" : "Apply to Lead a Group")}</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </button>
+              {/* Luminous Tone-on-Tone Icon Halo */}
+              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-purple-500/10 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 border border-purple-200/80 dark:border-purple-800/80 flex items-center justify-center mx-auto mb-5 shadow-xs">
+                <PlusCircle className="w-7 h-7 sm:w-8 sm:h-8" />
+              </div>
 
-              <Link
-                href="/contact"
-                className="px-8 py-3.5 bg-white dark:bg-white/10 hover:bg-purple-50 dark:hover:bg-white/20 text-slate-800 dark:text-white border border-purple-200/90 dark:border-white/20 rounded-2xl font-bold text-sm transition-all shadow-sm flex items-center justify-center gap-2 hover:scale-105"
-              >
-                <MessageSquare className="w-4 h-4 text-purple-600 dark:text-purple-300" />
-                <span>{language === "te" ? "నాయకులను సంప్రదించండి" : language === "hi" ? "नेताओं से संपर्क करें" : "Contact Leaders"}</span>
-              </Link>
+              {/* Title */}
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black mb-4 text-slate-900 dark:text-white tracking-tight font-outfit">
+                {sg.startTitle || (language === "te" ? "చిన్న సమూహాన్ని ప్రారంభించండి" : language === "hi" ? "एक समूह शुरू करें" : "Start a Group")}
+              </h2>
+
+              {/* Subtitle */}
+              <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base md:text-lg max-w-2xl mx-auto mb-10 leading-relaxed font-normal">
+                {sg.startDesc ||
+                  (language === "te"
+                    ? "మీరు విజయవంతంగా సమూహాన్ని నడిపించడానికి అవసరమైన శిక్షణ, అధ్యయన సామగ్రి మరియు నిరంతర సహకారాన్ని మేము అందిస్తాము."
+                    : language === "hi"
+                    ? "हम आपको एक संपन्न सामुदायिक समूह का नेतृत्व करने में मदद करने के लिए प्रशिक्षण, अध्ययन सामग्री और निरंतर मार्गदर्शन प्रदान करते हैं।"
+                    : "Interested in leading a small group? We provide training and resources to help you lead effectively.")}
+              </p>
+
+              {/* 3 Step Cards Progression */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 max-w-4xl mx-auto mb-10 text-left">
+                {/* Step 1 */}
+                <div className="relative p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white/95 dark:bg-slate-850/90 backdrop-blur-xl border border-slate-200/90 dark:border-slate-800 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col justify-between group">
+                  <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-purple-500 to-indigo-500 opacity-80" />
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="px-2.5 py-0.5 rounded-md bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-200/80 dark:border-purple-800/80 text-[10px] font-black uppercase tracking-wider">
+                        {language === "te" ? "దశ 1" : language === "hi" ? "चरण 1" : "Step 1"}
+                      </span>
+                      <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform" />
+                    </div>
+                    <div className="font-black text-base text-slate-900 dark:text-white mb-1.5 font-outfit">
+                      {language === "te" ? "ఆసక్తిని తెలియజేయండి" : language === "hi" ? "रुचि व्यक्त करें" : "Express Interest"}
+                    </div>
+                    <div className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-normal leading-relaxed">
+                      {language === "te" ? "చిన్న నాయకత్వ ఫారమ్‌ను సమర్పించండి" : language === "hi" ? "त्वरित लीडर फॉर्म भरें" : "Submit a quick online leader application"}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Step 2 */}
+                <div className="relative p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white/95 dark:bg-slate-850/90 backdrop-blur-xl border border-slate-200/90 dark:border-slate-800 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col justify-between group">
+                  <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-indigo-500 to-cyan-500 opacity-80" />
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="px-2.5 py-0.5 rounded-md bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border border-indigo-200/80 dark:border-indigo-800/80 text-[10px] font-black uppercase tracking-wider">
+                        {language === "te" ? "దశ 2" : language === "hi" ? "चरण 2" : "Step 2"}
+                      </span>
+                      <BookOpen className="w-4 h-4 text-indigo-600 dark:text-indigo-400 group-hover:scale-110 transition-transform" />
+                    </div>
+                    <div className="font-black text-base text-slate-900 dark:text-white mb-1.5 font-outfit">
+                      {language === "te" ? "అవగాహన & శిక్షణ" : language === "hi" ? "प्रशिक्षण प्राप्त करें" : "Orientation & Guides"}
+                    </div>
+                    <div className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-normal leading-relaxed">
+                      {language === "te" ? "అధ్యయన గైడ్‌లు & పాస్టరల్ మద్దతు పొందండి" : language === "hi" ? "गाइड, टिप्स और कोचिंग प्राप्त करें" : "Receive curriculum, guides & pastoral coaching"}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Step 3 */}
+                <div className="relative p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white/95 dark:bg-slate-850/90 backdrop-blur-xl border border-slate-200/90 dark:border-slate-800 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col justify-between group">
+                  <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-500 opacity-80" />
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="px-2.5 py-0.5 rounded-md bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/80 text-[10px] font-black uppercase tracking-wider">
+                        {language === "te" ? "దశ 3" : language === "hi" ? "चरण 3" : "Step 3"}
+                      </span>
+                      <Users className="w-4 h-4 text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform" />
+                    </div>
+                    <div className="font-black text-base text-slate-900 dark:text-white mb-1.5 font-outfit">
+                      {language === "te" ? "గ్రూపును ప్రారంభించండి" : language === "hi" ? "समूह शुरू करें" : "Launch Your Group"}
+                    </div>
+                    <div className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-normal leading-relaxed">
+                      {language === "te" ? "స్నేహితులు & ఇరుగుపొరుగు వారిని ఆహ్వానించండి" : language === "hi" ? "मित्रों और पड़ोसियों को आमंत्रित करें" : "Gather friends, neighbors & begin meeting"}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons: Unified Ergonomic Dock */}
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
+                <button
+                  onClick={() => setIsLeaderModalOpen(true)}
+                  className="w-full sm:w-auto min-h-[50px] px-8 py-3.5 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-700 hover:to-indigo-800 text-white rounded-2xl font-black text-xs sm:text-sm shadow-xl shadow-purple-600/25 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 cursor-pointer group"
+                >
+                  <PlusCircle className="w-4 h-4 text-purple-200 group-hover:scale-110 transition-transform" />
+                  <span>{sg.becomeLeader || (language === "te" ? "లీడర్‌గా దరఖాస్తు చేసుకోండి" : language === "hi" ? "लीडर के लिए आवेदन करें" : "Become a Leader")}</span>
+                  <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
+                </button>
+
+                <Link
+                  href="/contact"
+                  className="w-full sm:w-auto min-h-[50px] px-8 py-3.5 bg-white dark:bg-slate-850 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-2xl font-black text-xs sm:text-sm shadow-sm hover:shadow-md hover:border-purple-300 dark:hover:border-purple-600 transition-all flex items-center justify-center gap-2.5 cursor-pointer active:scale-[0.98] group"
+                >
+                  <MessageSquare className="w-4 h-4 text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform" />
+                  <span>{language === "te" ? "నాయకులను సంప్రదించండి" : language === "hi" ? "नेताओं से संपर्क करें" : "Contact Leaders"}</span>
+                </Link>
+              </div>
             </div>
           </div>
         </div>
@@ -667,7 +847,7 @@ export default function SmallGroupsPage() {
               <span className="text-xs uppercase font-bold px-3 py-1 rounded-full bg-white/20 text-white mb-2 inline-block">
                 {language === "te" ? "రిజిస్ట్రేషన్" : language === "hi" ? "पंजीकरण" : "Sign Up"}
               </span>
-              <h3 className="text-2xl font-bold font-serif text-white">{activeModalGroup.title}</h3>
+              <h3 className="text-2xl font-bold text-white tracking-tight font-outfit">{activeModalGroup.title}</h3>
               <p className="text-xs text-purple-100 mt-1">{activeModalGroup.time} • {activeModalGroup.location}</p>
             </div>
 
@@ -771,7 +951,7 @@ export default function SmallGroupsPage() {
               >
                 <X className="w-5 h-5" />
               </button>
-              <h3 className="text-2xl font-bold font-serif text-white">
+              <h3 className="text-2xl font-bold text-white tracking-tight font-outfit">
                 {language === "te" ? "గ్రూప్ లీడర్‌షిప్ దరఖాస్తు" : language === "hi" ? "समूह नेतृत्व आवेदन" : "Group Leadership Application"}
               </h3>
               <p className="text-xs text-purple-100 mt-1">

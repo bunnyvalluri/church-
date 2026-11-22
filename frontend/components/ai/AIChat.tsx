@@ -320,21 +320,21 @@ export default function AIChat() {
   // ── Floating Action Launcher Button (FAB) ──────────────────────────────────
   if (!isOpen) {
     return (
-      <div className="fixed bottom-4 right-4 z-50 group">
+      <div className="fixed bottom-3.5 right-3.5 sm:bottom-4 sm:right-4 z-50 group">
         <button
           onClick={() => setIsOpen(true)}
-          className="relative flex items-center justify-center w-14 h-14 rounded-full focus:outline-none transition-transform duration-300 hover:scale-105 active:scale-95 cursor-pointer"
+          className="relative flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full focus:outline-none transition-transform duration-300 hover:scale-105 active:scale-95 cursor-pointer"
           aria-label="Open KCM Assistant"
           style={{ filter: `drop-shadow(0 8px 24px ${themeStyle.fabGlow})` }}
         >
           <span className={cn("absolute inset-0 rounded-full bg-gradient-to-br opacity-25 animate-pulse scale-110 blur-sm pointer-events-none", themeStyle.fabGradient)} />
           <span className={cn("absolute inset-0 rounded-full bg-gradient-to-br border border-white/20 shadow-xl", themeStyle.fabGradient)} />
           <span className="absolute top-0 left-0 right-0 h-1/2 rounded-t-full bg-white/10 pointer-events-none" />
-          <span className="absolute -top-0.5 -right-0.5 flex h-3.5 w-3.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
-            <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500 border-[1.5px] border-white shadow-sm" />
+          <span className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 flex h-3 w-3 sm:h-3.5 sm:w-3.5 z-20">
+            <span className="animate-pulse absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-3 w-3 sm:h-3.5 sm:w-3.5 bg-emerald-500 border-2 border-white dark:border-slate-900 shadow-xs" />
           </span>
-          <div className="relative z-10 w-9 h-9 rounded-full overflow-hidden bg-white shadow-sm p-0.5 border border-white/40">
+          <div className="relative z-10 w-8 h-8 sm:w-9 sm:h-9 rounded-full overflow-hidden bg-white shadow-sm p-0.5 border border-white/40">
             <Image src="/logo.png" alt="Kingdom of Christ Ministries" width={36} height={36} unoptimized className="object-contain rounded-full w-full h-full" />
           </div>
         </button>

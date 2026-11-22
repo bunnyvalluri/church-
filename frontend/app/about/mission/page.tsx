@@ -20,11 +20,13 @@ import {
   Check,
   Compass,
   Layers,
-  HeartHandshake
+  HeartHandshake,
+  Home,
+  Printer,
+  Quote
 } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import Footer from "@/components/layout/Footer";
-import BackToHome from "@/components/ui/BackToHome";
 import Navbar from "@/components/layout/Navbar";
 
 export default function MissionPage() {
@@ -49,6 +51,8 @@ export default function MissionPage() {
     accent: string;
     color: string;
     bg: string;
+    badgeBg?: string;
+    badgeText?: string;
     quoteBg?: string;
     quoteText?: string;
     quoteBorder?: string;
@@ -70,43 +74,43 @@ export default function MissionPage() {
     }
   }, [selectedModalItem]);
 
-  // Stats Data
+  // Executive Tone-on-Tone Stats (Zero Trailing Ellipsis, Clean Responsive Design)
   const stats = [
     {
       value: "1",
-      label: language === "te" ? "ప్రధాన పిలుపు" : language === "hi" ? "मुख्य बुलाहट" : "Core Calling",
-      subtext: language === "te" ? "క్రీస్తును తెలుసుకోవడం & ప్రకటించడం" : language === "hi" ? "मसीह को जानना और बताना" : "To Know Christ & Make Him Known",
+      label: pageT.statCalling || (language === "te" ? "ప్రధాన పిలుపు" : language === "hi" ? "मुख्य बुलाहट" : "Core Calling"),
       icon: Target,
-      color: "text-white",
-      bg: "bg-purple-600 shadow-md shadow-purple-600/30",
+      iconColor: "text-purple-600 dark:text-purple-400",
+      iconBg: "bg-purple-500/10 dark:bg-purple-500/20 border-purple-200/50 dark:border-purple-700/50",
+      accent: "from-purple-500 to-indigo-500"
     },
     {
       value: "4",
-      label: language === "te" ? "సేవా స్తంభాలు" : language === "hi" ? "मिशन के स्तंभ" : "Mission Pillars",
-      subtext: language === "te" ? "ఆరాధన • ఎదుగుదల • సేవ • సువార్త" : language === "hi" ? "आराधना • विकास • सेवा • सुसमाचार" : "Worship • Grow • Serve • Reach",
+      label: pageT.statPillars || (language === "te" ? "సేవా స్తంభాలు" : language === "hi" ? "मिशन के स्तंभ" : "Mission Pillars"),
       icon: Layers,
-      color: "text-white",
-      bg: "bg-indigo-600 shadow-md shadow-indigo-600/30",
+      iconColor: "text-indigo-600 dark:text-indigo-400",
+      iconBg: "bg-indigo-500/10 dark:bg-indigo-500/20 border-indigo-200/50 dark:border-indigo-700/50",
+      accent: "from-indigo-500 to-cyan-500"
     },
     {
       value: "5",
-      label: language === "te" ? "దర్శన లక్ష్యాలు" : language === "hi" ? "दृष्टिकोण लक्ष्य" : "Vision Objectives",
-      subtext: language === "te" ? "హైదరాబాద్ అంతటా జీవితాల మార్పు" : language === "hi" ? "हैदराबाद में जीवन परिवर्तन" : "Transforming Lives Across Hyderabad",
+      label: pageT.statVision || (language === "te" ? "దర్శన లక్ష్యాలు" : language === "hi" ? "दृष्टिकोण लक्ष्य" : "Vision Objectives"),
       icon: Eye,
-      color: "text-white",
-      bg: "bg-pink-600 shadow-md shadow-pink-600/30",
+      iconColor: "text-rose-600 dark:text-rose-400",
+      iconBg: "bg-rose-500/10 dark:bg-rose-500/20 border-rose-200/50 dark:border-rose-700/50",
+      accent: "from-rose-500 to-pink-500"
     },
     {
       value: "6",
-      label: language === "te" ? "రాజ్య ప్రాథమిక విలువలు" : language === "hi" ? "राज्य के मूल मूल्य" : "Kingdom Core Values",
-      subtext: language === "te" ? "శాశ్వత సత్యంలో స్థిరమైనవి" : language === "hi" ? "शाश्वत सत्य में स्थापित" : "Anchored in Eternal Truth",
+      label: pageT.statValues || (language === "te" ? "రాజ్య విలువలు" : language === "hi" ? "राज्य के मूल्य" : "Kingdom Values"),
       icon: Sparkles,
-      color: "text-white",
-      bg: "bg-amber-600 shadow-md shadow-amber-600/30",
+      iconColor: "text-amber-600 dark:text-amber-400",
+      iconBg: "bg-amber-500/10 dark:bg-amber-500/20 border-amber-200/50 dark:border-amber-700/50",
+      accent: "from-amber-500 to-orange-500"
     },
   ];
 
-  // Mission Pillars
+  // 4 Core Mission Pillars with Tone-on-Tone Palettes
   const missionPillars = [
     {
       id: "worship",
@@ -130,15 +134,15 @@ export default function MissionPage() {
       ],
       icon: Flame,
       accent: "from-purple-500 to-indigo-500",
-      color: "text-white",
-      bg: "bg-purple-600 shadow-md shadow-purple-600/30",
-      badgeBg: "bg-purple-600 border border-purple-500 shadow-sm",
-      badgeText: "text-white font-extrabold",
-      borderHover: "hover:border-purple-500/50",
-      btnHover: "hover:bg-purple-600 dark:hover:bg-purple-600",
-      quoteBg: "bg-purple-50 dark:bg-purple-950/40",
-      quoteText: "text-purple-900 dark:text-purple-200",
-      quoteBorder: "border-purple-200 dark:border-purple-900/50",
+      color: "text-purple-600 dark:text-purple-400",
+      bg: "bg-purple-500/10 dark:bg-purple-500/20 border border-purple-200/60 dark:border-purple-800/60",
+      badgeBg: "bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-200/80 dark:border-purple-800/80",
+      badgeText: "text-purple-700 dark:text-purple-300 font-bold",
+      borderHover: "hover:border-purple-400/50 dark:hover:border-purple-600/50",
+      btnHover: "hover:bg-purple-600 hover:text-white dark:hover:bg-purple-600 dark:hover:text-white",
+      quoteBg: "bg-purple-50/70 dark:bg-purple-950/30",
+      quoteText: "text-purple-950 dark:text-purple-200",
+      quoteBorder: "border-purple-400/70 dark:border-purple-800/60",
     },
     {
       id: "grow",
@@ -162,15 +166,15 @@ export default function MissionPage() {
       ],
       icon: BookOpen,
       accent: "from-indigo-500 to-cyan-500",
-      color: "text-white",
-      bg: "bg-indigo-600 shadow-md shadow-indigo-600/30",
-      badgeBg: "bg-indigo-600 border border-indigo-500 shadow-sm",
-      badgeText: "text-white font-extrabold",
-      borderHover: "hover:border-indigo-500/50",
-      btnHover: "hover:bg-indigo-600 dark:hover:bg-indigo-600",
-      quoteBg: "bg-indigo-50 dark:bg-indigo-950/40",
-      quoteText: "text-indigo-900 dark:text-indigo-200",
-      quoteBorder: "border-indigo-200 dark:border-indigo-900/50",
+      color: "text-indigo-600 dark:text-indigo-400",
+      bg: "bg-indigo-500/10 dark:bg-indigo-500/20 border border-indigo-200/60 dark:border-indigo-800/60",
+      badgeBg: "bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border border-indigo-200/80 dark:border-indigo-800/80",
+      badgeText: "text-indigo-700 dark:text-indigo-300 font-bold",
+      borderHover: "hover:border-indigo-400/50 dark:hover:border-indigo-600/50",
+      btnHover: "hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-600 dark:hover:text-white",
+      quoteBg: "bg-indigo-50/70 dark:bg-indigo-950/30",
+      quoteText: "text-indigo-950 dark:text-indigo-200",
+      quoteBorder: "border-indigo-400/70 dark:border-indigo-800/60",
     },
     {
       id: "serve",
@@ -194,15 +198,15 @@ export default function MissionPage() {
       ],
       icon: HeartHandshake,
       accent: "from-pink-500 to-rose-500",
-      color: "text-white",
-      bg: "bg-pink-600 shadow-md shadow-pink-600/30",
-      badgeBg: "bg-pink-600 border border-pink-500 shadow-sm",
-      badgeText: "text-white font-extrabold",
-      borderHover: "hover:border-pink-500/50",
-      btnHover: "hover:bg-pink-600 dark:hover:bg-pink-600",
-      quoteBg: "bg-pink-50 dark:bg-pink-950/40",
-      quoteText: "text-pink-900 dark:text-pink-200",
-      quoteBorder: "border-pink-200 dark:border-pink-900/50",
+      color: "text-rose-600 dark:text-rose-400",
+      bg: "bg-rose-500/10 dark:bg-rose-500/20 border border-rose-200/60 dark:border-rose-800/60",
+      badgeBg: "bg-rose-500/10 text-rose-700 dark:text-rose-300 border border-rose-200/80 dark:border-rose-800/80",
+      badgeText: "text-rose-700 dark:text-rose-300 font-bold",
+      borderHover: "hover:border-rose-400/50 dark:hover:border-rose-600/50",
+      btnHover: "hover:bg-rose-600 hover:text-white dark:hover:bg-rose-600 dark:hover:text-white",
+      quoteBg: "bg-rose-50/70 dark:bg-rose-950/30",
+      quoteText: "text-rose-950 dark:text-rose-200",
+      quoteBorder: "border-rose-400/70 dark:border-rose-800/60",
     },
     {
       id: "reach",
@@ -226,19 +230,19 @@ export default function MissionPage() {
       ],
       icon: Globe,
       accent: "from-emerald-500 to-teal-500",
-      color: "text-white",
-      bg: "bg-emerald-600 shadow-md shadow-emerald-600/30",
-      badgeBg: "bg-emerald-600 border border-emerald-500 shadow-sm",
-      badgeText: "text-white font-extrabold",
-      borderHover: "hover:border-emerald-500/50",
-      btnHover: "hover:bg-emerald-600 dark:hover:bg-emerald-600",
-      quoteBg: "bg-emerald-50 dark:bg-emerald-950/40",
-      quoteText: "text-emerald-900 dark:text-emerald-200",
-      quoteBorder: "border-emerald-200 dark:border-emerald-900/50",
+      color: "text-emerald-600 dark:text-emerald-400",
+      bg: "bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-200/60 dark:border-emerald-800/60",
+      badgeBg: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/80",
+      badgeText: "text-emerald-700 dark:text-emerald-300 font-bold",
+      borderHover: "hover:border-emerald-400/50 dark:hover:border-emerald-600/50",
+      btnHover: "hover:bg-emerald-600 hover:text-white dark:hover:bg-emerald-600 dark:hover:text-white",
+      quoteBg: "bg-emerald-50/70 dark:bg-emerald-950/30",
+      quoteText: "text-emerald-950 dark:text-emerald-200",
+      quoteBorder: "border-emerald-400/70 dark:border-emerald-800/60",
     },
   ];
 
-  // Vision Goals
+  // 5 Vision Goals with Tone-on-Tone Palettes
   const visionGoals = [
     {
       id: "v1",
@@ -247,12 +251,10 @@ export default function MissionPage() {
       verse: "Romans 12:5",
       icon: Users,
       accent: "from-purple-500 to-indigo-500",
-      color: "text-white",
-      bg: "bg-purple-600 shadow-md shadow-purple-600/30",
-      badgeBg: "bg-purple-600 border border-purple-500 shadow-sm",
-      badgeText: "text-white font-extrabold",
-      badgeBorder: "border-purple-500",
-      borderHover: "hover:border-purple-500/50",
+      color: "text-purple-600 dark:text-purple-400",
+      bg: "bg-purple-500/10 dark:bg-purple-500/20 border border-purple-200/60 dark:border-purple-800/60",
+      badgeBg: "bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-200/80 dark:border-purple-800/80",
+      borderHover: "hover:border-purple-400/50 dark:hover:border-purple-600/50",
     },
     {
       id: "v2",
@@ -261,12 +263,10 @@ export default function MissionPage() {
       verse: "Ephesians 4:14-15",
       icon: BookOpen,
       accent: "from-indigo-500 to-cyan-500",
-      color: "text-white",
-      bg: "bg-indigo-600 shadow-md shadow-indigo-600/30",
-      badgeBg: "bg-indigo-600 border border-indigo-500 shadow-sm",
-      badgeText: "text-white font-extrabold",
-      badgeBorder: "border-indigo-500",
-      borderHover: "hover:border-indigo-500/50",
+      color: "text-indigo-600 dark:text-indigo-400",
+      bg: "bg-indigo-500/10 dark:bg-indigo-500/20 border border-indigo-200/60 dark:border-indigo-800/60",
+      badgeBg: "bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border border-indigo-200/80 dark:border-indigo-800/80",
+      borderHover: "hover:border-indigo-400/50 dark:hover:border-indigo-600/50",
     },
     {
       id: "v3",
@@ -275,12 +275,10 @@ export default function MissionPage() {
       verse: "Joshua 24:15",
       icon: Heart,
       accent: "from-pink-500 to-rose-500",
-      color: "text-white",
-      bg: "bg-pink-600 shadow-md shadow-pink-600/30",
-      badgeBg: "bg-pink-600 border border-pink-500 shadow-sm",
-      badgeText: "text-white font-extrabold",
-      badgeBorder: "border-pink-500",
-      borderHover: "hover:border-pink-500/50",
+      color: "text-rose-600 dark:text-rose-400",
+      bg: "bg-rose-500/10 dark:bg-rose-500/20 border border-rose-200/60 dark:border-rose-800/60",
+      badgeBg: "bg-rose-500/10 text-rose-700 dark:text-rose-300 border border-rose-200/80 dark:border-rose-800/80",
+      borderHover: "hover:border-rose-400/50 dark:hover:border-rose-600/50",
     },
     {
       id: "v4",
@@ -289,12 +287,10 @@ export default function MissionPage() {
       verse: "2 Corinthians 5:17",
       icon: Sparkles,
       accent: "from-amber-500 to-orange-500",
-      color: "text-white",
-      bg: "bg-amber-600 shadow-md shadow-amber-600/30",
-      badgeBg: "bg-amber-600 border border-amber-500 shadow-sm",
-      badgeText: "text-white font-extrabold",
-      badgeBorder: "border-amber-500",
-      borderHover: "hover:border-amber-500/50",
+      color: "text-amber-600 dark:text-amber-400",
+      bg: "bg-amber-500/10 dark:bg-amber-500/20 border border-amber-200/60 dark:border-amber-800/60",
+      badgeBg: "bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-200/80 dark:border-amber-800/80",
+      borderHover: "hover:border-amber-400/50 dark:hover:border-amber-600/50",
     },
     {
       id: "v5",
@@ -303,16 +299,14 @@ export default function MissionPage() {
       verse: "Matthew 28:19-20",
       icon: Globe,
       accent: "from-emerald-500 to-teal-500",
-      color: "text-white",
-      bg: "bg-emerald-600 shadow-md shadow-emerald-600/30",
-      badgeBg: "bg-emerald-600 border border-emerald-500 shadow-sm",
-      badgeText: "text-white font-extrabold",
-      badgeBorder: "border-emerald-500",
-      borderHover: "hover:border-emerald-500/50",
+      color: "text-emerald-600 dark:text-emerald-400",
+      bg: "bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-200/60 dark:border-emerald-800/60",
+      badgeBg: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/80",
+      borderHover: "hover:border-emerald-400/50 dark:hover:border-emerald-600/50",
     },
   ];
 
-  // Core Values Data
+  // 6 Core Values with Tone-on-Tone Palettes
   const coreValues = useMemo(
     () => [
       {
@@ -337,15 +331,15 @@ export default function MissionPage() {
         ],
         icon: Flame,
         accent: "from-purple-500 to-indigo-500",
-        color: "text-white",
-        bg: "bg-purple-600 shadow-md shadow-purple-600/30",
-        badgeBg: "bg-purple-600 border border-purple-500 shadow-sm",
-        badgeText: "text-white font-extrabold",
-        borderHover: "hover:border-purple-500/50",
-        btnHover: "hover:bg-purple-600 dark:hover:bg-purple-600",
-        quoteBg: "bg-purple-50 dark:bg-purple-950/40",
-        quoteText: "text-purple-900 dark:text-purple-200",
-        quoteBorder: "border-purple-200 dark:border-purple-900/50",
+        color: "text-purple-600 dark:text-purple-400",
+        bg: "bg-purple-500/10 dark:bg-purple-500/20 border border-purple-200/60 dark:border-purple-800/60",
+        badgeBg: "bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-200/80 dark:border-purple-800/80",
+        badgeText: "text-purple-700 dark:text-purple-300 font-bold",
+        borderHover: "hover:border-purple-400/50 dark:hover:border-purple-600/50",
+        btnHover: "hover:bg-purple-600 hover:text-white dark:hover:bg-purple-600 dark:hover:text-white",
+        quoteBg: "bg-purple-50/70 dark:bg-purple-950/30",
+        quoteText: "text-purple-950 dark:text-purple-200",
+        quoteBorder: "border-purple-400/70 dark:border-purple-800/60",
       },
       {
         id: "val-bible",
@@ -369,15 +363,15 @@ export default function MissionPage() {
         ],
         icon: BookOpen,
         accent: "from-indigo-500 to-cyan-500",
-        color: "text-white",
-        bg: "bg-indigo-600 shadow-md shadow-indigo-600/30",
-        badgeBg: "bg-indigo-600 border border-indigo-500 shadow-sm",
-        badgeText: "text-white font-extrabold",
-        borderHover: "hover:border-indigo-500/50",
-        btnHover: "hover:bg-indigo-600 dark:hover:bg-indigo-600",
-        quoteBg: "bg-indigo-50 dark:bg-indigo-950/40",
-        quoteText: "text-indigo-900 dark:text-indigo-200",
-        quoteBorder: "border-indigo-200 dark:border-indigo-900/50",
+        color: "text-indigo-600 dark:text-indigo-400",
+        bg: "bg-indigo-500/10 dark:bg-indigo-500/20 border border-indigo-200/60 dark:border-indigo-800/60",
+        badgeBg: "bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border border-indigo-200/80 dark:border-indigo-800/80",
+        badgeText: "text-indigo-700 dark:text-indigo-300 font-bold",
+        borderHover: "hover:border-indigo-400/50 dark:hover:border-indigo-600/50",
+        btnHover: "hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-600 dark:hover:text-white",
+        quoteBg: "bg-indigo-50/70 dark:bg-indigo-950/30",
+        quoteText: "text-indigo-950 dark:text-indigo-200",
+        quoteBorder: "border-indigo-400/70 dark:border-indigo-800/60",
       },
       {
         id: "val-love",
@@ -401,15 +395,15 @@ export default function MissionPage() {
         ],
         icon: Heart,
         accent: "from-pink-500 to-rose-500",
-        color: "text-white",
-        bg: "bg-pink-600 shadow-md shadow-pink-600/30",
-        badgeBg: "bg-pink-600 border border-pink-500 shadow-sm",
-        badgeText: "text-white font-extrabold",
-        borderHover: "hover:border-pink-500/50",
-        btnHover: "hover:bg-pink-600 dark:hover:bg-pink-600",
-        quoteBg: "bg-pink-50 dark:bg-pink-950/40",
-        quoteText: "text-pink-900 dark:text-pink-200",
-        quoteBorder: "border-pink-200 dark:border-pink-900/50",
+        color: "text-rose-600 dark:text-rose-400",
+        bg: "bg-rose-500/10 dark:bg-rose-500/20 border border-rose-200/60 dark:border-rose-800/60",
+        badgeBg: "bg-rose-500/10 text-rose-700 dark:text-rose-300 border border-rose-200/80 dark:border-rose-800/80",
+        badgeText: "text-rose-700 dark:text-rose-300 font-bold",
+        borderHover: "hover:border-rose-400/50 dark:hover:border-rose-600/50",
+        btnHover: "hover:bg-rose-600 hover:text-white dark:hover:bg-rose-600 dark:hover:text-white",
+        quoteBg: "bg-rose-50/70 dark:bg-rose-950/30",
+        quoteText: "text-rose-950 dark:text-rose-200",
+        quoteBorder: "border-rose-400/70 dark:border-rose-800/60",
       },
       {
         id: "val-community",
@@ -433,15 +427,15 @@ export default function MissionPage() {
         ],
         icon: Users,
         accent: "from-emerald-500 to-teal-500",
-        color: "text-white",
-        bg: "bg-emerald-600 shadow-md shadow-emerald-600/30",
-        badgeBg: "bg-emerald-600 border border-emerald-500 shadow-sm",
-        badgeText: "text-white font-extrabold",
-        borderHover: "hover:border-emerald-500/50",
-        btnHover: "hover:bg-emerald-600 dark:hover:bg-emerald-600",
-        quoteBg: "bg-emerald-50 dark:bg-emerald-950/40",
-        quoteText: "text-emerald-900 dark:text-emerald-200",
-        quoteBorder: "border-emerald-200 dark:border-emerald-900/50",
+        color: "text-emerald-600 dark:text-emerald-400",
+        bg: "bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-200/60 dark:border-emerald-800/60",
+        badgeBg: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/80",
+        badgeText: "text-emerald-700 dark:text-emerald-300 font-bold",
+        borderHover: "hover:border-emerald-400/50 dark:hover:border-emerald-600/50",
+        btnHover: "hover:bg-emerald-600 hover:text-white dark:hover:bg-emerald-600 dark:hover:text-white",
+        quoteBg: "bg-emerald-50/70 dark:bg-emerald-950/30",
+        quoteText: "text-emerald-950 dark:text-emerald-200",
+        quoteBorder: "border-emerald-400/70 dark:border-emerald-800/60",
       },
       {
         id: "val-mission",
@@ -449,7 +443,7 @@ export default function MissionPage() {
         category: "outreach",
         desc: language === "te" ? "మన నగరంలో, రాష్ట్రంలో మరియు ప్రపంచంలో క్రీస్తు నిరీక్షణను అందరికీ పంచుతాము." : language === "hi" ? "हम अपने शहर, देश और दुनिया में मसीह की आशा को बांटते हैं।" : "We reach the lost and share the hope of Christ in our city, nation, and beyond.",
         verse: "Mark 16:15",
-        quote: language === "te" ? "సర్వలోకమునకు వెళ్లి సర్వసృష్టికి సువార్తను ప్రకటించుడి." : language === "hi" ? "సారే జగత్ మే జాకర్ సారీ సృష్టి కే లోగోం కో సుసమాచార్ ప్రచార్ కరో." : "Go into all the world and preach the gospel to all creation.",
+        quote: language === "te" ? "సర్వలోకమునకు వెళ్లి సర్వసృష్టికి సువార్తను ప్రకటించుడి." : language === "hi" ? "सारे जगत में जाकर सारी सृष्टि के लोगों को सुसमाचार प्रचार करो।" : "Go into all the world and preach the gospel to all creation.",
         details: language === "te" ? [
           "షాపూర్, సుభాష్ నగర్ మరియు బహదూర్‌పల్లిలలో పరిసర ప్రాంత సువార్త పరిచర్యలు",
           "స్వదేశీ సువార్తికులకు మరియు మిషన్ విస్తరణకు మద్దతు",
@@ -465,15 +459,15 @@ export default function MissionPage() {
         ],
         icon: Globe,
         accent: "from-amber-500 to-orange-500",
-        color: "text-white",
-        bg: "bg-amber-600 shadow-md shadow-amber-600/30",
-        badgeBg: "bg-amber-600 border border-amber-500 shadow-sm",
-        badgeText: "text-white font-extrabold",
-        borderHover: "hover:border-amber-500/50",
-        btnHover: "hover:bg-amber-600 dark:hover:bg-amber-600",
-        quoteBg: "bg-amber-50 dark:bg-amber-950/40",
-        quoteText: "text-amber-900 dark:text-amber-200",
-        quoteBorder: "border-amber-200 dark:border-amber-900/50",
+        color: "text-amber-600 dark:text-amber-400",
+        bg: "bg-amber-500/10 dark:bg-amber-500/20 border border-amber-200/60 dark:border-amber-800/60",
+        badgeBg: "bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-200/80 dark:border-amber-800/80",
+        badgeText: "text-amber-700 dark:text-amber-300 font-bold",
+        borderHover: "hover:border-amber-400/50 dark:hover:border-amber-600/50",
+        btnHover: "hover:bg-amber-600 hover:text-white dark:hover:bg-amber-600 dark:hover:text-white",
+        quoteBg: "bg-amber-50/70 dark:bg-amber-950/30",
+        quoteText: "text-amber-950 dark:text-amber-200",
+        quoteBorder: "border-amber-400/70 dark:border-amber-800/60",
       },
       {
         id: "val-spirit",
@@ -497,15 +491,15 @@ export default function MissionPage() {
         ],
         icon: Sparkles,
         accent: "from-purple-500 to-pink-500",
-        color: "text-white",
-        bg: "bg-purple-600 shadow-md shadow-purple-600/30",
-        badgeBg: "bg-purple-600 border border-purple-500 shadow-sm",
-        badgeText: "text-white font-extrabold",
-        borderHover: "hover:border-purple-500/50",
-        btnHover: "hover:bg-purple-600 dark:hover:bg-purple-600",
-        quoteBg: "bg-purple-50 dark:bg-purple-950/40",
-        quoteText: "text-purple-900 dark:text-purple-200",
-        quoteBorder: "border-purple-200 dark:border-purple-900/50",
+        color: "text-purple-600 dark:text-purple-400",
+        bg: "bg-purple-500/10 dark:bg-purple-500/20 border border-purple-200/60 dark:border-purple-800/60",
+        badgeBg: "bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-200/80 dark:border-purple-800/80",
+        badgeText: "text-purple-700 dark:text-purple-300 font-bold",
+        borderHover: "hover:border-purple-400/50 dark:hover:border-purple-600/50",
+        btnHover: "hover:bg-purple-600 hover:text-white dark:hover:bg-purple-600 dark:hover:text-white",
+        quoteBg: "bg-purple-50/70 dark:bg-purple-950/30",
+        quoteText: "text-purple-950 dark:text-purple-200",
+        quoteBorder: "border-purple-400/70 dark:border-purple-800/60",
       },
     ],
     [language]
@@ -549,17 +543,26 @@ export default function MissionPage() {
       `Core Values:\n` +
       coreValues.map((v, i) => `${i + 1}. ${v.title} (${v.verse}): ${v.desc}`).join("\n") +
       `\n\nKingdom of Christ Ministries | Hyderabad, Telangana`;
+
     navigator.clipboard.writeText(textToCopy);
     setCopied(true);
     setTimeout(() => setCopied(false), 3000);
   };
 
+  // Print or Save as PDF
+  const handlePrintMission = () => {
+    if (typeof window !== "undefined") {
+      window.print();
+    }
+  };
+
   const mottoText =
-    language === "te"
+    pageT.mottoText ||
+    (language === "te"
       ? '"క్రీస్తును తెలుసుకోవడం మరియు ఆయనను ఇతరులకు తెలియజేయడం"'
       : language === "hi"
       ? '"मसीह को जानना और उन्हें सभी को बताना"'
-      : '"To know Christ and make Him known"';
+      : '"To know Christ and make Him known"');
 
   const visionBannerText =
     language === "te"
@@ -569,75 +572,119 @@ export default function MissionPage() {
       : '"A church where every person experiences transformation through Christ"';
 
   const categoryTabs = [
-    { id: "all", label: language === "te" ? "అన్ని విలువలు" : language === "hi" ? "सभी मूल्य" : "All Values" },
-    { id: "spiritual", label: language === "te" ? "ఆధ్యాత్మిక పునాదులు" : language === "hi" ? "आत्मिक आधार" : "Spiritual Foundations" },
-    { id: "community", label: language === "te" ? "సహవాసం & ప్రేమ" : language === "hi" ? "समुदाय और प्रेम" : "Community & Love" },
-    { id: "outreach", label: language === "te" ? "సువార్త & మిషన్" : language === "hi" ? "आउटरीच और मिशन" : "Outreach & Mission" },
+    { id: "all", label: pageT.filterAll || (language === "te" ? "అన్ని విలువలు" : language === "hi" ? "सभी मूल्य" : "All Values") },
+    { id: "spiritual", label: pageT.filterSpiritual || (language === "te" ? "ఆధ్యాత్మిక పునాదులు" : language === "hi" ? "आत्मिक आधार" : "Spiritual Foundations") },
+    { id: "community", label: pageT.filterCommunity || (language === "te" ? "సహవాసం & ప్రేమ" : language === "hi" ? "समुदाय और प्रेम" : "Community & Love") },
+    { id: "outreach", label: pageT.filterOutreach || (language === "te" ? "సువార్త & మిషన్" : language === "hi" ? "आउटरीच और मिशन" : "Outreach & Mission") },
   ];
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300">
       <Navbar />
 
-      {/* 🌌 Hero Section */}
-      <section className="relative pt-36 pb-24 md:pt-44 md:pb-32 bg-gradient-to-b from-purple-50/80 via-indigo-50/40 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-white overflow-hidden border-b border-purple-100/80 dark:border-slate-800/80 shadow-sm transition-colors duration-300">
+      {/* 🌌 Hero Section — Continuous Ambient Gradient Flow (No cutting bottom seam) */}
+      <section className="relative pt-32 pb-20 sm:pt-40 sm:pb-24 md:pt-44 md:pb-28 bg-gradient-to-b from-purple-50/80 via-indigo-50/40 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-white overflow-hidden transition-colors duration-300">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-25 dark:opacity-15 pointer-events-none" />
-        <div className="absolute -top-32 -right-32 w-96 h-96 bg-purple-400/25 dark:bg-purple-600/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-indigo-400/25 dark:bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -top-32 -right-32 w-96 h-96 bg-purple-400/20 dark:bg-purple-600/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-indigo-400/20 dark:bg-indigo-600/15 rounded-full blur-3xl pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
-            <div className="mb-6 flex justify-center">
-              <BackToHome label={(t as any)?.nav?.home || (language === "te" ? "హోమ్" : language === "hi" ? "होम" : "Home")} />
-            </div>
+            
+            {/* Inline Breadcrumb Navigation (Replaces Stacked Home Button) */}
+            <nav aria-label="Breadcrumb" className="mb-5 flex justify-center">
+              <ol className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/70 dark:bg-slate-900/70 backdrop-blur-md border border-purple-200/60 dark:border-slate-800 text-xs font-semibold text-slate-600 dark:text-slate-400 shadow-xs">
+                <li className="inline-flex items-center">
+                  <Link href="/" className="inline-flex items-center gap-1 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">
+                    <Home className="h-3.5 w-3.5" />
+                    <span>{pageT.breadcrumbHome || "Home"}</span>
+                  </Link>
+                </li>
+                <li className="flex items-center text-slate-400 dark:text-slate-600">/</li>
+                <li className="inline-flex items-center">
+                  <Link href="/about" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors">
+                    {pageT.breadcrumbAbout || "About"}
+                  </Link>
+                </li>
+                <li className="flex items-center text-slate-400 dark:text-slate-600">/</li>
+                <li className="text-purple-700 dark:text-purple-300 font-bold truncate max-w-[140px] sm:max-w-none">
+                  {pageT.breadcrumbCurrent || "Mission & Vision"}
+                </li>
+              </ol>
+            </nav>
 
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-purple-100/90 dark:bg-purple-900/60 border border-purple-200/90 dark:border-purple-400/40 rounded-full text-purple-900 dark:text-white text-xs sm:text-sm font-extrabold tracking-wide mb-6 shadow-sm backdrop-blur-md animate-bounce-in">
-              <Target className="h-4 w-4 text-purple-600 dark:text-purple-300" />
+            {/* Purposeful Section Badge */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-purple-500/10 dark:bg-purple-500/20 border border-purple-300/40 dark:border-purple-500/30 rounded-full text-purple-700 dark:text-purple-300 text-xs sm:text-sm font-bold tracking-wide mb-5 backdrop-blur-md animate-fade-in-up">
+              <Target className="h-4 w-4 text-purple-600 dark:text-purple-400" />
               <span>{pageT.badge || (language === "te" ? "మిషన్, దర్శనం & ప్రాథమిక విలువలు" : language === "hi" ? "मिशन, दृष्टिकोण और मूल मूल्य" : "Mission, Vision & Core Values")}</span>
-              <Sparkles className="h-3.5 w-3.5 text-amber-500 dark:text-amber-300" />
+              <Sparkles className="h-3.5 w-3.5 text-amber-500" />
             </div>
 
             {/* Main Title */}
-            <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold text-slate-900 dark:text-white mb-6 tracking-tight leading-tight animate-fade-in-up">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-slate-900 dark:text-white mb-4 tracking-tight leading-tight animate-fade-in-up animate-delay-100">
               {pageT.heroTitle || (language === "te" ? "మా ఉద్దేశ్యం & గమ్యం" : language === "hi" ? "हमारा उद्देश्य और दिशा" : "Our Purpose & Direction")}
             </h1>
 
-            <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-200 animate-fade-in-up animate-delay-200 font-medium max-w-2xl mx-auto leading-relaxed mb-8">
+            {/* Subtitle */}
+            <p className="text-base sm:text-lg md:text-xl text-slate-600 dark:text-slate-300 animate-fade-in-up animate-delay-200 font-medium max-w-2xl mx-auto leading-relaxed mb-6">
               {pageT.heroSubtitle || (language === "te" ? "వాక్యంతో నడిపించబడుతూ, ప్రేమతో ప్రేరేపించబడి, పరిశుద్ధాత్మ శక్తితో నింపబడుట." : language === "hi" ? "पवित्र शास्त्र द्वारा निर्देशित, प्रेम से प्रेरित, पवित्र आत्मा से सामर्थी।" : "Guided by Holy Scripture, Motivated by Love, Empowered by the Holy Spirit.")}
             </p>
 
-            {/* Key Quote Pill */}
-            <div className="inline-block p-4 sm:p-5 bg-white/95 dark:bg-purple-950/80 backdrop-blur-xl border border-purple-200/90 dark:border-purple-400/60 rounded-2xl max-w-xl mx-auto shadow-md dark:shadow-2xl animate-scale-in animate-delay-300">
-              <p className="text-base sm:text-lg italic font-black tracking-wide text-purple-900 dark:text-white">
-                {mottoText}
-              </p>
+            {/* Section Quick Navigation Anchor Chips */}
+            <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mt-4">
+              <a
+                href="#mission"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/80 dark:bg-slate-900/80 border border-purple-200/70 dark:border-purple-800/60 text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 hover:bg-purple-50 dark:hover:bg-purple-950/40 shadow-xs transition-all active:scale-95"
+              >
+                <Target className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" />
+                <span>{pageT.missionHeading || "Our Mission"}</span>
+              </a>
+              <a
+                href="#vision"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/80 dark:bg-slate-900/80 border border-indigo-200/70 dark:border-indigo-800/60 text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 shadow-xs transition-all active:scale-95"
+              >
+                <Eye className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
+                <span>{pageT.visionHeading || "Our Vision"}</span>
+              </a>
+              <a
+                href="#values"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/80 dark:bg-slate-900/80 border border-amber-200/70 dark:border-amber-800/60 text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 hover:bg-amber-50 dark:hover:bg-amber-950/40 shadow-xs transition-all active:scale-95"
+              >
+                <Sparkles className="h-3.5 w-3.5 text-amber-500" />
+                <span>{pageT.valuesHeading || "Core Values"}</span>
+              </a>
             </div>
+
           </div>
         </div>
       </section>
 
-      {/* 📊 Floating Stats & Pillars Overview Bar */}
-      <section className="relative z-20 -mt-12 sm:-mt-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
+      {/* 📊 Tone-on-Tone Floating Stats Bar (No Slicing Dividing Seam, Zero Truncation) */}
+      <section className="relative z-20 -mt-10 sm:-mt-14 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
           {stats.map((stat, idx) => {
             const Icon = stat.icon;
             return (
               <div
                 key={idx}
-                className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800 p-5 sm:p-6 rounded-2xl sm:rounded-3xl shadow-xl shadow-slate-900/5 dark:shadow-black/20 hover:scale-[1.02] transition-all duration-300 flex flex-col items-center text-center group"
+                className="relative bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 md:p-6 rounded-2xl sm:rounded-3xl shadow-xl shadow-slate-900/5 dark:shadow-black/20 hover:scale-[1.02] transition-all duration-300 flex flex-col items-center text-center group overflow-hidden"
               >
-                <div className={`w-10 h-10 sm:w-12 sm:h-12 ${stat.bg} rounded-xl sm:rounded-2xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform`}>
-                  <Icon className={`h-5 w-5 sm:h-6 sm:w-6 ${stat.color}`} />
+                {/* Subtle Top Accent Ribbon */}
+                <div className={`absolute top-0 inset-x-0 h-1 bg-gradient-to-r ${stat.accent} opacity-75 group-hover:opacity-100 transition-opacity`} />
+
+                {/* Tone-on-Tone Icon Container */}
+                <div className={`w-11 h-11 sm:w-12 sm:h-12 ${stat.iconBg} border rounded-xl sm:rounded-2xl flex items-center justify-center mb-2.5 sm:mb-3 group-hover:scale-110 transition-transform`}>
+                  <Icon className={`h-5 w-5 sm:h-6 sm:w-6 ${stat.iconColor}`} />
                 </div>
-                <div className="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-1">
+
+                {/* Metric Value */}
+                <div className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tight mb-1">
                   {stat.value}
                 </div>
-                <div className="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 mb-0.5">
+
+                {/* Metric Label — Zero broken ellipsis or awkward truncation */}
+                <div className="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 leading-snug">
                   {stat.label}
-                </div>
-                <div className="text-[11px] font-medium text-slate-500 dark:text-slate-400 line-clamp-1">
-                  {stat.subtext}
                 </div>
               </div>
             );
@@ -646,22 +693,36 @@ export default function MissionPage() {
       </section>
 
       {/* 🎯 Section 1: Our Mission */}
-      <section className="py-20 sm:py-28">
+      <section id="mission" className="py-16 sm:py-24 scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl shadow-purple-500/20 animate-glow">
-              <Target className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
+          <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-purple-500/10 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300 border border-purple-200/60 dark:border-purple-800/60 rounded-full text-xs font-bold uppercase tracking-wider mb-4 shadow-2xs">
+              <Target className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" />
+              <span>{pageT.mandateBadge || (language === "te" ? "మా ప్రధాన కర్తవ్యం" : language === "hi" ? "हमारा मुख्य कर्तव्य" : "Our Primary Mandate")}</span>
             </div>
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-purple-600 text-white rounded-full text-xs font-extrabold uppercase tracking-widest mb-4 border border-purple-500 shadow-sm">
-              <span>{language === "te" ? "మా ప్రధాన కర్తవ్యం" : language === "hi" ? "हमारा मुख्य कर्तव्य" : "Our Primary Mandate"}</span>
-            </div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight mb-4">
+            
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight mb-6">
               {pageT.missionHeading || (language === "te" ? "మా మిషన్" : language === "hi" ? "हमारा मिशन" : "Our Mission")}
             </h2>
-            <div className="my-4 inline-block px-6 py-3 bg-purple-600 text-white text-xl sm:text-2xl font-black rounded-2xl shadow-lg border border-purple-500 tracking-wide">
-              {mottoText}
+
+            {/* Executive Mission Statement Card — Tone-on-Tone Glassmorphism, Zero Solid Bricks */}
+            <div className="relative max-w-2xl mx-auto p-6 sm:p-8 bg-gradient-to-r from-purple-50/80 via-white/95 to-indigo-50/80 dark:from-slate-900/90 dark:via-purple-950/30 dark:to-slate-900/90 border border-purple-200/70 dark:border-purple-800/60 rounded-3xl shadow-xl shadow-purple-950/5 dark:shadow-black/25 backdrop-blur-xl overflow-hidden group mb-6">
+              <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-purple-500 via-indigo-500 to-purple-500 opacity-80" />
+              <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-purple-500/10 dark:bg-purple-500/15 rounded-full blur-2xl pointer-events-none" />
+              
+              <div className="relative z-10 flex flex-col items-center">
+                <Quote className="h-6 w-6 sm:h-7 sm:w-7 text-purple-500 dark:text-purple-400 mb-3 opacity-75" />
+                <p className="text-lg sm:text-xl md:text-2xl font-black tracking-tight text-slate-900 dark:text-white leading-relaxed font-outfit">
+                  {mottoText}
+                </p>
+                <div className="w-12 h-0.5 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full mt-4 mb-2 opacity-60" />
+                <span className="text-xs sm:text-sm font-semibold text-purple-600 dark:text-purple-400">
+                  {language === "te" ? "క్రీస్తు సువార్తను ప్రకటించడం & శిష్యులను చేయడం" : language === "hi" ? "मसीह के सुसमाचार का प्रचार करना और चेला बनाना" : "Proclaiming the Gospel & Making Disciples"}
+                </span>
+              </div>
             </div>
-            <p className="text-slate-600 dark:text-slate-200 text-base sm:text-lg max-w-2xl mx-auto font-medium mt-2">
+
+            <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base md:text-lg max-w-2xl mx-auto font-medium leading-relaxed">
               {language === "te"
                 ? "కింగ్‌డమ్ ఆఫ్ క్రైస్ట్ మినిస్ట్రీస్‌గా మేము చేసే ప్రతి పరిచర్య ఈ ఏకైక నిబద్ధత నుండే ఉద్భవిస్తుంది: యేసుతో మన సంబంధాన్ని బలపరుచుకోవడం మరియు ఆయన రక్షణను అందరికీ అందించడం."
                 : language === "hi"
@@ -671,33 +732,34 @@ export default function MissionPage() {
           </div>
 
           {/* 4 Mission Pillars Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 stagger-children">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
             {missionPillars.map((pillar) => {
               const Icon = pillar.icon;
               return (
                 <div
                   key={pillar.id}
-                  className={`relative group bg-white dark:bg-slate-900 rounded-3xl p-7 shadow-xl shadow-slate-900/5 dark:shadow-black/30 border border-slate-200/80 dark:border-slate-800 ${pillar.borderHover} transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between overflow-hidden text-left`}
+                  className={`relative group bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl p-6 sm:p-7 shadow-xl shadow-slate-900/5 dark:shadow-black/25 border border-slate-200/80 dark:border-slate-800 ${pillar.borderHover} transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between overflow-hidden text-left`}
                 >
                   <div className={`absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r ${pillar.accent}`} />
 
                   <div>
-                    <div className="flex items-center justify-between mb-5">
-                      <div className={`w-13 h-13 ${pillar.bg} border border-slate-200/50 dark:border-slate-700/50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                        <Icon className={`h-6 w-6 ${pillar.color}`} />
+                    {/* Top Header: Tone-on-tone Icon & Scripture Badge */}
+                    <div className="flex items-center justify-between gap-3 mb-5">
+                      <div className={`w-12 h-12 sm:w-14 sm:h-14 ${pillar.bg} rounded-2xl flex items-center justify-center group-hover:scale-105 transition-transform shadow-xs`}>
+                        <Icon className={`h-6 w-6 sm:h-7 sm:w-7 ${pillar.color}`} />
                       </div>
-                      <span className={`text-xs font-bold ${pillar.badgeText} ${pillar.badgeBg} px-3 py-1 rounded-full border border-slate-200/60 dark:border-slate-800/60`}>
+                      <span className={`text-xs font-bold ${pillar.badgeText} ${pillar.badgeBg} px-3 py-1 rounded-full shadow-2xs`}>
                         {pillar.verse}
                       </span>
                     </div>
 
-                    <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-1 tracking-tight">
+                    <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mb-1 tracking-tight">
                       {pillar.title}
                     </h3>
-                    <p className="text-sm font-extrabold text-purple-700 dark:text-purple-300 mb-3">
+                    <p className={`text-xs sm:text-sm font-bold ${pillar.color} mb-3`}>
                       {pillar.subtitle}
                     </p>
-                    <p className="text-slate-600 dark:text-slate-200 text-sm leading-relaxed mb-5 font-medium">
+                    <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-sm leading-relaxed mb-6 font-normal">
                       {pillar.desc}
                     </p>
                   </div>
@@ -720,9 +782,9 @@ export default function MissionPage() {
                         quoteBorder: pillar.quoteBorder,
                       })
                     }
-                    className={`w-full py-2.5 px-4 bg-slate-100 dark:bg-slate-800/70 ${pillar.btnHover} hover:text-white dark:hover:text-white text-slate-800 dark:text-slate-100 font-extrabold rounded-xl text-xs sm:text-sm transition-all duration-300 flex items-center justify-center gap-2 group/btn shadow-sm`}
+                    className="w-full py-2.5 px-4 bg-slate-100/90 dark:bg-slate-800/90 hover:bg-slate-200 dark:hover:bg-slate-700/80 text-slate-900 dark:text-white font-bold rounded-xl text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-2 group/btn border border-slate-200/80 dark:border-slate-700/80 shadow-xs hover:shadow-md active:scale-[0.99]"
                   >
-                    <span>{language === "te" ? "స్తంభం వివరాలు" : language === "hi" ? "स्तंभ विवरण" : "Pillar Details"}</span>
+                    <span>{pageT.detailsBtn || (language === "te" ? "స్తంభం వివరాలు" : language === "hi" ? "स्तंभ विवरण" : "Pillar Details")}</span>
                     <ChevronRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
                   </button>
                 </div>
@@ -733,49 +795,62 @@ export default function MissionPage() {
       </section>
 
       {/* 👁️ Section 2: Our Vision */}
-      <section className="py-20 bg-gradient-to-br from-purple-900/10 via-slate-900/5 to-indigo-900/10 dark:from-purple-950/40 dark:via-slate-950/60 dark:to-indigo-950/40 border-y border-purple-200/50 dark:border-purple-800/40">
+      <section id="vision" className="py-16 sm:py-24 bg-slate-100/70 dark:bg-slate-900/40 border-y border-slate-200/60 dark:border-slate-800/80 scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl shadow-indigo-500/20">
-              <Eye className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
+          <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-indigo-500/10 dark:bg-indigo-500/20 border border-indigo-200/80 dark:border-indigo-800/80 text-indigo-700 dark:text-indigo-300 rounded-full text-xs font-bold uppercase tracking-wider mb-4 shadow-2xs backdrop-blur-md">
+              <Eye className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
+              <span>{pageT.futureBadge || (language === "te" ? "మా భవిష్యత్ దర్శనం" : language === "hi" ? "हमारा भविष्य का दर्शन" : "Our Future Picture")}</span>
             </div>
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-indigo-600 text-white rounded-full text-xs font-extrabold uppercase tracking-widest mb-4 border border-indigo-500 shadow-sm">
-              <span>{pageT.visionBadge || (language === "te" ? "మా భవిష్యత్ దర్శనం" : language === "hi" ? "हमारा भविष्य का दर्शन" : "Our Future Picture")}</span>
-            </div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight mb-4">
+
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight mb-6">
               {pageT.visionHeading || (language === "te" ? "మా దర్శనం" : language === "hi" ? "हमारा दृष्टिकोण" : "Our Vision")}
             </h2>
-            <div className="my-4 inline-block px-6 py-3 bg-indigo-600 text-white text-xl sm:text-2xl font-black rounded-2xl shadow-lg border border-indigo-500 tracking-wide max-w-3xl">
-              {visionBannerText}
+
+            {/* Executive Vision Statement Card — Tone-on-Tone Glassmorphic Centerpiece */}
+            <div className="relative max-w-2xl mx-auto p-6 sm:p-8 bg-gradient-to-r from-indigo-50/80 via-white/95 to-purple-50/80 dark:from-slate-900/90 dark:via-indigo-950/30 dark:to-slate-900/90 border border-indigo-200/70 dark:border-indigo-800/60 rounded-3xl shadow-xl shadow-indigo-950/5 dark:shadow-black/25 backdrop-blur-xl overflow-hidden group">
+              <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 opacity-80" />
+              <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-indigo-500/10 dark:bg-indigo-500/15 rounded-full blur-2xl pointer-events-none" />
+              
+              <div className="relative z-10 flex flex-col items-center">
+                <Quote className="h-6 w-6 sm:h-7 sm:w-7 text-indigo-500 dark:text-indigo-400 mb-3 opacity-75" />
+                <p className="text-lg sm:text-xl md:text-2xl font-black tracking-tight text-slate-900 dark:text-white leading-relaxed font-outfit">
+                  {visionBannerText}
+                </p>
+                <div className="w-12 h-0.5 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full mt-4 mb-2 opacity-60" />
+                <span className="text-xs sm:text-sm font-semibold text-indigo-600 dark:text-indigo-400">
+                  {pageT.visionSubtext || (language === "te" ? "క్రీస్తు ద్వారా రూపాంతరం చెందే సమాజం" : language === "hi" ? "मसीह के द्वारा रूपांतरित समाज" : "Transforming lives and communities through Jesus Christ")}
+                </span>
+              </div>
             </div>
           </div>
 
           {/* Vision Objectives List */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto stagger-children">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 max-w-6xl mx-auto">
             {visionGoals.map((goal) => {
               const Icon = goal.icon;
               return (
                 <div
                   key={goal.id}
-                  className={`relative bg-white dark:bg-slate-900 rounded-3xl p-7 shadow-xl shadow-slate-900/5 dark:shadow-black/30 border border-slate-200/80 dark:border-slate-800 ${goal.borderHover} hover:scale-[1.02] transition-all duration-300 flex flex-col justify-between group overflow-hidden text-left`}
+                  className={`relative bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl p-6 sm:p-7 shadow-xl shadow-slate-900/5 dark:shadow-black/20 border border-slate-200/80 dark:border-slate-800 ${goal.borderHover} hover:scale-[1.02] transition-all duration-300 flex flex-col justify-between group overflow-hidden text-left`}
                 >
-                  <div className={`absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r ${goal.accent}`} />
+                  <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${goal.accent}`} />
 
                   <div>
-                    <div className="flex items-center justify-between mb-4 mt-1">
-                      <div className={`w-12 h-12 ${goal.bg} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                    <div className="flex items-center justify-between gap-3 mb-4 mt-1">
+                      <div className={`w-12 h-12 ${goal.bg} rounded-2xl flex items-center justify-center group-hover:scale-105 transition-transform shadow-xs`}>
                         <Icon className={`h-6 w-6 ${goal.color}`} />
                       </div>
-                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 ${goal.badgeBg} ${goal.badgeText} rounded-full text-xs font-bold border ${goal.badgeBorder}`}>
+                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 ${goal.badgeBg} rounded-full text-xs font-bold shadow-2xs`}>
                         <CheckCircle2 className={`h-3.5 w-3.5 ${goal.color}`} />
-                        {goal.verse}
+                        <span>{goal.verse}</span>
                       </span>
                     </div>
 
-                    <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
+                    <h3 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white mb-2 tracking-tight">
                       {goal.title}
                     </h3>
-                    <p className="text-slate-600 dark:text-slate-200 text-sm leading-relaxed font-medium">
+                    <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-sm leading-relaxed font-normal">
                       {goal.text}
                     </p>
                   </div>
@@ -786,18 +861,20 @@ export default function MissionPage() {
         </div>
       </section>
 
-      {/* 🌟 Section 3: Core Values with Search & Interactive Modal */}
-      <section className="py-20 sm:py-28">
+      {/* 🌟 Section 3: Core Values with Search & Filter Track */}
+      <section id="values" className="py-16 sm:py-24 scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-12">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-amber-500 text-slate-950 rounded-full text-xs font-black uppercase tracking-widest mb-4 shadow-sm">
-              <Sparkles className="h-3.5 w-3.5 text-slate-950" />
-              <span>{language === "te" ? "దైనిందిన జీవితంలో సువార్త" : language === "hi" ? "दैनिक जीवन में सुसमाचार" : "Living the Gospel Daily"}</span>
+          <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-12">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-amber-500/15 border border-amber-300/40 dark:border-amber-500/30 text-amber-700 dark:text-amber-300 rounded-full text-xs font-bold uppercase tracking-wider mb-4 shadow-2xs">
+              <Sparkles className="h-3.5 w-3.5 text-amber-500" />
+              <span>{pageT.livingBadge || (language === "te" ? "దైనిందిన జీవితంలో సువార్త" : language === "hi" ? "दैनिक जीवन में सुसमाचार" : "Living the Gospel Daily")}</span>
             </div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white mb-4 tracking-tight">
+            
+            <h2 className="text-2xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white mb-3 tracking-tight">
               {pageT.valuesHeading || (language === "te" ? "రాజ్య ప్రాథమిక విలువలు" : language === "hi" ? "राज्य के मूल मूल्य" : "Core Values")}
             </h2>
-            <p className="text-slate-600 dark:text-slate-300 text-base sm:text-lg font-medium">
+            
+            <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base md:text-lg font-medium">
               {language === "te"
                 ? "మన ఆరాధన, సంస్కృతి మరియు సమాజ సహవాసాన్ని నడిపించే తిరుగులేని ఆధ్యాత్మిక ప్రమాణాలు."
                 : language === "hi"
@@ -806,90 +883,93 @@ export default function MissionPage() {
             </p>
           </div>
 
-          {/* Search & Category Filter */}
-          <div className="max-w-4xl mx-auto mb-12 space-y-6">
+          {/* Search & Category Filter Toolbar */}
+          <div className="max-w-3xl mx-auto mb-10 space-y-4">
+            
             {/* Search Input Box */}
-            <div className="max-w-xl mx-auto relative">
-              <div className="relative flex items-center">
-                <Search className="absolute left-3.5 sm:left-4 h-4.5 w-4.5 sm:h-5 sm:w-5 text-slate-400" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder={language === "te" ? "విలువలు లేదా వాక్యాలను శోధించండి..." : language === "hi" ? "मूल्य या वचन खोजें..." : "Search values or scripture..."}
-                  className="w-full pl-10 sm:pl-12 pr-10 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white placeholder-slate-400 text-xs sm:text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-purple-500 shadow-lg transition-all font-medium placeholder:font-normal"
-                />
-                {searchQuery && (
-                  <button
-                    onClick={() => setSearchQuery("")}
-                    className="absolute right-3.5 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-full transition-colors"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                )}
-              </div>
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-slate-400" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={pageT.searchPlaceholder || (language === "te" ? "విలువలు లేదా వాక్యాలను శోధించండి..." : language === "hi" ? "मूल्य या वचन खोजें..." : "Search values or scripture...")}
+                className="w-full pl-11 sm:pl-12 pr-10 py-3 sm:py-3.5 bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white placeholder-slate-400 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-purple-500 shadow-sm transition-all font-medium"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  aria-label="Clear search"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-full transition-colors"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
             </div>
 
-            {/* Category Tabs */}
-            <div className="flex flex-wrap justify-center items-center gap-2 sm:gap-3">
-              {categoryTabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setSelectedCategory(tab.id)}
-                  className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-all duration-300 ${
-                    selectedCategory === tab.id
-                      ? "bg-purple-600 text-white shadow-lg shadow-purple-600/25 scale-105"
-                      : "bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800"
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
+            {/* Category Tabs (Mobile Ergonomic Horizontal Swipe Track — Zero Ragged Wrapping) */}
+            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1 px-0.5 sm:justify-center flex-nowrap">
+              {categoryTabs.map((tab) => {
+                const isActive = selectedCategory === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setSelectedCategory(tab.id)}
+                    className={`flex-shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 ${
+                      isActive
+                        ? "bg-purple-600 text-white shadow-md shadow-purple-600/25 scale-[1.02]"
+                        : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-800"
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
           {/* Core Values Grid */}
           {filteredCoreValues.length === 0 ? (
-            <div className="text-center py-16 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 max-w-xl mx-auto">
-              <Sparkles className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-              <p className="text-lg font-bold text-slate-700 dark:text-slate-300">
-                {language === "te" ? `"${searchQuery}" తో సరిపోలే విలువలు లేవు` : language === "hi" ? `"${searchQuery}" से मेल खाने वाला कोई मूल्य नहीं मिला` : `No core values found matching "${searchQuery}"`}
+            <div className="text-center py-16 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 max-w-xl mx-auto p-6 shadow-sm">
+              <Sparkles className="h-12 w-12 text-slate-400 mx-auto mb-4 opacity-60" />
+              <p className="text-base sm:text-lg font-bold text-slate-800 dark:text-slate-200 mb-1">
+                {pageT.noResultsTitle || "No core values found matching"} "{searchQuery}"
               </p>
               <button
                 onClick={() => {
                   setSearchQuery("");
                   setSelectedCategory("all");
                 }}
-                className="mt-4 px-6 py-2 bg-purple-600 text-white text-sm font-semibold rounded-xl hover:bg-purple-700 transition-colors"
+                className="mt-4 px-5 py-2.5 bg-purple-600 text-white text-xs sm:text-sm font-bold rounded-xl hover:bg-purple-700 active:scale-95 transition-all shadow-md shadow-purple-600/20"
               >
-                {language === "te" ? "ఫిల్టర్‌లను రీసెట్ చేయండి" : language === "hi" ? "फ़िल्टर रीसेट करें" : "Reset Search Filters"}
+                {pageT.resetFilter || "Reset Search Filters"}
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 stagger-children">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
               {filteredCoreValues.map((val) => {
                 const Icon = val.icon;
                 return (
                   <div
                     key={val.id}
-                    className={`relative group bg-white dark:bg-slate-900 rounded-3xl p-7 shadow-xl shadow-slate-900/5 dark:shadow-black/30 border border-slate-200/80 dark:border-slate-800 ${val.borderHover} transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between overflow-hidden text-left`}
+                    className={`relative group bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl p-6 sm:p-7 shadow-xl shadow-slate-900/5 dark:shadow-black/20 border border-slate-200/80 dark:border-slate-800 ${val.borderHover} transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between overflow-hidden text-left`}
                   >
-                    <div className={`absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r ${val.accent}`} />
+                    <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${val.accent}`} />
 
                     <div>
-                      <div className="flex items-center justify-between mb-4 mt-1">
-                        <div className={`w-12 h-12 ${val.bg} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                      <div className="flex items-center justify-between gap-3 mb-4 mt-1">
+                        <div className={`w-12 h-12 ${val.bg} rounded-2xl flex items-center justify-center group-hover:scale-105 transition-transform shadow-xs`}>
                           <Icon className={`h-6 w-6 ${val.color}`} />
                         </div>
-                        <span className={`text-xs font-bold ${val.badgeText} ${val.badgeBg} px-3 py-1 rounded-full border border-slate-200/60 dark:border-slate-800/60`}>
+                        <span className={`text-xs font-bold ${val.badgeText} ${val.badgeBg} px-3 py-1 rounded-full shadow-2xs`}>
                           {val.verse}
                         </span>
                       </div>
 
-                      <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
+                      <h3 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white mb-2 tracking-tight">
                         {val.title}
                       </h3>
-                      <p className="text-slate-600 dark:text-slate-200 text-sm leading-relaxed mb-6 font-medium">
+                      <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-sm leading-relaxed mb-6 font-normal">
                         {val.desc}
                       </p>
                     </div>
@@ -912,9 +992,9 @@ export default function MissionPage() {
                           quoteBorder: val.quoteBorder,
                         })
                       }
-                      className={`w-full py-2.5 px-4 bg-slate-100 dark:bg-slate-800/80 ${val.btnHover} hover:text-white dark:hover:text-white text-slate-800 dark:text-slate-100 font-extrabold rounded-xl text-xs sm:text-sm transition-all duration-300 flex items-center justify-center gap-2 group/btn shadow-sm`}
+                      className={`w-full py-2.5 px-4 bg-slate-100 dark:bg-slate-800/80 ${val.btnHover} text-slate-800 dark:text-slate-200 font-bold rounded-xl text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-2 group/btn shadow-2xs active:scale-[0.99]`}
                     >
-                      <span>{language === "te" ? "పూర్తి వివరణ & వాక్య ఆధారాలు" : language === "hi" ? "गहन विवरण और शास्त्रीय प्रमाण" : "Deep Dive & Scriptural Proof"}</span>
+                      <span>{pageT.deepDiveBtn || (language === "te" ? "పూర్తి వివరణ & వాక్యాలు" : language === "hi" ? "गहन विवरण और वचन" : "Deep Dive & Verses")}</span>
                       <ChevronRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
                     </button>
                   </div>
@@ -925,46 +1005,55 @@ export default function MissionPage() {
         </div>
       </section>
 
-      {/* 📄 Downloadable / Copy Statement Section */}
-      <section className="py-16 bg-slate-100/70 dark:bg-slate-900/40 border-y border-slate-200/60 dark:border-slate-800/80">
+      {/* 📄 Downloadable / Copy Statement Section (Dual Actions: Copy + Print/Save PDF) */}
+      <section className="py-16 sm:py-24 bg-slate-100/70 dark:bg-slate-900/40 border-y border-slate-200/60 dark:border-slate-800/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto bg-gradient-to-br from-purple-900/10 via-slate-900/5 to-indigo-900/10 dark:from-purple-950/50 dark:via-slate-900/80 dark:to-indigo-950/50 border border-purple-200/80 dark:border-purple-800/60 rounded-3xl p-8 sm:p-12 shadow-2xl relative overflow-hidden">
+          <div className="max-w-4xl mx-auto bg-gradient-to-br from-purple-900/5 via-slate-900/5 to-indigo-900/5 dark:from-purple-950/40 dark:via-slate-900/60 dark:to-indigo-950/40 border border-purple-200/60 dark:border-purple-800/40 rounded-3xl p-6 sm:p-10 md:p-12 shadow-xl relative overflow-hidden backdrop-blur-xl">
             <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
 
-            <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-8">
               <div className="space-y-3 text-center md:text-left">
-                <div className="inline-flex items-center gap-2 px-3 py-1 bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 rounded-full text-xs font-black uppercase tracking-wider">
+                <div className="inline-flex items-center gap-2 px-3 py-1 bg-purple-500/10 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300 border border-purple-200/60 dark:border-purple-800/60 rounded-full text-xs font-bold uppercase tracking-wider">
                   <Compass className="h-3.5 w-3.5" />
-                  <span>{language === "te" ? "సారాంశం & భాగస్వామ్యం" : language === "hi" ? "सारांश और साझाकरण" : "Summary & Sharing"}</span>
+                  <span>{pageT.shareBadge || (language === "te" ? "సారాంశం & భాగస్వామ్యం" : language === "hi" ? "सारांश और साझाकरण" : "Summary & Sharing")}</span>
                 </div>
                 <h3 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-                  {language === "te" ? "మా మిషన్ & దర్శనాన్ని పంచుకోండి" : language === "hi" ? "हमारा मिशन और दृष्टिकोण साझा करें" : "Share Our Mission & Vision"}
+                  {pageT.shareTitle || (language === "te" ? "మా మిషన్ & దర్శనాన్ని పంచుకోండి" : language === "hi" ? "हमारा मिशन और दृष्टिकोण साझा करें" : "Share Our Mission & Vision")}
                 </h3>
-                <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base max-w-xl">
-                  {language === "te"
-                    ? "గ్రూప్ అధ్యయనం, వ్యక్తిగత ధ్యానం లేదా స్నేహితులతో పంచుకోవడానికి మా మిషన్, దర్శనం మరియు ప్రాథమిక విలువల సారాంశాన్ని కాపీ చేయండి."
+                <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base max-w-xl leading-relaxed font-normal">
+                  {pageT.shareDesc || (language === "te"
+                    ? "గ్రూప్ అధ్యయనం, వ్యక్తిగత ధ్యానం లేదా స్నేహితులతో పంచుకోవడానికి మా మిషన్, దర్శనం మరియు ప్రాథమిక విలువల సారాంశాన్ని కాపీ చేయండి లేదా ప్రింట్ చేయండి."
                     : language === "hi"
-                    ? "समूह अध्ययन, व्यक्तिगत मनन या मित्रों के साथ साझा करने के लिए हमारे मिशन, विज़न और मूल मूल्यों का सारांश कॉपी करें।"
-                    : "Copy our complete Mission, Vision & Core Values statement for group study, personal reflection, or sharing with friends."}
+                    ? "समूह अध्ययन, व्यक्तिगत मनन या मित्रों के साथ साझा करने के लिए हमारे मिशन, विज़न और मूल मूल्यों का सारांश कॉपी या प्रिंट करें।"
+                    : "Copy or print our complete Mission, Vision & Core Values statement for group study, personal reflection, or sharing with friends.")}
                 </p>
               </div>
 
-              <div className="flex-shrink-0">
+              {/* Dual Action Buttons */}
+              <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto shrink-0">
                 <button
                   onClick={handleCopyMission}
-                  className="px-6 py-3.5 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-2xl shadow-lg shadow-purple-600/30 transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2"
+                  className="w-full sm:w-auto px-5 py-3 bg-purple-600 hover:bg-purple-700 active:scale-95 text-white font-bold rounded-xl shadow-md shadow-purple-600/20 transition-all duration-200 flex items-center justify-center gap-2 text-xs sm:text-sm cursor-pointer"
                 >
                   {copied ? (
                     <>
                       <Check className="h-4 w-4 text-emerald-300" />
-                      <span>{language === "te" ? "కాపీ చేయబడింది!" : language === "hi" ? "क्लिपबोर्ड पर कॉपी किया गया!" : "Copied to Clipboard!"}</span>
+                      <span>{pageT.copiedToast || (language === "te" ? "కాపీ చేయబడింది!" : language === "hi" ? "कॉपी किया गया!" : "Copied to Clipboard!")}</span>
                     </>
                   ) : (
                     <>
                       <Copy className="h-4 w-4" />
-                      <span>{language === "te" ? "సారాంశాన్ని కాపీ చేయండి" : language === "hi" ? "सारांश कॉपी करें" : "Copy Summary Statement"}</span>
+                      <span>{pageT.copyStatement || (language === "te" ? "సారాంశాన్ని కాపీ చేయండి" : language === "hi" ? "सारांश कॉपी करें" : "Copy Summary Statement")}</span>
                     </>
                   )}
+                </button>
+
+                <button
+                  onClick={handlePrintMission}
+                  className="w-full sm:w-auto px-5 py-3 bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-750 active:scale-95 font-bold rounded-xl shadow-xs transition-all duration-200 flex items-center justify-center gap-2 text-xs sm:text-sm cursor-pointer"
+                >
+                  <Printer className="h-4 w-4 text-slate-500 dark:text-slate-400" />
+                  <span>{pageT.printStatement || (language === "te" ? "ప్రింట్ / సేవ్ PDF" : language === "hi" ? "प्रिंट / सेव PDF" : "Print / Save PDF")}</span>
                 </button>
               </div>
             </div>
@@ -973,51 +1062,52 @@ export default function MissionPage() {
       </section>
 
       {/* 🚀 Call To Action (CTA) Section */}
-      <section className="py-24 bg-slate-950 relative overflow-hidden text-white">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-600/15 rounded-full blur-3xl pointer-events-none" />
+      <section className="py-20 sm:py-28 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 relative overflow-hidden text-white border-t border-slate-800">
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-15 pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-purple-600/15 rounded-full blur-3xl pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-3xl mx-auto text-center">
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-purple-600 border border-purple-400 rounded-full text-white text-xs sm:text-sm font-bold uppercase tracking-widest mb-8 shadow-lg shadow-purple-600/40">
-              <Sparkles className="h-4 w-4 text-yellow-300 animate-pulse" />
-              <span>{language === "te" ? "దైవిక సంకల్పంలోకి అడుగుపెట్టండి" : language === "hi" ? "ईश्वरीय उद्देश्य में कदम रखें" : "Step Into Purpose"}</span>
+            
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-purple-500/10 border border-purple-400/30 text-purple-300 rounded-full text-xs font-bold uppercase tracking-wider mb-4 shadow-2xs">
+              <Sparkles className="h-3.5 w-3.5 text-purple-400" />
+              <span>{pageT.ctaBadge || (language === "te" ? "దైవిక సంకల్పంలోకి అడుగుపెట్టండి" : language === "hi" ? "ईश्वरीय उद्देश्य में कदम रखें" : "Step Into Purpose")}</span>
             </div>
 
-            <h2 className="text-4xl sm:text-5xl md:text-6xl font-black text-white mb-6 tracking-tight leading-tight animate-fade-in-up">
-              {language === "te" ? "నేడే మా మిషన్‌లో చేరండి" : language === "hi" ? "आज ही हमारे मिशन से जुड़ें" : "Join Our Mission Today"}
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black mb-4 tracking-tight leading-tight">
+              {pageT.ctaHeading || (language === "te" ? "నేడే మా మిషన్‌లో చేరండి" : language === "hi" ? "आज ही हमारे मिशन से जुड़ें" : "Join Our Mission Today")}
             </h2>
 
-            <p className="text-xl sm:text-2xl text-slate-200 mb-12 animate-fade-in-up animate-delay-100 font-medium max-w-2xl mx-auto leading-relaxed">
-              {language === "te"
+            <p className="text-base sm:text-lg md:text-xl text-slate-300 font-normal mb-8 leading-relaxed max-w-2xl mx-auto">
+              {pageT.ctaDesc || (language === "te"
                 ? "గొప్ప లక్ష్యంలో భాగస్వాములు కండి. ఆత్మీయ సహవాసాన్ని అనుభవిస్తూ, విశ్వాసంలో ఎదుగుతూ హైదరాబాద్ అంతటా శాశ్వత ప్రభావం చూపించండి."
                 : language === "hi"
                 ? "किसी महान उद्देश्य का हिस्सा बनें। आत्मिक संगति का अनुभव करें, विश्वास में बढ़ें और हैदराबाद में एक स्थायी प्रभाव छोड़ें।"
-                : "Be part of something greater. Experience fellowship, grow in faith, and make a lasting impact across Hyderabad."}
+                : "Be part of something greater. Experience fellowship, grow in faith, and make a lasting impact across Hyderabad.")}
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center animate-scale-in animate-delay-200">
+            <div className="flex flex-col sm:flex-row gap-3.5 sm:gap-4 justify-center items-center">
               <Link
                 href="/membership"
-                className="group px-8 py-4 bg-white hover:bg-slate-100 text-slate-950 rounded-2xl font-black shadow-xl hover:shadow-white/20 transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2.5"
+                className="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-xl font-bold shadow-xl shadow-purple-600/30 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] text-sm sm:text-base text-center"
               >
-                <span>{language === "te" ? "సభ్యత్వాన్ని పొందండి" : language === "hi" ? "सदस्य बनें" : "Become a Member"}</span>
-                <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform text-purple-600" />
+                <span>{pageT.ctaMember || (language === "te" ? "సభ్యత్వాన్ని పొందండి" : language === "hi" ? "सदस्य बनें" : "Become a Member")}</span>
               </Link>
 
               <Link
                 href="/about/story"
-                className="px-8 py-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-2xl font-black shadow-xl shadow-purple-600/30 transition-all duration-300 hover:scale-105 flex items-center justify-center"
+                className="w-full sm:w-auto px-8 py-3.5 bg-white/10 hover:bg-white/15 active:scale-[0.98] text-white border border-white/20 backdrop-blur-md rounded-xl font-bold transition-all duration-200 flex items-center justify-center gap-2 text-sm sm:text-base text-center"
               >
-                {language === "te" ? "మా చరిత్ర" : language === "hi" ? "हमारी कहानी" : "Our Story"}
+                <span>{pageT.ctaStory || (language === "te" ? "మా చరిత్ర" : language === "hi" ? "हमारी कहानी" : "Our Story")}</span>
+                <ChevronRight className="h-4 w-4 text-slate-400" />
               </Link>
 
               <Link
                 href="/about/beliefs"
-                className="px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-2xl font-black transition-all duration-300 hover:scale-105 flex items-center justify-center"
+                className="w-full sm:w-auto px-8 py-3.5 bg-white/10 hover:bg-white/15 active:scale-[0.98] text-white border border-white/20 backdrop-blur-md rounded-xl font-bold transition-all duration-200 flex items-center justify-center gap-2 text-sm sm:text-base text-center"
               >
-                {language === "te" ? "మా విశ్వాసాలు" : language === "hi" ? "हमारे विश्वास" : "Our Beliefs"}
+                <span>{pageT.ctaBeliefs || (language === "te" ? "మా విశ్వాసాలు" : language === "hi" ? "हमारे विश्वास" : "Our Beliefs")}</span>
+                <ChevronRight className="h-4 w-4 text-slate-400" />
               </Link>
             </div>
           </div>
@@ -1030,25 +1120,25 @@ export default function MissionPage() {
           onClick={(e) => {
             if (e.target === e.currentTarget) setSelectedModalItem(null);
           }}
-          className="fixed inset-0 z-[10005] flex items-center justify-center p-2.5 sm:p-4 md:p-6 bg-slate-950/85 backdrop-blur-md animate-fade-in"
+          className="fixed inset-0 z-[10005] flex items-center justify-center p-3 sm:p-4 md:p-6 bg-slate-950/80 backdrop-blur-md animate-fade-in"
         >
           <div
             role="dialog"
             aria-modal="true"
             aria-labelledby="mission-modal-title"
-            className="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden max-h-[92dvh] sm:max-h-[90vh] flex flex-col animate-scale-in"
+            className="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden max-h-[90dvh] flex flex-col animate-scale-in"
           >
             {/* Modal Header */}
-            <div className={`p-4 sm:p-6 md:p-7 bg-gradient-to-r ${selectedModalItem.accent} text-white relative shrink-0 z-10 pr-14 sm:pr-16 shadow-sm`}>
+            <div className={`p-5 sm:p-6 md:p-7 bg-gradient-to-r ${selectedModalItem.accent} text-white relative shrink-0 z-10 pr-14 sm:pr-16 shadow-sm`}>
               <button
                 onClick={() => setSelectedModalItem(null)}
                 aria-label="Close modal"
-                className="absolute top-3 sm:top-4 right-3 sm:right-4 p-2 sm:p-2.5 bg-black/25 hover:bg-black/40 active:scale-95 rounded-xl text-white transition-all min-h-[44px] min-w-[44px] flex items-center justify-center cursor-pointer shadow-sm"
+                className="absolute top-4 right-4 sm:top-5 sm:right-5 p-2 bg-black/25 hover:bg-black/40 active:scale-95 rounded-xl text-white transition-all cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
 
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-bold tracking-wide mb-2 sm:mb-2.5 border border-white/20 shadow-xs">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-bold tracking-wide mb-2.5 border border-white/20 shadow-xs">
                 <BookOpen className="h-3.5 w-3.5 flex-shrink-0" />
                 <span className="truncate">{selectedModalItem.verse}</span>
               </div>
@@ -1065,26 +1155,19 @@ export default function MissionPage() {
             </div>
 
             {/* Modal Body */}
-            <div className="p-4 sm:p-6 md:p-8 overflow-y-auto space-y-4 sm:space-y-6 text-slate-700 dark:text-slate-300 text-left flex-1 overscroll-contain">
+            <div className="p-5 sm:p-6 md:p-8 overflow-y-auto space-y-4 sm:space-y-6 text-slate-700 dark:text-slate-300 text-left flex-1 overscroll-contain">
               <div>
-                <h4 className={`text-xs font-extrabold uppercase tracking-widest ${
-                  selectedModalItem.accent?.includes("purple") ? "text-purple-600 dark:text-purple-400" :
-                  selectedModalItem.accent?.includes("indigo") ? "text-indigo-600 dark:text-indigo-400" :
-                  selectedModalItem.accent?.includes("pink") ? "text-pink-600 dark:text-pink-400" :
-                  selectedModalItem.accent?.includes("emerald") ? "text-emerald-600 dark:text-emerald-400" :
-                  selectedModalItem.accent?.includes("amber") ? "text-amber-600 dark:text-amber-400" :
-                  "text-purple-600 dark:text-purple-400"
-                } mb-2`}>
+                <h4 className={`text-xs font-bold uppercase tracking-wider ${selectedModalItem.color || 'text-purple-600 dark:text-purple-400'} mb-2`}>
                   {language === "te" ? "పరిచర్య లక్ష్యం & ప్రాముఖ్యత" : language === "hi" ? "अवलोकन और उद्देश्य" : "Overview & Purpose"}
                 </h4>
-                <p className="text-sm sm:text-base md:text-lg leading-relaxed font-medium">
+                <p className="text-sm sm:text-base md:text-lg leading-relaxed font-normal">
                   {selectedModalItem.desc}
                 </p>
               </div>
 
               {selectedModalItem.quote && (
-                <div className={`p-4 sm:p-5 ${selectedModalItem.quoteBg || 'bg-purple-50 dark:bg-purple-950/40'} rounded-2xl border ${selectedModalItem.quoteBorder || 'border-purple-200 dark:border-purple-900/50'}`}>
-                  <p className={`text-xs sm:text-sm md:text-base italic font-semibold ${selectedModalItem.quoteText || 'text-purple-900 dark:text-purple-200'}`}>
+                <div className={`p-4 sm:p-5 ${selectedModalItem.quoteBg || 'bg-purple-50/70 dark:bg-purple-950/30'} rounded-2xl border-l-4 ${selectedModalItem.quoteBorder || 'border-purple-500'}`}>
+                  <p className={`text-xs sm:text-sm md:text-base italic font-medium leading-relaxed ${selectedModalItem.quoteText || 'text-purple-950 dark:text-purple-200'}`}>
                     "{selectedModalItem.quote}"
                   </p>
                 </div>
@@ -1092,23 +1175,16 @@ export default function MissionPage() {
 
               {selectedModalItem.details && selectedModalItem.details.length > 0 && (
                 <div>
-                  <h4 className={`text-xs font-extrabold uppercase tracking-widest ${
-                    selectedModalItem.accent?.includes("purple") ? "text-purple-600 dark:text-purple-400" :
-                    selectedModalItem.accent?.includes("indigo") ? "text-indigo-600 dark:text-indigo-400" :
-                    selectedModalItem.accent?.includes("pink") ? "text-pink-600 dark:text-pink-400" :
-                    selectedModalItem.accent?.includes("emerald") ? "text-emerald-600 dark:text-emerald-400" :
-                    selectedModalItem.accent?.includes("amber") ? "text-amber-600 dark:text-amber-400" :
-                    "text-purple-600 dark:text-purple-400"
-                  } mb-3`}>
+                  <h4 className={`text-xs font-bold uppercase tracking-wider ${selectedModalItem.color || 'text-purple-600 dark:text-purple-400'} mb-3`}>
                     {language === "te" ? "ఆచరణాత్మక జీవితం & పరిచర్య ప్రణాళిక" : language === "hi" ? "व्यावहारिक जीवन और सेवा कार्य" : "Practical Living & Ministry Action"}
                   </h4>
                   <div className="space-y-2.5">
                     {selectedModalItem.details.map((item: string, i: number) => (
                       <div
                         key={i}
-                        className="flex items-start sm:items-center gap-3 p-3 sm:p-3.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 rounded-xl text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200 shadow-xs"
+                        className="flex items-start sm:items-center gap-3 p-3 sm:p-3.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 rounded-xl text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200 shadow-2xs"
                       >
-                        <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5 sm:mt-0" />
+                        <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500 flex-shrink-0 mt-0.5 sm:mt-0" />
                         <span className="leading-snug">{item}</span>
                       </div>
                     ))}
@@ -1118,12 +1194,12 @@ export default function MissionPage() {
             </div>
 
             {/* Modal Footer */}
-            <div className="p-3.5 sm:p-4 bg-slate-50 dark:bg-slate-950/80 border-t border-slate-200 dark:border-slate-800 flex justify-end shrink-0 z-10">
+            <div className="p-4 bg-slate-50 dark:bg-slate-950/80 border-t border-slate-200 dark:border-slate-800 flex justify-end shrink-0 z-10">
               <button
                 onClick={() => setSelectedModalItem(null)}
-                className="w-full sm:w-auto px-6 py-2.5 min-h-[44px] bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold rounded-xl text-sm hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center shadow-sm cursor-pointer"
+                className="w-full sm:w-auto px-6 py-2.5 bg-purple-600 hover:bg-purple-700 active:scale-95 text-white font-bold rounded-xl text-xs sm:text-sm transition-all shadow-md shadow-purple-600/20 cursor-pointer"
               >
-                {language === "te" ? "మూసివేయి" : language === "hi" ? "बंद करें" : "Close"}
+                {pageT.modalClose || (language === "te" ? "మూసివేయి" : language === "hi" ? "बंद करें" : "Close")}
               </button>
             </div>
           </div>

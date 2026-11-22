@@ -653,7 +653,7 @@ export default function EventsPage() {
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h3 className="text-xl font-black font-serif text-white">
+                    <h3 className="text-xl font-black font-outfit tracking-tight text-white">
                       {language === "te" ? "ఈవెంట్లను తొలగించే మేనేజర్" : language === "hi" ? "कार्यक्रम हटाने का प्रबंधक" : "Quick Event Delete Manager"}
                     </h3>
                     <kbd className="px-2 py-0.5 rounded bg-white/20 border border-white/30 text-[11px] font-mono font-black text-white">

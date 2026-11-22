@@ -84,7 +84,7 @@ export default function BranchLocationPage({
               </span>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight mb-4 font-serif text-slate-900 dark:text-white">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight mb-4 font-outfit text-slate-900 dark:text-white">
               {branchName}
             </h1>
 
@@ -107,7 +107,7 @@ export default function BranchLocationPage({
                   <Clock className="w-6 h-6" />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold text-slate-900 dark:text-white font-serif">
+                  <h2 className="text-2xl font-black text-slate-900 dark:text-white font-outfit tracking-tight">
                     {isTelugu ? "ఆరాధన సమయాలు & ప్రార్థనలు" : isHindi ? "आराधना समय एवं प्रार्थनाएं" : "Worship & Service Schedule"}
                   </h2>
                   <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -156,7 +156,7 @@ export default function BranchLocationPage({
                   <Navigation className="w-6 h-6" />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold text-slate-900 dark:text-white font-serif">
+                  <h2 className="text-2xl font-black text-slate-900 dark:text-white font-outfit tracking-tight">
                     {isTelugu ? "ఎలా చేరుకోవాలి (దిశలు)" : isHindi ? "कैसे पहुंचे (दिशा-निर्देश)" : "Directions & Getting Here"}
                   </h2>
                   <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -182,7 +182,7 @@ export default function BranchLocationPage({
           <div className="space-y-6">
             {/* Quick Action Box */}
             <div className="bg-gradient-to-br from-purple-900 to-indigo-950 text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-purple-500/20">
-              <h3 className="text-xl font-bold mb-4 font-serif text-white">
+              <h3 className="text-xl font-black mb-4 font-outfit tracking-tight text-white">
                 {isTelugu ? "మమ్మల్ని సంప్రదించండి" : isHindi ? "संपर्क करें" : "Contact & Visit"}
               </h3>
               <p className="text-xs text-purple-200 leading-relaxed mb-6">
