@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -46,6 +46,23 @@ export default function MembershipPage() {
     preferredBranch: "Shapur Main Campus",
     preferredDate: "Upcoming Sunday • 11:30 AM"
   });
+
+  // Body scroll lock and Escape key handler for Modal
+  useEffect(() => {
+    if (!isModalOpen) return;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsModalOpen(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isModalOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -258,23 +275,24 @@ export default function MembershipPage() {
               <button
                 type="button"
                 onClick={() => setIsModalOpen(true)}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-purple-600 hover:bg-purple-700 text-white text-xs sm:text-sm font-black shadow-lg shadow-purple-600/25 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-purple-600 hover:bg-purple-700 active:scale-95 text-white text-xs sm:text-sm font-bold shadow-md shadow-purple-600/25 transition-all cursor-pointer"
               >
-                <span>{language === "te" ? "తరగతి నమోదు (దశ 1) →" : language === "hi" ? "कक्षा पंजीकरण (चरण 1) →" : "Register for Class (Step 1) →"}</span>
+                <span>{language === "te" ? "తరగతి నమోదు (దశ 1)" : language === "hi" ? "कक्षा पंजीकरण (चरण 1)" : "Register for Class (Step 1)"}</span>
                 <ChevronRight className="w-4 h-4" />
               </button>
               <a
                 href="#pathway"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-white/90 dark:bg-slate-900/90 hover:bg-purple-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 text-xs sm:text-sm font-bold border border-slate-200/90 dark:border-slate-800 shadow-xs transition-all active:scale-95"
+                className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-2xl bg-white/90 dark:bg-slate-900/90 hover:bg-purple-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 text-xs sm:text-sm font-semibold border border-slate-200/90 dark:border-slate-800 shadow-2xs transition-all active:scale-95"
               >
-                <span>{language === "te" ? "4 దశల మార్గం ↓" : language === "hi" ? "4-चरणीय मार्ग ↓" : "Explore 4 Steps ↓"}</span>
-                <ArrowRight className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                <span>{language === "te" ? "4 దశల మార్గం" : language === "hi" ? "4-चरणीय मार्ग" : "Explore 4 Steps"}</span>
+                <ChevronDown className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
               </a>
               <a
                 href="#covenant"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-white/90 dark:bg-slate-900/90 hover:bg-purple-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 text-xs sm:text-sm font-bold border border-slate-200/90 dark:border-slate-800 shadow-xs transition-all active:scale-95"
+                className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-2xl bg-white/90 dark:bg-slate-900/90 hover:bg-purple-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 text-xs sm:text-sm font-semibold border border-slate-200/90 dark:border-slate-800 shadow-2xs transition-all active:scale-95"
               >
-                <span>{language === "te" ? "సభ్యత్వ నిబంధన ↓" : language === "hi" ? "सदस्यता वाचा ↓" : "Read Covenant ↓"}</span>
+                <span>{language === "te" ? "సభ్యత్వ నిబంధన" : language === "hi" ? "सदस्यता वाचा" : "Read Covenant"}</span>
+                <ChevronDown className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
               </a>
             </div>
 
@@ -574,35 +592,46 @@ export default function MembershipPage() {
 
       {/* 📥 Interactive Class Registration Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-fade-in">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl relative">
-            
-            {/* Top Accent Ribbon */}
-            <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-purple-500 via-indigo-500 to-purple-500 opacity-90" />
-
-            <div className="p-6 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 text-white relative">
+        <div 
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-title"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsModalOpen(false);
+          }}
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-5 bg-slate-950/80 backdrop-blur-md animate-fade-in overflow-y-auto"
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl w-full max-w-lg shadow-2xl relative my-auto flex flex-col max-h-[92dvh] overflow-hidden transition-all duration-300"
+          >
+            {/* Header with Luxury Brand Gradient */}
+            <div className="px-6 py-5 sm:px-7 sm:py-6 bg-gradient-to-r from-purple-700 via-indigo-700 to-purple-800 text-white relative shrink-0">
               <button
+                type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="absolute top-4 right-4 p-2 rounded-full bg-white/20 hover:bg-white/30 text-white transition-colors cursor-pointer"
+                className="absolute top-4 right-4 sm:top-5 sm:right-5 w-9 h-9 rounded-full bg-white/15 hover:bg-white/25 active:scale-95 text-white flex items-center justify-center transition-all cursor-pointer border border-white/20 shadow-sm"
                 aria-label="Close modal"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
               
-              <span className="text-[10px] uppercase font-black px-3 py-1 rounded-full bg-white/20 text-white border border-white/30 mb-2 inline-block shadow-sm">
-                {language === "te" ? "తరగతి నమోదు" : language === "hi" ? "कक्षा पंजीकरण" : "Class Registration"}
-              </span>
+              <div className="inline-flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider px-3 py-1 rounded-full bg-white/15 text-purple-100 border border-white/20 mb-2.5 shadow-2xs backdrop-blur-xs">
+                <Sparkles className="w-3 h-3 text-amber-300" />
+                <span>{language === "te" ? "తరగతి నమోదు" : language === "hi" ? "कक्षा पंजीकरण" : "Class Registration"}</span>
+              </div>
               
-              <h3 className="text-2xl font-black font-outfit tracking-tight text-white">
+              <h3 id="modal-title" className="text-xl sm:text-2xl font-black font-outfit tracking-tight text-white pr-8">
                 {language === "te" ? "కింగ్‌డమ్ డిస్కవర్ తరగతి" : language === "hi" ? "किंगडम डिस्कवर क्लास" : "Discover Kingdom Class"}
               </h3>
               
-              <p className="text-xs text-purple-100 mt-1">
+              <p className="text-xs text-purple-100/90 mt-1 leading-relaxed max-w-sm">
                 {language === "te" ? "రాబోయే ఆదివారం సభ్యత్వ అవగాహన సెషన్ కోసం నమోదు చేసుకోండి." : language === "hi" ? "रविवार के सदस्यता ओरिएंटेशन सत्र के लिए पंजीकरण करें।" : "Register for our upcoming Sunday membership orientation session."}
               </p>
             </div>
 
-            <div className="p-6 sm:p-7 text-slate-900 dark:text-slate-100">
+            {/* Modal Body with smooth scrolling */}
+            <div className="p-5 sm:p-7 text-slate-900 dark:text-slate-100 overflow-y-auto overscroll-contain flex-1">
               {isSubmitted ? (
                 <div className="text-center py-10">
                   <div className="w-16 h-16 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-500/20 animate-bounce">
@@ -617,60 +646,63 @@ export default function MembershipPage() {
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">
+                  {/* Full Name */}
                   <div>
-                    <label className="block text-xs font-black text-slate-900 dark:text-slate-100 mb-1.5 font-outfit">
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 font-sans">
                       Full Name <span className="text-rose-500">*</span>
                     </label>
                     <div className="relative">
-                      <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                      <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500 pointer-events-none" />
                       <input
                         type="text"
                         required
                         placeholder="e.g. David Raju"
                         value={regForm.name}
                         onChange={(e) => setRegForm({ ...regForm, name: e.target.value })}
-                        className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl text-sm font-semibold focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500 outline-none text-slate-900 dark:text-slate-100 transition-all"
+                        className="w-full pl-10 pr-4 py-3 bg-slate-50/90 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl text-sm font-medium focus:ring-2 focus:ring-purple-500/25 focus:border-purple-600 dark:focus:border-purple-400 outline-none text-slate-900 dark:text-slate-100 placeholder:text-slate-400 placeholder:font-normal transition-all"
                       />
                     </div>
                   </div>
 
+                  {/* Email & Phone */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                     <div>
-                      <label className="block text-xs font-black text-slate-900 dark:text-slate-100 mb-1.5 font-outfit">
+                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 font-sans">
                         Email Address <span className="text-rose-500">*</span>
                       </label>
                       <div className="relative">
-                        <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                        <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500 pointer-events-none" />
                         <input
                           type="email"
                           required
                           placeholder="david@example.com"
                           value={regForm.email}
                           onChange={(e) => setRegForm({ ...regForm, email: e.target.value })}
-                          className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl text-sm font-semibold focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500 outline-none text-slate-900 dark:text-slate-100 transition-all"
+                          className="w-full pl-10 pr-4 py-3 bg-slate-50/90 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl text-sm font-medium focus:ring-2 focus:ring-purple-500/25 focus:border-purple-600 dark:focus:border-purple-400 outline-none text-slate-900 dark:text-slate-100 placeholder:text-slate-400 placeholder:font-normal transition-all"
                         />
                       </div>
                     </div>
                     <div>
-                      <label className="block text-xs font-black text-slate-900 dark:text-slate-100 mb-1.5 font-outfit">
+                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 font-sans">
                         Phone Number <span className="text-rose-500">*</span>
                       </label>
                       <div className="relative">
-                        <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                        <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500 pointer-events-none" />
                         <input
                           type="tel"
                           required
                           placeholder="+91 98765 43210"
                           value={regForm.phone}
                           onChange={(e) => setRegForm({ ...regForm, phone: e.target.value })}
-                          className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl text-sm font-semibold focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500 outline-none text-slate-900 dark:text-slate-100 transition-all"
+                          className="w-full pl-10 pr-4 py-3 bg-slate-50/90 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl text-sm font-medium focus:ring-2 focus:ring-purple-500/25 focus:border-purple-600 dark:focus:border-purple-400 outline-none text-slate-900 dark:text-slate-100 placeholder:text-slate-400 placeholder:font-normal transition-all"
                         />
                       </div>
                     </div>
                   </div>
 
+                  {/* Location Dropdown */}
                   <div>
-                    <label className="block text-xs font-black text-slate-900 dark:text-slate-100 mb-1.5 font-outfit">
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 font-sans">
                       Select Location / Campus <span className="text-rose-500">*</span>
                     </label>
                     <div className="relative">
@@ -678,19 +710,20 @@ export default function MembershipPage() {
                       <select
                         value={regForm.preferredBranch}
                         onChange={(e) => setRegForm({ ...regForm, preferredBranch: e.target.value })}
-                        className="w-full pl-10 pr-10 py-3 bg-slate-50 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl text-xs sm:text-sm font-bold focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500 outline-none text-slate-900 dark:text-slate-100 transition-all cursor-pointer appearance-none"
+                        className="w-full pl-10 pr-12 py-3 bg-slate-50/90 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl text-xs sm:text-sm font-semibold focus:ring-2 focus:ring-purple-500/25 focus:border-purple-600 dark:focus:border-purple-400 outline-none text-slate-900 dark:text-slate-100 transition-all cursor-pointer appearance-none truncate"
                       >
                         <option value="Shapur Main Campus">Shapur Main Campus</option>
                         <option value="Subhash Nagar Campus">Subhash Nagar Campus</option>
                         <option value="Bahadurpally Campus">Bahadurpally Campus</option>
                         <option value="Online Zoom Session">Online Zoom Session</option>
                       </select>
-                      <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500 pointer-events-none" />
+                      <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 dark:text-slate-400 pointer-events-none" />
                     </div>
                   </div>
 
+                  {/* Preferred Date & Session Dropdown */}
                   <div>
-                    <label className="block text-xs font-black text-slate-900 dark:text-slate-100 mb-1.5 font-outfit">
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 font-sans">
                       Preferred Date & Session <span className="text-rose-500">*</span>
                     </label>
                     <div className="relative">
@@ -698,7 +731,7 @@ export default function MembershipPage() {
                       <select
                         value={regForm.preferredDate}
                         onChange={(e) => setRegForm({ ...regForm, preferredDate: e.target.value })}
-                        className="w-full pl-10 pr-10 py-3 bg-slate-50 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl text-xs sm:text-sm font-bold focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500 outline-none text-slate-900 dark:text-slate-100 transition-all cursor-pointer appearance-none"
+                        className="w-full pl-10 pr-12 py-3 bg-slate-50/90 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl text-xs sm:text-sm font-semibold focus:ring-2 focus:ring-purple-500/25 focus:border-purple-600 dark:focus:border-purple-400 outline-none text-slate-900 dark:text-slate-100 transition-all cursor-pointer appearance-none truncate"
                       >
                         <option value="Upcoming Sunday • 11:30 AM">
                           {language === "te" ? "ఈ ఆదివారం • 11:30 AM" : language === "hi" ? "इस रविवार • 11:30 AM" : "Upcoming Sunday • 11:30 AM"}
@@ -710,13 +743,14 @@ export default function MembershipPage() {
                           {language === "te" ? "బుధవారం ఆన్‌లైన్ • 7:00 PM (జూమ్)" : language === "hi" ? "बुधवार ऑनलाइन • 7:00 PM (ज़ूम)" : "Wednesday Online • 7:00 PM (Zoom)"}
                         </option>
                       </select>
-                      <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500 pointer-events-none" />
+                      <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 dark:text-slate-400 pointer-events-none" />
                     </div>
                   </div>
 
+                  {/* Submit CTA */}
                   <button
                     type="submit"
-                    className="w-full min-h-[50px] py-3.5 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-700 hover:to-indigo-700 text-white rounded-2xl font-black text-sm transition-all shadow-lg shadow-purple-600/25 flex items-center justify-center gap-2 mt-5 active:scale-[0.98] cursor-pointer"
+                    className="w-full min-h-[50px] py-3.5 px-6 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-700 hover:to-indigo-700 active:scale-[0.98] text-white rounded-2xl font-bold text-sm tracking-wide transition-all shadow-lg shadow-purple-600/25 hover:shadow-purple-600/40 flex items-center justify-center gap-2 mt-5 cursor-pointer"
                   >
                     <Send className="w-4 h-4" />
                     <span>Complete Class Registration</span>

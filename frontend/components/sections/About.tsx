@@ -2,7 +2,7 @@
 
 import { memo } from "react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
-import { Church, Heart, Users, BookOpen, MapPin, Phone, Sparkles, LucideIcon } from "lucide-react";
+import { Church, Heart, Users, BookOpen, MapPin, Phone, LucideIcon } from "lucide-react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useAboutContent, useContacts, usePastors } from "@/hooks/useCmsData";
@@ -354,82 +354,52 @@ export default function About({ initialAboutData, initialContactsData, initialPa
               {pastorsLoading ? (
                 <PastorSkeleton />
               ) : primaryPastor ? (
-                <div className="flex flex-col items-center text-center mb-8 sm:mb-10 pb-8 sm:pb-10 border-b border-slate-200/80 dark:border-white/10">
-                  <div className="relative mb-5 group cursor-default">
-                    {/* Ambient Glow Aura */}
-                    <div className="absolute -inset-2 bg-gradient-to-tr from-violet-600 via-purple-600 to-amber-400 rounded-full blur-lg opacity-40 group-hover:opacity-70 transition-opacity duration-500" />
-                    
-                    {/* Outer Gradient Halo */}
-                    <div className="relative p-1 rounded-full bg-gradient-to-tr from-violet-600 via-purple-500 to-amber-400 shadow-xl shadow-purple-900/20">
-                      {/* Inner Circular Avatar with Executive Portrait Headshot Framing */}
-                      <div className="w-32 h-32 sm:w-36 sm:h-36 rounded-full overflow-hidden border-2 border-white dark:border-slate-900 bg-gradient-to-b from-slate-900 via-slate-950 to-black relative shadow-inner">
-                        <Image
-                          src={primaryPastor.image ?? "/pastor.png"}
-                          alt={primaryPastor.name}
-                          fill
-                          sizes="(max-width: 640px) 128px, 144px"
-                          className="object-cover object-[center_14%] origin-top scale-[1.7] sm:scale-[1.75] transition-transform duration-500 group-hover:scale-[1.85]"
-                          loading="lazy"
-                          decoding="async"
-                          quality={95}
-                        />
-                      </div>
-                    </div>
+                <div className="flex flex-col items-center text-center mb-10 pb-10 border-b border-slate-200/80 dark:border-white/10">
+                  <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden border-4 border-white shadow-xl mb-4 relative hover:scale-105 transition-transform duration-300 bg-white ring-1 ring-slate-900/10 dark:ring-white/20">
+                    <Image
+                      src={primaryPastor.image ?? "/pastor.png"}
+                      alt={primaryPastor.name}
+                      fill
+                      sizes="(max-width: 640px) 112px, 128px"
+                      className="object-cover"
+                      priority
+                      unoptimized
+                    />
                   </div>
-
-                  {/* Executive Leadership Pill */}
-                  <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-[0.2em] text-violet-700 dark:text-violet-300 px-3.5 py-1 rounded-full bg-violet-100/80 dark:bg-violet-500/15 border border-violet-200/80 dark:border-violet-500/30 font-outfit mb-2 shadow-xs">
-                    <Sparkles className="w-3 h-3 text-amber-500" />
-                    <span>{ledByLabel}</span>
-                  </span>
-
-                  {/* Unified Name & Ecclesiastical Title */}
-                  <h3 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-slate-900 dark:text-white font-outfit mt-1">
-                    {pastorTitle} {pastorName.replace(/^Bishop\s+/i, "")}
+                  <p className="text-indigo-600 dark:text-amber-400 font-bold uppercase tracking-[0.2em] text-xs mb-1.5 font-outfit">
+                    {ledByLabel}
+                  </p>
+                  <h3 className="text-xl sm:text-2xl md:text-3xl font-extrabold mb-1.5 tracking-tight text-slate-900 dark:text-white font-outfit">
+                    {pastorTitle}
                   </h3>
-
-                  {/* Pastoral Designation */}
-                  <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-semibold mt-1 font-sans">
+                  <p className="text-lg sm:text-2xl md:text-3xl font-black tracking-wide text-amber-600 dark:text-amber-300 font-outfit">
+                    {pastorName}
+                  </p>
+                  <p className="text-xs sm:text-sm text-slate-500 dark:text-white/50 mt-1 font-sans">
                     {pastorDesignation}
                   </p>
                 </div>
               ) : (
-                <div className="flex flex-col items-center text-center mb-8 sm:mb-10 pb-8 sm:pb-10 border-b border-slate-200/80 dark:border-white/10">
-                  <div className="relative mb-5 group cursor-default">
-                    {/* Ambient Glow Aura */}
-                    <div className="absolute -inset-2 bg-gradient-to-tr from-violet-600 via-purple-600 to-amber-400 rounded-full blur-lg opacity-40 group-hover:opacity-70 transition-opacity duration-500" />
-                    
-                    {/* Outer Gradient Halo */}
-                    <div className="relative p-1 rounded-full bg-gradient-to-tr from-violet-600 via-purple-500 to-amber-400 shadow-xl shadow-purple-900/20">
-                      {/* Inner Circular Avatar with Executive Portrait Headshot Framing */}
-                      <div className="w-32 h-32 sm:w-36 sm:h-36 rounded-full overflow-hidden border-2 border-white dark:border-slate-900 bg-gradient-to-b from-slate-900 via-slate-950 to-black relative shadow-inner">
-                        <Image
-                          src="/pastor.png"
-                          alt="Bishop Kurra Kristhu Raju"
-                          fill
-                          sizes="(max-width: 640px) 128px, 144px"
-                          className="object-cover object-[center_14%] origin-top scale-[1.7] sm:scale-[1.75] transition-transform duration-500 group-hover:scale-[1.85]"
-                          loading="lazy"
-                          decoding="async"
-                          quality={95}
-                        />
-                      </div>
-                    </div>
+                <div className="flex flex-col items-center text-center mb-10 pb-10 border-b border-slate-200/80 dark:border-white/10">
+                  <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden border-4 border-white shadow-xl mb-4 relative hover:scale-105 transition-transform duration-300 bg-white ring-1 ring-slate-900/10 dark:ring-white/20">
+                    <Image
+                      src="/pastor.png"
+                      alt="Bishop Kurra Kristhu Raju"
+                      fill
+                      sizes="(max-width: 640px) 112px, 128px"
+                      className="object-cover"
+                      priority
+                      unoptimized
+                    />
                   </div>
-
-                  {/* Executive Leadership Pill */}
-                  <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-[0.2em] text-violet-700 dark:text-violet-300 px-3.5 py-1 rounded-full bg-violet-100/80 dark:bg-violet-500/15 border border-violet-200/80 dark:border-violet-500/30 font-outfit mb-2 shadow-xs">
-                    <Sparkles className="w-3 h-3 text-amber-500" />
-                    <span>{ledByLabel}</span>
-                  </span>
-
-                  {/* Unified Name & Ecclesiastical Title */}
-                  <h3 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-slate-900 dark:text-white font-outfit mt-1">
-                    {t.about.pastor} {t.about.pastorName?.replace(/^Bishop\s+/i, "")}
+                  <p className="text-indigo-600 dark:text-amber-400 font-bold uppercase tracking-[0.2em] text-xs mb-1.5 font-outfit">
+                    {ledByLabel}
+                  </p>
+                  <h3 className="text-xl sm:text-2xl md:text-3xl font-extrabold mb-1.5 tracking-tight text-slate-900 dark:text-white font-outfit">
+                    {t.about.pastor}
                   </h3>
-
-                  <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-semibold mt-1 font-sans">
-                    {pastorDesignation}
+                  <p className="text-lg sm:text-2xl md:text-3xl font-black tracking-wide text-amber-600 dark:text-amber-300 font-outfit">
+                    {t.about.pastorName}
                   </p>
                 </div>
               )}

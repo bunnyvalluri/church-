@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { 
-  Youtube, 
   Mail, 
   Phone, 
   MapPin, 
@@ -22,6 +21,24 @@ import { usePathname } from "next/navigation";
 import { useFooterConfig, useFooterNavigation } from "@/hooks/useCmsData";
 import type { NavigationItem } from "@/types/cms";
 import { IndiaFlag } from "@/components/ui/IndiaFlag";
+
+// Authentic Official YouTube Icon
+function YouTubeLogoIcon({ className = "w-5 h-5 shrink-0" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className={className}
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <path
+        d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z"
+        fill="#FF0000"
+      />
+      <polygon points="9.545,15.568 15.818,12 9.545,8.432" fill="#FFFFFF" />
+    </svg>
+  );
+}
 
 const LINK_MAP: Record<string, { te: string; hi: string }> = {
   "/about/story": { te: "మా కథ", hi: "हमारी कहानी" },
@@ -340,9 +357,7 @@ export default function Footer() {
                 aria-label="YouTube Channel"
                 className="inline-flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-red-600/10 hover:bg-red-600/20 border border-red-500/30 text-red-400 hover:text-red-300 text-xs font-semibold transition-all hover:scale-[1.02] shadow-xs group"
               >
-                <div className="w-6 h-6 rounded-lg bg-red-600 text-white flex items-center justify-center shrink-0 shadow-sm shadow-red-600/40 group-hover:scale-105 transition-transform">
-                  <Youtube className="w-3.5 h-3.5 fill-current" />
-                </div>
+                <YouTubeLogoIcon className="w-5 h-5 shrink-0 group-hover:scale-110 transition-transform drop-shadow-xs" />
                 <span>Watch Live Sermons & Worship</span>
                 <ExternalLink className="w-3 h-3 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
               </a>
