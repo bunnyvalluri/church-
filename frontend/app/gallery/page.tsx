@@ -248,10 +248,10 @@ const GALLERY_I18N: Record<"en" | "te" | "hi", GalleryTranslations> = {
       "Fellowship & Joy": "Fellowship & Joy",
       "Special Events": "Special Events",
     },
-    allBranches: "All Church Branches",
-    subhashBranch: "Subhash Nagar Branch",
-    shapurBranch: "Shapur Nagar Branch",
-    bahadurBranch: "Bahadurpalli Branch",
+    allBranches: "All Branches",
+    subhashBranch: "Subhash Nagar",
+    shapurBranch: "Shapur Nagar",
+    bahadurBranch: "Bahadurpalli",
     sortOrderAsc: "Order-Wise (1 — {count})",
     sortOrderDesc: "Newest First ({count})",
     sortTitleAsc: "Title (A — Z)",
@@ -301,10 +301,10 @@ const GALLERY_I18N: Record<"en" | "te" | "hi", GalleryTranslations> = {
       "Fellowship & Joy": "సహవాస ఆనందం",
       "Special Events": "ప్రత్యేక కార్యక్రమాలు",
     },
-    allBranches: "అన్ని చర్చి బ్రాంచ్‌లు",
-    subhashBranch: "సుభాష్ నగర్ బ్రాంచ్",
-    shapurBranch: "షాపూర్ నగర్ బ్రాంచ్",
-    bahadurBranch: "బహదూర్‌పల్లి బ్రాంచ్",
+    allBranches: "అన్ని బ్రాంచ్‌లు",
+    subhashBranch: "సుభాష్ నగర్",
+    shapurBranch: "షాపూర్ నగర్",
+    bahadurBranch: "బహదూర్‌పల్లి",
     sortOrderAsc: "వరుస క్రమ ఫోటోలు (1 — {count})",
     sortOrderDesc: "ఇటీవలి ఫోటోలు ({count})",
     sortTitleAsc: "శీర్షిక (A — Z)",
@@ -353,10 +353,10 @@ const GALLERY_I18N: Record<"en" | "te" | "hi", GalleryTranslations> = {
       "Fellowship & Joy": "संगति एवं आनंद",
       "Special Events": "विशेष कार्यक्रम",
     },
-    allBranches: "सभी चर्च शाखाएं",
-    subhashBranch: "सुभाष नगर शाखा",
-    shapurBranch: "शापुर नगर शाखा",
-    bahadurBranch: "बहादुरपल्ली शाखा",
+    allBranches: "सभी शाखाएं",
+    subhashBranch: "सुभाष नगर",
+    shapurBranch: "शापुर नगर",
+    bahadurBranch: "बहादुरपल्ली",
     sortOrderAsc: "क्रमवार (1 — {count})",
     sortOrderDesc: "नवीनतम ({count})",
     sortTitleAsc: "शीर्षक (A — Z)",
@@ -959,21 +959,21 @@ export default function ChurchGalleryPage() {
             </p>
 
             {/* Quick Media Switcher Tabs in Hero — Fully Responsive Segmented Grid */}
-            <div className="w-full max-w-2xl mx-auto p-1.5 sm:p-2 rounded-2xl sm:rounded-3xl bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border border-slate-200/90 dark:border-white/10 shadow-xl shadow-purple-950/5">
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 sm:gap-2">
+            <div className="w-full max-w-2xl mx-auto p-1 sm:p-1.5 rounded-2xl sm:rounded-3xl bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border border-slate-200/90 dark:border-white/10 shadow-xl shadow-purple-950/5">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 sm:gap-1.5">
                 {/* 1. Photo Gallery */}
                 <button
                   onClick={handleSwitchToPhotoGallery}
-                  className={`relative flex items-center justify-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl font-extrabold text-xs sm:text-sm transition-all duration-200 cursor-pointer ${
+                  className={`relative flex items-center justify-center gap-1 sm:gap-1.5 px-1.5 xs:px-2.5 sm:px-3 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl font-extrabold transition-all duration-200 cursor-pointer ${
                     activeMediaTab === "photos"
                       ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-600/30 ring-2 ring-purple-400/40"
                       : "text-slate-700 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50/80 dark:hover:bg-purple-950/30"
                   }`}
                 >
                   <Camera className={`w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 ${activeMediaTab === "photos" ? "text-white" : "text-purple-600 dark:text-purple-400"}`} />
-                  <span className="truncate">Photo Gallery</span>
+                  <span className="whitespace-nowrap text-[11px] sm:text-xs md:text-sm font-extrabold tracking-tight">Photo Gallery</span>
                   <span
-                    className={`px-1.5 py-0.5 rounded-full text-[10px] font-mono font-black shrink-0 ${
+                    className={`px-1.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-mono font-black shrink-0 ${
                       activeMediaTab === "photos"
                         ? "bg-white/25 text-white"
                         : "bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300"
@@ -986,16 +986,16 @@ export default function ChurchGalleryPage() {
                 {/* 2. Pastor Spotlight */}
                 <button
                   onClick={handleSwitchToPastor}
-                  className={`relative flex items-center justify-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl font-extrabold text-xs sm:text-sm transition-all duration-200 cursor-pointer ${
+                  className={`relative flex items-center justify-center gap-1 sm:gap-1.5 px-1.5 xs:px-2.5 sm:px-3 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl font-extrabold transition-all duration-200 cursor-pointer ${
                     activeMediaTab === "pastor"
                       ? "bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 text-white shadow-md shadow-purple-600/30 ring-2 ring-purple-400/40"
                       : "text-slate-700 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50/80 dark:hover:bg-purple-950/30"
                   }`}
                 >
                   <Crown className={`w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 ${activeMediaTab === "pastor" ? "text-amber-300 fill-amber-300" : "text-amber-500"}`} />
-                  <span className="truncate">Pastor Spotlight</span>
+                  <span className="whitespace-nowrap text-[11px] sm:text-xs md:text-sm font-extrabold tracking-tight">Pastor Spotlight</span>
                   <span
-                    className={`px-1.5 py-0.5 rounded-full text-[10px] font-mono font-black shrink-0 ${
+                    className={`px-1.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-mono font-black shrink-0 ${
                       activeMediaTab === "pastor"
                         ? "bg-white/25 text-white"
                         : "bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300"
@@ -1008,16 +1008,16 @@ export default function ChurchGalleryPage() {
                 {/* 3. Video Theater */}
                 <button
                   onClick={handleSwitchToVideoTheater}
-                  className={`relative flex items-center justify-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl font-extrabold text-xs sm:text-sm transition-all duration-200 cursor-pointer ${
+                  className={`relative flex items-center justify-center gap-1 sm:gap-1.5 px-1.5 xs:px-2.5 sm:px-3 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl font-extrabold transition-all duration-200 cursor-pointer ${
                     activeMediaTab === "videos"
                       ? "bg-gradient-to-r from-rose-600 to-red-600 text-white shadow-md shadow-rose-600/30 ring-2 ring-rose-400/40"
                       : "text-slate-700 dark:text-slate-300 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50/80 dark:hover:bg-rose-950/30"
                   }`}
                 >
                   <YouTubeLogoIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-                  <span className="truncate">Video Theater</span>
+                  <span className="whitespace-nowrap text-[11px] sm:text-xs md:text-sm font-extrabold tracking-tight">Video Theater</span>
                   <span
-                    className={`px-1.5 py-0.5 rounded-full text-[10px] font-mono font-black shrink-0 ${
+                    className={`px-1.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-mono font-black shrink-0 ${
                       activeMediaTab === "videos"
                         ? "bg-white/25 text-white"
                         : "bg-rose-100 dark:bg-rose-900/60 text-rose-700 dark:text-rose-300"
@@ -1030,16 +1030,16 @@ export default function ChurchGalleryPage() {
                 {/* 4. All Media */}
                 <button
                   onClick={handleSwitchToAllMedia}
-                  className={`relative flex items-center justify-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl font-extrabold text-xs sm:text-sm transition-all duration-200 cursor-pointer ${
+                  className={`relative flex items-center justify-center gap-1 sm:gap-1.5 px-1.5 xs:px-2.5 sm:px-3 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl font-extrabold transition-all duration-200 cursor-pointer ${
                     activeMediaTab === "all"
                       ? "bg-gradient-to-r from-indigo-600 to-blue-600 text-white shadow-md shadow-indigo-600/30 ring-2 ring-indigo-400/40"
                       : "text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50/80 dark:hover:bg-indigo-950/30"
                   }`}
                 >
                   <Layers className={`w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 ${activeMediaTab === "all" ? "text-white" : "text-indigo-600 dark:text-indigo-400"}`} />
-                  <span className="truncate">All Media</span>
+                  <span className="whitespace-nowrap text-[11px] sm:text-xs md:text-sm font-extrabold tracking-tight">All Media</span>
                   <span
-                    className={`px-1.5 py-0.5 rounded-full text-[10px] font-mono font-black shrink-0 ${
+                    className={`px-1.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-mono font-black shrink-0 ${
                       activeMediaTab === "all"
                         ? "bg-white/25 text-white"
                         : "bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300"
