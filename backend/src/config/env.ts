@@ -19,6 +19,7 @@ export const env = {
 
   // Database
   DATABASE_URL: process.env.DATABASE_URL || '',
+  DIRECT_URL: process.env.DIRECT_URL || process.env.DATABASE_URL || '',
   DB_OFFLINE: process.env.DB_OFFLINE === 'true',
   MONGODB_URI: process.env.MONGODB_URI || '',
   MONGODB_DATABASE_NAME: process.env.MONGODB_DATABASE_NAME || 'kcm_church',

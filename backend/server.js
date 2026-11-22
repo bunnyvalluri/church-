@@ -435,8 +435,7 @@ app.post('/api/agents/developer-support', async (req, res) => {
 // Agent Task History Endpoints
 app.get('/api/agents/tasks', async (req, res) => {
   try {
-    const { PrismaClient } = require('@prisma/client');
-    const prisma = new PrismaClient();
+    // Using shared singleton prisma
     const tasks = await prisma.agentReachTask.findMany({
       include: { sources: true },
       orderBy: { createdAt: 'desc' },
@@ -450,8 +449,7 @@ app.get('/api/agents/tasks', async (req, res) => {
 
 app.get('/api/agents/tasks/:id', async (req, res) => {
   try {
-    const { PrismaClient } = require('@prisma/client');
-    const prisma = new PrismaClient();
+    // Using shared singleton prisma
     const task = await prisma.agentReachTask.findUnique({
       where: { id: req.params.id },
       include: { sources: true }
