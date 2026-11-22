@@ -17,6 +17,7 @@ import {
   RotateCcw,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   Download,
   Share2,
   Search,
@@ -233,10 +234,10 @@ interface GalleryTranslations {
 
 const GALLERY_I18N: Record<"en" | "te" | "hi", GalleryTranslations> = {
   en: {
-    titleMain: "Church",
+    titleMain: "Church Media",
     titleHighlight: "Photo Gallery & Video Theater",
     subtitle:
-      "Relive powerful revival services, explore 80+ church family blessing moments, and watch anointed video broadcasts.",
+      "Relive powerful revival services, explore church family blessing moments, and watch anointed video broadcasts.",
     allCategory: "All",
     categoryTranslations: {
       All: "All",
@@ -251,14 +252,14 @@ const GALLERY_I18N: Record<"en" | "te" | "hi", GalleryTranslations> = {
     subhashBranch: "Subhash Nagar Branch",
     shapurBranch: "Shapur Nagar Branch",
     bahadurBranch: "Bahadurpalli Branch",
-    sortOrderAsc: "Order-Wise Photos (1 — {count})",
-    sortOrderDesc: "Newest First ({count} Photos)",
+    sortOrderAsc: "Order-Wise (1 — {count})",
+    sortOrderDesc: "Newest First ({count})",
     sortTitleAsc: "Title (A — Z)",
     viewMasonry: "Masonry Layout",
     viewStandard: "Standard Grid",
     viewCompact: "Compact Grid",
     savedPhotos: "Saved Favorites",
-    searchPlaceholder: "Search 80+ photos...",
+    searchPlaceholder: "Search photos by keyword, category, or branch...",
     videoSearchPlaceholder: "Search videos...",
     loadingPhotos: "Loading sacred moments...",
     noMomentsFound: "No sacred moments found",
@@ -286,10 +287,10 @@ const GALLERY_I18N: Record<"en" | "te" | "hi", GalleryTranslations> = {
     hideInfo: "Hide Details",
   },
   te: {
-    titleMain: "చర్చి",
+    titleMain: "చర్చి మీడియా",
     titleHighlight: "ఫోటో గ్యాలరీ & వీడియో థియేటర్",
     subtitle:
-      "ఆధ్యాత్మిక పునరుజ్జీవ కూడికలు, 80+ కుటుంబ ఆశీర్వాద క్షణాలు, మరియు ఆత్మీయ వీడియో ప్రసారాలను చూడండి.",
+      "ఆధ్యాత్మిక పునరుజ్జీవ కూడికలు, కుటుంబ ఆశీర్వాద క్షణాలు, మరియు ఆత్మీయ వీడియో ప్రసారాలను చూడండి.",
     allCategory: "అన్నీ",
     categoryTranslations: {
       All: "అన్నీ",
@@ -311,7 +312,7 @@ const GALLERY_I18N: Record<"en" | "te" | "hi", GalleryTranslations> = {
     viewStandard: "గ్రిడ్ లేఅవుట్",
     viewCompact: "కాంపాక్ట్ గ్రిడ్",
     savedPhotos: "సేవ్ చేసిన ఫోటోలు",
-    searchPlaceholder: "ఫోటోలను శోధించండి...",
+    searchPlaceholder: "శీర్షిక, వర్గం లేదా బ్రాంచ్ ద్వారా శోధించండి...",
     videoSearchPlaceholder: "వీడియోలను శోధించండి...",
     loadingPhotos: "ఫోటోలు లోడ్ అవుతున్నాయి...",
     noMomentsFound: "ఎలాంటి ఫోటోలు కనుగొనబడలేదు",
@@ -338,10 +339,10 @@ const GALLERY_I18N: Record<"en" | "te" | "hi", GalleryTranslations> = {
     hideInfo: "వివరాలను దాచండి",
   },
   hi: {
-    titleMain: "चर्च",
+    titleMain: "चर्च मीडिया",
     titleHighlight: "फोटो गैलरी एवं वीडियो थिएटर",
     subtitle:
-      "आत्मिक पुनरुद्धार सभाएं, 80+ पारिवारिक आशीष के क्षण, और आत्मिक वीडियो प्रसारण देखें।",
+      "आत्मिक पुनरुद्धार सभाएं, पारिवारिक आशीष के क्षण, और आत्मिक वीडियो प्रसारण देखें।",
     allCategory: "सभी",
     categoryTranslations: {
       All: "सभी",
@@ -356,14 +357,14 @@ const GALLERY_I18N: Record<"en" | "te" | "hi", GalleryTranslations> = {
     subhashBranch: "सुभाष नगर शाखा",
     shapurBranch: "शापुर नगर शाखा",
     bahadurBranch: "बहादुरपल्ली शाखा",
-    sortOrderAsc: "क्रमवार फोटो (1 — {count})",
-    sortOrderDesc: "नवीनतम फोटो ({count})",
+    sortOrderAsc: "क्रमवार (1 — {count})",
+    sortOrderDesc: "नवीनतम ({count})",
     sortTitleAsc: "शीर्षक (A — Z)",
     viewMasonry: "मेसनरी लेआउट",
     viewStandard: "मानक ग्रिड",
     viewCompact: "कॉम्पैक्ट ग्रिड",
     savedPhotos: "सहेजे गए फोटो",
-    searchPlaceholder: "फोटो खोजें...",
+    searchPlaceholder: "फोटो, श्रेणी या शाखा द्वारा खोजें...",
     videoSearchPlaceholder: "वीडियो खोजें...",
     loadingPhotos: "फोटो लोड हो रहे हैं...",
     noMomentsFound: "कोई फोटो नहीं मिला",
@@ -649,13 +650,15 @@ export default function ChurchGalleryPage() {
     }
   }, [selectedBranchId]);
 
-  // Derive photo categories dynamically with count
+  // Derive photo categories dynamically with count (only include active categories with items)
   const photoCategories = useMemo(() => {
     const counts: Record<string, number> = {};
     items.forEach((item) => {
       counts[item.category] = (counts[item.category] || 0) + 1;
     });
-    const unique = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
+    const unique = Object.keys(counts)
+      .filter((cat) => (counts[cat] || 0) > 0)
+      .sort((a, b) => counts[b] - counts[a]);
     return [
       { name: "All", label: gt.categoryTranslations?.["All"] || gt.allCategory, count: items.length },
       ...unique.map((cat) => ({
@@ -837,6 +840,16 @@ export default function ChurchGalleryPage() {
     };
   }, [isSlideshowPlaying, lightboxIndex, nextPhoto]);
 
+  // Auto-scroll active thumbnail into view in photo lightbox
+  useEffect(() => {
+    if (lightboxIndex !== null && thumbnailContainerRef.current) {
+      const activeThumb = thumbnailContainerRef.current.children[lightboxIndex] as HTMLElement;
+      if (activeThumb) {
+        activeThumb.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+      }
+    }
+  }, [lightboxIndex]);
+
   // Keyboard navigation for photo lightbox
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -917,7 +930,7 @@ export default function ChurchGalleryPage() {
       </AnimatePresence>
 
       {/* ══════════════════════════ HERO SECTION ══════════════════════════ */}
-      <section className="relative pt-32 pb-14 md:pt-36 md:pb-16 overflow-hidden bg-gradient-to-b from-purple-100/70 via-slate-50 to-slate-50 dark:from-purple-950/40 dark:via-slate-950 dark:to-slate-950 border-b border-slate-200/80 dark:border-white/5">
+      <section className="relative pt-28 pb-12 sm:pt-32 sm:pb-16 overflow-hidden bg-gradient-to-b from-purple-100/70 via-slate-50 to-slate-50 dark:from-purple-950/40 dark:via-slate-950 dark:to-slate-950 border-b border-slate-200/80 dark:border-white/5">
         {/* Ambient Lights & Sacred Aura */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(147,51,234,0.18),rgba(255,255,255,0))] dark:bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(147,51,234,0.35),rgba(255,255,255,0))]" />
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[750px] h-[380px] bg-purple-500/15 dark:bg-purple-600/20 blur-[130px] rounded-full pointer-events-none animate-pulse" style={{ animationDuration: "8s" }} />
@@ -925,118 +938,117 @@ export default function ChurchGalleryPage() {
         <div className="absolute -bottom-10 left-10 w-80 h-80 bg-blue-600/10 dark:bg-blue-600/15 blur-[110px] rounded-full pointer-events-none" />
 
         <div className="container mx-auto px-4 sm:px-6 relative z-10">
-          <div className="max-w-4xl mx-auto text-center space-y-6">
-            <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3">
+          <div className="max-w-4xl mx-auto text-center space-y-5 sm:space-y-6">
+            <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
               <BackToHome variant="glass" />
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 dark:bg-purple-500/20 border border-purple-500/30 dark:border-purple-400/30 text-purple-700 dark:text-purple-300 text-xs font-extrabold uppercase tracking-widest backdrop-blur-xl shadow-sm shrink-0">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-500/10 dark:bg-purple-500/20 border border-purple-500/25 dark:border-purple-400/30 text-purple-700 dark:text-purple-300 text-[11px] sm:text-xs font-extrabold uppercase tracking-widest backdrop-blur-xl shadow-sm shrink-0">
                 <Sparkles className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400 animate-spin shrink-0" style={{ animationDuration: "6s" }} />
                 <span className="whitespace-nowrap">Captured Moments of Faith & Praise</span>
               </div>
             </div>
 
-            <h1 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight text-slate-900 dark:text-white font-outfit">
-              {gt.titleMain || "Church"}{" "}
-              <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-rose-500 dark:from-purple-400 dark:via-pink-400 dark:to-rose-300 bg-clip-text text-transparent">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-900 dark:text-white font-outfit leading-[1.15]">
+              {gt.titleMain || "Church Media"}{" "}
+              <span className="bg-gradient-to-r from-purple-600 via-indigo-600 to-amber-600 dark:from-purple-300 dark:via-indigo-300 dark:to-amber-300 bg-clip-text text-transparent block sm:inline mt-1 sm:mt-0">
                 {gt.titleHighlight || "Photo Gallery & Video Theater"}
               </span>
             </h1>
 
-            <p className="text-base sm:text-lg md:text-xl text-slate-600 dark:text-slate-300/90 leading-relaxed font-medium max-w-2xl mx-auto">
-              {gt.subtitle || "Relive powerful revival services, explore 80+ church family blessing moments, and watch anointed video broadcasts."}
+            <p className="text-sm sm:text-base md:text-lg text-slate-600 dark:text-slate-300/90 leading-relaxed font-medium max-w-2xl mx-auto">
+              {gt.subtitle || "Relive powerful revival services, explore church family blessing moments, and watch anointed video broadcasts."}
             </p>
 
-            {/* Quick Media Switcher Tabs in Hero — Liquid Glass Segmented Pill */}
-            <div className="inline-flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 rounded-3xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-2xl border border-slate-200/80 dark:border-white/10 shadow-2xl shadow-purple-950/10 max-w-full mx-auto">
-              {/* 1. Photo Gallery Tab — PRIMARY & ON TOP */}
-              <button
-                onClick={handleSwitchToPhotoGallery}
-                className={`relative inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-2xl font-extrabold text-xs sm:text-sm whitespace-nowrap transition-all duration-300 ${
-                  activeMediaTab === "photos"
-                    ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-600/30 ring-2 ring-purple-400/40"
-                    : "text-slate-700 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50/80 dark:hover:bg-purple-950/30"
-                }`}
-              >
-                <Camera className={`w-4 h-4 shrink-0 ${activeMediaTab === "photos" ? "text-white" : "text-purple-600 dark:text-purple-400"}`} />
-                <span>Photo Gallery</span>
-                <span
-                  className={`px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-mono font-black shrink-0 ${
+            {/* Quick Media Switcher Tabs in Hero — Fully Responsive Segmented Grid */}
+            <div className="w-full max-w-2xl mx-auto p-1.5 sm:p-2 rounded-2xl sm:rounded-3xl bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border border-slate-200/90 dark:border-white/10 shadow-xl shadow-purple-950/5">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 sm:gap-2">
+                {/* 1. Photo Gallery */}
+                <button
+                  onClick={handleSwitchToPhotoGallery}
+                  className={`relative flex items-center justify-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl font-extrabold text-xs sm:text-sm transition-all duration-200 cursor-pointer ${
                     activeMediaTab === "photos"
-                      ? "bg-white/25 text-white"
-                      : "bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300"
+                      ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-600/30 ring-2 ring-purple-400/40"
+                      : "text-slate-700 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50/80 dark:hover:bg-purple-950/30"
                   }`}
                 >
-                  {filteredItems.length}+
-                </span>
-                {activeMediaTab === "photos" && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping absolute -top-1 -right-1" />
-                )}
-              </button>
+                  <Camera className={`w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 ${activeMediaTab === "photos" ? "text-white" : "text-purple-600 dark:text-purple-400"}`} />
+                  <span className="truncate">Photo Gallery</span>
+                  <span
+                    className={`px-1.5 py-0.5 rounded-full text-[10px] font-mono font-black shrink-0 ${
+                      activeMediaTab === "photos"
+                        ? "bg-white/25 text-white"
+                        : "bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300"
+                    }`}
+                  >
+                    {items.length}+
+                  </span>
+                </button>
 
-              {/* 2. Pastor Spotlight Tab */}
-              <button
-                onClick={handleSwitchToPastor}
-                className={`relative inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-2xl font-extrabold text-xs sm:text-sm whitespace-nowrap transition-all duration-300 ${
-                  activeMediaTab === "pastor"
-                    ? "bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 text-white shadow-lg shadow-purple-600/30 ring-2 ring-purple-400/40"
-                    : "text-slate-700 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50/80 dark:hover:bg-purple-950/30"
-                }`}
-              >
-                <Crown className={`w-4 h-4 shrink-0 ${activeMediaTab === "pastor" ? "text-amber-300 fill-amber-300" : "text-amber-500"}`} />
-                <span>Pastor Spotlight</span>
-                <span
-                  className={`px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-mono font-black shrink-0 ${
+                {/* 2. Pastor Spotlight */}
+                <button
+                  onClick={handleSwitchToPastor}
+                  className={`relative flex items-center justify-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl font-extrabold text-xs sm:text-sm transition-all duration-200 cursor-pointer ${
                     activeMediaTab === "pastor"
-                      ? "bg-white/25 text-white"
-                      : "bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300"
+                      ? "bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 text-white shadow-md shadow-purple-600/30 ring-2 ring-purple-400/40"
+                      : "text-slate-700 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50/80 dark:hover:bg-purple-950/30"
                   }`}
                 >
-                  {PASTOR_MEDIA_ITEMS.length}
-                </span>
-              </button>
+                  <Crown className={`w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 ${activeMediaTab === "pastor" ? "text-amber-300 fill-amber-300" : "text-amber-500"}`} />
+                  <span className="truncate">Pastor Spotlight</span>
+                  <span
+                    className={`px-1.5 py-0.5 rounded-full text-[10px] font-mono font-black shrink-0 ${
+                      activeMediaTab === "pastor"
+                        ? "bg-white/25 text-white"
+                        : "bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300"
+                    }`}
+                  >
+                    {PASTOR_MEDIA_ITEMS.length}
+                  </span>
+                </button>
 
-              {/* 3. Video Theater Tab */}
-              <button
-                onClick={handleSwitchToVideoTheater}
-                className={`relative inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-2xl font-extrabold text-xs sm:text-sm whitespace-nowrap transition-all duration-300 ${
-                  activeMediaTab === "videos"
-                    ? "bg-gradient-to-r from-rose-600 to-red-600 text-white shadow-lg shadow-rose-600/30 ring-2 ring-rose-400/40"
-                    : "text-slate-700 dark:text-slate-300 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50/80 dark:hover:bg-rose-950/30"
-                }`}
-              >
-                <YouTubeLogoIcon className="w-4 h-4 shrink-0" />
-                <span>Video Theater</span>
-                <span
-                  className={`px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-mono font-black shrink-0 ${
+                {/* 3. Video Theater */}
+                <button
+                  onClick={handleSwitchToVideoTheater}
+                  className={`relative flex items-center justify-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl font-extrabold text-xs sm:text-sm transition-all duration-200 cursor-pointer ${
                     activeMediaTab === "videos"
-                      ? "bg-white/25 text-white"
-                      : "bg-rose-100 dark:bg-rose-900/60 text-rose-700 dark:text-rose-300"
+                      ? "bg-gradient-to-r from-rose-600 to-red-600 text-white shadow-md shadow-rose-600/30 ring-2 ring-rose-400/40"
+                      : "text-slate-700 dark:text-slate-300 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50/80 dark:hover:bg-rose-950/30"
                   }`}
                 >
-                  {filteredVideos.length}
-                </span>
-              </button>
+                  <YouTubeLogoIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+                  <span className="truncate">Video Theater</span>
+                  <span
+                    className={`px-1.5 py-0.5 rounded-full text-[10px] font-mono font-black shrink-0 ${
+                      activeMediaTab === "videos"
+                        ? "bg-white/25 text-white"
+                        : "bg-rose-100 dark:bg-rose-900/60 text-rose-700 dark:text-rose-300"
+                    }`}
+                  >
+                    {filteredVideos.length}
+                  </span>
+                </button>
 
-              {/* 4. All Media Tab */}
-              <button
-                onClick={handleSwitchToAllMedia}
-                className={`relative inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-2xl font-extrabold text-xs sm:text-sm whitespace-nowrap transition-all duration-300 ${
-                  activeMediaTab === "all"
-                    ? "bg-gradient-to-r from-indigo-600 to-blue-600 text-white shadow-lg shadow-indigo-600/30 ring-2 ring-indigo-400/40"
-                    : "text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50/80 dark:hover:bg-indigo-950/30"
-                }`}
-              >
-                <Layers className={`w-4 h-4 shrink-0 ${activeMediaTab === "all" ? "text-white" : "text-indigo-600 dark:text-indigo-400"}`} />
-                <span>All Media</span>
-                <span
-                  className={`px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-mono font-black shrink-0 ${
+                {/* 4. All Media */}
+                <button
+                  onClick={handleSwitchToAllMedia}
+                  className={`relative flex items-center justify-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl font-extrabold text-xs sm:text-sm transition-all duration-200 cursor-pointer ${
                     activeMediaTab === "all"
-                      ? "bg-white/25 text-white"
-                      : "bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300"
+                      ? "bg-gradient-to-r from-indigo-600 to-blue-600 text-white shadow-md shadow-indigo-600/30 ring-2 ring-indigo-400/40"
+                      : "text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50/80 dark:hover:bg-indigo-950/30"
                   }`}
                 >
-                  {filteredVideos.length + filteredItems.length}+
-                </span>
-              </button>
+                  <Layers className={`w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 ${activeMediaTab === "all" ? "text-white" : "text-indigo-600 dark:text-indigo-400"}`} />
+                  <span className="truncate">All Media</span>
+                  <span
+                    className={`px-1.5 py-0.5 rounded-full text-[10px] font-mono font-black shrink-0 ${
+                      activeMediaTab === "all"
+                        ? "bg-white/25 text-white"
+                        : "bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300"
+                    }`}
+                  >
+                    {filteredVideos.length + items.length}+
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -1046,19 +1058,19 @@ export default function ChurchGalleryPage() {
            PRIMARY SECTION: 📸 HIGH-RESOLUTION CHURCH PHOTO GALLERY (ON TOP)
       ══════════════════════════════════════════════════════════════════════════════ */}
       {(activeMediaTab === "all" || activeMediaTab === "photos") && (
-        <main ref={photoGalleryRef} className="container mx-auto px-4 sm:px-6 py-10 sm:py-14">
+        <main ref={photoGalleryRef} className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
           {/* Photo Gallery Header & Control Bar */}
-          <div className="space-y-6 mb-10">
+          <div className="space-y-6 mb-8 sm:mb-10">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-purple-100 text-purple-700 dark:bg-purple-500/15 dark:text-purple-400 border border-purple-200 dark:border-purple-500/30 mb-2">
                   <Camera className="w-3.5 h-3.5" />
                   PHOTO ARCHIVE & FAMILY BLESSINGS
                 </div>
-                <h2 className="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
                   High-Resolution Moments of Faith
                 </h2>
-                <p className="text-slate-600 dark:text-slate-400 text-sm mt-1">
+                <p className="text-slate-600 dark:text-slate-400 text-xs sm:text-sm mt-1">
                   Explore {items.length}+ curated photographs capturing pastoral blessings, worship, prayer services, and church family milestones.
                 </p>
               </div>
@@ -1070,9 +1082,9 @@ export default function ChurchGalleryPage() {
                       setLightboxIndex(0);
                       setIsSlideshowPlaying(true);
                     }}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 text-white font-bold text-xs sm:text-sm shadow-lg shadow-purple-600/25 hover:scale-105 active:scale-95 transition-all"
+                    className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 text-white font-bold text-xs sm:text-sm shadow-md shadow-purple-600/25 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer w-full sm:w-auto"
                   >
-                    <Play className="w-4 h-4 fill-current" />
+                    <Play className="w-4 h-4 fill-current shrink-0" />
                     <span>Launch Slideshow ({filteredItems.length} Photos)</span>
                   </button>
                 )}
@@ -1080,7 +1092,7 @@ export default function ChurchGalleryPage() {
             </div>
 
             {/* Photo Search Bar & Controls Bar */}
-            <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 p-3 rounded-2xl bg-white/90 dark:bg-slate-900/60 border border-slate-200/80 dark:border-white/10 backdrop-blur-xl shadow-md">
+            <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2.5 p-2.5 sm:p-3 rounded-2xl bg-white/90 dark:bg-slate-900/80 border border-slate-200/90 dark:border-white/10 backdrop-blur-xl shadow-md">
               {/* Search */}
               <div className="relative flex-1">
                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -1089,28 +1101,28 @@ export default function ChurchGalleryPage() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder={gt.searchPlaceholder}
-                  className="w-full pl-10 pr-10 py-2 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white placeholder-slate-400 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full pl-10 pr-9 py-2.5 sm:py-2 rounded-xl bg-slate-50 dark:bg-white/[0.04] border border-slate-200/90 dark:border-white/10 text-slate-900 dark:text-white placeholder-slate-400 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
                 />
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery("")}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-white"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer"
                   >
-                    <X className="w-4 h-4" />
+                    <X className="w-3.5 h-3.5" />
                   </button>
                 )}
               </div>
 
-              {/* Controls Group */}
-              <div className="grid grid-cols-1 sm:flex sm:flex-nowrap items-center gap-2">
+              {/* Controls Group: 2-column grid on mobile, row on desktop */}
+              <div className="grid grid-cols-2 md:flex md:flex-nowrap items-center gap-2">
                 {/* Branch Dropdown */}
-                <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 text-xs font-semibold text-slate-700 dark:text-slate-300">
-                  <MapPin className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400 shrink-0" />
+                <div className="relative flex items-center bg-slate-50 dark:bg-white/[0.04] border border-slate-200/90 dark:border-white/10 rounded-xl px-2.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  <MapPin className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400 shrink-0 mr-1.5" />
                   <select
                     value={selectedBranch}
                     onChange={(e) => setSelectedBranch(e.target.value)}
                     aria-label="Filter photos by church branch"
-                    className="bg-transparent text-slate-900 dark:text-white font-bold focus:outline-none cursor-pointer pr-2 text-xs sm:text-sm w-full truncate"
+                    className="bg-transparent text-slate-900 dark:text-white font-bold focus:outline-none cursor-pointer pr-6 text-xs sm:text-sm w-full truncate appearance-none"
                   >
                     <option value="all" className="bg-white text-slate-900 dark:bg-slate-900 dark:text-white">
                       {gt.allBranches} ({items.length})
@@ -1125,16 +1137,17 @@ export default function ChurchGalleryPage() {
                       {gt.bahadurBranch}
                     </option>
                   </select>
+                  <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2 pointer-events-none" />
                 </div>
 
                 {/* Sort Dropdown */}
-                <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 text-xs font-semibold text-slate-700 dark:text-slate-300">
-                  <ArrowUpDown className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
+                <div className="relative flex items-center bg-slate-50 dark:bg-white/[0.04] border border-slate-200/90 dark:border-white/10 rounded-xl px-2.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  <ArrowUpDown className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0 mr-1.5" />
                   <select
                     value={sortOrder}
                     onChange={(e) => setSortOrder(e.target.value as any)}
                     aria-label="Sort gallery photos"
-                    className="bg-transparent text-slate-900 dark:text-white font-bold focus:outline-none cursor-pointer pr-2 text-xs sm:text-sm w-full truncate"
+                    className="bg-transparent text-slate-900 dark:text-white font-bold focus:outline-none cursor-pointer pr-6 text-xs sm:text-sm w-full truncate appearance-none"
                   >
                     <option value="order-asc" className="bg-white text-slate-900 dark:bg-slate-900 dark:text-white">
                       {gt.sortOrderAsc.replace("{count}", items.length.toString())}
@@ -1146,16 +1159,17 @@ export default function ChurchGalleryPage() {
                       {gt.sortTitleAsc}
                     </option>
                   </select>
+                  <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2 pointer-events-none" />
                 </div>
 
-                {/* View Layout Switcher */}
-                <div className="hidden sm:flex items-center p-1 bg-slate-100 dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 rounded-xl">
+                {/* View Layout Switcher (Desktop) */}
+                <div className="hidden sm:flex items-center p-1 bg-slate-100 dark:bg-white/[0.04] border border-slate-200/90 dark:border-white/10 rounded-xl">
                   <button
                     onClick={() => setViewMode("masonry")}
                     title="Masonry Gallery"
-                    className={`p-2 rounded-lg transition-all ${
+                    className={`p-2 rounded-lg transition-all cursor-pointer ${
                       viewMode === "masonry"
-                        ? "bg-purple-600 text-white shadow-md"
+                        ? "bg-purple-600 text-white shadow-sm"
                         : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                     }`}
                   >
@@ -1164,9 +1178,9 @@ export default function ChurchGalleryPage() {
                   <button
                     onClick={() => setViewMode("standard")}
                     title="Standard Grid"
-                    className={`p-2 rounded-lg transition-all ${
+                    className={`p-2 rounded-lg transition-all cursor-pointer ${
                       viewMode === "standard"
-                        ? "bg-purple-600 text-white shadow-md"
+                        ? "bg-purple-600 text-white shadow-sm"
                         : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                     }`}
                   >
@@ -1175,9 +1189,9 @@ export default function ChurchGalleryPage() {
                   <button
                     onClick={() => setViewMode("compact")}
                     title="Compact Dense"
-                    className={`p-2 rounded-lg transition-all ${
+                    className={`p-2 rounded-lg transition-all cursor-pointer ${
                       viewMode === "compact"
-                        ? "bg-purple-600 text-white shadow-md"
+                        ? "bg-purple-600 text-white shadow-sm"
                         : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                     }`}
                   >
@@ -1189,7 +1203,7 @@ export default function ChurchGalleryPage() {
                 <button
                   onClick={() => setCardDisplayMode((m) => (m === "immersive" ? "detailed" : "immersive"))}
                   title={cardDisplayMode === "immersive" ? "Switch to Detailed Cards with Captions" : "Switch to Immersive Photos"}
-                  className={`hidden lg:flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-bold transition-all ${
+                  className={`hidden lg:flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
                     cardDisplayMode === "immersive"
                       ? "bg-purple-50 dark:bg-purple-950/40 border-purple-300 dark:border-purple-600/50 text-purple-700 dark:text-purple-300"
                       : "bg-slate-50 dark:bg-white/[0.04] border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300"
@@ -1684,7 +1698,7 @@ export default function ChurchGalleryPage() {
                           }}
                           className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all cursor-pointer ${
                             videoPlaybackMode === "direct"
-                              ? "bg-violet-600 text-white shadow-xs"
+                              ? "bg-violet-600 text-white shadow-sm"
                               : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
                           }`}
                         >
@@ -1698,7 +1712,7 @@ export default function ChurchGalleryPage() {
                           }}
                           className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all cursor-pointer ${
                             videoPlaybackMode === "youtube"
-                              ? "bg-red-600 text-white shadow-xs"
+                              ? "bg-red-600 text-white shadow-sm"
                               : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
                           }`}
                         >
@@ -2098,7 +2112,7 @@ export default function ChurchGalleryPage() {
                       type="button"
                       onClick={() => setVideoPlaybackMode("direct")}
                       className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
-                        videoPlaybackMode === "direct" ? "bg-violet-600 text-white shadow-xs" : "text-white/70 hover:text-white"
+                        videoPlaybackMode === "direct" ? "bg-violet-600 text-white shadow-sm" : "text-white/70 hover:text-white"
                       }`}
                     >
                       Direct HD
@@ -2107,7 +2121,7 @@ export default function ChurchGalleryPage() {
                       type="button"
                       onClick={() => setVideoPlaybackMode("youtube")}
                       className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
-                        videoPlaybackMode === "youtube" ? "bg-red-600 text-white shadow-xs" : "text-white/70 hover:text-white"
+                        videoPlaybackMode === "youtube" ? "bg-red-600 text-white shadow-sm" : "text-white/70 hover:text-white"
                       }`}
                     >
                       YouTube

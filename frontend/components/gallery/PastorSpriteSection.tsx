@@ -338,9 +338,9 @@ export default function PastorSpriteSection({
         {/* Filter Switcher Pills - 100% Visible on all mobile screens */}
         <div className="w-full lg:w-auto grid grid-cols-3 sm:flex sm:items-center gap-1 sm:gap-2 p-1 sm:p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 backdrop-blur-xl shadow-inner shrink-0">
           {[
-            { id: "all", label: labels.filterAll, icon: Layers, count: 5 },
-            { id: "photos", label: labels.filterPhotos, icon: Camera, count: 4 },
-            { id: "videos", label: labels.filterVideos, icon: Video, count: 1 },
+            { id: "all", label: labels.filterAll, icon: Layers, count: PASTOR_MEDIA_ITEMS.length },
+            { id: "photos", label: labels.filterPhotos, icon: Camera, count: PASTOR_MEDIA_ITEMS.filter((i) => i.type === "image").length },
+            { id: "videos", label: labels.filterVideos, icon: Video, count: PASTOR_MEDIA_ITEMS.filter((i) => i.type === "video").length },
           ].map((tab) => {
             const Icon = tab.icon;
             const isActive = filterCategory === tab.id;
