@@ -917,15 +917,15 @@ export default function ContactPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           
           {/* Section Header */}
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <div className="inline-flex items-center gap-2 text-xs font-bold text-orange-600 dark:text-orange-400 uppercase tracking-widest bg-orange-100/70 dark:bg-orange-500/10 px-4 py-1.5 rounded-full mb-3 shadow-sm">
-              <MapPin className="w-4 h-4" />
+          <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-12">
+            <div className="inline-flex items-center gap-2 text-xs font-extrabold text-[#f95700] dark:text-orange-400 uppercase tracking-widest bg-orange-500/10 dark:bg-orange-500/15 border border-orange-500/20 px-3.5 py-1.5 rounded-full mb-3 shadow-xs">
+              <MapPin className="w-3.5 h-3.5" />
               <span>{isTe ? "హైదరాబాద్ అంతటా 3 చర్చి క్యాంపస్‌లు" : isHi ? "हैदराबाद में 3 चर्च परिसर" : "3 Church Campuses Across Hyderabad"}</span>
             </div>
-            <h3 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white font-outfit">
+            <h3 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white font-outfit tracking-tight">
               {isTe ? "మా చర్చి కేంద్రాలను సందర్శించండి" : isHi ? "हमारे चर्च स्थानों पर आएं" : "Visit Our Church Locations"}
             </h3>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 font-medium">
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-2 font-medium max-w-xl mx-auto leading-relaxed">
               {isTe 
                 ? "మా 3 చురుకైన ఆరాధన కేంద్రాలలో దేవుని సన్నిధిని, రూపాంతర సహవాసాన్ని మరియు ఉజ్జీవ వాక్య బోధనలను అనుభవించండి."
                 : isHi 
@@ -934,33 +934,39 @@ export default function ContactPage() {
             </p>
           </div>
 
-          {/* Branch Switcher Tabs */}
-          <div className="flex flex-wrap items-center justify-center gap-3 mb-12">
-            {branches.map((branch, idx) => {
-              const isActive = selectedBranchIdx === idx;
-              return (
-                <button
-                  key={branch.id}
-                  type="button"
-                  onClick={() => setSelectedBranchIdx(idx)}
-                  className={`px-5 py-3.5 rounded-2xl font-black text-xs sm:text-sm transition-all duration-300 flex items-center gap-2.5 cursor-pointer border ${
-                    isActive
-                      ? "bg-[#f95700] text-white border-[#f95700] shadow-xl shadow-orange-500/30 scale-[1.03]"
-                      : "bg-white dark:bg-white/5 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/10 hover:border-orange-400/50"
-                  }`}
-                >
-                  <MapPin className={`w-4 h-4 ${isActive ? "text-white" : "text-[#f95700]"}`} />
-                  <span>{branch.name}</span>
-                  <span
-                    className={`text-[10px] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider ${
-                      isActive ? "bg-white/25 text-white" : "bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-slate-400"
+          {/* Branch Switcher: Responsive Segmented Control Bar (Zero Vertical Stacking on Mobile!) */}
+          <div className="max-w-2xl mx-auto mb-10 sm:mb-12">
+            <div className="grid grid-cols-3 gap-1.5 p-1.5 rounded-2xl bg-slate-200/70 dark:bg-white/5 border border-slate-300/60 dark:border-white/10 shadow-inner">
+              {branches.map((branch, idx) => {
+                const isActive = selectedBranchIdx === idx;
+                return (
+                  <button
+                    key={branch.id}
+                    type="button"
+                    onClick={() => setSelectedBranchIdx(idx)}
+                    className={`px-2 sm:px-4 py-2.5 sm:py-3 rounded-xl font-black text-xs sm:text-sm transition-all duration-200 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 cursor-pointer text-center ${
+                      isActive
+                        ? "bg-[#f95700] text-white shadow-md shadow-orange-500/25 scale-[1.01]"
+                        : "text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white hover:bg-white/50 dark:hover:bg-white/10"
                     }`}
                   >
-                    {branch.badge}
-                  </span>
-                </button>
-              );
-            })}
+                    <div className="flex items-center gap-1 sm:gap-1.5 truncate">
+                      <MapPin className={`w-3.5 h-3.5 shrink-0 ${isActive ? "text-white" : "text-[#f95700]"}`} />
+                      <span className="truncate">{branch.name}</span>
+                    </div>
+                    <span
+                      className={`text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 rounded-md font-bold uppercase tracking-wider shrink-0 ${
+                        isActive 
+                          ? "bg-white/20 text-white" 
+                          : "bg-slate-300/60 dark:bg-white/10 text-slate-600 dark:text-slate-400"
+                      }`}
+                    >
+                      {branch.badge}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           {/* Active Branch Showcase: Schedule + Interactive Google Map */}
@@ -970,7 +976,7 @@ export default function ContactPage() {
             <div className="lg:col-span-5 flex flex-col justify-between space-y-4 bg-white dark:bg-[#0c0e22]/90 p-5 sm:p-7 rounded-3xl border border-slate-200/90 dark:border-white/10 shadow-xl shadow-slate-200/40 dark:shadow-none backdrop-blur-md">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <div className="inline-flex items-center gap-2 text-xs font-bold text-orange-600 dark:text-orange-400 uppercase tracking-wider">
+                  <div className="inline-flex items-center gap-2 text-xs font-bold text-[#f95700] dark:text-orange-400 uppercase tracking-wider">
                     <Clock className="w-4 h-4" />
                     <span>{currentBranch.name} {isTe ? "సమయాలు" : isHi ? "समय सारिणी" : "Schedule"}</span>
                   </div>
@@ -983,8 +989,8 @@ export default function ContactPage() {
                   {currentBranch.fullName}
                 </h4>
 
-                {/* Address & Landmark Box */}
-                <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 space-y-1.5">
+                {/* Address & Quick Actions Box */}
+                <div className="p-4 rounded-2xl bg-slate-50/90 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 space-y-3">
                   <div className="flex items-start gap-2.5">
                     <MapPin className="w-4 h-4 text-[#f95700] shrink-0 mt-0.5" />
                     <p className="text-xs text-slate-800 dark:text-slate-200 font-semibold leading-relaxed">
@@ -992,35 +998,52 @@ export default function ContactPage() {
                     </p>
                   </div>
                   <div className="flex items-center gap-2 text-[11px] text-slate-500 dark:text-slate-400 pl-6">
-                    <Compass className="w-3.5 h-3.5 text-orange-400" />
+                    <Compass className="w-3.5 h-3.5 text-orange-400 shrink-0" />
                     <span>{currentBranch.landmark}</span>
                   </div>
-                  <div className="pt-1 pl-6">
+                  
+                  {/* Action Buttons: Directions & Campus Phone */}
+                  <div className="flex flex-wrap items-center gap-2 pt-1 pl-6">
                     <a
                       href={currentBranch.mapsUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 text-xs font-extrabold text-[#f95700] hover:underline"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#f95700] hover:bg-[#ea580c] text-white text-xs font-bold shadow-sm transition-all hover:scale-105 active:scale-95"
                     >
-                      <span>{isTe ? "డ్రైవింగ్ దిశలను పొందండి" : isHi ? "ड्राइविंग दिशानिर्देश प्राप्त करें" : "Get Instant Driving Directions"}</span>
+                      <span>{isTe ? "దిశలను పొందండి" : isHi ? "दिशानिर्देश प्राप्त करें" : "Driving Directions"}</span>
                       <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
+
+                    <a
+                      href={`tel:${currentBranch.phone.replace(/\s+/g, '')}`}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-white/10 hover:bg-slate-100 dark:hover:bg-white/15 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-white/10 text-xs font-bold transition-all hover:scale-105 active:scale-95"
+                    >
+                      <Phone className="w-3.5 h-3.5 text-[#f95700]" />
+                      <span>{currentBranch.phone}</span>
                     </a>
                   </div>
                 </div>
 
                 {/* Service Schedule List */}
-                <div className="space-y-1.5 pt-1">
+                <div className="space-y-2 pt-1">
                   <label className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                     {isTe ? "ఆరాధన సమయాలు" : isHi ? "आराधना समय" : "Service Timings"}
                   </label>
-                  <ul className="space-y-1.5 text-xs">
+                  <ul className="space-y-2 text-xs">
                     {currentBranch.timings.map((t, i) => (
                       <li
                         key={i}
-                        className="flex items-center justify-between py-2 px-3 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200/70 dark:border-white/10 shadow-sm dark:shadow-none hover:border-orange-300 transition-colors"
+                        className="flex items-start justify-between gap-3 p-3 rounded-2xl bg-slate-50/90 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 shadow-xs hover:border-orange-400/40 transition-colors"
                       >
-                        <span className="font-bold text-slate-800 dark:text-slate-200 leading-snug">{t.service}</span>
-                        <span className="font-mono text-[#f95700] font-black shrink-0 ml-2">{t.time}</span>
+                        <div className="flex items-start gap-2.5 min-w-0">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#f95700] mt-1.5 shrink-0" />
+                          <span className="font-bold text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-snug">
+                            {t.service}
+                          </span>
+                        </div>
+                        <span className="text-xs font-black text-[#f95700] tracking-tight shrink-0 whitespace-nowrap bg-orange-500/10 dark:bg-orange-500/15 border border-orange-500/20 px-2.5 py-1 rounded-xl tabular-nums">
+                          {t.time}
+                        </span>
                       </li>
                     ))}
                   </ul>
@@ -1028,14 +1051,14 @@ export default function ContactPage() {
               </div>
             </div>
 
-            {/* Right (7 cols): Google Maps Embed (Equal Height Symmetrical to Left Card) */}
+            {/* Right (7 cols): Google Maps Embed with Dark Theme Support */}
             <div className="lg:col-span-7 rounded-3xl overflow-hidden shadow-2xl border border-slate-200/90 dark:border-white/10 min-h-[420px] lg:min-h-[500px] h-full relative bg-slate-200 dark:bg-slate-900 group flex flex-col">
               {/* Floating Maps Overlay Badge */}
               <a
                 href={currentBranch.mapsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="absolute top-4 left-4 z-10 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/95 dark:bg-slate-900/90 hover:bg-white text-xs font-bold text-slate-900 dark:text-white shadow-xl hover:scale-105 transition-all backdrop-blur-md border border-slate-200 dark:border-white/15"
+                className="absolute top-4 left-4 z-10 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/95 dark:bg-[#0c0e22]/95 hover:bg-white text-xs font-bold text-slate-900 dark:text-white shadow-xl hover:scale-105 transition-all backdrop-blur-md border border-slate-200 dark:border-white/15"
               >
                 <span>{isTe ? "గూగుల్ మ్యాప్స్‌లో తెరవండి" : isHi ? "गूगल मैप्स में खोलें" : "Open in Google Maps"}</span>
                 <ExternalLink className="w-3.5 h-3.5 text-[#f95700]" />
@@ -1051,7 +1074,7 @@ export default function ContactPage() {
                 allowFullScreen={false}
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                className="w-full h-full min-h-[420px] lg:min-h-full flex-1"
+                className="w-full h-full min-h-[420px] lg:min-h-full flex-1 dark:brightness-[0.82] dark:contrast-[1.15] dark:invert-[0.9] dark:hue-rotate-180 transition-all duration-300"
               />
             </div>
 
