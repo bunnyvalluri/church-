@@ -332,40 +332,35 @@ export default function ContactPage() {
       {/* ── Top Hero Banner (Spatial Lighting & Visual Depth) ── */}
       <section className="relative pt-32 pb-24 lg:pt-40 lg:pb-32 bg-gradient-to-b from-orange-100/50 via-slate-100/60 to-[#fafafc] dark:from-[#060710]/95 dark:via-[#0a0c1e]/95 dark:to-[#070814] border-b border-slate-200/80 dark:border-white/5 overflow-hidden transition-colors duration-300">
         
-        {/* Glow Spheres & Ambient Spatial Grid */}
-        <div className="absolute -top-32 right-1/4 w-[500px] h-[500px] bg-[#f95700]/15 dark:bg-[#f95700]/20 rounded-full blur-[120px] pointer-events-none" />
-        <div className="absolute -bottom-32 left-1/4 w-[500px] h-[500px] bg-indigo-500/10 dark:bg-indigo-600/15 rounded-full blur-[120px] pointer-events-none" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,0,0.03)_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:36px_36px] pointer-events-none" />
+        {/* Glow Spheres & Ambient Spatial Lighting (Velvety, smooth, grid-free) */}
+        <div className="absolute -top-32 right-1/4 w-[500px] h-[500px] bg-[#f95700]/10 dark:bg-[#f95700]/15 rounded-full blur-[140px] pointer-events-none" />
+        <div className="absolute -bottom-32 left-1/4 w-[500px] h-[500px] bg-indigo-500/10 dark:bg-indigo-600/15 rounded-full blur-[140px] pointer-events-none" />
 
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
           
-          {/* Header Action Bar: Back to Home + Our Story + Live Pastoral Desk Badges */}
-          <div className="flex flex-wrap items-center gap-3 mb-6">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/95 dark:bg-white/10 hover:bg-white dark:hover:bg-white/20 border border-slate-200/80 dark:border-white/15 text-xs font-bold text-slate-800 dark:text-white shadow-sm hover:shadow-md transition-all hover:scale-105 active:scale-95 group backdrop-blur-md"
-            >
-              <ChevronLeft className="w-4 h-4 text-[#f95700] group-hover:-translate-x-0.5 transition-transform" />
-              <span>{isTe ? "హోమ్‌కు తిరిగి వెళ్ళండి" : isHi ? "होम पर वापस जाएं" : "Back to Home"}</span>
-            </Link>
-
-            <Link
-              href="/about/story"
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/95 dark:bg-white/10 hover:bg-white dark:hover:bg-white/20 border border-orange-300/80 dark:border-orange-500/30 text-xs font-bold text-orange-700 dark:text-orange-300 shadow-sm hover:shadow-md transition-all hover:scale-105 active:scale-95 group backdrop-blur-md"
-            >
-              <BookOpen className="w-4 h-4 text-[#f95700]" />
-              <span>{isTe ? "మా కథ & దర్శనం" : isHi ? "हमारी कहानी और दृष्टिकोण" : "Our Story & Vision"}</span>
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-            </Link>
-
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/90 dark:bg-white/5 border border-orange-200/80 dark:border-white/10 shadow-sm text-xs font-bold text-orange-600 dark:text-orange-400 backdrop-blur-md">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>{isTe ? "పాస్టరల్ కార్యాలయం • షాపూర్ నగర్, హైదరాబాద్" : isHi ? "पादरी कार्यालय • शापूर नगर, हैदराबाद" : "Pastoral Office • Shapur Nagar, Hyderabad"}</span>
+          {/* Header Action Bar: Clean, unified single-row navigation & live pastoral desk indicator */}
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+            <div className="flex items-center gap-2">
+              <Link
+                href="/"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/90 dark:bg-white/10 hover:bg-white dark:hover:bg-white/20 border border-slate-200/80 dark:border-white/15 text-xs font-bold text-slate-700 dark:text-slate-200 shadow-xs hover:shadow-sm transition-all hover:scale-105 active:scale-95 group backdrop-blur-md"
+              >
+                <ChevronLeft className="w-4 h-4 text-[#f95700] group-hover:-translate-x-0.5 transition-transform" />
+                <span>{isTe ? "హోమ్‌కు తిరిగి వెళ్ళండి" : isHi ? "होम पर वापस जाएं" : "Back to Home"}</span>
+              </Link>
+              <Link
+                href="/about/story"
+                className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/90 dark:bg-white/10 hover:bg-white dark:hover:bg-white/20 border border-orange-300/60 dark:border-orange-500/30 text-xs font-bold text-orange-700 dark:text-orange-300 shadow-xs hover:shadow-sm transition-all hover:scale-105 active:scale-95 group backdrop-blur-md"
+              >
+                <BookOpen className="w-3.5 h-3.5 text-[#f95700]" />
+                <span>{isTe ? "మా కథ & దర్శనం" : isHi ? "हमारी कहानी" : "Our Story & Vision"}</span>
+                <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+              </Link>
             </div>
 
-            <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs font-bold text-emerald-700 dark:text-emerald-400">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>{isTe ? "24/7 ప్రార్థన డెస్క్ అందుబాటులో ఉంది" : isHi ? "24/7 प्रार्थना सहायता उपलब्ध" : "24/7 Prayer Desk Available"}</span>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/25 text-xs font-bold text-emerald-700 dark:text-emerald-400 backdrop-blur-md shadow-xs">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.7)]" />
+              <span>{isTe ? "24/7 పాస్టరల్ డెస్క్ • షాపూర్ నగర్ హెచ్‌క్యూ" : isHi ? "24/7 पादरी डेस्क • शापूर नगर मुख्यालय" : "24/7 Pastoral Desk • Shapur Nagar HQ"}</span>
             </div>
           </div>
 
@@ -433,7 +428,7 @@ export default function ContactPage() {
             {/* Card 1: Pastoral Phone Line */}
             <div className="flex flex-col justify-between space-y-4 lg:pr-6 group">
               <div className="flex items-start gap-4">
-                <div className="w-13 h-13 rounded-2xl border border-orange-200/60 dark:border-white/15 flex items-center justify-center shrink-0 bg-orange-50 dark:bg-white/5 shadow-sm group-hover:scale-105 group-hover:border-orange-500/50 transition-all duration-300">
+                <div className="w-12 h-12 rounded-2xl border border-orange-200/60 dark:border-white/15 flex items-center justify-center shrink-0 bg-orange-50 dark:bg-white/5 shadow-sm group-hover:scale-105 group-hover:border-orange-500/50 transition-all duration-300">
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 fill-current text-slate-800 dark:text-slate-100 group-hover:text-[#f95700] transition-colors shrink-0" viewBox="0 0 24 24">
                     <path d="M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2a1 1 0 011.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.45.57 3.57a1 1 0 01-.24 1.02l-2.21 2.2z" />
                   </svg>
@@ -445,7 +440,7 @@ export default function ContactPage() {
                     </h3>
                     <button
                       type="button"
-                      onClick={() => handleCopy("9704090069", "phone")}
+                      onClick={() => handleCopy("+91 97040 90069", "phone")}
                       className="p-1 rounded-md text-slate-400 hover:text-[#f95700] hover:bg-orange-50 dark:hover:bg-white/5 transition-all flex items-center gap-1 text-[11px] font-bold cursor-pointer"
                       title="Copy phone number"
                     >
@@ -465,9 +460,9 @@ export default function ContactPage() {
                   <div className="mt-1">
                     <a
                       href="tel:+919704090069"
-                      className="text-base font-extrabold text-slate-900 dark:text-slate-100 hover:text-[#f95700] dark:hover:text-[#f95700] transition-colors block font-mono"
+                      className="text-lg sm:text-xl font-black text-slate-900 dark:text-white hover:text-[#f95700] dark:hover:text-[#f95700] transition-colors block font-sans tracking-tight"
                     >
-                      9704090069
+                      +91 97040 90069
                     </a>
                   </div>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">
@@ -486,7 +481,7 @@ export default function ContactPage() {
             {/* Card 2: Central Sanctuary Campus */}
             <div className="flex flex-col justify-between space-y-4 lg:px-6 group">
               <div className="flex items-start gap-4">
-                <div className="w-13 h-13 rounded-2xl border border-orange-200/60 dark:border-white/15 flex items-center justify-center shrink-0 bg-orange-50 dark:bg-white/5 shadow-sm group-hover:scale-105 group-hover:border-orange-500/50 transition-all duration-300">
+                <div className="w-12 h-12 rounded-2xl border border-orange-200/60 dark:border-white/15 flex items-center justify-center shrink-0 bg-orange-50 dark:bg-white/5 shadow-sm group-hover:scale-105 group-hover:border-orange-500/50 transition-all duration-300">
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 fill-current text-slate-800 dark:text-slate-100 group-hover:text-[#f95700] transition-colors shrink-0" viewBox="0 0 24 24">
                     <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z" />
                   </svg>
@@ -526,7 +521,7 @@ export default function ContactPage() {
             {/* Card 3: Ministry Desk Email */}
             <div className="flex flex-col justify-between space-y-4 lg:pl-6 group">
               <div className="flex items-start gap-4">
-                <div className="w-13 h-13 rounded-2xl border border-orange-200/60 dark:border-white/15 flex items-center justify-center shrink-0 bg-orange-50 dark:bg-white/5 shadow-sm group-hover:scale-105 group-hover:border-orange-500/50 transition-all duration-300">
+                <div className="w-12 h-12 rounded-2xl border border-orange-200/60 dark:border-white/15 flex items-center justify-center shrink-0 bg-orange-50 dark:bg-white/5 shadow-sm group-hover:scale-105 group-hover:border-orange-500/50 transition-all duration-300">
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 fill-current text-slate-800 dark:text-slate-100 group-hover:text-[#f95700] transition-colors shrink-0" viewBox="0 0 24 24">
                     <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
                   </svg>
@@ -587,20 +582,14 @@ export default function ContactPage() {
           
           {/* Left Column (5 cols): Bishop Kurra Kristhu Raju Founder Showcase */}
           <div className="lg:col-span-5 space-y-5">
-            {/* 1. Dedicated High-Definition Portrait Container */}
-            <div className="relative w-full h-[400px] sm:h-[450px] rounded-3xl overflow-hidden shadow-2xl border border-slate-200/90 dark:border-white/15 bg-white dark:bg-slate-900 group">
-              <Image
-                src="/pastor.png"
-                alt="Bishop Kurra Kristhu Raju - Senior Pastor & Founder"
-                fill
-                sizes="(max-width: 768px) 100vw, 40vw"
-                className="object-cover object-top group-hover:scale-105 transition-transform duration-700 ease-out"
-                priority
-                unoptimized
-              />
+            {/* 1. Dedicated High-Definition Portrait Container with Seamless Bottom Dissolve */}
+            <div className="relative w-full h-[420px] sm:h-[460px] rounded-3xl overflow-hidden shadow-2xl border border-slate-200/90 dark:border-white/15 bg-gradient-to-b from-purple-50/70 via-slate-50 to-white dark:from-[#0d152c] dark:via-[#101938] dark:to-[#0c1324] group">
+              
+              {/* Subtle Ambient Radial Backlight */}
+              <div className="absolute inset-0 bg-radial from-[#f95700]/10 via-transparent to-transparent opacity-70 dark:opacity-40 pointer-events-none" />
 
               {/* Floating Top Founder Badge */}
-              <div className="absolute top-4 left-4 right-4 flex items-center justify-between pointer-events-none z-10">
+              <div className="absolute top-4 left-4 right-4 flex items-center justify-between pointer-events-none z-20">
                 <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-black/75 backdrop-blur-md border border-white/20 text-white text-[10px] font-extrabold uppercase tracking-widest shadow-lg">
                   <ShieldCheck className="w-3.5 h-3.5 text-[#f95700]" />
                   <span>{isTe ? "సీనియర్ పాస్టర్ & వ్యవస్థాపకులు" : isHi ? "वरिष्ठ पादरी और संस्थापक" : "Senior Pastor & Founder"}</span>
@@ -608,6 +597,36 @@ export default function ContactPage() {
                 <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#f95700] text-white text-[10px] font-black uppercase tracking-wider shadow-lg">
                   KCM
                 </span>
+              </div>
+
+              {/* Founder Image with Crisp Top/Center Alignment */}
+              <Image
+                src="/pastor.png"
+                alt="Bishop Kurra Kristhu Raju - Senior Pastor & Founder"
+                fill
+                sizes="(max-width: 768px) 100vw, 40vw"
+                className="object-cover object-top group-hover:scale-[1.02] transition-transform duration-700 ease-out"
+                priority
+                unoptimized
+              />
+
+              {/* Seamless Studio Gradient Scrim (Eliminates Torso Cutoff) */}
+              <div className="absolute bottom-0 inset-x-0 h-32 bg-gradient-to-t from-white via-white/80 to-transparent dark:from-[#0c0e22] dark:via-[#0c0e22]/80 to-transparent z-10 pointer-events-none" />
+
+              {/* Executive Identification Plaque Over Scrim */}
+              <div className="absolute bottom-4 left-4 right-4 z-20 p-3.5 rounded-2xl bg-white/95 dark:bg-[#0c0e22]/90 backdrop-blur-md border border-slate-200/90 dark:border-white/10 shadow-lg flex items-center justify-between">
+                <div>
+                  <p className="text-[10px] font-extrabold uppercase tracking-widest text-[#f95700]">
+                    {isTe ? "వ్యవస్థాపకులు & సీనియర్ పాస్టర్" : isHi ? "संस्थापक और वरिष्ठ पादरी" : "Founder & Senior Pastor"}
+                  </p>
+                  <h4 className="text-sm sm:text-base font-black text-slate-900 dark:text-white font-outfit">
+                    {isTe ? "బిషప్ కుర్రా క్రీస్తు రాజు" : isHi ? "बिशप कुर्रा क्रिस्टु राजू" : "Bishop Kurra Kristhu Raju"}
+                  </h4>
+                </div>
+                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-500/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-extrabold shrink-0">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <span>{isTe ? "పరిచర్యలో" : isHi ? "सक्रिय" : "Active"}</span>
+                </div>
               </div>
             </div>
 
@@ -619,7 +638,7 @@ export default function ContactPage() {
                   <span>{isTe ? "దర్శన నాయకత్వం" : isHi ? "दूरदर्शी नेतृत्व" : "Visionary Leadership"}</span>
                 </div>
                 <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white font-outfit">
-                  {isTe ? "బిషప్ కుర్రా క్రీస్తు రాజు" : isHi ? "बिशप कुर्रा क्रिस्टु राजू" : "Bishop Kurra Kristhu Raju"}
+                  {isTe ? "దేవుని పిలుపు & ప్రవచనాత్మక పరిచర్య" : isHi ? "ईश्वरीय आह्वान और भविष्यसूचक मंत्रालय" : "Divine Calling & Ministry Journey"}
                 </h3>
               </div>
 
@@ -656,28 +675,28 @@ export default function ContactPage() {
               </Link>
             </div>
 
-            {/* 3. Quick Action Buttons Grid */}
+            {/* 3. Quick Action Buttons Grid (Symmetrical, Single-line, Accessible 48px Touch Targets) */}
             <div className="grid grid-cols-2 gap-3">
               <a
                 href={whatsappPastorUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 p-4 rounded-2xl bg-[#25D366]/10 dark:bg-[#25D366]/15 hover:bg-[#25D366]/20 border border-[#25D366]/30 text-emerald-800 dark:text-emerald-300 font-extrabold text-xs transition-all hover:scale-[1.02] active:scale-[0.98] shadow-sm"
+                className="h-12 min-h-[48px] px-3 sm:px-4 rounded-2xl bg-[#25D366]/15 hover:bg-[#25D366]/25 border border-[#25D366]/35 text-emerald-900 dark:text-emerald-300 font-extrabold text-xs transition-all hover:scale-[1.02] active:scale-[0.98] shadow-sm flex items-center justify-center gap-2 whitespace-nowrap"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 fill-current text-[#25D366] shrink-0" viewBox="0 0 24 24">
                   <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
                 </svg>
-                <span>{isTe ? "పాస్టర్ గారికి వాట్సాప్" : isHi ? "पादरी को व्हाट्सएप" : "WhatsApp Pastor"}</span>
+                <span className="truncate">{isTe ? "వాట్సాప్" : isHi ? "व्हाट्सएप" : "WhatsApp"}</span>
               </a>
 
               <a
                 href="tel:+919704090069"
-                className="flex items-center justify-center gap-2 p-4 rounded-2xl bg-orange-500/10 dark:bg-orange-500/15 hover:bg-orange-500/20 border border-orange-500/30 text-[#f95700] font-extrabold text-xs transition-all hover:scale-[1.02] active:scale-[0.98] shadow-sm"
+                className="h-12 min-h-[48px] px-3 sm:px-4 rounded-2xl bg-orange-500/10 dark:bg-orange-500/15 hover:bg-orange-500/20 border border-orange-500/30 text-orange-700 dark:text-orange-400 font-extrabold text-xs transition-all hover:scale-[1.02] active:scale-[0.98] shadow-sm flex items-center justify-center gap-2 whitespace-nowrap"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24">
                   <path d="M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2a1 1 0 011.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.45.57 3.57a1 1 0 01-.24 1.02l-2.21 2.2z" />
                 </svg>
-                <span>{isTe ? "నేరుగా కాల్ చేయండి" : isHi ? "सीधे कॉल करें" : "Call Directly"}</span>
+                <span className="truncate">{isTe ? "నేరుగా కాల్" : isHi ? "सीधे कॉल" : "Call Directly"}</span>
               </a>
             </div>
           </div>
