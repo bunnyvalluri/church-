@@ -29,7 +29,9 @@ import {
   Calendar,
   Compass,
   Radio,
-  BookOpen
+  BookOpen,
+  Users,
+  Gift
 } from "lucide-react";
 
 export default function ContactPage() {
@@ -57,42 +59,42 @@ export default function ContactPage() {
   const phoneId = useId();
   const messageId = useId();
 
-  // Dynamic localized categories
+  // Dynamic localized categories with professional Lucide icons
   const categories = [
     {
       key: "General Inquiry",
       label: isTe ? "సాధారణ విచారణ" : isHi ? "सामान्य पूछताछ" : "General Inquiry",
-      icon: "💬",
+      Icon: MessageCircle,
       desc: isTe ? "ఆరాధన సమయాలు, సమాచారం" : isHi ? "सेवा की जानकारी, समय" : "Service info, timings, guidance"
     },
     {
       key: "Pastoral Prayer",
       label: isTe ? "పాస్టరల్ ప్రార్థన" : isHi ? "पादरी प्रार्थना" : "Pastoral Prayer",
-      icon: "✝️",
+      Icon: Sparkles,
       desc: isTe ? "బిషప్ & బృందం ప్రార్థన మద్దతు" : isHi ? "बिशप और टीम से प्रार्थना" : "Prayer support from Bishop & team"
     },
     {
       key: "Healing & Deliverance",
       label: isTe ? "స్వస్థత & విడుదల" : isHi ? "चंगाई और छुटकारा" : "Healing & Deliverance",
-      icon: "✨",
+      Icon: ShieldCheck,
       desc: isTe ? "ప్రత్యేక ఉపవాస ప్రార్థన విజ్ఞాపన" : isHi ? "विशेष उपवास प्रार्थना" : "Special fasting prayer intercession"
     },
     {
       key: "Pastoral Counseling",
       label: isTe ? "పాస్టరల్ కౌన్సెలింగ్" : isHi ? "पादरी परामर्श" : "Pastoral Counseling",
-      icon: "🤝",
+      Icon: HeartHandshake,
       desc: isTe ? "రహస్య ఆధ్యాత్మిక మార్గదర్శకత్వం" : isHi ? "गोपनीय आध्यात्मिक मार्गदर्शन" : "Confidential spiritual guidance"
     },
     {
       key: "Volunteering & Ministry",
       label: isTe ? "వాలంటీరింగ్ & పరిచర్య" : isHi ? "स्वयंसेवा और मंत्रालय" : "Volunteering & Ministry",
-      icon: "🙋",
+      Icon: Users,
       desc: isTe ? "కోయిర్, మీడియా, ఎన్జీవో సేవలు" : isHi ? "गायक दल, मीडिया, एनजीओ" : "Choir, media, NGO community outreach"
     },
     {
       key: "Donations & Giving",
       label: isTe ? "కానుకలు & దశమభాగాలు" : isHi ? "दान और दशमांश" : "Donations & Giving",
-      icon: "🎁",
+      Icon: Gift,
       desc: isTe ? "దశమభాగాలు, భవన నిధి & రశీదులు" : isHi ? "दशमांश, भवन निधि और रसीदें" : "Tithes, building fund & receipts"
     }
   ];
@@ -769,22 +771,34 @@ export default function ContactPage() {
                 <label className="text-xs font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                   {isTe ? "ఉద్దేశాన్ని ఎంచుకోండి" : isHi ? "उद्देश्य चुनें" : "Select Purpose"} <span className="text-orange-500">*</span>
                 </label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
                   {categories.map((cat) => {
                     const isSelected = formData.category === cat.key;
+                    const IconComponent = cat.Icon;
                     return (
                       <button
                         key={cat.key}
                         type="button"
                         onClick={() => setFormData((prev) => ({ ...prev, category: cat.key }))}
-                        className={`text-xs p-3 rounded-2xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between ${
+                        className={`p-3 sm:p-3.5 rounded-2xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between min-h-[76px] sm:min-h-[82px] ${
                           isSelected
-                            ? "bg-[#f95700] text-white border-[#f95700] shadow-md shadow-orange-500/25 font-bold scale-[1.02]"
-                            : "bg-slate-50 dark:bg-white/5 border-slate-200/90 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:border-orange-400/50 hover:bg-slate-100 dark:hover:bg-white/10"
+                            ? "bg-gradient-to-br from-[#f95700] to-[#ea580c] text-white border-transparent shadow-lg shadow-orange-500/25 font-bold scale-[1.02]"
+                            : "bg-slate-50/90 dark:bg-white/5 border-slate-200/90 dark:border-white/10 text-slate-700 dark:text-slate-200 hover:border-orange-400/50 hover:bg-slate-100 dark:hover:bg-white/10"
                         }`}
                       >
-                        <span className="text-base mb-1">{cat.icon}</span>
-                        <span className="font-bold leading-tight">{cat.label}</span>
+                        <div className="flex items-center justify-between w-full mb-1.5">
+                          <div className={`w-7 h-7 rounded-xl flex items-center justify-center transition-colors ${
+                            isSelected 
+                              ? "bg-white/20 text-white" 
+                              : "bg-orange-500/10 text-[#f95700] dark:bg-orange-500/15 dark:text-orange-400"
+                          }`}>
+                            <IconComponent className="w-4 h-4" />
+                          </div>
+                          {isSelected && (
+                            <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
+                          )}
+                        </div>
+                        <span className="text-xs font-bold leading-tight line-clamp-2">{cat.label}</span>
                       </button>
                     );
                   })}
@@ -804,7 +818,7 @@ export default function ContactPage() {
                   onChange={handleChange}
                   required
                   placeholder={isTe ? "ఉదా: శామ్యూల్ రాజు" : isHi ? "उदा: सैमुअल राजू" : "e.g. Samuel Raju"}
-                  className="w-full px-4 py-3.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/80 dark:bg-[#070814] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-[#070814] focus:outline-none focus:ring-2 focus:ring-[#f95700] focus:border-transparent transition-all text-sm font-medium"
+                  className="w-full px-4 py-3.5 rounded-2xl border border-slate-300/80 dark:border-white/15 bg-slate-50/90 dark:bg-[#070814] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-[#070814] focus:outline-none focus:ring-2 focus:ring-[#f95700] focus:border-transparent transition-all text-sm font-medium shadow-xs"
                 />
               </div>
 
@@ -822,7 +836,7 @@ export default function ContactPage() {
                     onChange={handleChange}
                     required
                     placeholder="yourname@gmail.com"
-                    className="w-full px-4 py-3.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/80 dark:bg-[#070814] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-[#070814] focus:outline-none focus:ring-2 focus:ring-[#f95700] focus:border-transparent transition-all text-sm font-medium"
+                    className="w-full px-4 py-3.5 rounded-2xl border border-slate-300/80 dark:border-white/15 bg-slate-50/90 dark:bg-[#070814] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-[#070814] focus:outline-none focus:ring-2 focus:ring-[#f95700] focus:border-transparent transition-all text-sm font-medium shadow-xs"
                   />
                 </div>
 
@@ -838,36 +852,32 @@ export default function ContactPage() {
                     onChange={handleChange}
                     required
                     placeholder="+91 98765 43210"
-                    className="w-full px-4 py-3.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/80 dark:bg-[#070814] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-[#070814] focus:outline-none focus:ring-2 focus:ring-[#f95700] focus:border-transparent transition-all text-sm font-medium font-mono"
+                    className="w-full px-4 py-3.5 rounded-2xl border border-slate-300/80 dark:border-white/15 bg-slate-50/90 dark:bg-[#070814] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-[#070814] focus:outline-none focus:ring-2 focus:ring-[#f95700] focus:border-transparent transition-all text-sm font-medium shadow-xs"
                   />
                 </div>
               </div>
 
               {/* Message / Prayer Request */}
               <div className="space-y-1.5">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-wrap items-center justify-between gap-2">
                   <label htmlFor={messageId} className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
-                    {isTe ? "మీ సందేశం / ప్రార్థన అభ్యర్థన" : isHi ? "आपका संदेश / प्रार्थना अनुरोध" : "Your Message / Prayer Request"} <span className="text-orange-500">*</span>
+                    {isTe ? "సందేశం / ప్రార్థన అభ్యర్థన" : isHi ? "संदेश / प्रार्थना अनुरोध" : "Message / Prayer Request"} <span className="text-orange-500">*</span>
                   </label>
-                  <span className="text-[11px] text-slate-400 dark:text-slate-500 font-mono">
-                    {formData.message.length}/1000
+                  <span className="text-[11px] font-medium px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-slate-400 font-mono">
+                    {formData.message.length} / 1000
                   </span>
                 </div>
-                <div className="relative">
-                  <textarea
-                    id={messageId}
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    required
-                    maxLength={1000}
-                    rows={4}
-                    placeholder={isTe ? "మీ ప్రార్థన అభ్యర్థన, ప్రశ్న లేదా సందేశాన్ని వివరంగా రాయండి..." : isHi ? "अपना प्रार्थना अनुरोध, प्रश्न या संदेश विस्तार से लिखें..." : "Write your prayer request, question, or message in detail..."}
-                    className="w-full px-4 py-3.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/80 dark:bg-[#070814] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-[#070814] focus:outline-none focus:ring-2 focus:ring-[#f95700] focus:border-transparent transition-all text-sm font-medium resize-none"
-                  />
-                  {/* Vertical Accent Pill */}
-                  <span className="absolute right-0 top-3 bottom-3 w-1.5 bg-[#f95700] rounded-r-md pointer-events-none" />
-                </div>
+                <textarea
+                  id={messageId}
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
+                  required
+                  maxLength={1000}
+                  rows={4}
+                  placeholder={isTe ? "మీ ప్రార్థన అభ్యర్థన, ప్రశ్న లేదా సందేశాన్ని వివరంగా రాయండి..." : isHi ? "अपना प्रार्थना अनुरोध, प्रश्न या संदेश विस्तार से लिखें..." : "Write your prayer request, question, or message in detail..."}
+                  className="w-full px-4 py-3.5 rounded-2xl border border-slate-300/80 dark:border-white/15 bg-slate-50/90 dark:bg-[#070814] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-[#070814] focus:outline-none focus:ring-2 focus:ring-[#f95700] focus:border-transparent transition-all text-sm font-medium resize-none shadow-xs"
+                />
               </div>
 
               {/* Confidentiality Assurance */}
@@ -881,17 +891,17 @@ export default function ContactPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="bg-gradient-to-r from-[#f95700] to-[#ea580c] hover:from-[#ea580c] hover:to-[#c2410c] text-white font-black text-sm px-10 py-4 rounded-full inline-flex items-center justify-center gap-2.5 shadow-xl shadow-orange-500/30 transition-all hover:scale-105 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer w-full sm:w-auto"
+                  className="h-14 min-h-[52px] bg-gradient-to-r from-[#f95700] to-[#ea580c] hover:from-[#ea580c] hover:to-[#c2410c] text-white font-black text-sm px-8 sm:px-10 rounded-full inline-flex items-center justify-center gap-2.5 shadow-xl shadow-orange-500/30 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer w-full sm:w-auto whitespace-nowrap"
                 >
                   {isSubmitting ? (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin text-white" />
-                      <span>{isTe ? "సందేశం పంపబడుతోంది..." : isHi ? "संदेश भेजा जा रहा है..." : "Transmitting Message..."}</span>
+                      <Loader2 className="w-4 h-4 animate-spin text-white shrink-0" />
+                      <span>{isTe ? "సందేశం పంపబడుతోంది..." : isHi ? "संदेश भेजा जा रहा है..." : "Transmitting..."}</span>
                     </>
                   ) : (
                     <>
-                      <span>{isTe ? "ప్రార్థన అభ్యర్థన / సందేశం పంపండి" : isHi ? "प्रार्थना अनुरोध / संदेश भेजें" : "Send Prayer Request / Message"}</span>
-                      <ArrowRight className="w-4 h-4" />
+                      <span>{isTe ? "ప్రార్థన అభ్యర్థన పంపండి" : isHi ? "प्रार्थना अनुरोध भेजें" : "Send Prayer Request"}</span>
+                      <ArrowRight className="w-4 h-4 shrink-0" />
                     </>
                   )}
                 </button>
