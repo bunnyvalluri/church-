@@ -895,17 +895,12 @@ function NgoDonationsContent() {
         <AgentStatusBar />
         {step === 3 && <PaymentStateMonitor />}
 
-        {/* ── TOP IMPACT METRICS BAR (SENIOR RESPONSIVE ARCHITECTURE — ZERO TEXT WRAPPING) ── */}
+        {/* ── TOP IMPACT METRICS BAR (CLEAN, MINIMALIST, ZERO BADGE CLUTTER) ── */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
           {/* 1. Govt Registered */}
           <div className="flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white/90 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200/80 dark:border-white/10 shadow-xs hover:shadow-md hover:border-purple-300 dark:hover:border-purple-500/40 transition-all group active:scale-[0.99]">
-            <div className="flex items-center justify-between mb-2.5">
-              <div className="w-8 h-8 rounded-xl bg-purple-500/10 dark:bg-purple-500/20 text-purple-600 dark:text-purple-300 border border-purple-500/20 flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
-                <ShieldCheck className="w-4.5 h-4.5" />
-              </div>
-              <span className="text-[9px] font-black uppercase tracking-wider text-purple-700 dark:text-purple-300 bg-purple-500/10 dark:bg-purple-500/20 px-2 py-0.5 rounded-full border border-purple-500/20">
-                Govt Validated
-              </span>
+            <div className="w-9 h-9 rounded-xl bg-purple-500/10 dark:bg-purple-500/20 text-purple-600 dark:text-purple-300 border border-purple-500/20 flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform mb-2.5">
+              <ShieldCheck className="w-5 h-5" />
             </div>
             <div className="space-y-0.5 min-w-0">
               <p className="text-xs sm:text-sm font-black text-slate-900 dark:text-white leading-tight font-outfit truncate">
@@ -919,13 +914,8 @@ function NgoDonationsContent() {
 
           {/* 2. Beneficiaries Assisted */}
           <div className="flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white/90 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200/80 dark:border-white/10 shadow-xs hover:shadow-md hover:border-emerald-300 dark:hover:border-emerald-500/40 transition-all group active:scale-[0.99]">
-            <div className="flex items-center justify-between mb-2.5">
-              <div className="w-8 h-8 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border border-emerald-500/20 flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
-                <Users className="w-4.5 h-4.5" />
-              </div>
-              <span className="text-[9px] font-black uppercase tracking-wider text-emerald-700 dark:text-emerald-300 bg-emerald-500/10 dark:bg-emerald-500/20 px-2 py-0.5 rounded-full border border-emerald-500/20">
-                Verified Reach
-              </span>
+            <div className="w-9 h-9 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border border-emerald-500/20 flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform mb-2.5">
+              <Users className="w-5 h-5" />
             </div>
             <div className="space-y-0.5 min-w-0">
               <p className="text-xs sm:text-sm font-black text-slate-900 dark:text-white leading-tight font-outfit truncate">
@@ -939,13 +929,8 @@ function NgoDonationsContent() {
 
           {/* 3. Volunteers */}
           <div className="flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white/90 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200/80 dark:border-white/10 shadow-xs hover:shadow-md hover:border-amber-300 dark:hover:border-amber-500/40 transition-all group active:scale-[0.99]">
-            <div className="flex items-center justify-between mb-2.5">
-              <div className="w-8 h-8 rounded-xl bg-amber-500/10 dark:bg-amber-500/20 text-amber-600 dark:text-amber-300 border border-amber-500/20 flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
-                <Flame className="w-4.5 h-4.5" />
-              </div>
-              <span className="text-[9px] font-black uppercase tracking-wider text-amber-700 dark:text-amber-300 bg-amber-500/10 dark:bg-amber-500/20 px-2 py-0.5 rounded-full border border-amber-500/20">
-                On Ground
-              </span>
+            <div className="w-9 h-9 rounded-xl bg-amber-500/10 dark:bg-amber-500/20 text-amber-600 dark:text-amber-300 border border-amber-500/20 flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform mb-2.5">
+              <Flame className="w-5 h-5" />
             </div>
             <div className="space-y-0.5 min-w-0">
               <p className="text-xs sm:text-sm font-black text-slate-900 dark:text-white leading-tight font-outfit truncate">
@@ -959,13 +944,8 @@ function NgoDonationsContent() {
 
           {/* 4. Direct Aid / Impact */}
           <div className="flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white/90 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200/80 dark:border-white/10 shadow-xs hover:shadow-md hover:border-sky-300 dark:hover:border-sky-500/40 transition-all group active:scale-[0.99]">
-            <div className="flex items-center justify-between mb-2.5">
-              <div className="w-8 h-8 rounded-xl bg-sky-500/10 dark:bg-sky-500/20 text-sky-600 dark:text-sky-300 border border-sky-500/20 flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
-                <Award className="w-4.5 h-4.5" />
-              </div>
-              <span className="text-[9px] font-black uppercase tracking-wider text-sky-700 dark:text-sky-300 bg-sky-500/10 dark:bg-sky-500/20 px-2 py-0.5 rounded-full border border-sky-500/20">
-                Direct Aid
-              </span>
+            <div className="w-9 h-9 rounded-xl bg-sky-500/10 dark:bg-sky-500/20 text-sky-600 dark:text-sky-300 border border-sky-500/20 flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform mb-2.5">
+              <Award className="w-5 h-5" />
             </div>
             <div className="space-y-0.5 min-w-0">
               <p className="text-xs sm:text-sm font-black text-slate-900 dark:text-white leading-tight font-outfit truncate">
@@ -1070,43 +1050,75 @@ function NgoDonationsContent() {
                           : "bg-white/80 dark:bg-slate-900/80 border-slate-200 dark:border-white/10 hover:border-purple-300 dark:hover:border-purple-500/40 hover:bg-slate-50 dark:hover:bg-slate-800"
                       }`}
                     >
-                      <div className="flex items-center justify-between mb-1">
-                        <div className="flex items-center gap-2">
-                          <span className={`text-xs sm:text-sm font-black ${isSelected ? "text-purple-950 dark:text-white" : "text-slate-900 dark:text-white"}`}>
+                      <div className="flex items-center justify-between gap-3 mb-1.5">
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <div
+                            className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${
+                              isSelected
+                                ? "border-purple-600 bg-purple-600 text-white shadow-2xs"
+                                : "border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800"
+                            }`}
+                          >
+                            {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
+                          </div>
+                          <span
+                            className={`text-xs sm:text-sm font-black tracking-tight ${
+                              isSelected ? "text-purple-950 dark:text-purple-100" : "text-slate-900 dark:text-white"
+                            }`}
+                          >
                             {causeName}
                           </span>
-                          {isSelected && <CheckCircle2 className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400 flex-shrink-0" />}
                         </div>
+
                         {hasTarget ? (
-                          <span className={`text-[11px] font-mono font-bold ${isSelected ? "text-purple-800 dark:text-purple-200" : "text-slate-500 dark:text-slate-400"}`}>
-                            ₹{formatNumber(raised)} / ₹{formatNumber(target)} ({pct}%)
+                          <span
+                            className={`text-xs font-mono font-black px-2.5 py-0.5 rounded-full shrink-0 shadow-2xs ${
+                              isSelected
+                                ? "bg-purple-600 text-white"
+                                : "bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300"
+                            }`}
+                          >
+                            {pct}%
                           </span>
                         ) : raised > 0 ? (
-                          <span className="inline-flex items-center gap-1 text-[11px] font-mono font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800/50">
+                          <span className="inline-flex items-center gap-1 text-[11px] font-mono font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800/50 shrink-0">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                            ₹{formatNumber(raised)} Raised
+                            ₹{formatNumber(raised)}
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-1 rounded-full border border-emerald-200 dark:border-emerald-800/60">
+                          <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-1 rounded-full border border-emerald-200 dark:border-emerald-800/60 shrink-0">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                            Active Relief Drive
+                            Active
                           </span>
                         )}
                       </div>
 
                       {/* Real description of the relief mission */}
                       {c.descEn && (
-                        <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed pl-7.5">
                           {c.descEn}
                         </p>
                       )}
 
                       {hasTarget && (
-                        <div className="w-full bg-slate-200/80 dark:bg-slate-800 h-2 rounded-full overflow-hidden mt-2.5">
-                          <div
-                            className="bg-gradient-to-r from-purple-600 via-indigo-600 to-rose-500 h-full rounded-full transition-all duration-500"
-                            style={{ width: `${pct}%` }}
-                          />
+                        <div className="pl-7.5 mt-2.5 space-y-1.5">
+                          <div className="w-full bg-slate-200/80 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                            <div
+                              className="bg-gradient-to-r from-purple-600 via-indigo-600 to-rose-500 h-full rounded-full transition-all duration-500"
+                              style={{ width: `${pct}%` }}
+                            />
+                          </div>
+                          <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 dark:text-slate-400">
+                            <span>
+                              <strong className={`font-bold ${isSelected ? "text-purple-950 dark:text-white" : "text-slate-900 dark:text-slate-200"}`}>
+                                ₹{formatNumber(raised)}
+                              </strong>{" "}
+                              raised
+                            </span>
+                            <span>
+                              Target: <strong className="font-bold text-slate-700 dark:text-slate-300">₹{formatNumber(target)}</strong>
+                            </span>
+                          </div>
                         </div>
                       )}
                     </button>
@@ -1467,7 +1479,7 @@ function NgoDonationsContent() {
                       </>
                     ) : (
                       <>
-                        <span>{dp.generateQr || "Proceed to UPI & Checkout"}</span>
+                        <span>{dp.generateQr || "Proceed to Pay"}</span>
                         <ArrowRight className="w-4 h-4" />
                       </>
                     )}
