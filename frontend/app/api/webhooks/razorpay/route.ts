@@ -16,6 +16,7 @@
  */
 
 import { NextResponse } from 'next/server';
+import crypto from 'crypto';
 import { prisma } from '@/lib/prisma';
 import { writeAuditLog } from '@/lib/auditLogger';
 import { completeDonationSession } from '@/lib/paymentService';
@@ -119,7 +120,19 @@ export async function POST(req: Request) {
     const orderEntity = webhookData.payload.order?.entity;
 
     const paymentId = paymentEntity?.id || '';
-    const orderId = paymentEntity?.order_id || orderEntity?.id || '';
+    const notes = ((paymentEntity?.notes || orderEntity?.notes || {}) as Record<string, any>);
+    let orderId =
+      paymentEntity?.order_id ||
+      orderEntity?.id ||
+      notes.orderId ||
+      notes.referenceNumber ||
+      notes.sessionId ||
+      '';
+
+    if (!orderId && (paymentEntity as any)?.description) {
+      const match = String((paymentEntity as any).description).match(/(order_[a-zA-Z0-9]+|REC-[a-zA-Z0-9-]+)/i);
+      if (match) orderId = match[1];
+    }
     const paidAmountPaise = paymentEntity?.amount || orderEntity?.amount || 0;
 
     if (!paymentId && !orderId) {
@@ -170,40 +183,132 @@ export async function POST(req: Request) {
       let session = await prisma.donationSession.findFirst({
         where: {
           OR: [
-            { referenceNumber: orderId },
-            { razorpayOrderId: orderId },
+            ...(orderId ? [{ referenceNumber: orderId }, { razorpayOrderId: orderId }, { id: orderId }] : []),
+            ...(notes.referenceNumber ? [{ referenceNumber: notes.referenceNumber }] : []),
+            ...(notes.sessionId ? [{ id: notes.sessionId }] : []),
           ],
           status: { not: 'COMPLETED' },
         },
         include: { purpose: true, branch: true },
       });
 
+      // Fallback: lookup by donor phone and amount within the last 30 minutes
+      if (!session && paymentEntity?.contact) {
+        const normalizedPhone = paymentEntity.contact.replace(/\D/g, '').slice(-10);
+        if (normalizedPhone.length === 10) {
+          const thirtyMinsAgo = new Date(Date.now() - 30 * 60 * 1000);
+          session = await prisma.donationSession.findFirst({
+            where: {
+              donorPhone: { contains: normalizedPhone },
+              amount: paidAmountPaise ? Math.round(paidAmountPaise / 100) : undefined,
+              status: { not: 'COMPLETED' },
+              createdAt: { gte: thirtyMinsAgo },
+            },
+            include: { purpose: true, branch: true },
+          });
+        }
+      }
+
       if (!session) {
-        // Fallback: check if already completed
-        const completedSession = await prisma.donationSession.findFirst({
+        // Fallback: check if donation already recorded & completed
+        const existingDonation = await prisma.donation.findFirst({
           where: {
             OR: [
-              { referenceNumber: orderId },
-              { razorpayOrderId: orderId },
+              { razorpayPaymentId: paymentId },
+              ...(orderId ? [{ razorpayOrderId: orderId }] : []),
             ],
-            status: 'COMPLETED',
           },
+          include: { receipt: true },
         });
 
-        if (completedSession) {
+        if (existingDonation) {
           await prisma.paymentWebhook.update({
             where: { id: webhookRecord.id },
             data: { status: 'DUPLICATE', processedAt: new Date() },
           });
-          return NextResponse.json({ received: true, processed: false, reason: 'already_completed' }, { status: 200 });
+          return NextResponse.json({
+            received: true,
+            processed: true,
+            alreadyProcessed: true,
+            donationId: existingDonation.id,
+            receiptNumber: existingDonation.receipt?.receiptNumber,
+          }, { status: 200 });
         }
+
+        // Standalone Payment Captured: Automatically create donation and generate receipt
+        const amountInRupees = paidAmountPaise ? paidAmountPaise / 100 : 0;
+        const defaultPurpose = (await prisma.donationPurpose.findFirst({
+          where: { code: 'CHARITY' },
+        })) || (await prisma.donationPurpose.findFirst());
+
+        const receiptNumber = `REC-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Math.floor(1000 + Math.random() * 9000)}`;
+        const verificationCode = crypto.randomBytes(16).toString('hex');
+        const donorName = notes.name || paymentEntity?.email?.split('@')[0] || 'Faithful Giver';
+        const donorEmail = paymentEntity?.email || null;
+        const donorPhone = paymentEntity?.contact || null;
+
+        const newDonation = await prisma.$transaction(async (tx) => {
+          const d = await tx.donation.create({
+            data: {
+              amount: amountInRupees,
+              currency: paymentEntity?.currency || 'INR',
+              purpose: defaultPurpose?.code || 'CHARITY',
+              purposeId: defaultPurpose?.id,
+              paymentMethod: 'RAZORPAY_UPI',
+              razorpayPaymentId: paymentId,
+              razorpayOrderId: orderId || null,
+              razorpaySignature: signatureHeader || 'webhook_verified',
+              donorName,
+              donorEmail,
+              donorPhone,
+              amountVerified: true,
+              signatureVerified: true,
+              status: 'COMPLETED',
+              verifiedBy: 'RAZORPAY_WEBHOOK',
+            },
+          });
+
+          const r = await tx.receipt.create({
+            data: {
+              receiptNumber,
+              donationId: d.id,
+              referenceNumber: paymentId,
+              amount: amountInRupees,
+              currency: paymentEntity?.currency || 'INR',
+              verificationCode,
+              issuedAt: new Date(),
+            },
+          });
+
+          return { donation: d, receipt: r };
+        });
 
         await prisma.paymentWebhook.update({
           where: { id: webhookRecord.id },
-          data: { status: 'FAILED', errorMessage: `No session found for order: ${maskSensitive(orderId, 10)}` },
+          data: { status: 'PROCESSED', processedAt: new Date(), webhookEventId },
         });
-        await logPaymentEvent('SESSION_NOT_FOUND', { orderId: maskSensitive(orderId, 10) }, ip);
-        return NextResponse.json({ received: true, processed: false, reason: 'session_not_found' }, { status: 200 });
+
+        // Trigger real-time notifications to NGO and Donors
+        await safeTriggerCompanionEvent(
+          'donation.success',
+          {
+            paymentId,
+            orderId,
+            donationId: newDonation.donation.id,
+            receiptNumber: newDonation.receipt.receiptNumber,
+            amount: amountInRupees,
+            donorName,
+            status: 'COMPLETED',
+          },
+          'ngo:donations'
+        );
+
+        return NextResponse.json({
+          received: true,
+          processed: true,
+          donationId: newDonation.donation.id,
+          receiptNumber: newDonation.receipt.receiptNumber,
+        }, { status: 200 });
       }
 
       // 12. Amount Cross-Verification in Integer Paise
