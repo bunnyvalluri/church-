@@ -11,7 +11,7 @@ import MemberLoginButton from "./MemberLoginButton";
 interface NavigationActionsProps {
   /** Shows full member login button (desktop/tablet) */
   showLogin?: boolean;
-  /** Shows settings/palette toggle */
+  /** Shows settings/palette toggle (default false to keep navbar clean) */
   showSettings?: boolean;
   /** Shows dedicated language toggle */
   showLanguage?: boolean;
@@ -20,15 +20,16 @@ interface NavigationActionsProps {
 }
 
 /**
- * NavigationActions — right-side cluster: BranchSelector + Language + Settings + Login
+ * NavigationActions — Right-side action cluster: BranchSelector + Language + MemberLogin
  *
- * Desktop (≥lg):   BranchSelector + Language + Settings + Login button
- * Tablet (sm–lg):  BranchSelector + Language + Login button
- * Mobile (<sm):    BranchSelector only (Language & Settings inside mobile drawer)
+ * Designed with senior UX principles:
+ *   • Clean visual hierarchy without redundant preference gear icons
+ *   • Guaranteed flex-shrink-0 so buttons are never squashed or pushed off screen
+ *   • Smooth responsive gaps across breakpoints
  */
 const NavigationActions = memo(function NavigationActions({
   showLogin = true,
-  showSettings = true,
+  showSettings = false,
   showLanguage = true,
   compact = false,
 }: NavigationActionsProps) {
@@ -37,32 +38,32 @@ const NavigationActions = memo(function NavigationActions({
   return (
     <div
       className={cn(
-        "flex items-center flex-shrink-0 z-10 relative",
-        compact ? "gap-1" : "gap-1 min-[360px]:gap-1.5 sm:gap-2"
+        "flex items-center flex-shrink-0 shrink-0 z-10 relative",
+        compact ? "gap-1" : "gap-1.5 sm:gap-2"
       )}
     >
       {/* Branch Selector — visible on tablet+ (sm+) */}
-      <div className="hidden sm:block flex-shrink-0">
+      <div className="hidden sm:block flex-shrink-0 shrink-0">
         <BranchSelector />
       </div>
 
       {/* Language Selector — visible on tablet+ (sm+) */}
       {showLanguage && (
-        <div className="hidden sm:block flex-shrink-0">
+        <div className="hidden sm:block flex-shrink-0 shrink-0">
           <LanguageToggle />
         </div>
       )}
 
-      {/* Settings / Preferences — desktop only (xl+) */}
+      {/* Optional Settings/Palette Toggle — only when explicitly enabled */}
       {showSettings && (
-        <div className="hidden xl:block flex-shrink-0">
+        <div className="hidden 2xl:block flex-shrink-0 shrink-0">
           <PaletteToggle showPreferences={true} />
         </div>
       )}
 
       {/* Member Login — tablet+ (md+), hidden on mobile */}
       {showLogin && (
-        <div className="hidden md:block flex-shrink-0">
+        <div className="hidden md:block flex-shrink-0 shrink-0">
           <MemberLoginButton variant="tablet" label={t.nav.login} />
         </div>
       )}

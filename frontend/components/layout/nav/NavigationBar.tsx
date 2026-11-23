@@ -252,10 +252,10 @@ const NavigationBar = memo(function NavigationBar() {
                 resolveHref={resolveHref}
               />
 
-              {/* ── Right actions: BranchSelector + Settings + Login + Squircle Theme Toggle + Squircle Hamburger ── */}
-              <div className="flex items-center gap-1.5 min-[360px]:gap-2 sm:gap-2.5 flex-shrink-0 min-w-0">
-                {/* Branch Selector + Settings + Login */}
-                <NavigationActions />
+              {/* ── Right actions: BranchSelector + Login + Squircle Theme Toggle + Squircle Hamburger ── */}
+              <div className="flex items-center gap-1.5 min-[360px]:gap-2 sm:gap-2.5 flex-shrink-0 shrink-0">
+                {/* Branch Selector + Login */}
+                <NavigationActions showSettings={false} />
 
                 {/* ── 1-Tap Squircle Theme Toggle (Moon / Sun from reference design) ── */}
                 <button

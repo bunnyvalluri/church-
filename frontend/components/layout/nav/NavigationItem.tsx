@@ -40,9 +40,9 @@ const NavigationItem = memo(function NavigationItem({
         // Base Apple Liquid Glass button
         "apple-liquid-glass-btn relative group flex items-center gap-1.5 font-bold",
         "whitespace-nowrap select-none overflow-hidden rounded-full",
-        "text-[12px] lg:text-[12.5px] xl:text-[13.5px] 2xl:text-[14px]",
+        "text-[12px] lg:text-[12.5px] xl:text-[13px] 2xl:text-[13.5px]",
         variant === "desktop"
-          ? "px-2.5 py-1.5 lg:px-3 lg:py-1.5 xl:px-3.5 xl:py-2"
+          ? "px-2.5 py-1.5 xl:px-3 xl:py-1.5 2xl:px-3.5 2xl:py-2"
           : "px-2 py-1 md:px-2.5 md:py-1.5",
         // Transitions
         "transition-all duration-300 cubic-bezier(0.16, 1, 0.3, 1)",

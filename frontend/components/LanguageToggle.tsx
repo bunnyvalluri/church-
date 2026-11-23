@@ -129,7 +129,7 @@ export default function LanguageToggle({ align = "auto", className = "" }: Langu
         type="button"
         onClick={handleToggle}
         onKeyDown={handleKeyDown}
-        className="flex items-center gap-1.5 px-3 h-9 bg-gray-100 dark:bg-gray-800/90 border border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700/90 text-gray-900 dark:text-white rounded-full text-xs font-bold shadow-sm transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer shrink-0 focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:outline-none"
+        className="flex items-center gap-1.5 px-2.5 min-[360px]:px-3 h-8.5 min-[360px]:h-9 bg-slate-100/90 hover:bg-slate-200/90 dark:bg-white/[0.08] dark:hover:bg-white/[0.14] border border-slate-200/90 dark:border-white/15 text-slate-800 dark:text-slate-100 rounded-xl text-[11px] min-[360px]:text-xs font-bold shadow-2xs transition-all duration-200 hover:scale-[1.02] active:scale-95 cursor-pointer shrink-0 focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:outline-none"
         aria-label={`Select Language, currently ${currentLang.label}`}
         aria-haspopup="listbox"
         aria-expanded={isOpen}

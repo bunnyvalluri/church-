@@ -3,6 +3,7 @@
 import React, { memo } from "react";
 import { cn } from "@/lib/utils";
 import NavigationItem from "./NavigationItem";
+import MoreDropdown from "./MoreDropdown";
 import { NAV_STYLES } from "./constants";
 import { NavItem } from "./types";
 
@@ -14,10 +15,13 @@ interface DesktopMenuProps {
 }
 
 /**
- * DesktopMenu — Full navigation for ≥1025px (lg+)
+ * DesktopMenu — Senior Responsive Navigation System
  *
- * Shows all nav items inline in a centered flex row.
- * Memoized to prevent re-render on unrelated state changes.
+ * Responsiveness:
+ *   • 1280px–1535px (xl): 5 core items inline + sleek "More ▾" dropdown for overflow
+ *   • ≥1536px (2xl): All 8 items inline with comfortable widescreen breathing room
+ *   • Eliminates double-dock nesting ("pill inside a pill")
+ *   • Guarantees 0px horizontal overflow across all display scalings and laptop resolutions
  */
 const DesktopMenu = memo(function DesktopMenu({
   navItems,
@@ -25,17 +29,52 @@ const DesktopMenu = memo(function DesktopMenu({
   pathname,
   resolveHref,
 }: DesktopMenuProps) {
+  // 5 core items for standard laptops & scaled displays (1280px–1535px)
+  const primaryKeys = ["#home", "#about", "/ngo", "#services", "#events"];
+  const primaryItems = navItems.filter((item) => primaryKeys.includes(item.href));
+  const overflowItems = navItems.filter((item) => !primaryKeys.includes(item.href));
+
   return (
     <nav
       aria-label="Primary navigation"
       className={cn(
         "hidden xl:flex",
-        "flex-shrink-0 items-center justify-center",
-        "px-1 xl:px-2"
+        "flex-1 items-center justify-center min-w-0",
+        "px-2"
       )}
     >
-      {/* Apple Floating Liquid Glass Segmented Dock */}
-      <div className="flex items-center gap-0.5 lg:gap-1 xl:gap-1.5 p-1 rounded-full bg-white/40 dark:bg-slate-900/40 backdrop-blur-2xl border border-white/60 dark:border-white/15 shadow-[0_4px_24px_-2px_rgba(0,0,0,0.06),0_1px_2px_rgba(255,255,255,0.7)_inset] dark:shadow-[0_4px_24px_-2px_rgba(0,0,0,0.5),0_1px_1px_rgba(255,255,255,0.1)_inset]">
+      {/* ── Tier 1: 1280px–1535px (xl) — 5 Primary items + MoreDropdown ── */}
+      <div className="flex 2xl:hidden items-center gap-1 xl:gap-1.5 p-0.5">
+        {primaryItems.map((item) => {
+          const isActive = item.href.startsWith("/")
+            ? pathname === item.href || pathname.startsWith(item.href + "/")
+            : activeSection === item.href.replace("#", "");
+          const styles = NAV_STYLES[item.href] ?? NAV_STYLES["#home"];
+
+          return (
+            <NavigationItem
+              key={item.href}
+              item={item}
+              isActive={isActive}
+              styles={styles}
+              resolvedHref={resolveHref(item.href)}
+              variant="desktop"
+            />
+          );
+        })}
+
+        {overflowItems.length > 0 && (
+          <MoreDropdown
+            items={overflowItems}
+            activeSection={activeSection}
+            pathname={pathname}
+            resolveHref={resolveHref}
+          />
+        )}
+      </div>
+
+      {/* ── Tier 2: ≥1536px (2xl) — Full 8 items inline ── */}
+      <div className="hidden 2xl:flex items-center gap-1.5 p-0.5">
         {navItems.map((item) => {
           const isActive = item.href.startsWith("/")
             ? pathname === item.href || pathname.startsWith(item.href + "/")
