@@ -19,14 +19,16 @@ const NavigationLogo = memo(function NavigationLogo() {
     <Link
       href="/"
       className={cn(
-        "flex items-center flex-shrink-0 min-w-0 z-10 relative",
+        "flex items-center flex-shrink-0 shrink-0 min-w-0 z-10 relative",
+        // Guaranteed margin to prevent brand subtitle from overlapping 'Home' pill
+        "mr-2 lg:mr-2.5",
         // Spacing between avatar ring and text
         "gap-2.5 sm:gap-3",
         // Group for hover effects
         "group",
         // Focus ring
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 rounded-full",
-        "py-0.5"
+        "py-0.5 select-none"
       )}
       aria-label="Kingdom of Christ Ministries — Home"
     >
@@ -51,7 +53,7 @@ const NavigationLogo = memo(function NavigationLogo() {
       </div>
 
       {/* ── Typography Block (Two-Tone Title + Subtitle) ── */}
-      <div className="flex flex-col min-w-0 leading-none">
+      <div className="flex flex-col min-w-0 flex-shrink-0 shrink-0 leading-none">
         {/* Church Name — Two Tone: "Kingdom" (dark) + "of Christ" (purple) */}
         <span
           suppressHydrationWarning
@@ -71,10 +73,10 @@ const NavigationLogo = memo(function NavigationLogo() {
           )}
         </span>
 
-        {/* Subtitle / Department — Bold Uppercase Sub-Label */}
+        {/* Subtitle / Department — Bold Uppercase Sub-Label with zero truncation and no overflow */}
         <span
           suppressHydrationWarning
-          className="text-[8.5px] min-[360px]:text-[9.5px] sm:text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 leading-none mt-0.5 truncate"
+          className="text-[8.5px] min-[360px]:text-[9px] sm:text-[9.5px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 leading-none mt-0.5 whitespace-nowrap select-none"
         >
           {language === "en" ? "Ministries • Church Portal" : t.nav.ministries}
         </span>

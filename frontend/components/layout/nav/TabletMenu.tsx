@@ -36,8 +36,9 @@ const TabletMenu = memo(function TabletMenu({
       aria-label="Primary navigation"
       className={cn(
         "hidden md:flex xl:hidden",
-        "flex-1 items-center justify-center min-w-0",
-        "px-1 lg:px-2"
+        "items-center justify-center shrink-0 min-w-0",
+        "mx-1 lg:mx-2 px-0.5 lg:px-1",
+        "z-10"
       )}
     >
       <div className="flex items-center gap-1 lg:gap-1.5 p-0.5 shrink-0">

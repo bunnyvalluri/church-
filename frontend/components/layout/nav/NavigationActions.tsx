@@ -38,8 +38,8 @@ const NavigationActions = memo(function NavigationActions({
   return (
     <div
       className={cn(
-        "flex items-center flex-shrink-0 shrink-0 z-10 relative",
-        compact ? "gap-1" : "gap-1.5 sm:gap-2"
+        "flex items-center flex-shrink-0 shrink-0 z-10 relative ml-1 lg:ml-1.5",
+        compact ? "gap-1" : "gap-1.5 lg:gap-2"
       )}
     >
       {/* Branch Selector — visible on tablet+ (sm+) */}

@@ -98,11 +98,11 @@ export default function BranchSelector() {
         aria-expanded={isOpen}
         aria-haspopup="menu"
         aria-label={`Branch selector: currently ${activeBranchName}`}
-        className="h-8.5 min-[360px]:h-9 px-2.5 min-[360px]:px-3 flex items-center gap-1.5 bg-slate-100/90 hover:bg-slate-200/90 dark:bg-white/[0.08] dark:hover:bg-white/[0.14] backdrop-blur-xl rounded-xl border border-slate-200/90 dark:border-white/15 text-[11px] min-[360px]:text-xs font-bold text-slate-800 dark:text-slate-100 transition-all duration-200 shadow-2xs hover:scale-[1.02] active:scale-95 cursor-pointer select-none"
+        className="h-8 min-[360px]:h-8.5 px-2 min-[360px]:px-2.5 flex items-center gap-1.5 shrink-0 flex-shrink-0 bg-slate-100/90 hover:bg-slate-200/90 dark:bg-white/[0.08] dark:hover:bg-white/[0.14] backdrop-blur-xl rounded-xl border border-slate-200/90 dark:border-white/15 text-[11px] min-[360px]:text-xs font-bold text-slate-800 dark:text-slate-100 transition-all duration-200 shadow-2xs hover:scale-[1.02] active:scale-95 cursor-pointer select-none"
       >
         <MapPin className="w-3.5 h-3.5 text-violet-600 dark:text-violet-400 shrink-0 transition-colors" />
         <span
-          className="whitespace-nowrap font-extrabold tracking-tight max-w-[85px] min-[360px]:max-w-[110px] sm:max-w-[140px] truncate"
+          className="whitespace-nowrap font-extrabold tracking-tight max-w-[80px] min-[360px]:max-w-[95px] sm:max-w-[115px] xl:max-w-[140px] truncate"
           suppressHydrationWarning
         >
           {activeBranchName}

@@ -36,7 +36,7 @@ const MemberLoginButton = memo(function MemberLoginButton({
 
   const sizeClasses = {
     desktop: "px-3 sm:px-4 py-2 text-xs sm:text-[13px] xl:text-sm rounded-full",
-    tablet: "px-2.5 sm:px-3.5 py-1.5 text-[11px] sm:text-xs rounded-full",
+    tablet: "px-2.5 sm:px-3 py-1.5 text-[11px] sm:text-xs rounded-full",
     drawer: "w-full py-3 px-4 text-xs sm:text-sm flex items-center justify-between tracking-wide rounded-2xl shadow-lg shadow-purple-600/30",
   }[variant];
 

@@ -70,7 +70,7 @@ const MoreDropdown = memo(function MoreDropdown({
   }, [isOpen, close]);
 
   return (
-    <div className="relative" ref={containerRef}>
+    <div className="relative shrink-0 flex-shrink-0 mr-1 lg:mr-1.5" ref={containerRef}>
       {/* Trigger */}
       <button
         ref={buttonRef}
@@ -80,8 +80,8 @@ const MoreDropdown = memo(function MoreDropdown({
         aria-haspopup="menu"
         aria-label={`${moreLabel} navigation items`}
         className={cn(
-          "apple-liquid-glass-btn relative flex items-center gap-1.5 px-3 py-1.5 rounded-full",
-          "text-[12.5px] font-bold whitespace-nowrap select-none overflow-hidden",
+          "apple-liquid-glass-btn relative flex items-center gap-1 px-2 py-1 lg:px-2.5 lg:py-1.5 rounded-full shrink-0",
+          "text-xs font-bold whitespace-nowrap select-none overflow-hidden",
           "transition-all duration-300 cubic-bezier(0.16, 1, 0.3, 1)",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1",
           hasActiveOverflow

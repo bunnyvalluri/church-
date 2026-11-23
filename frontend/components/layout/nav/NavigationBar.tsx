@@ -226,14 +226,14 @@ const NavigationBar = memo(function NavigationBar() {
               isScrolled
                 ? "shadow-xl shadow-black/10 dark:shadow-purple-950/40 border-purple-300/60 dark:border-violet-500/30"
                 : "shadow-md shadow-black/[0.04] dark:shadow-purple-950/20",
-              "px-3 py-1.5 min-[360px]:px-3.5 min-[360px]:py-2 sm:px-5 sm:py-2"
+              "px-2.5 py-1.5 min-[360px]:px-3 min-[360px]:py-2 sm:px-3.5 lg:px-4 sm:py-2"
             )}
           >
-            {/* ── Flex row: Logo | Menu | Actions ── */}
+            {/* ── Flex row: Logo | Menu | Actions with guaranteed breathing room ── */}
             <div
               className={cn(
                 "flex items-center justify-between",
-                "gap-1.5 min-[360px]:gap-2 sm:gap-3 md:gap-4 lg:gap-6",
+                "gap-1.5 sm:gap-2 md:gap-2.5 lg:gap-3 xl:gap-5",
                 "min-h-[44px] min-[360px]:min-h-[48px] sm:min-h-[52px]"
               )}
             >
@@ -257,7 +257,7 @@ const NavigationBar = memo(function NavigationBar() {
               />
 
               {/* ── Right actions: BranchSelector + Login + Squircle Theme Toggle + Squircle Hamburger ── */}
-              <div className="flex items-center gap-1.5 min-[360px]:gap-2 sm:gap-2.5 flex-shrink-0 shrink-0">
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0 shrink-0">
                 {/* Branch Selector + Login */}
                 <NavigationActions showSettings={false} />
 
@@ -268,7 +268,7 @@ const NavigationBar = memo(function NavigationBar() {
                   aria-label={currentTheme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
                   title={currentTheme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
                   className={cn(
-                    "w-9 h-9 min-[360px]:w-10 min-[360px]:h-10 rounded-2xl flex-shrink-0",
+                    "w-8.5 h-8.5 sm:w-9 sm:h-9 rounded-2xl flex-shrink-0 shrink-0",
                     "flex items-center justify-center",
                     "bg-slate-100/90 hover:bg-slate-200/90 dark:bg-white/10 dark:hover:bg-white/15",
                     "border border-slate-200/70 dark:border-white/10",
@@ -279,9 +279,9 @@ const NavigationBar = memo(function NavigationBar() {
                   )}
                 >
                   {currentTheme === "dark" ? (
-                    <Sun className="w-4.5 h-4.5 min-[360px]:w-5 min-[360px]:h-5 text-amber-400 fill-amber-400/20" />
+                    <Sun className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-amber-400 fill-amber-400/20" />
                   ) : (
-                    <Moon className="w-4.5 h-4.5 min-[360px]:w-5 min-[360px]:h-5 text-purple-600" />
+                    <Moon className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-purple-600" />
                   )}
                 </button>
 
