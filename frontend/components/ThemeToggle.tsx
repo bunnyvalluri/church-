@@ -1,7 +1,7 @@
 "use client";
 
 import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
+import { useEffect, useState, startTransition } from "react";
 import { Moon, Sun } from "lucide-react";
 
 export default function ThemeToggle() {
@@ -12,17 +12,27 @@ export default function ThemeToggle() {
     setMounted(true);
   }, []);
 
-  const handleToggle = () => {
+  const handleToggle = (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     if (!mounted) return;
     const next = (theme === "dark" || document.documentElement.classList.contains("dark")) ? "light" : "dark";
-    if (next === "dark") {
-      document.documentElement.classList.add("dark");
-      document.documentElement.classList.remove("light");
-    } else {
-      document.documentElement.classList.remove("dark");
-      document.documentElement.classList.add("light");
-    }
-    setTheme(next);
+    
+    requestAnimationFrame(() => {
+      if (next === "dark") {
+        document.documentElement.classList.add("dark");
+        document.documentElement.classList.remove("light");
+      } else {
+        document.documentElement.classList.remove("dark");
+        document.documentElement.classList.add("light");
+      }
+    });
+
+    startTransition(() => {
+      setTheme(next);
+    });
   };
 
   // Always render the same DOM structure — use opacity to hide until mounted

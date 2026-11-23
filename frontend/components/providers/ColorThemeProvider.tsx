@@ -285,41 +285,49 @@ export function ColorThemeProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // Whenever theme or dark/light mode changes, apply the CSS variables to the document element
+  // Whenever theme or dark/light mode changes, apply the CSS variables to the document element (deferred to next frame to guarantee <16ms INP)
   useEffect(() => {
-    const root = document.documentElement;
-    const p = palettes[theme] || palettes.violet;
-    const isDark = resolvedTheme === "dark";
+    const frame = requestAnimationFrame(() => {
+      const root = document.documentElement;
+      const p = palettes[theme] || palettes.violet;
+      const isDark = resolvedTheme === "dark";
 
-    const primaryColor = isDark ? p.primaryDark : p.primary;
-    const accentColor = isDark ? p.accentDark : p.accent;
+      const primaryColor = isDark ? p.primaryDark : p.primary;
+      const accentColor = isDark ? p.accentDark : p.accent;
 
-    root.style.setProperty("--primary", primaryColor);
-    root.style.setProperty("--ring", primaryColor);
-    root.style.setProperty("--accent", accentColor);
-    
-    // Gradient stops
-    root.style.setProperty("--primary-gradient-start", p.gradientStart);
-    root.style.setProperty("--primary-gradient-end", p.gradientEnd);
-    
-    // Full Palette Scale injection (50 through 950)
-    root.style.setProperty("--purple-50-hsl", p.scale[50]);
-    root.style.setProperty("--purple-100-hsl", p.scale[100]);
-    root.style.setProperty("--purple-200-hsl", p.scale[200]);
-    root.style.setProperty("--purple-300-hsl", p.scale[300]);
-    root.style.setProperty("--purple-400-hsl", p.scale[400]);
-    root.style.setProperty("--purple-500-hsl", p.scale[500]);
-    root.style.setProperty("--purple-600-hsl", p.scale[600]);
-    root.style.setProperty("--purple-700-hsl", p.scale[700]);
-    root.style.setProperty("--purple-800-hsl", p.scale[800]);
-    root.style.setProperty("--purple-900-hsl", p.scale[900]);
-    root.style.setProperty("--purple-950-hsl", p.scale[950]);
+      root.style.setProperty("--primary", primaryColor);
+      root.style.setProperty("--ring", primaryColor);
+      root.style.setProperty("--accent", accentColor);
+      
+      // Gradient stops
+      root.style.setProperty("--primary-gradient-start", p.gradientStart);
+      root.style.setProperty("--primary-gradient-end", p.gradientEnd);
+      
+      // Full Palette Scale injection (50 through 950)
+      root.style.setProperty("--purple-50-hsl", p.scale[50]);
+      root.style.setProperty("--purple-100-hsl", p.scale[100]);
+      root.style.setProperty("--purple-200-hsl", p.scale[200]);
+      root.style.setProperty("--purple-300-hsl", p.scale[300]);
+      root.style.setProperty("--purple-400-hsl", p.scale[400]);
+      root.style.setProperty("--purple-500-hsl", p.scale[500]);
+      root.style.setProperty("--purple-600-hsl", p.scale[600]);
+      root.style.setProperty("--purple-700-hsl", p.scale[700]);
+      root.style.setProperty("--purple-800-hsl", p.scale[800]);
+      root.style.setProperty("--purple-900-hsl", p.scale[900]);
+      root.style.setProperty("--purple-950-hsl", p.scale[950]);
 
-    // Data theme attribute
-    root.setAttribute("data-color-theme", theme);
-    
-    // Persist
-    localStorage.setItem("kcm-color-theme", theme);
+      // Data theme attribute
+      root.setAttribute("data-color-theme", theme);
+      
+      // Persist
+      try {
+        localStorage.setItem("kcm-color-theme", theme);
+      } catch {
+        // Safe localStorage fallback
+      }
+    });
+
+    return () => cancelAnimationFrame(frame);
   }, [theme, resolvedTheme]);
 
   const setTheme = (t: ColorTheme) => {

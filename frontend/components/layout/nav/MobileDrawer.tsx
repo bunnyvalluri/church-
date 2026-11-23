@@ -1,6 +1,6 @@
 "use client";
 
-import React, { memo, useEffect, useState } from "react";
+import React, { memo, useEffect, useState, startTransition } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import Image from "next/image";
@@ -85,14 +85,19 @@ const MobileDrawer = memo(function MobileDrawer({
   const activeLanguage = language || "en";
 
   const handleThemeChange = (newTheme: "light" | "dark") => {
-    if (newTheme === "dark") {
-      document.documentElement.classList.add("dark");
-      document.documentElement.classList.remove("light");
-    } else {
-      document.documentElement.classList.remove("dark");
-      document.documentElement.classList.add("light");
-    }
-    setTheme(newTheme);
+    requestAnimationFrame(() => {
+      if (newTheme === "dark") {
+        document.documentElement.classList.add("dark");
+        document.documentElement.classList.remove("light");
+      } else {
+        document.documentElement.classList.remove("dark");
+        document.documentElement.classList.add("light");
+      }
+    });
+
+    startTransition(() => {
+      setTheme(newTheme);
+    });
   };
 
   const handleLanguageChange = (code: "en" | "te" | "hi") => {

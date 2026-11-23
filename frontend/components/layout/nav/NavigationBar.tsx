@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback, useMemo, memo } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo, memo, startTransition } from "react";
 import { usePathname } from "next/navigation";
 import {
   Home, Info, HeartHandshake, Church, Calendar, Mic, Image as ImageIcon, Phone, Menu, X, Sun, Moon,
@@ -44,16 +44,28 @@ const NavigationBar = memo(function NavigationBar() {
   const { theme, resolvedTheme, setTheme } = useTheme();
   const currentTheme = resolvedTheme || theme || "light";
 
-  const toggleTheme = useCallback(() => {
-    const nextTheme = currentTheme === "dark" ? "light" : "dark";
-    if (nextTheme === "dark") {
-      document.documentElement.classList.add("dark");
-      document.documentElement.classList.remove("light");
-    } else {
-      document.documentElement.classList.remove("dark");
-      document.documentElement.classList.add("light");
+  const toggleTheme = useCallback((e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
     }
-    setTheme(nextTheme);
+    const nextTheme = currentTheme === "dark" ? "light" : "dark";
+
+    // Non-blocking DOM class update in requestAnimationFrame so the click handler returns in <1ms
+    requestAnimationFrame(() => {
+      if (nextTheme === "dark") {
+        document.documentElement.classList.add("dark");
+        document.documentElement.classList.remove("light");
+      } else {
+        document.documentElement.classList.remove("dark");
+        document.documentElement.classList.add("light");
+      }
+    });
+
+    // Wrap theme state update in transition to allow instant paint (<16ms INP)
+    startTransition(() => {
+      setTheme(nextTheme);
+    });
   }, [currentTheme, setTheme]);
 
   // ── Dynamic header height measurement for sticky secondary navigation stacking ──
@@ -273,7 +285,7 @@ const NavigationBar = memo(function NavigationBar() {
                     "bg-slate-100/90 hover:bg-slate-200/90 dark:bg-white/10 dark:hover:bg-white/15",
                     "border border-slate-200/70 dark:border-white/10",
                     "text-purple-600 dark:text-purple-400",
-                    "transition-all duration-150 ease-out",
+                    "transition-transform duration-100 ease-out",
                     "active:scale-95 cursor-pointer touch-manipulation",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
                   )}
