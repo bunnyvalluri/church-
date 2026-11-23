@@ -226,7 +226,7 @@ const NavigationBar = memo(function NavigationBar() {
               isScrolled
                 ? "shadow-xl shadow-black/10 dark:shadow-purple-950/40 border-purple-300/60 dark:border-violet-500/30"
                 : "shadow-md shadow-black/[0.04] dark:shadow-purple-950/20",
-              "px-2.5 py-1.5 min-[360px]:px-3 min-[360px]:py-2 sm:px-3.5 lg:px-4 sm:py-2"
+              "pl-2.5 pr-3 min-[360px]:pl-3 min-[360px]:pr-3.5 sm:pl-4 sm:pr-4.5 md:pl-4 md:pr-5 lg:pl-4.5 lg:pr-5.5 py-1.5 min-[360px]:py-2"
             )}
           >
             {/* ── Flex row: Logo | Menu | Actions with guaranteed breathing room ── */}
@@ -257,7 +257,7 @@ const NavigationBar = memo(function NavigationBar() {
               />
 
               {/* ── Right actions: BranchSelector + Login + Squircle Theme Toggle + Squircle Hamburger ── */}
-              <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0 shrink-0">
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0 shrink-0 pr-0.5 sm:pr-1">
                 {/* Branch Selector + Login */}
                 <NavigationActions showSettings={false} />
 
@@ -268,7 +268,7 @@ const NavigationBar = memo(function NavigationBar() {
                   aria-label={currentTheme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
                   title={currentTheme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
                   className={cn(
-                    "w-8.5 h-8.5 sm:w-9 sm:h-9 rounded-2xl flex-shrink-0 shrink-0",
+                    "w-8 h-8 sm:w-8.5 sm:h-8.5 rounded-2xl flex-shrink-0 shrink-0",
                     "flex items-center justify-center",
                     "bg-slate-100/90 hover:bg-slate-200/90 dark:bg-white/10 dark:hover:bg-white/15",
                     "border border-slate-200/70 dark:border-white/10",
@@ -279,9 +279,9 @@ const NavigationBar = memo(function NavigationBar() {
                   )}
                 >
                   {currentTheme === "dark" ? (
-                    <Sun className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-amber-400 fill-amber-400/20" />
+                    <Sun className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400 fill-amber-400/20" />
                   ) : (
-                    <Moon className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-purple-600" />
+                    <Moon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-purple-600" />
                   )}
                 </button>
 
