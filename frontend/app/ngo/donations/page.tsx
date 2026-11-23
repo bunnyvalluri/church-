@@ -564,7 +564,7 @@ function NgoDonationsContent() {
     setTimeout(() => setToast(null), 4000);
   };
 
-  const getFinalAmount = () => (customAmount ? customAmount : amount);
+  const getFinalAmount = useCallback(() => (customAmount ? customAmount : amount), [customAmount, amount]);
 
   // Quick Amount Adjuster
   const handleQuickAdd = (addVal: number) => {
@@ -1505,9 +1505,12 @@ function NgoDonationsContent() {
                 }`}>
                   <div className="relative w-56 aspect-square bg-white rounded-2xl p-3 border border-slate-200 dark:border-white/20 shadow-inner flex items-center justify-center">
                     {qrCodeBase64 ? (
-                      <img
+                      <Image
                         src={qrCodeBase64}
                         alt="Dynamic UPI QR Code"
+                        width={224}
+                        height={224}
+                        unoptimized
                         className="w-full h-full object-contain rounded-lg"
                       />
                     ) : (
