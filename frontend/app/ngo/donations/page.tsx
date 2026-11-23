@@ -895,45 +895,85 @@ function NgoDonationsContent() {
         <AgentStatusBar />
         {step === 3 && <PaymentStateMonitor />}
 
-        {/* ── TOP IMPACT METRICS BAR ────────────────────────────────────── */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 p-3.5 sm:p-4 rounded-3xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200/80 dark:border-white/10 shadow-sm text-slate-800 dark:text-slate-200">
-          <div className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50/80 dark:bg-slate-800/60 border border-slate-200/60 dark:border-white/5 hover:border-purple-300 dark:hover:border-purple-500/30 transition-all">
-            <div className="w-10 h-10 rounded-xl bg-purple-500/10 dark:bg-purple-500/20 text-purple-600 dark:text-purple-300 border border-purple-500/20 flex items-center justify-center shadow-xs flex-shrink-0">
-              <ShieldCheck className="w-5 h-5" />
+        {/* ── TOP IMPACT METRICS BAR (SENIOR RESPONSIVE ARCHITECTURE — ZERO TEXT WRAPPING) ── */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+          {/* 1. Govt Registered */}
+          <div className="flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white/90 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200/80 dark:border-white/10 shadow-xs hover:shadow-md hover:border-purple-300 dark:hover:border-purple-500/40 transition-all group active:scale-[0.99]">
+            <div className="flex items-center justify-between mb-2.5">
+              <div className="w-8 h-8 rounded-xl bg-purple-500/10 dark:bg-purple-500/20 text-purple-600 dark:text-purple-300 border border-purple-500/20 flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
+                <ShieldCheck className="w-4.5 h-4.5" />
+              </div>
+              <span className="text-[9px] font-black uppercase tracking-wider text-purple-700 dark:text-purple-300 bg-purple-500/10 dark:bg-purple-500/20 px-2 py-0.5 rounded-full border border-purple-500/20">
+                Govt Validated
+              </span>
             </div>
-            <div>
-              <p className="text-xs sm:text-sm font-black text-slate-900 dark:text-white leading-tight">{dp.regdNo || "Regd No: 206/2024"}</p>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold">{dp.govtRegd || "Govt Registered NGO"}</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50/80 dark:bg-slate-800/60 border border-slate-200/60 dark:border-white/5 hover:border-emerald-300 dark:hover:border-emerald-500/30 transition-all">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border border-emerald-500/20 flex items-center justify-center shadow-xs flex-shrink-0">
-              <Users className="w-5 h-5" />
-            </div>
-            <div>
-              <p className="text-xs sm:text-sm font-black text-slate-900 dark:text-white leading-tight">{dp.assistedCount || "5,000+ Assisted"}</p>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold">{dp.assistedDesc || "Patients & Families"}</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50/80 dark:bg-slate-800/60 border border-slate-200/60 dark:border-white/5 hover:border-amber-300 dark:hover:border-amber-500/30 transition-all">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/10 dark:bg-amber-500/20 text-amber-600 dark:text-amber-300 border border-amber-500/20 flex items-center justify-center shadow-xs flex-shrink-0">
-              <Flame className="w-5 h-5" />
-            </div>
-            <div>
-              <p className="text-xs sm:text-sm font-black text-slate-900 dark:text-white leading-tight">{dp.volunteersCount || "100+ Volunteers"}</p>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold">{dp.volunteersDesc || "Active Ground Team"}</p>
+            <div className="space-y-0.5 min-w-0">
+              <p className="text-xs sm:text-sm font-black text-slate-900 dark:text-white leading-tight font-outfit truncate">
+                {dp.regdNo || "Regd No: 206/2024"}
+              </p>
+              <p className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 font-semibold leading-tight truncate">
+                {dp.govtRegd || "Govt. Registered NGO"}
+              </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50/80 dark:bg-slate-800/60 border border-slate-200/60 dark:border-white/5 hover:border-sky-300 dark:hover:border-sky-500/30 transition-all">
-            <div className="w-10 h-10 rounded-xl bg-sky-500/10 dark:bg-sky-500/20 text-sky-600 dark:text-sky-300 border border-sky-500/20 flex items-center justify-center shadow-xs flex-shrink-0">
-              <Award className="w-5 h-5" />
+          {/* 2. Beneficiaries Assisted */}
+          <div className="flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white/90 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200/80 dark:border-white/10 shadow-xs hover:shadow-md hover:border-emerald-300 dark:hover:border-emerald-500/40 transition-all group active:scale-[0.99]">
+            <div className="flex items-center justify-between mb-2.5">
+              <div className="w-8 h-8 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border border-emerald-500/20 flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
+                <Users className="w-4.5 h-4.5" />
+              </div>
+              <span className="text-[9px] font-black uppercase tracking-wider text-emerald-700 dark:text-emerald-300 bg-emerald-500/10 dark:bg-emerald-500/20 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                Verified Reach
+              </span>
             </div>
-            <div>
-              <p className="text-xs sm:text-sm font-black text-slate-900 dark:text-white leading-tight">{dp.taxExempt || "100% Direct Impact"}</p>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold">{dp.taxExemptDesc || "Zero Platform Fees"}</p>
+            <div className="space-y-0.5 min-w-0">
+              <p className="text-xs sm:text-sm font-black text-slate-900 dark:text-white leading-tight font-outfit truncate">
+                {dp.assistedCount || "5,000+ Assisted"}
+              </p>
+              <p className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 font-semibold leading-tight truncate">
+                {dp.assistedDesc || "Patients & Families"}
+              </p>
+            </div>
+          </div>
+
+          {/* 3. Volunteers */}
+          <div className="flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white/90 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200/80 dark:border-white/10 shadow-xs hover:shadow-md hover:border-amber-300 dark:hover:border-amber-500/40 transition-all group active:scale-[0.99]">
+            <div className="flex items-center justify-between mb-2.5">
+              <div className="w-8 h-8 rounded-xl bg-amber-500/10 dark:bg-amber-500/20 text-amber-600 dark:text-amber-300 border border-amber-500/20 flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
+                <Flame className="w-4.5 h-4.5" />
+              </div>
+              <span className="text-[9px] font-black uppercase tracking-wider text-amber-700 dark:text-amber-300 bg-amber-500/10 dark:bg-amber-500/20 px-2 py-0.5 rounded-full border border-amber-500/20">
+                On Ground
+              </span>
+            </div>
+            <div className="space-y-0.5 min-w-0">
+              <p className="text-xs sm:text-sm font-black text-slate-900 dark:text-white leading-tight font-outfit truncate">
+                {dp.volunteersCount || "100+ Volunteers"}
+              </p>
+              <p className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 font-semibold leading-tight truncate">
+                {dp.volunteersDesc || "Active Ground Team"}
+              </p>
+            </div>
+          </div>
+
+          {/* 4. Direct Aid / Impact */}
+          <div className="flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white/90 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200/80 dark:border-white/10 shadow-xs hover:shadow-md hover:border-sky-300 dark:hover:border-sky-500/40 transition-all group active:scale-[0.99]">
+            <div className="flex items-center justify-between mb-2.5">
+              <div className="w-8 h-8 rounded-xl bg-sky-500/10 dark:bg-sky-500/20 text-sky-600 dark:text-sky-300 border border-sky-500/20 flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
+                <Award className="w-4.5 h-4.5" />
+              </div>
+              <span className="text-[9px] font-black uppercase tracking-wider text-sky-700 dark:text-sky-300 bg-sky-500/10 dark:bg-sky-500/20 px-2 py-0.5 rounded-full border border-sky-500/20">
+                Direct Aid
+              </span>
+            </div>
+            <div className="space-y-0.5 min-w-0">
+              <p className="text-xs sm:text-sm font-black text-slate-900 dark:text-white leading-tight font-outfit truncate">
+                {dp.taxExempt || "100% Direct Impact"}
+              </p>
+              <p className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 font-semibold leading-tight truncate">
+                {dp.taxExemptDesc || "Zero Platform Fees"}
+              </p>
             </div>
           </div>
         </div>
