@@ -31,14 +31,23 @@ export default function LocationsPage() {
   const isHindi = language === "hi";
 
   useEffect(() => {
-    fetch("/api/branches")
-      .then((res) => res.json())
+    const controller = new AbortController();
+    fetch("/api/branches", { signal: controller.signal })
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
       .then((data) => {
         if (data && data.success && Array.isArray(data.branches)) {
           setDbBranches(data.branches);
         }
       })
-      .catch((err) => console.error("Failed to load DB branches:", err));
+      .catch((err) => {
+        if (err.name !== "AbortError") {
+          console.error("Failed to load DB branches:", err);
+        }
+      });
+    return () => controller.abort();
   }, []);
 
   const getBranchData = () => {

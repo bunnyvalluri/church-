@@ -57,6 +57,7 @@ export default function OurStoryPage() {
   const [docCategory, setDocCategory] = useState<string>("all");
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [activeLeaderTab, setActiveLeaderTab] = useState<string>("overview");
+  const [showRestrictedNotice, setShowRestrictedNotice] = useState<boolean>(false);
 
   // Copy helper
   const handleCopy = (text: string, key: string) => {
@@ -593,32 +594,32 @@ export default function OurStoryPage() {
             {/* Left Column: Senior Pastor Majestic Portrait Card */}
             <div className="lg:col-span-5 space-y-6">
               
-              {/* Founder High-Definition Portrait Card — Seamless in both Light & Dark modes */}
+              {/* Founder High-Definition Portrait Card — Form-Fitted Framing Eliminates Excess Whitespace */}
               <div className="relative group bg-white dark:bg-[#11192e] rounded-[2.5rem] overflow-hidden border border-slate-200/90 dark:border-purple-500/20 shadow-xl shadow-slate-950/5 dark:shadow-black/70 transition-all duration-300 hover:border-purple-300 dark:hover:border-purple-500/40">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
                 <div className="absolute bottom-10 left-0 w-48 h-48 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
                 
-                {/* Pastor Portrait Box — Studio Backlight with High-Definition Transparent Cutout */}
-                <div className="relative w-full h-[360px] sm:h-[420px] overflow-hidden bg-gradient-to-b from-purple-50/70 via-slate-50 to-white dark:from-[#0d152c] dark:via-[#101938] dark:to-[#0c1324]">
+                {/* Pastor Portrait Box — Studio Backlight Form-Fitted (aspect 4:5, scaled to fill frame without excess whitespace) */}
+                <div className="relative w-full aspect-[4/5] sm:aspect-[3/4] max-h-[380px] overflow-hidden bg-gradient-to-b from-purple-100/60 via-slate-100/50 to-white dark:from-[#0d152c] dark:via-[#101938] dark:to-[#0c1324]">
                   <Image
                     src="/pastor.png"
-                    alt="Bishop Kurra Kristhu Raju"
+                    alt="Sri. Kurra Kristhu Raju"
                     fill
                     sizes="(max-width: 768px) 100vw, 450px"
-                    className="object-contain object-top pt-2 sm:pt-4 transition-transform duration-700 group-hover:scale-105"
+                    className="object-cover object-[center_16%] scale-135 transition-transform duration-700 group-hover:scale-140"
                     priority
                     unoptimized
                   />
-                  <div className="absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-white via-white/40 to-transparent dark:from-[#0c1324] dark:via-[#0c1324]/40 pointer-events-none" />
+                  <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-white via-white/60 to-transparent dark:from-[#0c1324] dark:via-[#0c1324]/60 pointer-events-none" />
                 </div>
 
                 {/* Name & Title Header Overlay — Theme Adaptive with high-contrast text */}
-                <div className="relative z-10 p-5 sm:p-6 md:p-7 bg-white/95 dark:bg-[#0c1324] border-t border-slate-100 dark:border-purple-500/20">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 dark:bg-amber-500/20 border border-amber-500/30 dark:border-amber-400/50 rounded-full text-xs font-black uppercase tracking-wider mb-2.5 shadow-2xs">
+                <div className="relative z-10 p-4 sm:p-5 md:p-6 bg-white/95 dark:bg-[#0c1324] border-t border-slate-100 dark:border-purple-500/20">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 dark:bg-amber-500/20 border border-amber-500/30 dark:border-amber-400/50 rounded-full text-xs font-black uppercase tracking-wider mb-2 shadow-2xs">
                     <Sparkles className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
                     <span className="text-amber-700 dark:text-amber-300 font-bold">{pageT.leaderTitle || "Visionary Leader"}</span>
                   </div>
-                  <h3 className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight text-slate-900 dark:text-white mb-1.5 font-outfit leading-tight">
+                  <h3 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 dark:text-white mb-1 font-outfit leading-tight">
                     {pageT.leaderName || "Sri. KURRA KRISTHU RAJU"}
                   </h3>
                   <p className="text-xs sm:text-sm font-semibold text-purple-700 dark:text-purple-300 leading-snug">
@@ -920,7 +921,7 @@ export default function OurStoryPage() {
                       {doc.subtitle}
                     </p>
 
-                    {/* High-Definition Interactive Document Thumbnail Frame (Authentic Portrait A4 Certificate Aspect 3:4) */}
+                    {/* High-Definition Interactive Document Thumbnail Frame with Official Security Watermark */}
                     <div 
                       tabIndex={0}
                       role="button"
@@ -932,7 +933,8 @@ export default function OurStoryPage() {
                           setSelectedDocIndex(globalIndex);
                         }
                       }}
-                      className="relative w-full aspect-[3/4] bg-slate-100/90 dark:bg-slate-950/90 rounded-2xl overflow-hidden border border-slate-200/90 dark:border-slate-800 mb-4 cursor-pointer group/img shadow-inner outline-none focus-visible:ring-2 focus-visible:ring-purple-500 p-2 sm:p-2.5 flex items-center justify-center transition-all duration-300 hover:border-purple-400 dark:hover:border-purple-500/50"
+                      onContextMenu={(e) => e.preventDefault()}
+                      className="relative w-full aspect-[3/4] bg-slate-100/90 dark:bg-slate-950/90 rounded-2xl overflow-hidden border border-slate-200/90 dark:border-slate-800 mb-4 cursor-pointer group/img shadow-inner outline-none focus-visible:ring-2 focus-visible:ring-purple-500 p-2 sm:p-2.5 flex items-center justify-center transition-all duration-300 hover:border-purple-400 dark:hover:border-purple-500/50 select-none"
                     >
                       <div className="relative w-full h-full rounded-xl overflow-hidden shadow-sm border border-slate-200/80 dark:border-slate-800 bg-white">
                         <Image
@@ -940,10 +942,31 @@ export default function OurStoryPage() {
                           alt={doc.title}
                           fill
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                          className="object-contain p-1.5 transition-transform duration-500 group-hover/img:scale-105"
+                          className="object-contain p-1.5 transition-transform duration-500 group-hover/img:scale-105 pointer-events-none select-none"
+                          draggable={false}
                         />
+
+                        {/* Security Watermark Overlay Across Preview Thumbnail */}
+                        <div 
+                          className="absolute inset-0 pointer-events-none select-none flex flex-col items-center justify-around z-10 overflow-hidden opacity-30 dark:opacity-45"
+                          aria-hidden="true"
+                        >
+                          <div className="-rotate-[28deg] font-black text-[10px] sm:text-[11px] tracking-widest text-purple-950 dark:text-purple-200 uppercase whitespace-nowrap border-y border-dashed border-purple-900/30 dark:border-purple-300/30 px-3 py-1 bg-white/40 dark:bg-black/30 backdrop-blur-[0.5px]">
+                            KCM MINISTRIES • OFFICIAL RECORD • PREVIEW ONLY
+                          </div>
+                          <div className="-rotate-[28deg] font-black text-[10px] sm:text-[11px] tracking-widest text-purple-950 dark:text-purple-200 uppercase whitespace-nowrap border-y border-dashed border-purple-900/30 dark:border-purple-300/30 px-3 py-1 bg-white/40 dark:bg-black/30 backdrop-blur-[0.5px]">
+                            REGD NO: 206/2012 • FOR INSPECTION ONLY
+                          </div>
+                        </div>
+
+                        {/* Security Protected Badge */}
+                        <div className="absolute top-2 right-2 z-10 px-2 py-0.5 rounded-full bg-slate-900/80 text-white text-[9px] font-bold flex items-center gap-1 backdrop-blur-md shadow-xs pointer-events-none">
+                          <ShieldCheck className="h-3 w-3 text-amber-400 shrink-0" />
+                          <span>Watermarked Preview</span>
+                        </div>
                       </div>
-                      <div className="absolute inset-0 bg-slate-950/0 group-hover/img:bg-slate-950/40 transition-colors flex items-center justify-center p-4">
+
+                      <div className="absolute inset-0 bg-slate-950/0 group-hover/img:bg-slate-950/40 transition-colors flex items-center justify-center p-4 z-20 pointer-events-none">
                         <div className="opacity-0 group-hover/img:opacity-100 transition-all duration-200 transform translate-y-2 group-hover/img:translate-y-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-4 py-2 rounded-full text-xs font-bold text-slate-900 dark:text-white flex items-center gap-2 shadow-2xl border border-slate-200 dark:border-slate-700">
                           <ZoomIn className="h-4 w-4 text-purple-600 dark:text-purple-400" />
                           <span>Inspect Certificate</span>
@@ -1348,11 +1371,11 @@ export default function OurStoryPage() {
         </div>
       </section>
 
-      {/* 🗺️ MILESTONE JOURNEY TIMELINE */}
+      {/* 🗺️ MILESTONE JOURNEY TIMELINE — RESPONSIVE ALTERNATING TIMELINE */}
       <section className="py-20 sm:py-28 bg-white dark:bg-[#090e1f] relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           
-          <div className="text-center max-w-3xl mx-auto mb-16">
+          <div className="text-center max-w-3xl mx-auto mb-16 sm:mb-20">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-purple-600 text-white rounded-full text-xs font-black uppercase tracking-widest mb-4 shadow-sm font-outfit">
               <Clock className="h-3.5 w-3.5 text-amber-300" />
               <span>{language === "te" ? "కాలక్రమానుసార మైలురాళ్ళు" : language === "hi" ? "कालानुक्रमिक मील के पत्थर" : "Chronological Milestones"}</span>
@@ -1368,192 +1391,200 @@ export default function OurStoryPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-stretch">
-            {journeySteps.map((item, idx) => {
-              const Icon = item.icon;
-              return (
-                <div 
-                  key={idx}
-                  className="relative group bg-slate-50 dark:bg-[#11192e] rounded-3xl p-6 sm:p-8 shadow-xl shadow-slate-950/5 dark:shadow-black/30 border border-slate-200/90 dark:border-slate-800 hover:border-purple-500/40 transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between overflow-hidden"
-                >
-                  <div className={`absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r ${item.accent}`} />
-                  
-                  <div>
-                    <div className="flex items-center justify-between mb-5 flex-wrap gap-2">
-                      <div className="flex items-center gap-3">
-                        <div className={`w-12 h-12 sm:w-14 sm:h-14 ${item.bg} border ${item.border} rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-xs`}>
-                          <Icon className={`h-6 w-6 sm:h-7 sm:w-7 ${item.color}`} />
+          {/* Alternating Vertical Timeline Track (Desktop Alternating, Mobile Left-Aligned) */}
+          <div className="relative max-w-5xl mx-auto">
+            {/* Continuous Vertical Glowing Spine: Desktop Center, Mobile Left-6 */}
+            <div 
+              className="absolute top-6 bottom-6 left-6 md:left-1/2 -translate-x-1/2 w-1 bg-gradient-to-b from-purple-500 via-indigo-500 to-pink-500 dark:from-purple-400 dark:via-indigo-400 dark:to-pink-400 rounded-full shadow-[0_0_12px_rgba(168,85,247,0.35)]" 
+              aria-hidden="true" 
+            />
+
+            <div className="space-y-10 sm:space-y-14 md:space-y-16">
+              {journeySteps.map((item, idx) => {
+                const Icon = item.icon;
+                const isEven = idx % 2 === 0; // Even: left on desktop; Odd: right on desktop
+
+                return (
+                  <div 
+                    key={idx}
+                    className={`relative flex items-center md:justify-between ${
+                      isEven ? "md:flex-row" : "md:flex-row-reverse"
+                    } pl-14 sm:pl-16 md:pl-0 group`}
+                  >
+                    {/* Content Card (Takes ~45% width on desktop) */}
+                    <div className="w-full md:w-[calc(50%-2.5rem)]">
+                      <div className="relative group/card bg-slate-50 dark:bg-[#11192e] rounded-3xl p-5 sm:p-7 shadow-xl shadow-slate-950/5 dark:shadow-black/30 border border-slate-200/90 dark:border-slate-800 hover:border-purple-500/40 transition-all duration-300 hover:-translate-y-1 overflow-hidden">
+                        <div className={`absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r ${item.accent}`} />
+                        
+                        <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+                          <div className="flex items-center gap-2.5">
+                            <div className={`w-10 h-10 sm:w-12 sm:h-12 ${item.bg} border ${item.border} rounded-2xl flex items-center justify-center shrink-0 group-hover/card:scale-105 transition-transform shadow-xs`}>
+                              <Icon className={`h-5 w-5 sm:h-6 sm:w-6 ${item.color}`} />
+                            </div>
+                            <span className="text-[11px] sm:text-xs font-mono font-black text-purple-600 dark:text-purple-400 px-2.5 py-0.5 rounded-md bg-purple-100/80 dark:bg-purple-950/60 border border-purple-200/80 dark:border-purple-500/20">
+                              PHASE {item.step}
+                            </span>
+                          </div>
+                          
+                          <span className={`text-[10px] sm:text-[11px] font-black uppercase tracking-wider px-3 py-1 rounded-full border ${item.badgeStyle} font-outfit shadow-2xs`}>
+                            {item.year}
+                          </span>
                         </div>
-                        <span className="text-xs font-mono font-black text-purple-600 dark:text-purple-400 px-2 py-0.5 rounded-md bg-purple-100/80 dark:bg-purple-950/60 border border-purple-200/80 dark:border-purple-500/20">
-                          PHASE {item.step}
+
+                        <h3 className="text-lg sm:text-xl md:text-2xl font-black text-slate-900 dark:text-white mb-2 font-outfit">
+                          {item.title}
+                        </h3>
+
+                        <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-sm leading-relaxed font-normal mb-4">
+                          {item.desc}
+                        </p>
+
+                        <div className="pt-3 border-t border-slate-200/80 dark:border-slate-800 flex items-start gap-2 text-xs font-bold text-slate-800 dark:text-slate-200 leading-snug">
+                          <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-500 mt-0.5" />
+                          <span className="min-w-0 flex-1 break-words">{item.milestoneTag}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Central Glowing Milestone Pin Node */}
+                    <div className="absolute left-6 md:left-1/2 -translate-x-1/2 flex items-center justify-center z-10">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white dark:bg-[#0c1324] border-4 border-purple-500 dark:border-purple-400 shadow-lg shadow-purple-500/25 flex items-center justify-center group-hover:scale-110 group-hover:border-purple-600 transition-all duration-300">
+                        <span className="text-xs sm:text-sm font-black text-purple-700 dark:text-purple-300 font-mono">
+                          {item.step}
                         </span>
                       </div>
-                      
-                      <span className={`text-[11px] font-black uppercase tracking-wider px-3 py-1 rounded-full border ${item.badgeStyle} font-outfit shadow-2xs`}>
-                        {item.year}
-                      </span>
                     </div>
 
-                    <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mb-2.5 font-outfit">
-                      {item.title}
-                    </h3>
-
-                    <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base leading-relaxed font-normal">
-                      {item.desc}
-                    </p>
+                    {/* Counterbalance Spacer for Alternating Desktop Symmetry */}
+                    <div className="hidden md:block md:w-[calc(50%-2.5rem)]" />
                   </div>
-
-                  {/* Concrete institutional accomplishment chip (Zero Truncation, Natural Multi-line Wrapping) */}
-                  <div className="pt-3.5 mt-5 border-t border-slate-200/80 dark:border-slate-800 flex items-start gap-2.5 text-xs font-bold text-slate-800 dark:text-slate-200 leading-snug">
-                    <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-500 mt-0.5" />
-                    <span className="min-w-0 flex-1 break-words">{item.milestoneTag}</span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-        </div>
-      </section>
-
-      {/* 🌟 TODAY & IMPACT HIGHLIGHT */}
-      <section className="py-20 sm:py-28 bg-slate-100/70 dark:bg-[#0c1324] border-t border-slate-200/60 dark:border-slate-800/80 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-white/95 dark:bg-[#11192e] border border-slate-200/90 dark:border-purple-500/30 rounded-3xl p-6 sm:p-10 md:p-12 shadow-2xl relative overflow-hidden">
-              <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-purple-500 to-indigo-600" />
-              <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
-
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-purple-100 dark:bg-purple-950/70 border border-purple-200/90 dark:border-purple-500/30 text-purple-800 dark:text-purple-300 rounded-full text-xs font-black uppercase tracking-widest mb-4 shadow-2xs font-outfit">
-                <Sparkles className="h-3.5 w-3.5 text-purple-600 dark:text-amber-300" />
-                <span>{language === "te" ? "ప్రస్తుత సేవ & భవిష్యత్ కార్యాచరణ" : language === "hi" ? "वर्तमान सेवा और निरंतर मिशन" : "Present Action & Continuing Mission"}</span>
-              </div>
-
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 dark:text-white mb-4 tracking-tight font-outfit">
-                {pageT.today || "Today & Our Continuing Mission"}
-              </h2>
-
-              <p className="text-slate-700 dark:text-slate-200 leading-relaxed text-sm sm:text-base md:text-lg mb-6 font-medium">
-                {pageT.todayP1 || "Today, The Kingdom of Christ Ministries stands as a beacon of hope, spiritual growth, and social transformation—advancing holistic community development across Telangana and beyond."}
-              </p>
-
-              {/* Dedicated Institutional Manifesto Plaque — Balanced Editorial Geometry */}
-              <div className="my-6 p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-700 text-white shadow-xl shadow-purple-900/25 relative overflow-hidden border border-purple-400/30 group">
-                {/* Ambient Decorative Watermark Quote (Fills empty right side with editorial depth) */}
-                <div className="absolute -bottom-4 -right-2 text-white/[0.08] pointer-events-none select-none">
-                  <Quote className="h-28 w-28 sm:h-32 sm:w-32 rotate-12" />
-                </div>
-
-                {/* Integrated Verified Header Badge */}
-                <div className="flex items-center justify-between mb-3.5 relative z-10">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/15 backdrop-blur-md rounded-full text-[11px] font-black uppercase tracking-wider text-purple-100 border border-white/20 shadow-2xs font-outfit">
-                    <Sparkles className="h-3.5 w-3.5 text-amber-300 shrink-0" />
-                    <span>{language === "te" ? "మా శాశ్వత సంకల్పం" : language === "hi" ? "हमारा स्थाई संकल्प" : "Our Enduring Commitment"}</span>
-                  </div>
-                </div>
-
-                {/* Manifesto Quote Body with Fluid Balanced Typography */}
-                <blockquote className="relative z-10 text-lg sm:text-xl md:text-2xl font-black text-white font-outfit leading-snug tracking-tight text-balance max-w-2xl">
-                  &ldquo;{pageT.todayMissionQuote || "Empowering Lives Through Christ, Compassion & Education"}&rdquo;
-                </blockquote>
-              </div>
-
-              <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-sm sm:text-base mb-8 font-normal">
-                {pageT.todayP2 || "Every week, thousands of families are touched through our active church fellowships, 24/7 prayer counseling, educational institutes, free medical relief camps, and orphan sanctuary initiatives."}
-              </p>
-
-              {/* High-Craft Interactive Outreach Feature Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-6 border-t border-slate-200/80 dark:border-purple-800/40">
-                <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200/80 dark:border-purple-500/20 shadow-xs flex items-center gap-3 hover:border-emerald-300 transition-colors">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-950/70 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-200/80 dark:border-emerald-500/30 shadow-2xs">
-                    <Church className="h-5 w-5" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white font-outfit leading-tight">
-                      24/7 Prayer &amp; Counseling
-                    </div>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-normal">Spiritual care &amp; fellowship</p>
-                  </div>
-                </div>
-
-                <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200/80 dark:border-purple-500/20 shadow-xs flex items-center gap-3 hover:border-indigo-300 transition-colors">
-                  <div className="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 border border-indigo-200/80 dark:border-indigo-500/30 shadow-2xs">
-                    <Stethoscope className="h-5 w-5" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white font-outfit leading-tight">
-                      Health &amp; Study Camps
-                    </div>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-normal">Free clinics &amp; learning kits</p>
-                  </div>
-                </div>
-
-                <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200/80 dark:border-purple-500/20 shadow-xs flex items-center gap-3 hover:border-purple-300 transition-colors">
-                  <div className="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-950/70 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 border border-purple-200/80 dark:border-purple-500/30 shadow-2xs">
-                    <Heart className="h-5 w-5" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white font-outfit leading-tight">
-                      Orphan Sheltering &amp; Food
-                    </div>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-normal">Nutritious meals &amp; shelter</p>
-                  </div>
-                </div>
-              </div>
+                );
+              })}
             </div>
           </div>
+
         </div>
       </section>
 
-      {/* 🚀 CALL TO ACTION SECTION */}
-      <section className="py-20 sm:py-28 bg-[#090e1f] relative overflow-hidden text-white">
+      {/* 🌟 CONSOLIDATED UNIFIED CLOSING SECTION: TODAY, TOMORROW & OUR CONTINUING MISSION */}
+      <section className="py-20 sm:py-28 bg-gradient-to-b from-slate-900 via-[#0a0f24] to-[#060a17] text-white relative overflow-hidden border-t border-purple-900/30">
+        {/* Ambient Backlight Glows */}
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10 pointer-events-none" />
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-600/15 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-indigo-600/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-purple-600/15 rounded-full blur-[140px] pointer-events-none" />
+        <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-indigo-600/15 rounded-full blur-[140px] pointer-events-none" />
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="max-w-3xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-white/10 backdrop-blur-md border border-white/20 text-white rounded-full text-xs font-black uppercase tracking-widest mb-4 shadow-sm font-outfit">
-              <Heart className="h-3.5 w-3.5 text-pink-400" />
-              <span>Be A Part of the Transformation</span>
+          <div className="max-w-4xl mx-auto text-center space-y-6">
+            
+            {/* Verified Mission Badge */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-white/10 backdrop-blur-md border border-white/20 text-white rounded-full text-xs font-black uppercase tracking-widest shadow-sm font-outfit">
+              <Sparkles className="h-3.5 w-3.5 text-amber-300" />
+              <span>{language === "te" ? "ప్రస్తుత సేవ & శాశ్వత సంకల్పం" : language === "hi" ? "वर्तमान सेवा और निरंतर मिशन" : "Present Action & Continuing Mission"}</span>
             </div>
 
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white mb-5 tracking-tight font-outfit animate-fade-in-up">
-              {pageT.join || "Join Our Story & Mission"}
+            {/* Consolidated Section Heading */}
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight font-outfit leading-tight">
+              {pageT.today || (language === "te" ? "నేటి సేవ & మా నిరంతర లక్ష్యం" : language === "hi" ? "आज और हमारा निरंतर मिशन" : "Today & Our Continuing Mission")}
             </h2>
 
-            <p className="text-sm sm:text-base md:text-lg text-slate-300 mb-8 max-w-2xl mx-auto animate-fade-in-up animate-delay-100 font-normal leading-relaxed">
-              {pageT.joinSubtitle || "Partner with Sri. Kurra Kristhu Raju and Kingdom of Christ Ministries to transform lives and empower communities."}
+            {/* Visionary Narrative */}
+            <p className="text-sm sm:text-base md:text-lg text-slate-300 max-w-2xl mx-auto font-normal leading-relaxed">
+              {pageT.todayP1 || (language === "te" ? "కింగ్‌డమ్ ఆఫ్ క్రైస్ట్ మినిస్ట్రీస్ తెలంగాణ మరియు దేశవ్యాప్తంగా సామాజిక మార్పు, నాణ్యమైన విద్య మరియు సమగ్ర సమాజ అభివృద్ధికి అంకితమైంది." : language === "hi" ? "द किंगडम ऑफ क्राइस्ट मिनिस्ट्रीज पूरे तेलंगाना और उससे आगे सामाजिक बदलाव, गुणवत्तापूर्ण शिक्षा और समग्र विकास के लिए समर्पित है।" : "The Kingdom of Christ Ministries stands as an enduring pillar of spiritual hope, transformative education, and holistic welfare across Telangana and beyond.")}
             </p>
 
-            {/* Strategic Action Hierarchy: Primary Brand Gradient on Top, Secondary Glassmorphism Below */}
-            <div className="flex flex-col sm:flex-row gap-3.5 sm:gap-4 justify-center max-w-md sm:max-w-none mx-auto animate-scale-in animate-delay-200">
+            {/* Inspiring Manifesto Plaque */}
+            <div className="my-8 p-6 sm:p-8 md:p-10 rounded-3xl bg-gradient-to-br from-purple-600/90 via-purple-700/95 to-indigo-800/90 text-white shadow-2xl shadow-purple-900/40 relative overflow-hidden border border-purple-400/30 group text-left">
+              <div className="absolute -bottom-6 -right-4 text-white/[0.08] pointer-events-none select-none">
+                <Quote className="h-32 w-32 sm:h-40 sm:w-40 rotate-12" />
+              </div>
+
+              <div className="flex items-center justify-between mb-4 relative z-10">
+                <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/15 backdrop-blur-md rounded-full text-[11px] font-black uppercase tracking-wider text-purple-100 border border-white/20 shadow-2xs font-outfit">
+                  <Sparkles className="h-3.5 w-3.5 text-amber-300 shrink-0" />
+                  <span>{language === "te" ? "మా శాశ్వత సంకల్పం" : language === "hi" ? "हमारा स्थाई संकल्प" : "Our Enduring Commitment"}</span>
+                </div>
+              </div>
+
+              <blockquote className="relative z-10 text-xl sm:text-2xl md:text-3xl font-black text-white font-outfit leading-snug tracking-tight text-balance max-w-2xl mb-3">
+                &ldquo;{pageT.todayMissionQuote || "Empowering Lives Through Christ, Compassion & Education"}&rdquo;
+              </blockquote>
+
+              <p className="relative z-10 text-xs sm:text-sm text-purple-100/90 font-medium leading-relaxed max-w-2xl">
+                {pageT.todayP2 || (language === "te" ? "ప్రతి వారం వేలాది కుటుంబాలకు ఆత్మీయ ఆదరణ, ఉచిత వైద్య శిబిరాలు, విద్యార్థులకు స్కాలర్‌షిప్‌లు మరియు అనాథలకు ఆశ్రయం కల్పిస్తున్నాము." : language === "hi" ? "प्रत्येक सप्ताह हजारों परिवारों को आत्मिक शांति, निःशुल्क स्वास्थ्य शिविर, छात्रवृत्ति और अनाथ बच्चों को आश्रय प्रदान किया जा रहा है।" : "Every week, thousands of lives are touched through active fellowships, 24/7 prayer counseling, student scholarships, free medical relief camps, and loving shelter.")}
+              </p>
+            </div>
+
+            {/* 3 Active Outreach Pillars Mini-Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 text-left mb-8">
+              <div className="p-4 rounded-2xl bg-white/[0.06] backdrop-blur-md border border-white/10 shadow-xs flex items-center gap-3.5 hover:border-emerald-400/50 transition-colors">
+                <div className="w-11 h-11 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0 border border-emerald-500/30">
+                  <Church className="h-5 w-5" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-xs sm:text-sm font-extrabold text-white font-outfit leading-tight">
+                    24/7 Prayer &amp; Counseling
+                  </div>
+                  <p className="text-[11px] text-slate-300 leading-normal mt-0.5">Spiritual care &amp; fellowship</p>
+                </div>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-white/[0.06] backdrop-blur-md border border-white/10 shadow-xs flex items-center gap-3.5 hover:border-indigo-400/50 transition-colors">
+                <div className="w-11 h-11 rounded-xl bg-indigo-500/20 text-indigo-300 flex items-center justify-center shrink-0 border border-indigo-500/30">
+                  <Stethoscope className="h-5 w-5" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-xs sm:text-sm font-extrabold text-white font-outfit leading-tight">
+                    Health &amp; Study Camps
+                  </div>
+                  <p className="text-[11px] text-slate-300 leading-normal mt-0.5">Free clinics &amp; learning kits</p>
+                </div>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-white/[0.06] backdrop-blur-md border border-white/10 shadow-xs flex items-center gap-3.5 hover:border-purple-400/50 transition-colors">
+                <div className="w-11 h-11 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center shrink-0 border border-purple-500/30">
+                  <Heart className="h-5 w-5" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-xs sm:text-sm font-extrabold text-white font-outfit leading-tight">
+                    Orphan Sheltering &amp; Food
+                  </div>
+                  <p className="text-[11px] text-slate-300 leading-normal mt-0.5">Nutritious meals &amp; shelter</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Consolidated Action Buttons: Primary & Secondary */}
+            <div className="flex flex-col sm:flex-row gap-3.5 sm:gap-4 justify-center max-w-md sm:max-w-xl mx-auto pt-2">
               <Link
                 href="/ngo/donations"
-                className="px-7 py-4 bg-gradient-to-r from-purple-600 via-purple-700 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-2xl font-bold hover:shadow-2xl hover:shadow-purple-600/40 transition-all duration-300 hover:scale-[1.02] shadow-xl shadow-purple-600/25 flex items-center justify-center gap-2.5 active:scale-95 cursor-pointer border border-purple-400/30"
+                className="px-7 py-4 bg-gradient-to-r from-purple-600 via-purple-700 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-2xl font-bold hover:shadow-2xl hover:shadow-purple-600/40 transition-all duration-300 hover:scale-[1.02] shadow-xl shadow-purple-600/25 flex items-center justify-center gap-2.5 active:scale-95 cursor-pointer border border-purple-400/30 text-sm sm:text-base select-none"
               >
                 <ShieldCheck className="h-5 w-5 text-amber-300" />
-                <span className="font-outfit text-sm sm:text-base">Donate (80G Tax-Exempt)</span>
+                <span className="font-outfit">Support Our Projects (80G Tax-Exempt)</span>
               </Link>
 
               <Link
                 href="/membership"
-                className="px-7 py-4 bg-white/10 hover:bg-white/15 text-white rounded-2xl font-bold hover:shadow-xl hover:shadow-white/10 transition-all duration-300 hover:scale-[1.02] flex items-center justify-center gap-2.5 shadow-sm active:scale-95 cursor-pointer border border-white/20 backdrop-blur-md"
+                className="px-7 py-4 bg-white/10 hover:bg-white/15 text-white rounded-2xl font-bold hover:shadow-xl hover:shadow-white/10 transition-all duration-300 hover:scale-[1.02] flex items-center justify-center gap-2.5 shadow-sm active:scale-95 cursor-pointer border border-white/20 backdrop-blur-md text-sm sm:text-base select-none"
               >
-                <span className="font-outfit text-sm sm:text-base">{pageT.becomeMember || "Join Our Community"}</span>
+                <span className="font-outfit">{pageT.becomeMember || "Join Our Community"}</span>
                 <ArrowRight className="h-5 w-5 text-purple-300" />
               </Link>
             </div>
 
-            {/* Trust & Statutory Verification Strip */}
-            <div className="mt-8 pt-6 border-t border-white/10 flex flex-wrap items-center justify-center gap-4 sm:gap-8 text-xs text-slate-300 font-semibold">
+            {/* Unified Statutory Verification & Trust Strip */}
+            <div className="mt-10 pt-6 border-t border-white/10 flex flex-wrap items-center justify-center gap-4 sm:gap-8 text-xs text-slate-300 font-semibold">
               <div className="flex items-center gap-1.5">
                 <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
                 <span>80G Tax Deductible (50%)</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
-                <span>Govt. Verified Society (206/2012)</span>
+                <span>Govt. Verified Society (Reg. 206/2012)</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
+                <span>NITI Aayog DARPAN TS/2025/0879909</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
@@ -1679,32 +1710,55 @@ export default function OurStoryPage() {
             <div className="flex-1 overflow-y-auto p-3.5 sm:p-5 md:p-6 custom-thin-scrollbar overscroll-contain">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6 items-start">
                 
-                {/* Left Column: Full Document Image Viewer */}
-                <div className={`lg:col-span-6 bg-slate-100/90 dark:bg-slate-950/90 rounded-2xl p-2.5 sm:p-4 border border-slate-200 dark:border-slate-800 flex flex-col items-center ${modalTab === "details" ? "hidden sm:flex" : "flex"}`}>
+                {/* Left Column: Full Document Image Viewer with Security Watermark */}
+                <div 
+                  onContextMenu={(e) => e.preventDefault()}
+                  className={`lg:col-span-6 bg-slate-100/90 dark:bg-slate-950/90 rounded-2xl p-2.5 sm:p-4 border border-slate-200 dark:border-slate-800 flex flex-col items-center select-none ${modalTab === "details" ? "hidden sm:flex" : "flex"}`}
+                >
                   <div className="relative w-full aspect-[3/4] sm:h-[440px] lg:h-[520px] rounded-xl overflow-hidden bg-white dark:bg-slate-900 shadow-sm border border-slate-200/80 dark:border-slate-800 flex items-center justify-center">
                     <Image
                       src={selectedDoc.image}
                       alt={selectedDoc.title}
                       fill
                       sizes="(max-width: 768px) 100vw, 600px"
-                      className="object-contain p-2"
+                      className="object-contain p-2 pointer-events-none select-none"
+                      draggable={false}
                       priority
                     />
-                  </div>
-                  {/* Caption row */}
-                  <div className="mt-2.5 flex items-center justify-between w-full px-1 gap-2 flex-wrap">
-                    <span className="text-[11px] sm:text-xs font-bold text-slate-500 dark:text-slate-400">
-                      Official Certificate Document
-                    </span>
-                    <a
-                      href={selectedDoc.image}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[11px] sm:text-xs font-bold text-purple-600 dark:text-purple-400 hover:underline flex items-center gap-1 shrink-0"
+
+                    {/* Official Security Watermark Overlay Across Full Preview */}
+                    <div 
+                      className="absolute inset-0 pointer-events-none select-none flex flex-col items-center justify-around z-10 overflow-hidden opacity-30 dark:opacity-45"
+                      aria-hidden="true"
                     >
-                      <span>Open High Resolution Image</span>
-                      <ExternalLink className="h-3.5 w-3.5 shrink-0" />
-                    </a>
+                      <div className="-rotate-[28deg] font-black text-xs sm:text-sm tracking-widest text-purple-950 dark:text-purple-200 uppercase whitespace-nowrap border-y border-dashed border-purple-900/40 dark:border-purple-300/40 px-4 py-1.5 bg-white/50 dark:bg-black/50 backdrop-blur-[0.5px]">
+                        KINGDOM OF CHRIST MINISTRIES • OFFICIAL RECORD • PREVIEW COPY
+                      </div>
+                      <div className="-rotate-[28deg] font-black text-xs sm:text-sm tracking-widest text-purple-950 dark:text-purple-200 uppercase whitespace-nowrap border-y border-dashed border-purple-900/40 dark:border-purple-300/40 px-4 py-1.5 bg-white/50 dark:bg-black/50 backdrop-blur-[0.5px]">
+                        REGD NO. 206/2012 • NITI AAYOG DARPAN TS/2025/0879909
+                      </div>
+                      <div className="-rotate-[28deg] font-black text-xs sm:text-sm tracking-widest text-purple-950 dark:text-purple-200 uppercase whitespace-nowrap border-y border-dashed border-purple-900/40 dark:border-purple-300/40 px-4 py-1.5 bg-white/50 dark:bg-black/50 backdrop-blur-[0.5px]">
+                        VERIFIED STATUTORY ARCHIVE • REPRODUCTION RESTRICTED
+                      </div>
+                    </div>
+
+                    {/* Security Pill Badge */}
+                    <div className="absolute top-2.5 right-2.5 z-20 px-2.5 py-1 rounded-full bg-slate-900/85 text-white text-[10px] font-bold flex items-center gap-1.5 backdrop-blur-md shadow-xs pointer-events-none border border-white/10">
+                      <ShieldCheck className="h-3.5 w-3.5 text-amber-400 shrink-0" />
+                      <span>Security Watermarked</span>
+                    </div>
+                  </div>
+
+                  {/* Sanitized Document Caption & Restricted Notice */}
+                  <div className="mt-2.5 flex items-center justify-between w-full px-1 gap-2 flex-wrap">
+                    <span className="text-[11px] sm:text-xs font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                      <ShieldCheck className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                      <span>Official Certificate Document</span>
+                    </span>
+                    <span className="text-[10px] sm:text-[11px] font-bold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/60 border border-amber-200/80 dark:border-amber-800/80 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                      <ShieldCheck className="h-3 w-3 text-amber-500" />
+                      <span>Full-Res Download Restricted</span>
+                    </span>
                   </div>
                 </div>
 
@@ -1762,17 +1816,49 @@ export default function OurStoryPage() {
               </div>
             </div>
 
+            {/* Restricted Access Educational Disclosure Callout */}
+            {showRestrictedNotice && (
+              <div className="p-3.5 sm:p-4 mx-3.5 sm:mx-5 mb-2 rounded-2xl bg-amber-50/90 dark:bg-amber-950/40 border border-amber-200/90 dark:border-amber-700/60 text-xs text-amber-900 dark:text-amber-200 space-y-2 animate-fade-in">
+                <div className="flex items-center justify-between font-bold">
+                  <span className="flex items-center gap-1.5 uppercase tracking-wide">
+                    <ShieldCheck className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                    Official Document Access Policy
+                  </span>
+                  <button 
+                    type="button"
+                    onClick={() => setShowRestrictedNotice(false)}
+                    className="text-amber-700 dark:text-amber-400 hover:underline cursor-pointer"
+                  >
+                    Dismiss
+                  </button>
+                </div>
+                <p className="leading-relaxed text-slate-700 dark:text-slate-300">
+                  Full-resolution, unwatermarked statutory certificates (Society Reg: 206/2012, 12A/80G, NITI Aayog Darpan TS/2025/0879909) are restricted to authorized government agencies, statutory auditors, and verified institutional CSR donors to prevent unauthorized reproduction.
+                </p>
+                <div className="pt-1 flex flex-wrap items-center gap-2">
+                  <span className="font-semibold text-slate-600 dark:text-slate-400">Institutional Inquiries:</span>
+                  <button
+                    type="button"
+                    onClick={() => handleCopy("trust@kcmchurch.org", "trust-email")}
+                    className="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 border border-amber-300 dark:border-amber-700 text-purple-700 dark:text-purple-300 font-mono font-bold flex items-center gap-1 hover:border-purple-400 transition-colors cursor-pointer"
+                  >
+                    <span>trust@kcmchurch.org</span>
+                    {copiedKey === "trust-email" ? <Check className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3" />}
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* Modal Footer Bar — Pinned & Accessible */}
             <div className="p-3 sm:p-4 border-t border-slate-200/80 dark:border-slate-800/80 bg-slate-50/95 dark:bg-[#0c1324]/95 backdrop-blur-md shrink-0 flex flex-col sm:flex-row items-center justify-between gap-2.5">
-              <a
-                href={selectedDoc.image}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full sm:w-auto px-5 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs sm:text-sm font-bold rounded-xl flex items-center justify-center gap-2 transition-all shadow-xs active:scale-[0.98]"
+              <button
+                type="button"
+                onClick={() => setShowRestrictedNotice(prev => !prev)}
+                className="w-full sm:w-auto px-4 py-2.5 bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/50 dark:hover:bg-purple-900/60 border border-purple-200/90 dark:border-purple-700/60 text-purple-900 dark:text-purple-200 text-xs sm:text-sm font-bold rounded-xl flex items-center justify-center gap-2 transition-all shadow-xs active:scale-[0.98] cursor-pointer"
               >
-                <ExternalLink className="h-4 w-4" />
-                <span>Open Full Resolution Image</span>
-              </a>
+                <ShieldCheck className="h-4 w-4 text-purple-600 dark:text-purple-400 shrink-0" />
+                <span>{showRestrictedNotice ? "Hide Request Guidelines" : "Request Certified Copy for Audit"}</span>
+              </button>
 
               <button
                 type="button"
