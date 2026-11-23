@@ -2098,7 +2098,7 @@ function NgoDonationsContent() {
                   className="space-y-2.5"
                 >
                   <a
-                    href={`/api/receipts/${donationId}/pdf`}
+                    href={`/api/donations/receipt/${donationId}?format=download`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-full py-3.5 min-h-[48px] bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-extrabold rounded-2xl text-sm flex items-center justify-center gap-2 shadow-lg shadow-purple-500/25 transition-all hover:scale-[1.01] active:scale-[0.99] touch-manipulation select-none"

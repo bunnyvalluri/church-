@@ -102,7 +102,7 @@ export default function BranchSelector() {
       >
         <MapPin className="w-3.5 h-3.5 text-violet-600 dark:text-violet-400 shrink-0 transition-colors" />
         <span
-          className="whitespace-nowrap font-extrabold tracking-tight max-w-[72px] min-[360px]:max-w-[85px] sm:max-w-[100px] xl:max-w-[130px] truncate"
+          className="whitespace-nowrap font-extrabold tracking-tight max-w-[70px] min-[360px]:max-w-[80px] sm:max-w-[90px] md:max-w-[95px] lg:max-w-[110px] xl:max-w-[130px] truncate"
           suppressHydrationWarning
         >
           {activeBranchName}

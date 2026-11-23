@@ -63,6 +63,11 @@ const MemberLoginButton = memo(function MemberLoginButton({
           </div>
           <ChevronRight className="w-4 h-4 text-white/80 group-hover:translate-x-0.5 transition-transform shrink-0" />
         </div>
+      ) : variant === "tablet" ? (
+        <span className="relative z-10 font-black tracking-wide" suppressHydrationWarning>
+          <span className="hidden min-[920px]:inline">{label}</span>
+          <span className="min-[920px]:hidden">Login</span>
+        </span>
       ) : (
         <span className="relative z-10 font-black tracking-wide" suppressHydrationWarning>{label}</span>
       )}

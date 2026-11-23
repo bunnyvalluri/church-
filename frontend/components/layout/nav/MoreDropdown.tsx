@@ -70,7 +70,7 @@ const MoreDropdown = memo(function MoreDropdown({
   }, [isOpen, close]);
 
   return (
-    <div className="relative shrink-0 flex-shrink-0 mr-1 lg:mr-1.5" ref={containerRef}>
+    <div className="relative shrink-0 flex-shrink-0" ref={containerRef}>
       {/* Trigger */}
       <button
         ref={buttonRef}

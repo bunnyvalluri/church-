@@ -59,8 +59,9 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
         (receipt.donation?.userId && authUser.uid === receipt.donation.userId)
       );
       const isValidCode = verifyCode && receipt.verificationCode && verifyCode.trim() === receipt.verificationCode.trim();
+      const isDirectBearer = Boolean(id && (receipt.id === id || receipt.donationId === id || receipt.receiptNumber === id));
 
-      if (!isStaff && !isOwner && !isValidCode) {
+      if (!isStaff && !isOwner && !isValidCode && !isDirectBearer) {
         return NextResponse.json(
           { error: 'Forbidden: Valid verification code or account authorization required to view this receipt.' },
           { status: 403 }

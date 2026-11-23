@@ -226,14 +226,14 @@ const NavigationBar = memo(function NavigationBar() {
               isScrolled
                 ? "shadow-xl shadow-black/10 dark:shadow-purple-950/40 border-purple-300/60 dark:border-violet-500/30"
                 : "shadow-md shadow-black/[0.04] dark:shadow-purple-950/20",
-              "pl-2.5 pr-3 min-[360px]:pl-3 min-[360px]:pr-3.5 sm:pl-4 sm:pr-4.5 md:pl-4 md:pr-5 lg:pl-4.5 lg:pr-5.5 py-1.5 min-[360px]:py-2"
+              "px-3.5 min-[360px]:px-4 sm:px-5 md:px-6 lg:px-7 xl:px-8 py-1.5 min-[360px]:py-2"
             )}
           >
             {/* ── Flex row: Logo | Menu | Actions with guaranteed breathing room ── */}
             <div
               className={cn(
                 "flex items-center justify-between",
-                "gap-1.5 sm:gap-2 md:gap-2.5 lg:gap-3 xl:gap-5",
+                "gap-2 md:gap-3 lg:gap-4 xl:gap-6",
                 "min-h-[44px] min-[360px]:min-h-[48px] sm:min-h-[52px]"
               )}
             >
@@ -257,18 +257,18 @@ const NavigationBar = memo(function NavigationBar() {
               />
 
               {/* ── Right actions: BranchSelector + Login + Squircle Theme Toggle + Squircle Hamburger ── */}
-              <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0 shrink-0 pr-0.5 sm:pr-1">
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0 shrink-0">
                 {/* Branch Selector + Login */}
                 <NavigationActions showSettings={false} />
 
-                {/* ── 1-Tap Squircle Theme Toggle (Moon / Sun from reference design) ── */}
+                {/* ── 1-Tap Concentric Theme Toggle (Moon / Sun from reference design) ── */}
                 <button
                   type="button"
                   onClick={toggleTheme}
                   aria-label={currentTheme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
                   title={currentTheme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
                   className={cn(
-                    "w-8 h-8 sm:w-8.5 sm:h-8.5 rounded-2xl flex-shrink-0 shrink-0",
+                    "w-8 h-8 sm:w-[34px] sm:h-[34px] rounded-full flex-shrink-0 shrink-0",
                     "flex items-center justify-center",
                     "bg-slate-100/90 hover:bg-slate-200/90 dark:bg-white/10 dark:hover:bg-white/15",
                     "border border-slate-200/70 dark:border-white/10",
