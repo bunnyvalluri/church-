@@ -3,8 +3,9 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo, memo } from "react";
 import { usePathname } from "next/navigation";
 import {
-  Home, Info, HeartHandshake, Church, Calendar, Mic, Image as ImageIcon, Phone, Menu, X,
+  Home, Info, HeartHandshake, Church, Calendar, Mic, Image as ImageIcon, Phone, Menu, X, Sun, Moon,
 } from "lucide-react";
+import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import TopInfoBar from "./TopInfoBar";
@@ -39,6 +40,21 @@ const NavigationBar = memo(function NavigationBar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileOpen, setMobileOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
+
+  const { theme, resolvedTheme, setTheme } = useTheme();
+  const currentTheme = resolvedTheme || theme || "light";
+
+  const toggleTheme = useCallback(() => {
+    const nextTheme = currentTheme === "dark" ? "light" : "dark";
+    if (nextTheme === "dark") {
+      document.documentElement.classList.add("dark");
+      document.documentElement.classList.remove("light");
+    } else {
+      document.documentElement.classList.remove("dark");
+      document.documentElement.classList.add("light");
+    }
+    setTheme(nextTheme);
+  }, [currentTheme, setTheme]);
 
   // ── Dynamic header height measurement for sticky secondary navigation stacking ──
   useEffect(() => {
@@ -190,47 +206,31 @@ const NavigationBar = memo(function NavigationBar() {
           "max-w-[100vw]"
         )}
       >
-        {/* ── Main nav ── */}
+        {/* ── Floating Capsule Navbar ── */}
         <nav
           aria-label="Main navigation"
-          className={cn(
-            "w-full",
-            // Transition: backdrop, border, shadow — 200ms GPU
-            "transition-[background-color,backdrop-filter,border-color,box-shadow] duration-200 ease-out",
-            "border-b",
-            isScrolled
-              ? [
-                  "bg-white/95 dark:bg-slate-950/95",
-                  "backdrop-blur-2xl",
-                  "border-gray-200/80 dark:border-violet-500/30",
-                  "shadow-[0_1px_20px_0_rgba(0,0,0,0.06)] dark:shadow-[0_4px_32px_0_rgba(109,40,217,0.25)]",
-                ].join(" ")
-              : [
-                  "bg-white/85 dark:bg-slate-950/85",
-                  "backdrop-blur-xl",
-                  "border-transparent dark:border-violet-500/15",
-                  "shadow-none dark:shadow-[0_2px_16px_0_rgba(109,40,217,0.12)]",
-                ].join(" ")
-          )}
+          className="w-full px-2.5 py-2 min-[360px]:px-3.5 sm:px-6 lg:px-8 2xl:px-12 transition-all duration-200"
         >
-          {/* ── Max-width container ── */}
+          {/* ── Floating Island Glassmorphism Pill Container ── */}
           <div
             className={cn(
-              "mx-auto w-full",
-              // Max-widths per breakpoint
-              "max-w-screen-xl 2xl:max-w-[1440px]",
-              // Horizontal padding with generous mobile margins
-              "px-3.5 min-[360px]:px-4 sm:px-5 md:px-6 lg:px-8 2xl:px-12"
+              "mx-auto w-full max-w-screen-xl 2xl:max-w-[1440px]",
+              "rounded-full transition-all duration-300",
+              // Floating island glassmorphism styling
+              "bg-white/95 dark:bg-slate-900/90 backdrop-blur-2xl",
+              "border border-slate-200/80 dark:border-white/10",
+              isScrolled
+                ? "shadow-xl shadow-black/10 dark:shadow-purple-950/40 border-purple-300/60 dark:border-violet-500/30"
+                : "shadow-md shadow-black/[0.04] dark:shadow-purple-950/20",
+              "px-3 py-1.5 min-[360px]:px-3.5 min-[360px]:py-2 sm:px-5 sm:py-2"
             )}
           >
             {/* ── Flex row: Logo | Menu | Actions ── */}
             <div
               className={cn(
                 "flex items-center justify-between",
-                // Gap — 6 viewport responsive scale
                 "gap-1.5 min-[360px]:gap-2 sm:gap-3 md:gap-4 lg:gap-6",
-                // Heights per breakpoint tier
-                "min-h-[52px] min-[360px]:min-h-[56px] sm:min-h-[60px] md:min-h-[64px] lg:min-h-[72px] 2xl:min-h-[76px]"
+                "min-h-[44px] min-[360px]:min-h-[48px] sm:min-h-[52px]"
               )}
             >
               {/* Logo */}
@@ -252,12 +252,36 @@ const NavigationBar = memo(function NavigationBar() {
                 resolveHref={resolveHref}
               />
 
-              {/* ── Right actions: BranchSelector + Settings + Login + Hamburger ── */}
+              {/* ── Right actions: BranchSelector + Settings + Login + Squircle Theme Toggle + Squircle Hamburger ── */}
               <div className="flex items-center gap-1.5 min-[360px]:gap-2 sm:gap-2.5 flex-shrink-0 min-w-0">
                 {/* Branch Selector + Settings + Login */}
                 <NavigationActions />
 
-                {/* Hamburger — mobile only (<768px) */}
+                {/* ── 1-Tap Squircle Theme Toggle (Moon / Sun from reference design) ── */}
+                <button
+                  type="button"
+                  onClick={toggleTheme}
+                  aria-label={currentTheme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+                  title={currentTheme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+                  className={cn(
+                    "w-9 h-9 min-[360px]:w-10 min-[360px]:h-10 rounded-2xl flex-shrink-0",
+                    "flex items-center justify-center",
+                    "bg-slate-100/90 hover:bg-slate-200/90 dark:bg-white/10 dark:hover:bg-white/15",
+                    "border border-slate-200/70 dark:border-white/10",
+                    "text-purple-600 dark:text-purple-400",
+                    "transition-all duration-150 ease-out",
+                    "active:scale-95 cursor-pointer touch-manipulation",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
+                  )}
+                >
+                  {currentTheme === "dark" ? (
+                    <Sun className="w-4.5 h-4.5 min-[360px]:w-5 min-[360px]:h-5 text-amber-400 fill-amber-400/20" />
+                  ) : (
+                    <Moon className="w-4.5 h-4.5 min-[360px]:w-5 min-[360px]:h-5 text-purple-600" />
+                  )}
+                </button>
+
+                {/* ── Squircle Hamburger Button (3 lines from reference design) ── */}
                 <button
                   type="button"
                   onClick={() => setMobileOpen(!isMobileOpen)}
@@ -267,21 +291,19 @@ const NavigationBar = memo(function NavigationBar() {
                   className={cn(
                     "md:hidden flex-shrink-0",
                     "flex items-center justify-center",
-                    // Touch target sizing
-                    "w-9 h-9 min-[360px]:w-9.5 min-[360px]:h-9.5 sm:w-10 sm:h-10 rounded-xl",
-                    "bg-gray-100/90 dark:bg-white/10",
-                    "border border-gray-200/90 dark:border-white/20",
-                    "text-gray-700 dark:text-white",
-                    "hover:bg-gray-200/90 dark:hover:bg-white/20",
-                    "transition-[background-color,color,transform] duration-150 ease-out",
-                    "active:scale-90",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                    "w-9 h-9 min-[360px]:w-10 min-[360px]:h-10 rounded-2xl",
+                    "bg-slate-100/90 hover:bg-slate-200/90 dark:bg-white/10 dark:hover:bg-white/15",
+                    "border border-slate-200/70 dark:border-white/10",
+                    "text-slate-700 dark:text-slate-200",
+                    "transition-all duration-150 ease-out",
+                    "active:scale-95 cursor-pointer touch-manipulation",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
                   )}
                 >
                   {isMobileOpen ? (
-                    <X className="w-4.5 h-4.5 sm:w-5 sm:h-5" aria-hidden="true" />
+                    <X className="w-4.5 h-4.5 min-[360px]:w-5 min-[360px]:h-5 stroke-[2.25]" aria-hidden="true" />
                   ) : (
-                    <Menu className="w-4.5 h-4.5 sm:w-5 sm:h-5" aria-hidden="true" />
+                    <Menu className="w-4.5 h-4.5 min-[360px]:w-5 min-[360px]:h-5 stroke-[2.25]" aria-hidden="true" />
                   )}
                 </button>
               </div>

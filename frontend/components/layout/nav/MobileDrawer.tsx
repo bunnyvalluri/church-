@@ -20,6 +20,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useTheme } from "next-themes";
+import BranchSelector from "@/components/BranchSelector";
 import PaletteToggle from "@/components/PaletteToggle";
 import MemberLoginButton from "./MemberLoginButton";
 import { NavItem } from "./types";
@@ -212,7 +213,15 @@ const MobileDrawer = memo(function MobileDrawer({
             </div>
           </div>
 
-          {/* ── B. PRIMARY NAVIGATION (COMPACT, TOUCH-OPTIMIZED, NO WASTED VERTICAL PADDING) ── */}
+          {/* ── B. BRANCH / CAMPUS SELECTOR (MOBILE ACCESSIBLE) ── */}
+          <div className="bg-slate-100/80 dark:bg-white/[0.05] p-2.5 rounded-2xl border border-slate-200/80 dark:border-white/10 flex items-center justify-between">
+            <span className="text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 font-outfit">
+              Branch Campus
+            </span>
+            <BranchSelector />
+          </div>
+
+          {/* ── C. PRIMARY NAVIGATION (COMPACT, TOUCH-OPTIMIZED, NO WASTED VERTICAL PADDING) ── */}
           <div>
             <div className="px-1 mb-1.5 flex items-center justify-between">
               <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 font-outfit">

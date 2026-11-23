@@ -41,8 +41,8 @@ const NavigationActions = memo(function NavigationActions({
         compact ? "gap-1" : "gap-1 min-[360px]:gap-1.5 sm:gap-2"
       )}
     >
-      {/* Branch Selector — always visible */}
-      <div className="flex-shrink-0">
+      {/* Branch Selector — visible on tablet+ (sm+) */}
+      <div className="hidden sm:block flex-shrink-0">
         <BranchSelector />
       </div>
 

@@ -7,14 +7,10 @@ import { cn } from "@/lib/utils";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
 /**
- * NavigationLogo — Logo image + Church name + Tagline
+ * NavigationLogo — Floating Pill Logo matching modern portfolio & radiant gradient aesthetic
  *
- * Desktop (≥lg): Logo + name + tagline
- * Tablet (sm–lg): Logo + name
- * Mobile (<sm):  Logo + name (truncated)
- *
- * Fixed image dimensions prevent CLS.
- * Hover glow uses transform+opacity only (GPU composited).
+ * Left: Avatar inside a radiant gradient ring (purple/pink/indigo)
+ * Right: Two-tone Title ("Kingdom" bold dark + "of Christ" bold purple) + Subtitle ("MINISTRIES • CHURCH PORTAL")
  */
 const NavigationLogo = memo(function NavigationLogo() {
   const { t, language } = useLanguage();
@@ -24,76 +20,63 @@ const NavigationLogo = memo(function NavigationLogo() {
       href="/"
       className={cn(
         "flex items-center flex-shrink-0 min-w-0 z-10 relative",
-        // Spacing between logo and text
-        "gap-2 sm:gap-2.5",
+        // Spacing between avatar ring and text
+        "gap-2.5 sm:gap-3",
         // Group for hover effects
         "group",
         // Focus ring
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-xl",
-        // Min 44×44 touch target padding
-        "p-1"
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 rounded-full",
+        "py-0.5"
       )}
       aria-label="Kingdom of Christ Ministries — Home"
     >
-      {/* ── Logo Image ── */}
-      <div className="relative flex-shrink-0">
-        {/* Glow ring — GPU: opacity only */}
-        <div
-          className={cn(
-            "absolute inset-0 rounded-full bg-gradient-to-tr from-violet-500 via-purple-500 to-violet-600",
-            "opacity-0 group-hover:opacity-100 blur-md scale-125",
-            "transition-opacity duration-500 ease-out pointer-events-none"
-          )}
-          aria-hidden="true"
-        />
-        {/* Image container — fixed sizes prevent CLS */}
-        <div className={cn(
-          "relative rounded-full overflow-hidden bg-white",
-          "border-2 border-purple-300/40 group-hover:border-purple-400/70",
-          "shadow-md transition-[border-color,box-shadow] duration-300",
-          // Responsive sizes across 6 viewports
-          "w-7 h-7 min-[360px]:w-8 min-[360px]:h-8 sm:w-8.5 sm:h-8.5 md:w-9 md:h-9 lg:w-10 lg:h-10 2xl:w-11 2xl:h-11"
-        )}>
-          <Image
-            src="/logo.png"
-            alt="KCM Logo"
-            fill
-            unoptimized
-            sizes="(max-width: 375px) 28px, (max-width: 540px) 32px, (max-width: 768px) 34px, (max-width: 1024px) 36px, 44px"
-            className="object-contain p-0.5"
-            priority
-          />
+      {/* ── Radiant Gradient Avatar Ring (Pink-to-Purple Gradient Ring from reference) ── */}
+      <div className="relative flex-shrink-0 p-[2px] rounded-full bg-gradient-to-tr from-purple-600 via-pink-500 to-indigo-500 shadow-xs group-hover:scale-105 transition-transform duration-200">
+        <div className="p-[1.5px] rounded-full bg-white dark:bg-slate-900">
+          <div className={cn(
+            "relative rounded-full overflow-hidden bg-white",
+            "w-8 h-8 min-[360px]:w-9 min-[360px]:h-9 sm:w-10 sm:h-10"
+          )}>
+            <Image
+              src="/logo.png"
+              alt="KCM Logo"
+              fill
+              unoptimized
+              sizes="(max-width: 640px) 36px, 40px"
+              className="object-contain p-0.5"
+              priority
+            />
+          </div>
         </div>
       </div>
 
-      {/* ── Text Block ── */}
+      {/* ── Typography Block (Two-Tone Title + Subtitle) ── */}
       <div className="flex flex-col min-w-0 leading-none">
-        {/* Church name */}
+        {/* Church Name — Two Tone: "Kingdom" (dark) + "of Christ" (purple) */}
         <span
           suppressHydrationWarning
           className={cn(
-            "font-black text-gray-900 dark:text-white leading-tight truncate max-w-[105px] min-[360px]:max-w-[135px] sm:max-w-none",
-            // Responsive sizes across 6 viewports
-            "text-[9.5px] min-[360px]:text-[11px] sm:text-xs md:text-xs lg:text-sm xl:text-base 2xl:text-lg",
-            language !== "en" ? "tracking-normal" : "tracking-tight",
-            // GPU transition on hover
+            "font-black leading-tight truncate max-w-[130px] min-[360px]:max-w-[155px] sm:max-w-none font-outfit",
+            "text-xs min-[360px]:text-[13px] sm:text-sm md:text-sm lg:text-base 2xl:text-lg",
             "transition-colors duration-150"
           )}
         >
-          {t.nav.churchName}
+          {language === "en" ? (
+            <>
+              <span className="text-slate-900 dark:text-white">Kingdom </span>
+              <span className="text-purple-600 dark:text-purple-400">of Christ</span>
+            </>
+          ) : (
+            <span className="text-slate-900 dark:text-white">{t.nav.churchName}</span>
+          )}
         </span>
 
-        {/* Tagline / Ministries sub-label */}
+        {/* Subtitle / Department — Bold Uppercase Sub-Label */}
         <span
           suppressHydrationWarning
-          className={cn(
-            "whitespace-nowrap leading-none mt-0.5 font-extrabold uppercase",
-            language !== "en"
-              ? "text-[8px] min-[360px]:text-[9px] text-purple-600 dark:text-purple-300 tracking-normal"
-              : "text-[0.48rem] min-[360px]:text-[0.52rem] sm:text-[0.6rem] tracking-[0.18em] text-purple-600 dark:text-purple-300 sm:bg-gradient-to-r sm:from-purple-500 sm:to-indigo-400 dark:sm:from-purple-200 dark:sm:to-indigo-200 sm:bg-clip-text"
-          )}
+          className="text-[8.5px] min-[360px]:text-[9.5px] sm:text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 leading-none mt-0.5 truncate"
         >
-          {t.nav.ministries}
+          {language === "en" ? "Ministries • Church Portal" : t.nav.ministries}
         </span>
       </div>
     </Link>
