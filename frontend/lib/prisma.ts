@@ -24,32 +24,58 @@ function isConnectionClosedError(error: any): boolean {
   );
 }
 
-async function executeWithRetry<T>(fn: () => Promise<T>, client: PrismaClient): Promise<T> {
-  try {
-    return await fn();
-  } catch (err: any) {
-    if (isConnectionClosedError(err)) {
-      console.warn('[Prisma] Neon connection closed or dropped (kind: Closed). Reconnecting and retrying query...');
-      try {
-        await client.$disconnect().catch(() => {});
-        await client.$connect().catch(() => {});
-      } catch (connErr) {
-        // Safe fallback — retry will attempt to reconnect anyway
-      }
+async function executeWithRetry<T>(fn: () => Promise<T>, client: PrismaClient, maxRetries = 2): Promise<T> {
+  let attempt = 0;
+  while (true) {
+    try {
       return await fn();
+    } catch (err: any) {
+      attempt++;
+      if (isConnectionClosedError(err) && attempt <= maxRetries) {
+        console.warn(`[Prisma:Neon] Connection dropped (kind: Closed). Retrying query (attempt ${attempt}/${maxRetries}) after backoff...`);
+        try {
+          await client.$disconnect().catch(() => {});
+          // Delay briefly to allow Neon compute to finish waking up from sleep
+          await new Promise((resolve) => setTimeout(resolve, 600 * attempt));
+          await client.$connect().catch(() => {});
+        } catch (connErr) {
+          // Retry loop will attempt query again
+        }
+        continue;
+      }
+      throw err;
     }
-    throw err;
   }
 }
 
 function createPrismaClient(): PrismaClient {
-  return new PrismaClient({
-    log:
-      process.env.NODE_ENV === 'development'
-        ? ['warn', 'error']
-        : ['error'],
+  const client = new PrismaClient({
+    log: [
+      { emit: 'event', level: 'error' },
+      { emit: 'event', level: 'warn' },
+    ],
     errorFormat: 'pretty',
   });
+
+  // Intercept and handle connection events gracefully
+  (client as any).$on('error', (e: any) => {
+    const msg = String(e?.message || '');
+    if (isConnectionClosedError(msg)) {
+      if (process.env.NODE_ENV === 'development') {
+        console.info('[Prisma:Neon] Idle pooled connection closed by serverless PgBouncer; reconnecting automatically on next query.');
+      }
+      return;
+    }
+    console.error('[Prisma Error]:', e?.message || e);
+  });
+
+  (client as any).$on('warn', (e: any) => {
+    const msg = String(e?.message || '');
+    if (isConnectionClosedError(msg)) return;
+    console.warn('[Prisma Warning]:', msg || e);
+  });
+
+  return client;
 }
 
 // ── Optimized Prisma Client Singleton ─────────────────────────────────────────

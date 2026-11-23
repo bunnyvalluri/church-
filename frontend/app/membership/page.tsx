@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useTransition, useMemo } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -13,7 +13,6 @@ import {
   Crown,
   BookOpen,
   FileCheck,
-  FileText,
   UserCheck,
   Sparkles,
   X,
@@ -26,35 +25,64 @@ import {
   User,
   Mail,
   Phone,
-  ChevronDown
+  ChevronDown,
+  AlertCircle,
+  Loader2
 } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
 
+// ---------------------------------------------------------------------------
+// Main Membership Page Component
+// ---------------------------------------------------------------------------
 export default function MembershipPage() {
   const { language, t } = useLanguage();
-  const m = t?.pages?.membership || {};
+  const [, startTransition] = useTransition();
 
-  // Modal State for Class Registration
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const m = useMemo(() => {
+    return (t as any)?.pages?.membership || (t as any)?.membership || {};
+  }, [t]);
+
+  // Modal States
+  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
+  const [isCovenantModalOpen, setIsCovenantModalOpen] = useState(false);
+
+  // Registration Form States
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
   const [regForm, setRegForm] = useState({
     name: "",
     email: "",
     phone: "",
     preferredBranch: "Shapur Main Campus",
-    preferredDate: "Upcoming Sunday • 11:30 AM"
+    preferredDate: "Upcoming Sunday • 11:30 AM",
   });
 
-  // Body scroll lock and Escape key handler for Modal
+  // Section Refs for smooth in-page navigation
+  const pathwayRef = useRef<HTMLDivElement>(null);
+  const covenantRef = useRef<HTMLDivElement>(null);
+
+  // Form Validation
+  const isNameValid = regForm.name.trim().length >= 2;
+  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(regForm.email.trim());
+  const isPhoneValid = regForm.phone.trim().replace(/[^0-9]/g, "").length >= 10;
+  const isBranchValid = regForm.preferredBranch.trim().length > 0;
+  const isFormValid = isNameValid && isEmailValid && isPhoneValid && isBranchValid;
+
+  // Body scroll lock and Escape key handler for both Modals
   useEffect(() => {
-    if (!isModalOpen) return;
+    if (!isRegisterModalOpen && !isCovenantModalOpen) return;
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setIsModalOpen(false);
+      if (e.key === "Escape") {
+        setIsRegisterModalOpen(false);
+        setIsCovenantModalOpen(false);
+      }
     };
     window.addEventListener("keydown", handleKeyDown);
 
@@ -62,42 +90,10 @@ export default function MembershipPage() {
       document.body.style.overflow = originalOverflow;
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isModalOpen]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitted(true);
-
-    try {
-      const { submitToFormspark } = await import("@/lib/formspark");
-      await submitToFormspark({
-        formType: "Church Membership Application",
-        name: regForm.name,
-        email: regForm.email,
-        phone: regForm.phone,
-        preferredBranch: regForm.preferredBranch,
-        preferredDate: regForm.preferredDate,
-        subject: `Membership Application: ${regForm.name} (${regForm.preferredBranch})`,
-      });
-    } catch (err) {
-      console.warn("[MEMBERSHIP] Formspark submit notice:", err);
-    }
-
-    setTimeout(() => {
-      setIsSubmitted(false);
-      setIsModalOpen(false);
-      setRegForm({
-        name: "",
-        email: "",
-        phone: "",
-        preferredBranch: "Shapur Main Campus",
-        preferredDate: "Upcoming Sunday • 11:30 AM"
-      });
-    }, 2500);
-  };
+  }, [isRegisterModalOpen, isCovenantModalOpen]);
 
   // 4 Core Membership Pillars
-  const benefits = [
+  const benefits = useMemo(() => [
     {
       pillar: "01",
       icon: Users,
@@ -138,10 +134,10 @@ export default function MembershipPage() {
       iconBox: "bg-amber-500/10 dark:bg-amber-500/20 border-amber-200/80 dark:border-amber-800/60",
       badge: "bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-200/80 dark:border-amber-800/60"
     }
-  ];
+  ], [language, m]);
 
-  // 4-Step Sequential Pathway Data with Tone-on-Tone Harmonies & Logical Parity
-  const pathwaySteps = [
+  // 4-Step Sequential Pathway Data
+  const pathwaySteps = useMemo(() => [
     {
       step: "1",
       title: m.step1Title || (language === "te" ? "సభ్యత్వ తరగతికి హాజరవ్వండి" : language === "hi" ? "सदस्यता कक्षा में भाग लें" : "Attend the Membership Class"),
@@ -194,31 +190,109 @@ export default function MembershipPage() {
       durationStyle: "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-emerald-200/80 dark:border-emerald-800/60",
       glow: "hover:border-emerald-400 dark:hover:border-emerald-500/60",
     }
-  ];
+  ], [language, m]);
 
   // Membership Covenant Commitments
-  const covenantPromises = [
+  const covenantPromises = useMemo(() => [
     {
       num: "01",
-      title: language === "te" ? "సంఘ ఐక్యత" : language === "hi" ? "कलीसिया की एकता" : "Protect Unity",
-      text: m.covenant1 || (language === "te" ? "ఇతర సభ్యుల పట్ల ప్రేమతో ప్రవర్తిస్తూ, సంఘ ఐక్యతను కాపాడుతాను." : language === "hi" ? "अन्य सदस्यों के प्रति प्रेम से व्यवहार करते हुए कलीसिया की एकता की रक्षा करूंगा।" : "I will protect the unity of my church by acting in love toward other members and refusing to gossip.")
+      title: language === "te" ? "సంఘ ఐక్యతను రక్షించడం" : language === "hi" ? "कलीसिया की एकता की रक्षा" : "Protect Church Unity",
+      text: m.covenant1 || (language === "te" ? "ఇతర సభ్యుల పట్ల ప్రేమతో ప్రవర్తిస్తూ, ఎలాంటి గాసిప్ చేయకుండా సంఘ ఐక్యతను కాపాడుతాను." : language === "hi" ? "अन्य सदस्यों के प्रति प्रेम से व्यवहार करते हुए और निंदा से बचते हुए कलीसिया की एकता की रक्षा करूंगा।" : "I will protect the unity of my church by acting in love toward other members, refusing to gossip, and following church leaders.")
     },
     {
       num: "02",
-      title: language === "te" ? "బాధ్యతాయుత ప్రార్థన" : language === "hi" ? "प्रार्थना जिम्मेदारी" : "Share Responsibility",
-      text: m.covenant2 || (language === "te" ? "నిరంతరం ప్రార్థిస్తూ, ఇతరులను దేవుని సన్నిధికి ఆహ్వానిస్తూ సంఘ బాధ్యతను పంచుకుంటాను." : language === "hi" ? "प्रार्थना करते हुए और दूसरों को आमंत्रित करते हुए कलीसिया की जिम्मेदारी निभाऊंगा।" : "I will share the responsibility of my church by praying and inviting the unchurched.")
+      title: language === "te" ? "బాధ్యతాయుత ప్రార్థన & ఆహ్వానం" : language === "hi" ? "प्रार्थना एवं आमंत्रण जिम्मेदारी" : "Share Ministry Responsibility",
+      text: m.covenant2 || (language === "te" ? "సంఘ క్షేమం కొరకు నిరంతరం ప్రార్థిస్తూ, ఇతరులను దేవుని సన్నిధికి ఆహ్వానిస్తూ సంఘ బాధ్యతను పంచుకుంటాను." : language === "hi" ? "कलीसिया के विकास के लिए प्रार्थना करते हुए और दूसरों को आमंत्रित करते हुए जिम्मेदारी निभाऊंगा।" : "I will share the responsibility of my church by praying for its spiritual health and warmly welcoming newcomers.")
     },
     {
       num: "03",
-      title: language === "te" ? "వరాల ద్వారా సేవ" : language === "hi" ? "वरदानों से सेवकाई" : "Serve Faithfully",
-      text: m.covenant3 || (language === "te" ? "నా ఆధ్యాత్మిక వరాలను కనుగొని, నమ్మకంగా సంఘ పరిచర్యలో సేవ చేస్తాను." : language === "hi" ? "अपने आत्मिक वरदानों को पहचान कर विश्वासयोग्यता से कलीसिया की सेवा करूंगा।" : "I will serve the ministry of my church by discovering my gifts and serving faithfully.")
+      title: language === "te" ? "వరాల ద్వారా నమ్మకంగా సేవ" : language === "hi" ? "वरदानों से विश्वासयोग्य सेवकाई" : "Serve Faithfully With Gifts",
+      text: m.covenant3 || (language === "te" ? "నా ఆధ్యాత్మిక వరాలను కనుగొని, వినయపూర్వకమైన హృదయంతో సంఘ పరిచర్యలో నమ్మకంగా సేవ చేస్తాను." : language === "hi" ? "अपने आत्मिक वरदानों को पहचान कर और सेवक का मन बनाकर विश्वासयोग्यता से कलीसिया की सेवा करूंगा।" : "I will serve the ministry of my church by discovering my spiritual gifts and developing a servant's heart.")
     },
     {
       num: "04",
-      title: language === "te" ? "పరిశుద్ధ జీవితం & దశమభాగం" : language === "hi" ? "गवाही और दशमांश" : "Support Testimony",
-      text: m.covenant4 || (language === "te" ? "పరిశుద్ధమైన జీవితాన్ని జీవిస్తూ, నమ్మకంగా దశాంశ భాగాలను చెల్లిస్తూ సంఘ సాక్ష్యాన్ని నిలబెడతాను." : language === "hi" ? "पवित्र जीवन जीते हुए और विश्वासयोग्यता से दशमांश देते हुए कलीसिया की गवाही को बनाए रखूंगा।" : "I will support the testimony of my church by living a godly life and tithing faithfully.")
+      title: language === "te" ? "పరిశుద్ధ జీవితం & దశమభాగం" : language === "hi" ? "पवित्र गवाही एवं दशमांश" : "Support Church Testimony",
+      text: m.covenant4 || (language === "te" ? "క్రీస్తును మహిమపరిచే పరిశుద్ధమైన జీవితాన్ని జీవిస్తూ, క్రమం తప్పకుండా దశాంశ భాగాలను సమర్పిస్తూ సంఘ సాక్ష్యాన్ని నిలబెడతాను." : language === "hi" ? "पवित्र जीवन जीते हुए, आराधना में उपस्थित रहकर और विश्वासयोग्यता से दशमांश देकर कलीसिया की गवाही को बनाए रखूंगा।" : "I will support the testimony of my church by attending faithfully, living a godly life, and giving tithes and offerings regularly.")
     }
-  ];
+  ], [language, m]);
+
+  // Open Registration Modal with Transition
+  const handleOpenRegisterModal = () => {
+    startTransition(() => {
+      setSubmitError(null);
+      setIsSubmitted(false);
+      setIsCovenantModalOpen(false);
+      setIsRegisterModalOpen(true);
+    });
+  };
+
+  // Open Covenant Modal with Transition
+  const handleOpenCovenantModal = () => {
+    startTransition(() => {
+      setIsCovenantModalOpen(true);
+    });
+  };
+
+  // Smooth scroll handler with Transition
+  const handleSmoothScroll = (ref: React.RefObject<HTMLDivElement>) => {
+    startTransition(() => {
+      if (ref.current) {
+        requestAnimationFrame(() => {
+          ref.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+      }
+    });
+  };
+
+  // Class Registration Form Submit Handler
+  const handleRegisterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isFormValid || isSubmitting) return;
+
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      const { submitToFormspark } = await import("@/lib/formspark");
+      const res = await submitToFormspark({
+        formType: "Church Membership Application",
+        name: regForm.name.trim(),
+        email: regForm.email.trim(),
+        phone: regForm.phone.trim(),
+        preferredBranch: regForm.preferredBranch,
+        preferredDate: regForm.preferredDate,
+        subject: `Membership Class Registration: ${regForm.name.trim()} (${regForm.preferredBranch})`,
+      });
+
+      if (res && res.error) {
+        throw new Error(res.error);
+      }
+
+      setIsSubmitted(true);
+      setTimeout(() => {
+        setIsSubmitted(false);
+        setIsRegisterModalOpen(false);
+        setRegForm({
+          name: "",
+          email: "",
+          phone: "",
+          preferredBranch: "Shapur Main Campus",
+          preferredDate: "Upcoming Sunday • 11:30 AM",
+        });
+      }, 2500);
+    } catch (err: any) {
+      console.warn("[MEMBERSHIP] Registration submission notice:", err);
+      setSubmitError(
+        err?.message || (language === "te"
+          ? "నమోదును సమర్పించడంలో సమస్య తలెత్తింది. దయచేసి నెట్‌వర్క్‌ను తనిఖీ చేసి మళ్ళీ ప్రయత్నించండి."
+          : language === "hi"
+          ? "पंजीकरण जमा करने में समस्या आई। कृपया नेटवर्क कनेक्शन जांचें और पुनः प्रयास करें।"
+          : "Unable to submit your registration. Please check your network connection and try again.")
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300 selection:bg-purple-500 selection:text-white">
@@ -270,35 +344,36 @@ export default function MembershipPage() {
               {m.whyDesc ? m.subtitle || "Church membership is about committing to a spiritual family where you can be known, cared for, and encouraged in Christ." : (language === "te" ? "సంఘ సభ్యత్వం అనేది ఒక ఆధ్యాత్మిక కుటుంబంలో భాగస్వామ్యం పొందడం, ఇక్కడ మీరు క్రీస్తులో ప్రేమించబడతారు మరియు ప్రోత్సహించబడతారు." : language === "hi" ? "कलीसिया की सदस्यता एक आत्मिक परिवार का हिस्सा बनने के बारे में है जहाँ आपकी देखभाल की जाती है और मसीह में प्रोत्साहित किया जाता है।" : "Church membership is about committing to a spiritual family where you can be known, cared for, and encouraged in Christ.")}
             </p>
 
-            {/* Quick Jump Action Pills */}
+            {/* Quick Jump Action Pills with Sub-100ms Transitions */}
             <div className="flex flex-wrap items-center justify-center gap-3 mb-10">
               <button
                 type="button"
-                onClick={() => setIsModalOpen(true)}
+                onClick={handleOpenRegisterModal}
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-purple-600 hover:bg-purple-700 active:scale-95 text-white text-xs sm:text-sm font-bold shadow-md shadow-purple-600/25 transition-all cursor-pointer"
               >
                 <span>{language === "te" ? "తరగతి నమోదు (దశ 1)" : language === "hi" ? "कक्षा पंजीकरण (चरण 1)" : "Register for Class (Step 1)"}</span>
                 <ChevronRight className="w-4 h-4" />
               </button>
-              <a
-                href="#pathway"
-                className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-2xl bg-white/90 dark:bg-slate-900/90 hover:bg-purple-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 text-xs sm:text-sm font-semibold border border-slate-200/90 dark:border-slate-800 shadow-2xs transition-all active:scale-95"
+              <button
+                type="button"
+                onClick={() => handleSmoothScroll(pathwayRef)}
+                className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-2xl bg-white/90 dark:bg-slate-900/90 hover:bg-purple-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 text-xs sm:text-sm font-semibold border border-slate-200/90 dark:border-slate-800 shadow-2xs transition-all active:scale-95 cursor-pointer"
               >
                 <span>{language === "te" ? "4 దశల మార్గం" : language === "hi" ? "4-चरणीय मार्ग" : "Explore 4 Steps"}</span>
                 <ChevronDown className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
-              </a>
-              <a
-                href="#covenant"
-                className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-2xl bg-white/90 dark:bg-slate-900/90 hover:bg-purple-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 text-xs sm:text-sm font-semibold border border-slate-200/90 dark:border-slate-800 shadow-2xs transition-all active:scale-95"
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSmoothScroll(covenantRef)}
+                className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-2xl bg-white/90 dark:bg-slate-900/90 hover:bg-purple-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 text-xs sm:text-sm font-semibold border border-slate-200/90 dark:border-slate-800 shadow-2xs transition-all active:scale-95 cursor-pointer"
               >
                 <span>{language === "te" ? "సభ్యత్వ నిబంధన" : language === "hi" ? "सदस्यता वाचा" : "Read Covenant"}</span>
                 <ChevronDown className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
-              </a>
+              </button>
             </div>
 
             {/* Executive Metric Highlights Deck — Modern Frosted Glass with Tone-on-Tone Halos */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4 max-w-4xl mx-auto pt-6 border-t border-purple-100/80 dark:border-slate-800">
-              
               {/* Stat 1: Members */}
               <div className="relative bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 rounded-2xl sm:rounded-3xl shadow-md hover:shadow-xl hover:scale-[1.02] transition-all duration-300 flex flex-col items-center text-center group overflow-hidden">
                 <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-purple-500 to-indigo-500 opacity-90" />
@@ -338,14 +413,14 @@ export default function MembershipPage() {
                 <div className="text-2xl sm:text-3xl font-black font-outfit text-slate-900 dark:text-white tracking-tight mb-0.5">100%</div>
                 <div className="text-xs font-bold text-slate-700 dark:text-slate-300">{language === "te" ? "ఆధ్యాత్మిక గృహం" : language === "hi" ? "आत्मिक घर" : "Belonging"}</div>
               </div>
-
             </div>
+
           </div>
         </div>
       </section>
 
-      {/* 💡 Why Membership Matters Section — 4 Pillar Cards */}
-      <section id="pillars" className="py-16 md:py-24 bg-white dark:bg-slate-950 border-b border-slate-200/80 dark:border-slate-800/80 relative z-10 scroll-mt-20">
+      {/* 💡 Why Membership Matters Section — 4 Pillar Cards with Uniform Heights */}
+      <section id="pillars" className="py-16 md:py-24 bg-white dark:bg-slate-950 border-b border-slate-200/80 dark:border-slate-800/80 relative z-10 scroll-mt-24">
         <div className="container mx-auto px-4 max-w-6xl">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/10 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300 border border-purple-200/80 dark:border-purple-800/80 text-xs font-bold uppercase tracking-wider mb-3 shadow-2xs">
@@ -360,18 +435,18 @@ export default function MembershipPage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
             {benefits.map((item, index) => {
               const IconComp = item.icon;
               return (
                 <div
                   key={index}
-                  className="relative p-6 sm:p-7 rounded-3xl bg-slate-50/90 dark:bg-slate-900/90 border border-slate-200/90 dark:border-slate-800 shadow-md hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between group overflow-hidden"
+                  className="relative p-6 sm:p-7 rounded-3xl bg-slate-50/90 dark:bg-slate-900/90 border border-slate-200/90 dark:border-slate-800 shadow-md hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between group overflow-hidden h-full"
                 >
                   {/* Top Accent Gradient Ribbon */}
                   <div className={`absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r ${item.accent} opacity-85 group-hover:opacity-100 transition-opacity`} />
 
-                  <div>
+                  <div className="flex-1 flex flex-col">
                     {/* Header: Pillar Badge & Tone-on-Tone Halo */}
                     <div className="flex items-center justify-between mb-5">
                       <span className={`text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full border shadow-2xs ${item.badge}`}>
@@ -382,21 +457,25 @@ export default function MembershipPage() {
                       </div>
                     </div>
 
-                    <h3 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white mb-2.5 font-outfit tracking-tight group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors leading-snug">
+                    <h3 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white mb-2.5 font-outfit tracking-tight group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors leading-snug min-h-[48px] flex items-center">
                       {item.title}
                     </h3>
-                    <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-sm leading-relaxed font-normal">
+                    <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-sm leading-relaxed font-normal min-h-[72px] flex-1">
                       {item.desc}
                     </p>
                   </div>
 
-                  <a
-                    href="#covenant"
-                    className="mt-5 pt-4 border-t border-slate-200/60 dark:border-slate-800/60 flex items-center justify-between text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors group/link cursor-pointer"
-                  >
-                    <span>{language === "te" ? "నిబంధన ప్రమాణాలు చూడండి" : language === "hi" ? "वाचा प्रतिज्ञाएं देखें" : "Read Covenant Promises"}</span>
-                    <ChevronRight className="w-3.5 h-3.5 group-hover/link:translate-x-1 transition-transform text-purple-600 dark:text-purple-400" />
-                  </a>
+                  {/* Read Covenant Promises Trigger opening Accessible Modal */}
+                  <div className="mt-auto pt-4 border-t border-slate-200/60 dark:border-slate-800/60">
+                    <button
+                      type="button"
+                      onClick={handleOpenCovenantModal}
+                      className="w-full flex items-center justify-between text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors group/link cursor-pointer"
+                    >
+                      <span>{language === "te" ? "నిబంధన ప్రమాణాలు చూడండి" : language === "hi" ? "वाचा प्रतिज्ञाएं देखें" : "Read Covenant Promises"}</span>
+                      <ChevronRight className="w-3.5 h-3.5 group-hover/link:translate-x-1 transition-transform text-purple-600 dark:text-purple-400" />
+                    </button>
+                  </div>
                 </div>
               );
             })}
@@ -404,8 +483,8 @@ export default function MembershipPage() {
         </div>
       </section>
 
-      {/* 👣 4-Step Membership Pathway — Compact 2x2 on Mobile, 4-Column on Desktop */}
-      <section id="pathway" className="py-16 md:py-24 bg-slate-50/70 dark:bg-slate-950 border-b border-slate-200/80 dark:border-slate-800/80 relative z-10 scroll-mt-20">
+      {/* 👣 4-Step Membership Pathway — Clean Single-Column Stack on Mobile (grid-cols-1) */}
+      <section ref={pathwayRef} id="pathway" className="py-16 md:py-24 bg-slate-50/70 dark:bg-slate-950 border-b border-slate-200/80 dark:border-slate-800/80 relative z-10 scroll-mt-24">
         <div className="container mx-auto px-4 max-w-6xl">
           <div className="text-center max-w-3xl mx-auto mb-14">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/10 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300 border border-purple-200/80 dark:border-purple-800/80 text-xs font-bold uppercase tracking-wider mb-3 shadow-2xs">
@@ -420,13 +499,14 @@ export default function MembershipPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-6">
+          {/* Responsive Layout: grid-cols-1 on mobile for spacious readability, sm:grid-cols-2, lg:grid-cols-4 on desktop */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6 items-stretch">
             {pathwaySteps.map((item, index) => {
               const StepIcon = item.icon;
               return (
                 <div
                   key={index}
-                  className={`relative bg-white/95 dark:bg-slate-900/90 backdrop-blur-xl p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-slate-800 shadow-md hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 text-center overflow-hidden group flex flex-col justify-between ${item.glow}`}
+                  className={`relative bg-white/95 dark:bg-slate-900/90 backdrop-blur-xl p-5 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-slate-800 shadow-md hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 text-center overflow-hidden group flex flex-col justify-between h-full ${item.glow}`}
                 >
                   {/* Top Accent Gradient Ribbon */}
                   <div className={`absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r ${item.accent} opacity-85 group-hover:opacity-100 group-hover:h-2 transition-all`} />
@@ -434,50 +514,50 @@ export default function MembershipPage() {
                   {/* Ambient top corner glow */}
                   <div className={`absolute -top-10 -right-10 w-24 h-24 bg-gradient-to-br ${item.accent} opacity-10 rounded-full blur-xl group-hover:opacity-20 transition-opacity pointer-events-none`} />
 
-                  <div>
+                  <div className="flex-1 flex flex-col">
                     {/* Header: Step Pill + Duration Chip */}
-                    <div className="flex flex-col sm:flex-row items-center justify-between gap-1.5 mb-3 sm:mb-4">
+                    <div className="flex items-center justify-between gap-1.5 mb-4">
                       <span className={`px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-black uppercase tracking-wider border shadow-2xs ${item.badgeStyle}`}>
                         Step {item.step}
                       </span>
-                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border shadow-2xs ${item.durationStyle}`}>
+                      <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border shadow-2xs ${item.durationStyle}`}>
                         <Clock className="w-2.5 h-2.5 sm:w-3 sm:h-3 shrink-0 opacity-80" />
                         <span>{item.duration}</span>
                       </span>
                     </div>
 
                     {/* Tone-on-tone Icon Halo */}
-                    <div className={`w-12 h-12 sm:w-14 sm:h-14 ${item.iconBg} border rounded-2xl flex items-center justify-center mx-auto mb-3 sm:mb-4 group-hover:scale-110 transition-transform shadow-xs`}>
+                    <div className={`w-12 h-12 sm:w-14 sm:h-14 ${item.iconBg} border rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform shadow-xs`}>
                       <StepIcon className={`w-5 h-5 sm:w-6 sm:h-6 ${item.iconColor}`} />
                     </div>
 
                     {/* Symmetrical Title Block */}
-                    <div className="min-h-[44px] sm:min-h-[48px] flex items-center justify-center mb-2 px-0.5">
-                      <h3 className="font-black text-xs sm:text-base text-slate-900 dark:text-white tracking-tight font-outfit leading-snug group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+                    <div className="min-h-[44px] sm:min-h-[48px] flex items-center justify-center mb-2 px-1">
+                      <h3 className="font-black text-sm sm:text-base text-slate-900 dark:text-white tracking-tight font-outfit leading-snug group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
                         {item.title}
                       </h3>
                     </div>
 
                     {/* Description */}
-                    <p className="text-[11px] sm:text-xs text-slate-600 dark:text-slate-300 font-normal leading-relaxed mb-4">
+                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-normal leading-relaxed mb-5 min-h-[64px] flex-1">
                       {item.desc}
                     </p>
                   </div>
 
                   {/* Interactive Card Action / Status */}
-                  <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80">
+                  <div className="mt-auto pt-4 border-t border-slate-100 dark:border-slate-800/80">
                     {item.step === "1" ? (
                       <button
                         type="button"
-                        onClick={() => setIsModalOpen(true)}
-                        className="w-full py-1.5 px-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-[11px] sm:text-xs font-black flex items-center justify-center gap-1 shadow-sm shadow-purple-600/20 active:scale-95 transition-all cursor-pointer"
+                        onClick={handleOpenRegisterModal}
+                        className="w-full py-2.5 px-3 rounded-xl bg-purple-600 hover:bg-purple-700 active:scale-95 text-white text-xs font-black flex items-center justify-center gap-1.5 shadow-sm shadow-purple-600/25 transition-all cursor-pointer"
                       >
-                        <span>{language === "te" ? "దశ 1 నమోదు" : language === "hi" ? "चरण 1 पंजीकरण" : "Register for Step 1"}</span>
-                        <ArrowRight className="w-3 h-3" />
+                        <span>{language === "te" ? "దశ 1 నమోదు చేసుకోండి" : language === "hi" ? "चरण 1 पंजीकरण करें" : "Register for Class"}</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
                       </button>
                     ) : (
-                      <div className="flex items-center justify-center gap-1 text-[10px] sm:text-[11px] font-bold text-slate-400 dark:text-slate-500 py-0.5">
-                        <CheckCircle2 className={`w-3 h-3 ${item.iconColor}`} />
+                      <div className="flex items-center justify-center gap-1.5 text-xs font-bold text-slate-400 dark:text-slate-500 py-1">
+                        <CheckCircle2 className={`w-3.5 h-3.5 ${item.iconColor}`} />
                         <span>{item.step === "4" ? (language === "te" ? "ఆదివారం సంబరం" : language === "hi" ? "रविवार उत्सव" : "Sunday Celebration") : `${language === "te" ? "దశ" : language === "hi" ? "चरण" : "Step"} 0${item.step}`}</span>
                       </div>
                     )}
@@ -488,24 +568,24 @@ export default function MembershipPage() {
           </div>
 
           {/* Interactive Step 1 Pathway Callout Banner */}
-          <div className="mt-10 max-w-3xl mx-auto p-4 sm:p-5 rounded-2xl bg-white/90 dark:bg-slate-900/90 border border-purple-200/80 dark:border-slate-800 shadow-md flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-3 text-center sm:text-left">
-              <div className="w-10 h-10 rounded-xl bg-purple-500/10 dark:bg-purple-500/20 border border-purple-200/80 dark:border-purple-800/60 flex items-center justify-center shrink-0">
+          <div className="mt-10 max-w-3xl mx-auto p-5 sm:p-6 rounded-3xl bg-white/90 dark:bg-slate-900/90 border border-purple-200/80 dark:border-slate-800 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5 text-center sm:text-left">
+              <div className="w-11 h-11 rounded-2xl bg-purple-500/10 dark:bg-purple-500/20 border border-purple-200/80 dark:border-purple-800/60 flex items-center justify-center shrink-0">
                 <Calendar className="w-5 h-5 text-purple-600 dark:text-purple-400" />
               </div>
               <div>
-                <h4 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white font-outfit">
+                <h4 className="text-sm sm:text-base font-black text-slate-900 dark:text-white font-outfit">
                   {language === "te" ? "రాబోయే ఆదివారం తదుపరి సభ్యత్వ తరగతి ప్రారంభం" : language === "hi" ? "अगले रविवार अगली सदस्यता कक्षा शुरू हो रही है" : "Next Discover Kingdom Class starts this Sunday"}
                 </h4>
-                <p className="text-[11px] sm:text-xs text-slate-600 dark:text-slate-300 font-medium">
+                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-medium mt-0.5">
                   {language === "te" ? "ఉదయం 11:30 గంటలకు • షాపూర్, సుభాష్ నగర్ మరియు ఆన్‌లైన్ జూమ్" : language === "hi" ? "सुबह 11:30 बजे • शापुर, सुभाष नगर और ऑनलाइन ज़ूम" : "11:30 AM • Shapur, Subhash Nagar & Online Zoom"}
                 </p>
               </div>
             </div>
             <button
               type="button"
-              onClick={() => setIsModalOpen(true)}
-              className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-black shadow-md shadow-purple-600/20 transition-all hover:scale-105 active:scale-95 cursor-pointer shrink-0"
+              onClick={handleOpenRegisterModal}
+              className="px-6 py-3 rounded-2xl bg-purple-600 hover:bg-purple-700 text-white text-xs sm:text-sm font-black shadow-md shadow-purple-600/25 transition-all hover:scale-105 active:scale-95 cursor-pointer shrink-0"
             >
               <span>{m.signup || (language === "te" ? "తరగతి నమోదు చేసుకోండి" : language === "hi" ? "कक्षा के लिए साइन अप करें" : "Register Free →")}</span>
             </button>
@@ -514,7 +594,7 @@ export default function MembershipPage() {
       </section>
 
       {/* 📜 Membership Covenant & Class Sign Up CTA */}
-      <section id="covenant" className="py-20 relative z-10 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white border-t border-purple-100/80 dark:border-slate-800 scroll-mt-20">
+      <section ref={covenantRef} id="covenant" className="py-20 relative z-10 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white border-t border-purple-100/80 dark:border-slate-800 scroll-mt-24">
         <div className="container mx-auto px-4 max-w-4xl">
           <div className="bg-gradient-to-br from-purple-50/90 via-indigo-50/50 to-white dark:from-slate-900 dark:via-purple-950/40 dark:to-slate-900 border border-purple-200/90 dark:border-slate-800 rounded-3xl p-6 sm:p-12 text-center shadow-2xl shadow-purple-900/5 dark:shadow-black/40 relative overflow-hidden text-slate-900 dark:text-white">
             
@@ -569,7 +649,8 @@ export default function MembershipPage() {
               {/* High-Contrast Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-3.5 justify-center">
                 <button
-                  onClick={() => setIsModalOpen(true)}
+                  type="button"
+                  onClick={handleOpenRegisterModal}
                   className="min-h-[50px] px-8 py-3.5 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-700 hover:to-indigo-700 active:scale-[0.98] text-white font-black text-sm rounded-2xl transition-all duration-200 shadow-xl shadow-purple-600/30 flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <Calendar className="w-4 h-4" />
@@ -590,14 +671,103 @@ export default function MembershipPage() {
         </div>
       </section>
 
-      {/* 📥 Interactive Class Registration Modal */}
-      {isModalOpen && (
+      {/* 📖 Accessible Covenant Details Modal */}
+      {isCovenantModalOpen && (
         <div 
           role="dialog"
           aria-modal="true"
-          aria-labelledby="modal-title"
+          aria-labelledby="covenant-modal-title"
           onClick={(e) => {
-            if (e.target === e.currentTarget) setIsModalOpen(false);
+            if (e.target === e.currentTarget) setIsCovenantModalOpen(false);
+          }}
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-5 bg-slate-950/80 backdrop-blur-md animate-fade-in overflow-y-auto"
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl w-full max-w-2xl shadow-2xl relative my-auto flex flex-col max-h-[92dvh] overflow-hidden transition-all duration-300"
+          >
+            {/* Modal Header */}
+            <div className="px-6 py-5 sm:px-7 sm:py-6 bg-gradient-to-r from-purple-700 via-indigo-700 to-purple-800 text-white relative shrink-0">
+              <button
+                type="button"
+                onClick={() => setIsCovenantModalOpen(false)}
+                className="absolute top-4 right-4 sm:top-5 sm:right-5 w-9 h-9 rounded-full bg-white/15 hover:bg-white/25 active:scale-95 text-white flex items-center justify-center transition-all cursor-pointer border border-white/20 shadow-sm"
+                aria-label="Close modal"
+              >
+                <X className="w-4 h-4" />
+              </button>
+
+              <div className="inline-flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider px-3 py-1 rounded-full bg-white/15 text-purple-100 border border-white/20 mb-2.5 shadow-2xs">
+                <Shield className="w-3 h-3 text-amber-300" />
+                <span>Biblical Membership Commitments</span>
+              </div>
+
+              <h3 id="covenant-modal-title" className="text-xl sm:text-2xl font-black font-outfit tracking-tight text-white pr-8">
+                {m.covenantTitle || (language === "te" ? "సభ్యత్వ నిబంధన ప్రమాణాలు" : language === "hi" ? "सदस्यता वाचा प्रतिज्ञाएं" : "Membership Covenant Promises")}
+              </h3>
+
+              <p className="text-xs text-purple-100/90 mt-1 leading-relaxed max-w-md">
+                {language === "te"
+                  ? "మా సంఘ కుటుంబంలో సభ్యత్వం పొందడానికి ప్రతి విశ్వాసి అంగీకరించే 4 పవిత్ర వాగ్దానాలు."
+                  : language === "hi"
+                  ? "कलीसियाई परिवार में सदस्यता के लिए प्रत्येक विश्वासी द्वारा स्वीकार की जाने वाली 4 पवित्र प्रतिज्ञाएं।"
+                  : "The four core biblical commitments every member affirms as a covenant partner in our spiritual family."}
+              </p>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-5 sm:p-7 text-slate-900 dark:text-slate-100 overflow-y-auto overscroll-contain flex-1 space-y-4">
+              {covenantPromises.map((item, idx) => (
+                <div 
+                  key={idx}
+                  className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700/80 flex items-start gap-3.5"
+                >
+                  <div className="w-9 h-9 rounded-xl bg-purple-500/10 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-800/80 font-black text-sm flex items-center justify-center shrink-0 mt-0.5">
+                    {item.num}
+                  </div>
+                  <div>
+                    <h4 className="text-sm sm:text-base font-black text-slate-900 dark:text-white font-outfit mb-1 flex items-center gap-1.5">
+                      <Check className="w-4 h-4 text-emerald-500 stroke-[3]" />
+                      <span>{item.title}</span>
+                    </h4>
+                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-normal leading-relaxed">
+                      {item.text}
+                    </p>
+                  </div>
+                </div>
+              ))}
+
+              {/* Action buttons inside Covenant Modal */}
+              <div className="pt-4 flex flex-col sm:flex-row gap-3">
+                <button
+                  type="button"
+                  onClick={handleOpenRegisterModal}
+                  className="flex-1 py-3.5 px-6 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-700 hover:to-indigo-700 active:scale-[0.98] text-white rounded-xl font-bold text-xs sm:text-sm transition-all shadow-md shadow-purple-600/25 flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <Calendar className="w-4 h-4" />
+                  <span>{language === "te" ? "తరగతి నమోదుకు కొనసాగండి" : language === "hi" ? "कक्षा पंजीकरण जारी रखें" : "Proceed to Class Registration"}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsCovenantModalOpen(false)}
+                  className="py-3 px-5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-bold text-xs sm:text-sm transition-all cursor-pointer"
+                >
+                  {language === "te" ? "మూసివేయి" : language === "hi" ? "बंद करें" : "Close"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 📥 Unified Interactive Class Registration Modal */}
+      {isRegisterModalOpen && (
+        <div 
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="register-modal-title"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsRegisterModalOpen(false);
           }}
           className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-5 bg-slate-950/80 backdrop-blur-md animate-fade-in overflow-y-auto"
         >
@@ -609,7 +779,7 @@ export default function MembershipPage() {
             <div className="px-6 py-5 sm:px-7 sm:py-6 bg-gradient-to-r from-purple-700 via-indigo-700 to-purple-800 text-white relative shrink-0">
               <button
                 type="button"
-                onClick={() => setIsModalOpen(false)}
+                onClick={() => setIsRegisterModalOpen(false)}
                 className="absolute top-4 right-4 sm:top-5 sm:right-5 w-9 h-9 rounded-full bg-white/15 hover:bg-white/25 active:scale-95 text-white flex items-center justify-center transition-all cursor-pointer border border-white/20 shadow-sm"
                 aria-label="Close modal"
               >
@@ -621,7 +791,7 @@ export default function MembershipPage() {
                 <span>{language === "te" ? "తరగతి నమోదు" : language === "hi" ? "कक्षा पंजीकरण" : "Class Registration"}</span>
               </div>
               
-              <h3 id="modal-title" className="text-xl sm:text-2xl font-black font-outfit tracking-tight text-white pr-8">
+              <h3 id="register-modal-title" className="text-xl sm:text-2xl font-black font-outfit tracking-tight text-white pr-8">
                 {language === "te" ? "కింగ్‌డమ్ డిస్కవర్ తరగతి" : language === "hi" ? "किंगडम डिस्कवर क्लास" : "Discover Kingdom Class"}
               </h3>
               
@@ -633,23 +803,35 @@ export default function MembershipPage() {
             {/* Modal Body with smooth scrolling */}
             <div className="p-5 sm:p-7 text-slate-900 dark:text-slate-100 overflow-y-auto overscroll-contain flex-1">
               {isSubmitted ? (
-                <div className="text-center py-10">
-                  <div className="w-16 h-16 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-500/20 animate-bounce">
+                <div className="text-center py-10 animate-fade-in space-y-4">
+                  <div className="w-16 h-16 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-2 border border-emerald-500/20 shadow-lg shadow-emerald-500/20 animate-bounce">
                     <CheckCircle2 className="w-10 h-10" />
                   </div>
-                  <h4 className="text-2xl font-black text-slate-900 dark:text-white mb-2 font-outfit tracking-tight">
-                    Registration Successful!
+                  <h4 className="text-2xl font-black text-slate-900 dark:text-white font-outfit tracking-tight">
+                    {language === "te" ? "నమోదు విజయవంతమైంది!" : language === "hi" ? "पंजीकरण सफल रहा!" : "Registration Successful!"}
                   </h4>
                   <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed max-w-sm mx-auto">
-                    Thank you, <strong>{regForm.name || "friend"}</strong>! We look forward to welcoming you at <strong>{regForm.preferredBranch}</strong> for the Discover Kingdom class.
+                    {language === "te"
+                      ? `ధన్యవాదాలు, ${regForm.name || "మిత్రమా"}! ${regForm.preferredBranch} లో జరిగే డిస్కవర్ కింగ్‌డమ్ తరగతి కోసం మిమ్మల్ని ఆహ్వానించడానికి ఎదురుచూస్తున్నాము.`
+                      : language === "hi"
+                      ? `धन्यवाद, ${regForm.name || "मित्र"}! ${regForm.preferredBranch} में होने वाली डिस्कवर किंगडम क्लास के लिए आपका स्वागत करने के लिए हम उत्सुक हैं।`
+                      : `Thank you, ${regForm.name || "friend"}! We look forward to welcoming you at ${regForm.preferredBranch} for the Discover Kingdom class.`}
                   </p>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleRegisterSubmit} className="space-y-4">
+                  {/* Submit Error Banner */}
+                  {submitError && (
+                    <div className="p-3.5 bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 rounded-xl flex items-start gap-2.5 text-rose-700 dark:text-rose-300 text-xs">
+                      <AlertCircle className="w-4 h-4 shrink-0 text-rose-500 mt-0.5" />
+                      <div className="flex-1 leading-relaxed">{submitError}</div>
+                    </div>
+                  )}
+
                   {/* Full Name */}
                   <div>
                     <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 font-sans">
-                      Full Name <span className="text-rose-500">*</span>
+                      {language === "te" ? "పూర్తి పేరు" : language === "hi" ? "पूरा नाम" : "Full Name"} <span className="text-rose-500">*</span>
                     </label>
                     <div className="relative">
                       <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500 pointer-events-none" />
@@ -659,7 +841,7 @@ export default function MembershipPage() {
                         placeholder="e.g. David Raju"
                         value={regForm.name}
                         onChange={(e) => setRegForm({ ...regForm, name: e.target.value })}
-                        className="w-full pl-10 pr-4 py-3 bg-slate-50/90 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl text-sm font-medium focus:ring-2 focus:ring-purple-500/25 focus:border-purple-600 dark:focus:border-purple-400 outline-none text-slate-900 dark:text-slate-100 placeholder:text-slate-400 placeholder:font-normal transition-all"
+                        className="w-full pl-10 pr-4 py-3 bg-slate-50/90 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl text-xs sm:text-sm font-medium focus:ring-2 focus:ring-purple-500/25 focus:border-purple-600 dark:focus:border-purple-400 outline-none text-slate-900 dark:text-slate-100 placeholder:text-slate-400 transition-all"
                       />
                     </div>
                   </div>
@@ -668,7 +850,7 @@ export default function MembershipPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                     <div>
                       <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 font-sans">
-                        Email Address <span className="text-rose-500">*</span>
+                        {language === "te" ? "ఈమెయిల్" : language === "hi" ? "ईमेल" : "Email Address"} <span className="text-rose-500">*</span>
                       </label>
                       <div className="relative">
                         <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500 pointer-events-none" />
@@ -678,13 +860,13 @@ export default function MembershipPage() {
                           placeholder="david@example.com"
                           value={regForm.email}
                           onChange={(e) => setRegForm({ ...regForm, email: e.target.value })}
-                          className="w-full pl-10 pr-4 py-3 bg-slate-50/90 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl text-sm font-medium focus:ring-2 focus:ring-purple-500/25 focus:border-purple-600 dark:focus:border-purple-400 outline-none text-slate-900 dark:text-slate-100 placeholder:text-slate-400 placeholder:font-normal transition-all"
+                          className="w-full pl-10 pr-4 py-3 bg-slate-50/90 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl text-xs sm:text-sm font-medium focus:ring-2 focus:ring-purple-500/25 focus:border-purple-600 dark:focus:border-purple-400 outline-none text-slate-900 dark:text-slate-100 placeholder:text-slate-400 transition-all"
                         />
                       </div>
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 font-sans">
-                        Phone Number <span className="text-rose-500">*</span>
+                        {language === "te" ? "ఫోన్ నంబర్" : language === "hi" ? "फोन नंबर" : "Phone Number"} <span className="text-rose-500">*</span>
                       </label>
                       <div className="relative">
                         <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500 pointer-events-none" />
@@ -694,16 +876,16 @@ export default function MembershipPage() {
                           placeholder="+91 98765 43210"
                           value={regForm.phone}
                           onChange={(e) => setRegForm({ ...regForm, phone: e.target.value })}
-                          className="w-full pl-10 pr-4 py-3 bg-slate-50/90 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl text-sm font-medium focus:ring-2 focus:ring-purple-500/25 focus:border-purple-600 dark:focus:border-purple-400 outline-none text-slate-900 dark:text-slate-100 placeholder:text-slate-400 placeholder:font-normal transition-all"
+                          className="w-full pl-10 pr-4 py-3 bg-slate-50/90 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl text-xs sm:text-sm font-medium focus:ring-2 focus:ring-purple-500/25 focus:border-purple-600 dark:focus:border-purple-400 outline-none text-slate-900 dark:text-slate-100 placeholder:text-slate-400 transition-all"
                         />
                       </div>
                     </div>
                   </div>
 
-                  {/* Location Dropdown */}
+                  {/* Campus / Location Dropdown */}
                   <div>
                     <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 font-sans">
-                      Select Location / Campus <span className="text-rose-500">*</span>
+                      {language === "te" ? "కేంద్రం / ప్రాంగణం ఎంచుకోండి" : language === "hi" ? "स्थान / कलीसिया केंद्र चुनें" : "Select Location / Campus"} <span className="text-rose-500">*</span>
                     </label>
                     <div className="relative">
                       <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-purple-600 dark:text-purple-400 pointer-events-none" />
@@ -724,7 +906,7 @@ export default function MembershipPage() {
                   {/* Preferred Date & Session Dropdown */}
                   <div>
                     <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 font-sans">
-                      Preferred Date & Session <span className="text-rose-500">*</span>
+                      {language === "te" ? "ప్రాధాన్యత తేదీ & సమయం" : language === "hi" ? "पसंदीदा तिथि एवं सत्र" : "Preferred Date & Session"} <span className="text-rose-500">*</span>
                     </label>
                     <div className="relative">
                       <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-purple-600 dark:text-purple-400 pointer-events-none" />
@@ -747,13 +929,23 @@ export default function MembershipPage() {
                     </div>
                   </div>
 
-                  {/* Submit CTA */}
+                  {/* Submit CTA with Disabled Loading State */}
                   <button
                     type="submit"
-                    className="w-full min-h-[50px] py-3.5 px-6 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-700 hover:to-indigo-700 active:scale-[0.98] text-white rounded-2xl font-bold text-sm tracking-wide transition-all shadow-lg shadow-purple-600/25 hover:shadow-purple-600/40 flex items-center justify-center gap-2 mt-5 cursor-pointer"
+                    disabled={isSubmitting || !isFormValid}
+                    className="w-full min-h-[50px] py-3.5 px-6 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-700 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-2xl font-bold text-sm tracking-wide transition-all shadow-lg shadow-purple-600/25 hover:shadow-purple-600/40 flex items-center justify-center gap-2 mt-5 cursor-pointer"
                   >
-                    <Send className="w-4 h-4" />
-                    <span>Complete Class Registration</span>
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>{language === "te" ? "నమోదు సమర్పిస్తోంది..." : language === "hi" ? "पंजीकरण जमा किया जा रहा है..." : "Submitting Registration..."}</span>
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4" />
+                        <span>{language === "te" ? "నమోదు పూర్తి చేయండి" : language === "hi" ? "पंजीकरण पूर्ण करें" : "Complete Class Registration"}</span>
+                      </>
+                    )}
                   </button>
                 </form>
               )}

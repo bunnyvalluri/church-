@@ -165,7 +165,7 @@ export default function SermonInlineForm({ onClose, onSuccess, isEditMode = fals
           type="text"
           value={pastor}
           onChange={(e) => setPastor(e.target.value)}
-          placeholder="e.g. Pastor Samuel Valluri"
+          placeholder="e.g. Bishop Kurra Kristhu Raju"
           className={inputBase}
           disabled={isSubmitting}
         />

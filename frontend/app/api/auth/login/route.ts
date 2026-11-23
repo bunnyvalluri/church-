@@ -92,7 +92,7 @@ export async function POST(req: Request) {
 
     // Known portal accounts initial map for automatic provisioning and password upgrading
     const PORTAL_PROVISIONING: Record<string, { role: any; defaultPass: string; name: string }> = {
-      'kingofchristministries23@gmail.com': { role: 'SUPER_ADMIN', defaultPass: 'rahul@0423', name: 'Pastor Samuel Valluri' },
+      'kingofchristministries23@gmail.com': { role: 'SUPER_ADMIN', defaultPass: 'rahul@0423', name: 'Bishop Kurra Kristhu Raju' },
       'admin@kcm-church.com': { role: 'ADMIN', defaultPass: 'rahul@0423', name: 'Admin Leader' },
       'pastor.kristhuraju@kcm-church.com': { role: 'PASTOR', defaultPass: 'pastor@2026', name: 'Pastor Kristhuraju' },
       'pastor.david@kcm-church.com': { role: 'PASTOR', defaultPass: 'pastor@2026', name: 'Pastor David' },

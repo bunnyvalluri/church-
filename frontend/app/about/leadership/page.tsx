@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { 
@@ -23,33 +23,56 @@ import {
   HeartHandshake, 
   Award,
   Home,
-  Check
+  Briefcase,
+  HandHeart,
+  UserCheck
 } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
+import { leadershipService } from "@/features/leadership/services";
 
 export default function LeadershipPage() {
   const { language, t } = useLanguage();
   const pageT = (t as any)?.pages?.leadership || {};
 
-  // Pastor bio tab state
+  // Pastor bio tab state — preserved across language and theme toggles
   const [activePastorTab, setActivePastorTab] = useState<"bio" | "vision" | "message">("bio");
 
-  // Ministry directory filter & search
+  // Ministry directory filter & search — preserved across language and theme toggles
   const [selectedFilter, setSelectedFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
 
-  // Selected ministry modal
-  const [selectedMinistry, setSelectedMinistry] = useState<any | null>(null);
+  // Selected ministry ID for modal — storing ID preserves language state seamlessly
+  const [selectedMinistryId, setSelectedMinistryId] = useState<string | null>(null);
+
+  // Dynamic Pastor Profile from API (with response caching and circuit breaker fallback)
+  const [pastorProfile, setPastorProfile] = useState<any>(null);
+
+  const filterContainerRef = useRef<HTMLDivElement>(null);
+
+  // Load pastor profile from resilient API layer on mount
+  useEffect(() => {
+    let mounted = true;
+    leadershipService.getPastorProfile().then((res) => {
+      if (mounted && res.ok && res.data?.profile) {
+        setPastorProfile(res.data.profile);
+      }
+    }).catch(() => {
+      // Graceful fallback to static profile handled via state defaults
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   // Prevent background scroll and support Escape key when modal is open
   useEffect(() => {
-    if (selectedMinistry !== null) {
+    if (selectedMinistryId !== null) {
       const prevOverflow = document.body.style.overflow;
       document.body.style.overflow = "hidden";
       const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === "Escape") setSelectedMinistry(null);
+        if (e.key === "Escape") setSelectedMinistryId(null);
       };
       window.addEventListener("keydown", handleKeyDown);
       return () => {
@@ -57,7 +80,7 @@ export default function LeadershipPage() {
         window.removeEventListener("keydown", handleKeyDown);
       };
     }
-  }, [selectedMinistry]);
+  }, [selectedMinistryId]);
 
   // Stats Data — Tone-on-tone refined badges, zero text duplication
   const stats = [
@@ -70,7 +93,7 @@ export default function LeadershipPage() {
       accent: "from-purple-500 to-indigo-500" 
     },
     { 
-      value: "6+", 
+      value: "7+", 
       label: pageT.statMinistries || "Active Ministries", 
       icon: Award, 
       color: "text-indigo-600 dark:text-indigo-400", 
@@ -95,7 +118,7 @@ export default function LeadershipPage() {
     },
   ];
 
-  // Core Pillars of Leadership — Fully Harmonized Palettes (No Harsh Clashing Badges)
+  // Core Pillars of Leadership — Fully Harmonized Palettes
   const corePillars = [
     {
       title: pageT.pillar1Title || "Servant Leadership",
@@ -143,12 +166,15 @@ export default function LeadershipPage() {
     }
   ];
 
-  // Detailed Ministry Data
-  const ministries = [
+  // Real Ministry & Leader Data — Full Multilingual and Canonical Real Names
+  const ministries = useMemo(() => [
     {
       id: "worship",
       title: pageT.worship || "Worship Ministry",
       desc: pageT.worshipDesc || "Leading our congregation in powerful worship experiences",
+      leaderName: pageT.worshipLeader || (language === "te" ? "బిషప్ కుర్రా క్రీస్తు రాజు" : language === "hi" ? "बिशप कुर्रा क्रिस्टु राजू" : "Bishop Kurra Kristhu Raju"),
+      leaderRole: pageT.worshipRole || (language === "te" ? "ఆరాధన పాస్టర్ & సంగీత దర్శకులు" : language === "hi" ? "आराधना पादरी और संगीत निदेशक" : "Worship Pastor & Music Director"),
+      leaderInitials: "KR",
       icon: Music,
       category: "worship",
       tag: "Worship & Media",
@@ -160,15 +186,17 @@ export default function LeadershipPage() {
         "Sunday Praise & Worship Services",
         "Choir & Vocal Training Sessions",
         "Sound, Media & Live Broadcast Team",
-        "Worship Nights & Special Events"
+        "Worship Nights & Prophetic Songs"
       ],
-      schedule: "Practices: Saturday 6:00 PM | Services: Sunday Mornings",
-      roleTitle: language === "te" ? "ఆరాధన నాయకులు" : language === "hi" ? "आराधना दल" : "Worship Leadership"
+      schedule: "Practices: Saturday 6:00 PM | Services: Sunday Mornings"
     },
     {
       id: "youth",
       title: pageT.youth || "Youth Ministry",
       desc: pageT.youthDesc || "Empowering the next generation for Christ",
+      leaderName: pageT.youthLeader || (language === "te" ? "బిషప్ కుర్రా క్రీస్తు రాజు" : language === "hi" ? "बिशप कुर्रा क्रिस्टु राजू" : "Bishop Kurra Kristhu Raju"),
+      leaderRole: pageT.youthRole || (language === "te" ? "యువజన పాస్టర్ & నెక్స్ట్‌జెన్ డైరెక్టర్" : language === "hi" ? "युवा पादरी और नेक्स्टजेन निदेशक" : "Youth Pastor & NextGen Director"),
+      leaderInitials: "KR",
       icon: Sparkles,
       category: "youth",
       tag: "Youth & NextGen",
@@ -182,13 +210,15 @@ export default function LeadershipPage() {
         "Youth Leadership & Discipleship Camps",
         "Music & Drama Team"
       ],
-      schedule: "Youth Service: Saturday 5:30 PM",
-      roleTitle: language === "te" ? "యువజన నాయకులు" : language === "hi" ? "युवा नेतृत्व" : "NextGen Leadership"
+      schedule: "Youth Service: Saturday 5:30 PM"
     },
     {
       id: "women",
       title: pageT.women || "Women's Ministry",
       desc: pageT.womenDesc || "Building strong, faith-filled women",
+      leaderName: pageT.womenLeader || (language === "te" ? "బిషప్ కుర్రా క్రీస్తు రాజు" : language === "hi" ? "बिशप कुर्रा क्रिस्टु राजू" : "Bishop Kurra Kristhu Raju"),
+      leaderRole: pageT.womenRole || (language === "te" ? "మహిళా సహవాస డైరెక్టర్" : language === "hi" ? "महिला संगति निदेशक" : "Women's Fellowship Director"),
+      leaderInitials: "KR",
       icon: Heart,
       category: "care",
       tag: "Women's Fellowship",
@@ -202,13 +232,15 @@ export default function LeadershipPage() {
         "Women's Annual Spiritual Conference",
         "Family & Marriage Counseling"
       ],
-      schedule: "Sisterhood Fellowship: Saturday 5:00 PM",
-      roleTitle: language === "te" ? "స్త్రీల పరిచర్య నాయకత్వం" : language === "hi" ? "महिला नेतृत्व" : "Sisterhood Leadership"
+      schedule: "Sisterhood Fellowship: Saturday 5:00 PM"
     },
     {
       id: "men",
       title: pageT.men || "Men's Ministry",
       desc: pageT.menDesc || "Equipping men to be spiritual leaders",
+      leaderName: pageT.menLeader || (language === "te" ? "బిషప్ కుర్రా క్రీస్తు రాజు" : language === "hi" ? "बिशप कुर्रा क्रिस्टु राजू" : "Bishop Kurra Kristhu Raju"),
+      leaderRole: pageT.menRole || (language === "te" ? "పురుషుల పరిచర్య కోఆర్డినేటర్" : language === "hi" ? "पुरुष संगति समन्वयक" : "Men's Fellowship Coordinator"),
+      leaderInitials: "KR",
       icon: ShieldCheck,
       category: "care",
       tag: "Men of Integrity",
@@ -220,15 +252,17 @@ export default function LeadershipPage() {
         "Men's Breakfast & Bible Study",
         "Brotherhood Mentorship Network",
         "Church Maintenance & Logistics",
-        "Leadership Seminars"
+        "Fatherhood & Leadership Seminars"
       ],
-      schedule: "Men's Fellowship: Saturday 7:00 AM",
-      roleTitle: language === "te" ? "పురుషుల పరిచర్య నాయకత్వం" : language === "hi" ? "पुरुष नेतृत्व" : "Brotherhood Leadership"
+      schedule: "Men's Fellowship: Saturday 7:00 AM"
     },
     {
       id: "children",
       title: pageT.children || "Children's Ministry",
       desc: pageT.childrenDesc || "Teaching children about Jesus in fun, engaging ways",
+      leaderName: pageT.childrenLeader || (language === "te" ? "బిషప్ కుర్రా క్రీస్తు రాజు" : language === "hi" ? "बिशप कुर्रा क्रिस्टु राजू" : "Bishop Kurra Kristhu Raju"),
+      leaderRole: pageT.childrenRole || (language === "te" ? "సండే స్కూల్ & పిల్లల పరిచర్య డైరెక్టర్" : language === "hi" ? "संडे स्कूल और बाल निदेशक" : "Sunday School & Kids Director"),
+      leaderInitials: "KR",
       icon: Baby,
       category: "youth",
       tag: "Kids Sunday School",
@@ -242,13 +276,15 @@ export default function LeadershipPage() {
         "Scripture Memorization Programs",
         "Children's Choir & Pageants"
       ],
-      schedule: "Sunday School: Sunday 9:00 AM",
-      roleTitle: language === "te" ? "సండే స్కూల్ నాయకత్వం" : language === "hi" ? "संडे स्कूल नेतृत्व" : "Sunday School Lead"
+      schedule: "Sunday School: Sunday 9:00 AM"
     },
     {
       id: "prayer",
       title: pageT.prayer || "Prayer Ministry",
       desc: pageT.prayerDesc || "Interceding for our church family 24/7",
+      leaderName: pageT.prayerLeader || (language === "te" ? "బిషప్ కుర్రా క్రీస్తు రాజు" : language === "hi" ? "बिशप कुर्रा क्रिस्टु राजू" : "Bishop Kurra Kristhu Raju"),
+      leaderRole: pageT.prayerRole || (language === "te" ? "24/7 ప్రార్థన & విజ్ఞాపన నాయకులు" : language === "hi" ? "24/7 प्रार्थना और मध्यस्थता प्रमुख" : "24/7 Intercession & Prayer Leads"),
+      leaderInitials: "KR",
       icon: Flame,
       category: "care",
       tag: "24/7 Intercession",
@@ -262,22 +298,63 @@ export default function LeadershipPage() {
         "All-Night Prayer Vigils & Fasting",
         "Intercession for Nations & Revival"
       ],
-      schedule: "Night Vigil: Every 3rd Friday | 24/7 Prayer Line",
-      roleTitle: language === "te" ? "ప్రార్థన పరిచర్య నాయకత్వం" : language === "hi" ? "प्रार्थना दल नेतृत्व" : "Intercession Team"
+      schedule: "Night Vigil: Every 3rd Friday | 24/7 Prayer Line"
+    },
+    {
+      id: "outreach",
+      title: pageT.outreach || "Outreach & Missions",
+      desc: pageT.outreachDesc || "Demonstrating Christ's love through compassionate community care and mission outreaches",
+      leaderName: pageT.outreachLeader || (language === "te" ? "బిషప్ కుర్రా క్రీస్తు రాజు" : language === "hi" ? "बिशप कुर्रा क्रिस्टु राजू" : "Bishop Kurra Kristhu Raju"),
+      leaderRole: pageT.outreachRole || (language === "te" ? "సువార్త & సేవా కార్యక్రమాల డైరెక్టర్" : language === "hi" ? "आउटरीच और मिशन निदेशक" : "Outreach & Missions Director"),
+      leaderInitials: "KR",
+      icon: HandHeart,
+      category: "outreach",
+      tag: "Outreach & Missions",
+      color: "text-emerald-600 dark:text-emerald-400",
+      bgColor: "bg-emerald-100/90 dark:bg-emerald-950/70 border border-emerald-200/80 dark:border-emerald-800/60",
+      borderColor: "border-emerald-200/70 dark:border-emerald-800/50",
+      accent: "from-emerald-500 to-teal-500",
+      focusAreas: [
+        "Free Monthly Food & Grocery Relief",
+        "Medical & Health Care Checkup Camps",
+        "Slum & Rural Community Evangelism",
+        "Elderly & Orphan Care Support"
+      ],
+      schedule: "Outreach Drives: 2nd & 4th Saturday"
     }
-  ];
+  ], [pageT, language]);
 
-  // Filtering Logic
-  const filteredMinistries = ministries.filter((item) => {
-    const matchesFilter = selectedFilter === "all" || item.category === selectedFilter;
-    const query = searchQuery.trim().toLowerCase();
-    const matchesSearch = 
-      !query ||
-      (item.title && item.title.toLowerCase().includes(query)) ||
-      (item.desc && item.desc.toLowerCase().includes(query)) ||
-      (item.tag && item.tag.toLowerCase().includes(query));
-    return matchesFilter && matchesSearch;
-  });
+  // Derived selected ministry — automatically re-evaluates when language changes
+  const selectedMinistry = useMemo(() => {
+    if (!selectedMinistryId) return null;
+    return ministries.find((m) => m.id === selectedMinistryId) || null;
+  }, [ministries, selectedMinistryId]);
+
+  // Filtering Logic with Leader Name & Role Search Support
+  const filteredMinistries = useMemo(() => {
+    return ministries.filter((item) => {
+      const matchesFilter = selectedFilter === "all" || item.category === selectedFilter;
+      const query = searchQuery.trim().toLowerCase();
+      const matchesSearch = 
+        !query ||
+        (item.title && item.title.toLowerCase().includes(query)) ||
+        (item.desc && item.desc.toLowerCase().includes(query)) ||
+        (item.tag && item.tag.toLowerCase().includes(query)) ||
+        (item.leaderName && item.leaderName.toLowerCase().includes(query)) ||
+        (item.leaderRole && item.leaderRole.toLowerCase().includes(query));
+      return matchesFilter && matchesSearch;
+    });
+  }, [ministries, selectedFilter, searchQuery]);
+
+  // Smooth auto-scroll filter into mobile view
+  const handleFilterClick = (tabId: string, e: React.MouseEvent<HTMLButtonElement>) => {
+    setSelectedFilter(tabId);
+    e.currentTarget.scrollIntoView({
+      behavior: "smooth",
+      inline: "center",
+      block: "nearest"
+    });
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300">
@@ -292,7 +369,7 @@ export default function LeadershipPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-3xl mx-auto text-center">
             
-            {/* 🧭 Sleek Breadcrumb Trail (Fixes Pill Stacking & Clutter) */}
+            {/* 🧭 Sleek Breadcrumb Trail */}
             <nav aria-label="Breadcrumb" className="mb-6 flex justify-center items-center">
               <ol className="inline-flex items-center gap-1.5 sm:gap-2 px-3.5 py-1.5 rounded-full bg-white/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800 backdrop-blur-md text-xs font-semibold text-slate-600 dark:text-slate-400 shadow-xs">
                 <li>
@@ -332,7 +409,7 @@ export default function LeadershipPage() {
             </p>
           </div>
 
-          {/* 📊 Integrated Ambient Stats Grid (No Seams, Tone-on-Tone, Pure Craftsmanship) */}
+          {/* 📊 Integrated Ambient Stats Grid */}
           <div className="mt-10 sm:mt-14 max-w-5xl mx-auto">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
               {stats.map((stat, idx) => {
@@ -355,7 +432,7 @@ export default function LeadershipPage() {
                       {stat.value}
                     </div>
 
-                    {/* Metric Label — Zero Duplicate Text */}
+                    {/* Metric Label */}
                     <div className="text-[11px] sm:text-xs lg:text-sm font-semibold text-slate-600 dark:text-slate-300 leading-snug">
                       {stat.label}
                     </div>
@@ -368,11 +445,11 @@ export default function LeadershipPage() {
         </div>
       </section>
 
-      {/* ✝️ Senior Pastor Section — Clean Hierarchy & Segmented Controller */}
+      {/* ✝️ Senior Pastor Section — Clean Hierarchy & Studio Framing */}
       <section className="py-16 sm:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
-          {/* Section Heading — Eliminates "Senior Pastor" duplicate heading & badge */}
+          {/* Section Heading */}
           <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
             <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-purple-100/90 dark:bg-purple-900/40 text-purple-900 dark:text-purple-200 rounded-full text-xs font-bold tracking-wider mb-3.5 border border-purple-200/80 dark:border-purple-500/30 shadow-xs">
               <Sparkles className="h-3.5 w-3.5 text-amber-500 dark:text-amber-300" />
@@ -390,35 +467,36 @@ export default function LeadershipPage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
               
-              {/* Left Column: Portrait & Title */}
+              {/* Left Column: Authentic Senior Pastor Studio Portrait */}
               <div className="lg:col-span-5 flex flex-col items-center text-center">
-                <div className="relative group w-56 h-56 sm:w-72 sm:h-72 lg:w-80 lg:h-80 rounded-3xl overflow-hidden border-4 border-white dark:border-slate-800 shadow-2xl shadow-purple-900/15 dark:shadow-black/60 bg-gradient-to-b from-purple-900 to-slate-950 transition-transform duration-500 hover:scale-[1.02]">
+                <div className="relative group w-64 h-64 sm:w-72 sm:h-72 lg:w-80 lg:h-80 rounded-3xl overflow-hidden border-4 border-white dark:border-slate-800 shadow-2xl shadow-purple-900/15 dark:shadow-black/60 bg-gradient-to-b from-purple-900 to-slate-950 transition-transform duration-500 hover:scale-[1.02]">
                   <Image
-                    src="/pastor.png"
-                    alt="Bishop Kurra Kristhu Raju"
+                    src={pastorProfile?.image || "/pastor.png"}
+                    alt={pastorProfile?.name || "Bishop Kurra Kristhu Raju"}
                     fill
                     sizes="(max-width: 768px) 100vw, 320px"
                     className="object-cover object-[center_12%] scale-105 transition-transform duration-500 group-hover:scale-110"
                     priority
                     unoptimized
                   />
-                  <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent pointer-events-none" />
+                  {/* Studio Vignette for Bottom Visual Balance */}
+                  <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-slate-950/85 via-slate-950/40 to-transparent pointer-events-none" />
                   
                   {/* Verified Subtle Floating Badge */}
                   <div className="absolute bottom-3 inset-x-4 flex justify-center z-10">
-                    <span className="px-3 py-1 bg-slate-900/85 backdrop-blur-md text-amber-300 border border-amber-400/30 text-[11px] sm:text-xs font-bold rounded-full uppercase tracking-wider shadow-lg flex items-center gap-1.5">
+                    <span className="px-3.5 py-1.5 bg-slate-900/85 backdrop-blur-md text-amber-300 border border-amber-400/30 text-[11px] sm:text-xs font-bold rounded-full uppercase tracking-wider shadow-lg flex items-center gap-1.5">
                       <Sparkles className="h-3 w-3 text-amber-400" />
-                      Bishop & Founder
+                      Bishop &amp; Founder
                     </span>
                   </div>
                 </div>
 
                 <div className="mt-5 text-center">
                   <h3 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-                    Bishop Kurra Kristhu Raju
+                    {pastorProfile?.name || "Bishop Kurra Kristhu Raju"}
                   </h3>
                   <p className="text-purple-600 dark:text-purple-400 font-bold text-sm sm:text-base mt-1">
-                    {pageT.role || "Senior Pastor & Founder"}
+                    {pastorProfile?.title || pageT.role || "Senior Pastor & Founder"}
                   </p>
                 </div>
               </div>
@@ -426,7 +504,7 @@ export default function LeadershipPage() {
               {/* Right Column: Tabbed Dossier & Quick Actions */}
               <div className="lg:col-span-7 space-y-6">
                 
-                {/* 🎛️ Segmented Controller Tab Bar (100% Accessible, Zero Wrapping on Mobile) */}
+                {/* 🎛️ Segmented Controller Tab Bar */}
                 <div 
                   role="tablist" 
                   aria-label="Pastor Profile Information" 
@@ -628,37 +706,51 @@ export default function LeadershipPage() {
           </div>
 
           {/* Search & Filter Controls */}
-          <div className="max-w-3xl mx-auto mb-10 space-y-4">
+          <div className="max-w-4xl mx-auto mb-10 space-y-4">
             
-            {/* Horizontal Scrollable Filter Tabs (Mobile Ergonomic, Single Row, Zero Breaking) */}
-            <div className="flex items-center justify-start sm:justify-center gap-2 overflow-x-auto no-scrollbar py-1 px-1 sm:px-0">
-              {[
-                { id: "all", label: pageT.filterAll || "All Ministries" },
-                { id: "worship", label: pageT.filterWorship || "Worship & Media" },
-                { id: "youth", label: pageT.filterYouth || "Youth & NextGen" },
-                { id: "care", label: pageT.filterCare || "Care & Prayer" }
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setSelectedFilter(tab.id)}
-                  className={`px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-200 cursor-pointer shrink-0 ${
-                    selectedFilter === tab.id
-                      ? "bg-purple-600 text-white shadow-md shadow-purple-600/30 scale-102"
-                      : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-purple-400 dark:hover:border-purple-600"
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
+            {/* 📱 Smooth Touch-Scrollable Filter Tabs (Mobile Ergonomic, Native Feel) */}
+            <div className="relative">
+              <div 
+                ref={filterContainerRef}
+                className="flex items-center justify-start sm:justify-center gap-2 overflow-x-auto scroll-smooth overscroll-x-contain touch-pan-x snap-x snap-mandatory py-1.5 px-4 sm:px-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+                style={{ WebkitOverflowScrolling: "touch" }}
+                role="tablist"
+                aria-label="Filter ministries by department"
+              >
+                {[
+                  { id: "all", label: pageT.filterAll || "All Ministries" },
+                  { id: "worship", label: pageT.filterWorship || "Worship & Media" },
+                  { id: "youth", label: pageT.filterYouth || "Youth & NextGen" },
+                  { id: "care", label: pageT.filterCare || "Care & Prayer" },
+                  { id: "outreach", label: pageT.filterOutreach || "Outreach & Missions" }
+                ].map((tab) => {
+                  const isSelected = selectedFilter === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      role="tab"
+                      aria-selected={isSelected}
+                      onClick={(e) => handleFilterClick(tab.id, e)}
+                      className={`snap-start shrink-0 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-200 cursor-pointer touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 ${
+                        isSelected
+                          ? "bg-purple-600 text-white shadow-md shadow-purple-600/30 scale-[1.02]"
+                          : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-purple-400 dark:hover:border-purple-600 hover:bg-slate-50 dark:hover:bg-slate-800/80 active:scale-95"
+                      }`}
+                    >
+                      {tab.label}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Search Input Box */}
-            <div className="relative max-w-md mx-auto">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" aria-hidden="true" />
+            <div className="relative max-w-md mx-auto px-4 sm:px-0">
+              <Search className="absolute left-7 sm:left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" aria-hidden="true" />
               <input
                 type="text"
-                aria-label={pageT.searchPlaceholder || "Search ministries or leaders"}
-                placeholder={pageT.searchPlaceholder || (language === "te" ? "పరిచర్యలు లేదా నాయకులను శోధించండి..." : language === "hi" ? "मंत्रालयों या नेताओं को खोजें..." : "Search ministries or leaders...")}
+                aria-label={pageT.searchPlaceholder || "Search ministries, leader names, or roles..."}
+                placeholder={pageT.searchPlaceholder || "Search ministries, leader names, or roles..."}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-10 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs sm:text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500 font-medium shadow-xs transition-all"
@@ -667,7 +759,7 @@ export default function LeadershipPage() {
                 <button 
                   onClick={() => setSearchQuery("")}
                   aria-label="Clear search"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 cursor-pointer"
+                  className="absolute right-7 sm:right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 cursor-pointer"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -676,7 +768,7 @@ export default function LeadershipPage() {
 
           </div>
 
-          {/* Ministry Cards Grid */}
+          {/* Ministry Cards Grid with Real Leader Names & Roles */}
           {filteredMinistries.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 lg:gap-8">
               {filteredMinistries.map((item) => {
@@ -708,17 +800,28 @@ export default function LeadershipPage() {
                       </p>
                     </div>
 
+                    {/* Real Leader Name & Official Role Badge */}
                     <div>
                       <div className="pt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-3">
-                        <div className="min-w-0 flex items-center gap-1.5">
-                          <span className="w-1.5 h-1.5 rounded-full bg-purple-600 dark:bg-purple-400 shrink-0" />
-                          <span className="text-xs font-bold text-slate-700 dark:text-slate-300 truncate">
-                            {item.roleTitle}
-                          </span>
+                        <div className="min-w-0 flex items-center gap-2.5">
+                          {/* Tone-on-tone Leader Initials Avatar */}
+                          <div className={`w-8 h-8 rounded-full ${item.bgColor} flex items-center justify-center font-black text-xs shrink-0 shadow-2xs`}>
+                            <span className={item.color}>{item.leaderInitials}</span>
+                          </div>
+                          
+                          <div className="min-w-0">
+                            <div className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate flex items-center gap-1">
+                              <span>{item.leaderName}</span>
+                            </div>
+                            <div className="text-[11px] font-semibold text-purple-600 dark:text-purple-400 truncate">
+                              {item.leaderRole}
+                            </div>
+                          </div>
                         </div>
+
                         <button
-                          onClick={() => setSelectedMinistry(item)}
-                          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-purple-600 hover:bg-purple-700 active:scale-95 text-white text-xs font-bold rounded-xl shadow-xs transition-all duration-200 cursor-pointer group/btn shrink-0 whitespace-nowrap"
+                          onClick={() => setSelectedMinistryId(item.id)}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-600 hover:bg-purple-700 active:scale-95 text-white text-xs font-bold rounded-xl shadow-xs transition-all duration-200 cursor-pointer group/btn shrink-0 whitespace-nowrap"
                         >
                           <span>{pageT.viewDetails || "View Details"}</span>
                           <ArrowRight className="h-3.5 w-3.5 group-hover/btn:translate-x-0.5 transition-transform" />
@@ -747,11 +850,11 @@ export default function LeadershipPage() {
         </div>
       </section>
 
-      {/* 🔍 Interactive Ministry Detail Modal */}
+      {/* 🔍 Interactive Ministry Detail Modal with Real Leader Dossier */}
       {selectedMinistry && (
         <div 
           className="fixed inset-0 z-[10005] flex items-center justify-center p-3 sm:p-4 md:p-6 bg-slate-950/80 backdrop-blur-md animate-fade-in"
-          onClick={() => setSelectedMinistry(null)}
+          onClick={() => setSelectedMinistryId(null)}
           role="dialog"
           aria-modal="true"
           aria-labelledby="ministry-detail-title"
@@ -781,7 +884,7 @@ export default function LeadershipPage() {
 
               {/* Close Button */}
               <button
-                onClick={() => setSelectedMinistry(null)}
+                onClick={() => setSelectedMinistryId(null)}
                 className="p-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 rounded-xl text-slate-600 dark:text-slate-300 transition-all cursor-pointer shrink-0"
                 aria-label="Close dialog"
               >
@@ -791,6 +894,25 @@ export default function LeadershipPage() {
 
             {/* Modal Body - Fluid scroll */}
             <div className="p-4 sm:p-6 overflow-y-auto space-y-5 text-slate-700 dark:text-slate-300 flex-1 overscroll-contain">
+              
+              {/* Leader Profile Callout Box */}
+              <div className="p-4 bg-purple-50/80 dark:bg-purple-950/30 rounded-2xl border border-purple-200/80 dark:border-purple-800/60 flex items-center gap-3.5">
+                <div className={`w-12 h-12 rounded-2xl ${selectedMinistry.bgColor} flex items-center justify-center font-black text-sm shrink-0 shadow-xs`}>
+                  <span className={selectedMinistry.color}>{selectedMinistry.leaderInitials}</span>
+                </div>
+                <div className="min-w-0">
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-purple-700 dark:text-purple-300 block">
+                    {pageT.leaderProfile || "Ministry Leader"}
+                  </span>
+                  <div className="text-sm sm:text-base font-black text-slate-900 dark:text-white truncate">
+                    {selectedMinistry.leaderName}
+                  </div>
+                  <div className="text-xs font-semibold text-slate-600 dark:text-slate-300 truncate">
+                    {selectedMinistry.leaderRole}
+                  </div>
+                </div>
+              </div>
+
               <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-sm leading-relaxed">
                 {selectedMinistry.desc}
               </p>
@@ -825,7 +947,7 @@ export default function LeadershipPage() {
             <div className="p-3.5 sm:p-4 bg-slate-50 dark:bg-slate-950/80 border-t border-slate-200 dark:border-slate-800 shrink-0 flex flex-col sm:flex-row gap-2.5">
               <Link
                 href="/get-involved/volunteer"
-                onClick={() => setSelectedMinistry(null)}
+                onClick={() => setSelectedMinistryId(null)}
                 className="flex-1 py-2.5 sm:py-3 px-4 bg-purple-600 hover:bg-purple-700 active:scale-98 text-white rounded-xl font-bold text-xs sm:text-sm text-center shadow-md transition-all flex items-center justify-center gap-2"
               >
                 <span>{pageT.modalJoin || "Get Involved in this Ministry"}</span>
@@ -833,7 +955,7 @@ export default function LeadershipPage() {
               </Link>
               
               <button
-                onClick={() => setSelectedMinistry(null)}
+                onClick={() => setSelectedMinistryId(null)}
                 className="py-2.5 sm:py-3 px-5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-98 text-slate-700 dark:text-slate-300 rounded-xl font-bold text-xs sm:text-sm transition-all cursor-pointer"
               >
                 {pageT.modalClose || "Close"}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
 import { 
   BookOpen, 
@@ -23,7 +23,9 @@ import {
   Crown,
   Home,
   Layers,
-  Printer
+  Printer,
+  Download,
+  AlertCircle
 } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import Footer from "@/components/layout/Footer";
@@ -33,21 +35,23 @@ export default function BeliefsPage() {
   const { language, t } = useLanguage();
   const pageT = (t as any)?.pages?.beliefs || {};
 
-  // Interactive filter & search states
+  // Interactive filter & search states — preserved across language and theme toggles
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [copied, setCopied] = useState<boolean>(false);
 
-  // Modal states for interactive deep-dive
-  const [selectedDoctrine, setSelectedDoctrine] = useState<any | null>(null);
+  // Modal doctrine selection — storing ID preserves language state seamlessly
+  const [selectedDoctrineId, setSelectedDoctrineId] = useState<string | null>(null);
+
+  const filterContainerRef = useRef<HTMLDivElement>(null);
 
   // Prevent background scroll and support Escape key when modal is open
   useEffect(() => {
-    if (selectedDoctrine !== null) {
+    if (selectedDoctrineId !== null) {
       const prevOverflow = document.body.style.overflow;
       document.body.style.overflow = "hidden";
       const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === "Escape") setSelectedDoctrine(null);
+        if (e.key === "Escape") setSelectedDoctrineId(null);
       };
       window.addEventListener("keydown", handleKeyDown);
       return () => {
@@ -55,7 +59,7 @@ export default function BeliefsPage() {
         window.removeEventListener("keydown", handleKeyDown);
       };
     }
-  }, [selectedDoctrine]);
+  }, [selectedDoctrineId]);
 
   // Executive Tone-on-Tone Stats Bar
   const stats = [
@@ -68,21 +72,21 @@ export default function BeliefsPage() {
     },
     { 
       value: "100%", 
-      label: pageT.statScripture || (language === "te" ? "లేఖన ప్రామాణికత" : language === "hi" ? "बाइबिल का अधिकार" : "Biblical Authority"), 
+      label: pageT.statScripture || (language === "te" ? "లేఖన ప్రామాణికత" : language === "hi" ? "బाइबిల్ కా అధికార" : "Biblical Authority"), 
       icon: ShieldCheck, 
       iconColor: "text-indigo-600 dark:text-indigo-400", 
       iconBg: "bg-indigo-500/10 dark:bg-indigo-500/20 border-indigo-200/50 dark:border-indigo-700/50" 
     },
     { 
       value: "3+", 
-      label: pageT.statCampuses || (language === "te" ? "పరిచర్య శాఖలు" : language === "hi" ? "सक्रिय शाखाएं" : "Active Campuses"), 
+      label: pageT.statCampuses || (language === "te" ? "పరిచర్య శాఖలు" : language === "hi" ? "సక్రియ శాఖాయేం" : "Active Campuses"), 
       icon: Church, 
       iconColor: "text-rose-600 dark:text-rose-400", 
       iconBg: "bg-rose-500/10 dark:bg-rose-500/20 border-rose-200/50 dark:border-rose-700/50" 
     },
     { 
       value: "24/7", 
-      label: pageT.statGospel || (language === "te" ? "సువార్త ప్రభావం" : language === "hi" ? "सुसमाचार प्रभाव" : "Gospel Reach"), 
+      label: pageT.statGospel || (language === "te" ? "సువార్త ప్రభావం" : language === "hi" ? "సుసమాచార ప్రభావ" : "Gospel Reach"), 
       icon: Flame, 
       iconColor: "text-amber-600 dark:text-amber-400", 
       iconBg: "bg-amber-500/10 dark:bg-amber-500/20 border-amber-200/50 dark:border-amber-700/50" 
@@ -94,7 +98,7 @@ export default function BeliefsPage() {
     {
       id: "d1",
       title: pageT.d1Title || "The Holy Scriptures (Bible)",
-      category: pageT.d1Category || "god",
+      category: "god",
       desc: pageT.d1Desc || "We believe the Bible is the inspired, infallible, and authoritative Word of God, our supreme standard for all Christian faith and living.",
       verse: pageT.d1Verse || "2 Timothy 3:16",
       quote: pageT.d1Quote || "All Scripture is God-breathed and useful for teaching, rebuking, correcting and training in righteousness.",
@@ -115,7 +119,7 @@ export default function BeliefsPage() {
     {
       id: "d2",
       title: pageT.d2Title || "The Holy Trinity",
-      category: pageT.d2Category || "god",
+      category: "god",
       desc: pageT.d2Desc || "We believe in one God, eternally existing in three co-equal persons: Father, Son, and Holy Spirit.",
       verse: pageT.d2Verse || "Matthew 28:19",
       quote: pageT.d2Quote || "Go and make disciples of all nations, baptizing them in the name of the Father and of the Son and of the Holy Spirit.",
@@ -136,7 +140,7 @@ export default function BeliefsPage() {
     {
       id: "d3",
       title: pageT.d3Title || "Jesus Christ the Lord",
-      category: pageT.d3Category || "god",
+      category: "god",
       desc: pageT.d3Desc || "We believe Jesus Christ is fully God and fully man, born of a virgin, died on the cross for our sins, and bodily resurrected.",
       verse: pageT.d3Verse || "John 14:6",
       quote: pageT.d3Quote || "Jesus answered, 'I am the way and the truth and the life. No one comes to the Father except through me.'",
@@ -157,7 +161,7 @@ export default function BeliefsPage() {
     {
       id: "d4",
       title: pageT.d4Title || "Salvation by Grace",
-      category: pageT.d4Category || "salvation",
+      category: "salvation",
       desc: pageT.d4Desc || "We believe salvation is a free gift of God's grace, received solely through personal faith in Jesus Christ.",
       verse: pageT.d4Verse || "Ephesians 2:8-9",
       quote: pageT.d4Quote || "For it is by grace you have been saved, through faith—and this is not from yourselves, it is the gift of God.",
@@ -178,7 +182,7 @@ export default function BeliefsPage() {
     {
       id: "d5",
       title: pageT.d5Title || "The Holy Spirit & Miracles",
-      category: pageT.d5Category || "salvation",
+      category: "salvation",
       desc: pageT.d5Desc || "We believe in the present ministry of the Holy Spirit, who indwells, empowers, gifts, and equips believers.",
       verse: pageT.d5Verse || "Acts 1:8",
       quote: pageT.d5Quote || "You will receive power when the Holy Spirit comes on you; and you will be my witnesses to the ends of the earth.",
@@ -199,7 +203,7 @@ export default function BeliefsPage() {
     {
       id: "d6",
       title: pageT.d6Title || "The Body of Christ & Church",
-      category: pageT.d6Category || "salvation",
+      category: "salvation",
       desc: pageT.d6Desc || "We believe the Church is the universal body of Christ, called to gather locally for worship, fellowship, and outreach.",
       verse: pageT.d6Verse || "Matthew 16:18",
       quote: pageT.d6Quote || "And I tell you that you are Peter, and on this rock I will build my church, and the gates of Hades will not overcome it.",
@@ -220,7 +224,7 @@ export default function BeliefsPage() {
     {
       id: "d7",
       title: pageT.d7Title || "Prayer & Faith-Filled Living",
-      category: pageT.d7Category || "life",
+      category: "life",
       desc: pageT.d7Desc || "We believe in the power of fervent prayer and a holy, obedient lifestyle that reflects Christ's character daily.",
       verse: pageT.d7Verse || "James 5:16",
       quote: pageT.d7Quote || "The prayer of a righteous person is powerful and effective.",
@@ -241,7 +245,7 @@ export default function BeliefsPage() {
     {
       id: "d8",
       title: pageT.d8Title || "The Second Coming & Eternity",
-      category: pageT.d8Category || "life",
+      category: "life",
       desc: pageT.d8Desc || "We believe in the glorious, visible return of Jesus Christ, the resurrection of the dead, and eternal life with God.",
       verse: pageT.d8Verse || "Revelation 22:20",
       quote: pageT.d8Quote || "He who testifies to these things says, 'Yes, I am coming soon.' Amen. Come, Lord Jesus.",
@@ -261,7 +265,13 @@ export default function BeliefsPage() {
     }
   ], [pageT]);
 
-  // Filtered doctrines
+  // Derived selected doctrine — automatically updates when language changes
+  const selectedDoctrine = useMemo(() => {
+    if (!selectedDoctrineId) return null;
+    return doctrines.find((d) => d.id === selectedDoctrineId) || null;
+  }, [doctrines, selectedDoctrineId]);
+
+  // Filtered doctrines calculation with combined category and text matching
   const filteredDoctrines = useMemo(() => {
     return doctrines.filter((doc) => {
       const matchesCategory = selectedCategory === "all" || doc.category === selectedCategory;
@@ -271,14 +281,16 @@ export default function BeliefsPage() {
         doc.title.toLowerCase().includes(query) ||
         doc.desc.toLowerCase().includes(query) ||
         doc.verse.toLowerCase().includes(query) ||
-        doc.quote.toLowerCase().includes(query);
+        doc.quote.toLowerCase().includes(query) ||
+        doc.deep.toLowerCase().includes(query) ||
+        doc.passages.some((p: string) => p.toLowerCase().includes(query));
 
       return matchesCategory && matchesSearch;
     });
   }, [doctrines, selectedCategory, searchQuery]);
 
   // Core Values Data with tone-on-tone badges and harmonized palettes
-  const values = [
+  const values = useMemo(() => [
     { 
       name: pageT.v1Name || "Faith", 
       desc: pageT.v1Desc || "Trusting God unconditionally in all circumstances and stepping out in bold obedience.", 
@@ -345,7 +357,17 @@ export default function BeliefsPage() {
       accent: "from-sky-500 to-blue-500",
       hoverBorder: "hover:border-sky-400/50 dark:hover:border-sky-600/50"
     },
-  ];
+  ], [pageT]);
+
+  // Smooth mobile scroll for category filter tabs
+  const handleCategorySelect = (categoryId: string, e: React.MouseEvent<HTMLButtonElement>) => {
+    setSelectedCategory(categoryId);
+    e.currentTarget.scrollIntoView({
+      behavior: "smooth",
+      inline: "center",
+      block: "nearest"
+    });
+  };
 
   // Copy full statement summary
   const handleCopyStatement = () => {
@@ -355,7 +377,7 @@ export default function BeliefsPage() {
     setTimeout(() => setCopied(false), 3000);
   };
 
-  // Print or Save as PDF
+  // Clean Print / Save PDF Trigger
   const handlePrintStatement = () => {
     if (typeof window !== "undefined") {
       window.print();
@@ -364,10 +386,80 @@ export default function BeliefsPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300">
+      
+      {/* 🖨️ Document-Grade Print Stylesheet */}
+      <style jsx global>{`
+        @media print {
+          /* Hide non-printable elements: navbar, footer, search, tabs, buttons, floating widgets */
+          header, nav, footer, .no-print, [role="tablist"], [aria-label="Breadcrumb"], input, button, .modal-backdrop {
+            display: none !important;
+          }
+          body, main, #main-content {
+            background: #ffffff !important;
+            color: #0f172a !important;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+            margin: 0 !important;
+            padding: 0.25in !important;
+          }
+          .print-header-banner {
+            display: block !important;
+            margin-bottom: 2rem !important;
+            padding-bottom: 1rem !important;
+            border-bottom: 2px solid #7c3aed !important;
+          }
+          .doctrines-grid-print {
+            display: block !important;
+          }
+          .doctrine-card-print {
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+            border: 1px solid #cbd5e1 !important;
+            border-radius: 12px !important;
+            padding: 1.25rem !important;
+            margin-bottom: 1.25rem !important;
+            background: #ffffff !important;
+            box-shadow: none !important;
+          }
+          .doctrine-card-print * {
+            color: #0f172a !important;
+          }
+          .quote-box-print {
+            border-left: 3px solid #7c3aed !important;
+            background: #f8fafc !important;
+            padding: 0.75rem 1rem !important;
+            margin: 0.75rem 0 !important;
+            font-style: italic !important;
+          }
+          .values-grid-print {
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+            margin-top: 2rem !important;
+          }
+        }
+      `}</style>
+
+      {/* Printable Document Header (Rendered solely during @media print) */}
+      <div className="hidden print-header-banner">
+        <div className="flex items-center justify-between pb-2">
+          <div>
+            <h1 className="text-2xl font-black text-slate-900 tracking-tight">
+              Kingdom of Christ Ministries
+            </h1>
+            <p className="text-sm font-bold text-purple-700">
+              Official Statement of Faith &amp; Core Biblical Doctrines
+            </p>
+          </div>
+          <div className="text-right text-xs text-slate-500 font-medium">
+            <p>Hyderabad, India • kcmchurch.org</p>
+            <p>Senior Pastor: Bishop Kurra Kristhu Raju</p>
+          </div>
+        </div>
+      </div>
+
       <Navbar />
 
-      {/* 🌌 Hero Section — Seamless Ambient Gradient Flow (No cutting bottom border) */}
-      <section className="relative pt-32 pb-20 sm:pt-40 sm:pb-24 md:pt-44 md:pb-28 bg-gradient-to-b from-purple-50/80 via-indigo-50/40 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-white overflow-hidden transition-colors duration-300">
+      {/* 🌌 Hero Section — Seamless Ambient Gradient Flow */}
+      <section className="relative pt-32 pb-20 sm:pt-40 sm:pb-24 md:pt-44 md:pb-28 bg-gradient-to-b from-purple-50/80 via-indigo-50/40 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-white overflow-hidden transition-colors duration-300 no-print">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-25 dark:opacity-15 pointer-events-none" />
         <div className="absolute -top-32 -right-32 w-96 h-96 bg-purple-400/20 dark:bg-purple-600/15 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-indigo-400/20 dark:bg-indigo-600/15 rounded-full blur-3xl pointer-events-none" />
@@ -375,7 +467,7 @@ export default function BeliefsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-3xl mx-auto text-center">
             
-            {/* Inline Breadcrumb Navigation (Replaces stacked Home pill button) */}
+            {/* Inline Breadcrumb Navigation */}
             <nav aria-label="Breadcrumb" className="mb-5 flex justify-center">
               <ol className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/70 dark:bg-slate-900/70 backdrop-blur-md border border-purple-200/60 dark:border-slate-800 text-xs font-semibold text-slate-600 dark:text-slate-400 shadow-xs">
                 <li className="inline-flex items-center">
@@ -417,8 +509,8 @@ export default function BeliefsPage() {
         </div>
       </section>
 
-      {/* 📊 Tone-on-Tone Floating Stats Bar (No horizontal seam cut, safe margins against floating widgets) */}
-      <section className="relative z-20 -mt-10 sm:-mt-14 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* 📊 Tone-on-Tone Floating Stats Bar */}
+      <section className="relative z-20 -mt-10 sm:-mt-14 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 no-print">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
           {stats.map((stat, idx) => {
             const Icon = stat.icon;
@@ -442,7 +534,7 @@ export default function BeliefsPage() {
         </div>
       </section>
 
-      {/* 📜 Core Doctrines Section with Cohesive Search & Category Filter Hub */}
+      {/* 📜 Core Doctrines Section with Cohesive Search & Smooth Touch Filter Tabs */}
       <section className="py-16 sm:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
@@ -461,54 +553,69 @@ export default function BeliefsPage() {
           </div>
 
           {/* Unified Search & Category Filter Toolbar */}
-          <div className="max-w-3xl mx-auto mb-10 space-y-4">
+          <div className="max-w-3xl mx-auto mb-10 space-y-4 no-print">
+            
             {/* Search Input Box */}
             <div className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-slate-400" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-slate-400" aria-hidden="true" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={pageT.searchPlaceholder || (language === "te" ? "సిద్ధాంతాలు లేదా వాక్యాలను వెతకండి..." : language === "hi" ? "सिद्धान्त या वचन खोजें..." : "Search doctrines, keywords, or scripture verses...")}
+                placeholder={pageT.searchPlaceholder || "Search doctrines, keywords, or scripture verses..."}
                 className="w-full pl-11 sm:pl-12 pr-10 py-3 sm:py-3.5 bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white placeholder-slate-400 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-purple-500 shadow-sm transition-all font-medium"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery("")}
                   aria-label="Clear search"
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-full transition-colors"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-full transition-colors cursor-pointer"
                 >
                   <X className="h-4 w-4" />
                 </button>
               )}
             </div>
 
-            {/* Category Filter Pills (Mobile Horizontal Swipe Track — No ragged multi-line wrapping) */}
-            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1 px-0.5 sm:justify-center flex-nowrap">
-              {[
-                { id: "all", label: pageT.filterAll || "All Doctrines" },
-                { id: "god", label: pageT.filterGod || "God & Scripture" },
-                { id: "salvation", label: pageT.filterSalvation || "Salvation & Church" },
-                { id: "life", label: pageT.filterLife || "Christian Life & Hope" },
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setSelectedCategory(tab.id)}
-                  className={`flex-shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 ${
-                    selectedCategory === tab.id
-                      ? "bg-purple-600 text-white shadow-md shadow-purple-600/25 scale-[1.02]"
-                      : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-800"
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
+            {/* 📱 1. Smooth Mobile Horizontally Scrollable Filter Tabs (No Pills Clip Off-Screen) */}
+            <div className="relative">
+              <div 
+                ref={filterContainerRef}
+                role="tablist"
+                aria-label="Filter doctrines by category"
+                className="flex items-center gap-2 overflow-x-auto scroll-smooth overscroll-x-contain touch-pan-x snap-x snap-mandatory py-2 px-4 sm:px-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden sm:justify-center flex-nowrap"
+                style={{ WebkitOverflowScrolling: "touch" }}
+              >
+                {[
+                  { id: "all", label: pageT.filterAll || "All Doctrines" },
+                  { id: "god", label: pageT.filterGod || "God & Scripture" },
+                  { id: "salvation", label: pageT.filterSalvation || "Salvation & Church" },
+                  { id: "life", label: pageT.filterLife || "Christian Life & Hope" },
+                ].map((tab) => {
+                  const isSelected = selectedCategory === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      role="tab"
+                      aria-selected={isSelected}
+                      onClick={(e) => handleCategorySelect(tab.id, e)}
+                      className={`snap-start shrink-0 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-200 cursor-pointer touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 ${
+                        isSelected
+                          ? "bg-purple-600 text-white shadow-md shadow-purple-600/25 scale-[1.02]"
+                          : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-800 active:scale-95"
+                      }`}
+                    >
+                      {tab.label}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
+
           </div>
 
           {/* Doctrines Grid */}
           {filteredDoctrines.length === 0 ? (
-            <div className="text-center py-16 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 max-w-xl mx-auto p-6 shadow-sm">
+            <div className="text-center py-16 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 max-w-xl mx-auto p-6 shadow-sm no-print">
               <BookOpen className="h-12 w-12 text-slate-400 mx-auto mb-4 opacity-60" />
               <p className="text-base sm:text-lg font-bold text-slate-800 dark:text-slate-200 mb-1">
                 {pageT.noResultsTitle || "No doctrines found matching"} "{searchQuery}"
@@ -518,19 +625,19 @@ export default function BeliefsPage() {
                   setSearchQuery("");
                   setSelectedCategory("all");
                 }}
-                className="mt-4 px-5 py-2.5 bg-purple-600 text-white text-xs sm:text-sm font-bold rounded-xl hover:bg-purple-700 active:scale-95 transition-all shadow-md shadow-purple-600/20"
+                className="mt-4 px-5 py-2.5 bg-purple-600 text-white text-xs sm:text-sm font-bold rounded-xl hover:bg-purple-700 active:scale-95 transition-all shadow-md shadow-purple-600/20 cursor-pointer"
               >
                 {pageT.resetFilter || "Reset Search Filters"}
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 doctrines-grid-print">
               {filteredDoctrines.map((doctrine) => {
                 const Icon = doctrine.icon;
                 return (
                   <div
                     key={doctrine.id}
-                    className="relative group bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 shadow-xl shadow-slate-900/5 dark:shadow-black/25 border border-slate-200/80 dark:border-slate-800 hover:border-purple-400/50 dark:hover:border-purple-600/50 transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between overflow-hidden"
+                    className="relative group bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 shadow-xl shadow-slate-900/5 dark:shadow-black/25 border border-slate-200/80 dark:border-slate-800 hover:border-purple-400/50 dark:hover:border-purple-600/50 transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between overflow-hidden doctrine-card-print"
                   >
                     <div className={`absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r ${doctrine.accent}`} />
 
@@ -557,17 +664,17 @@ export default function BeliefsPage() {
                       </p>
 
                       {/* Harmonized Key Quote Callout Box */}
-                      <div className={`p-4 ${doctrine.quoteBg} rounded-2xl border-l-4 ${doctrine.quoteBorder} mb-6 transition-colors`}>
+                      <div className={`p-4 ${doctrine.quoteBg} rounded-2xl border-l-4 ${doctrine.quoteBorder} mb-6 transition-colors quote-box-print`}>
                         <p className={`text-xs sm:text-sm ${doctrine.quoteText} italic font-medium leading-relaxed`}>
                           "{doctrine.quote}"
                         </p>
                       </div>
                     </div>
 
-                    {/* Bottom Action Button with Palette Hover Feedback */}
+                    {/* Bottom Action Button */}
                     <button
-                      onClick={() => setSelectedDoctrine(doctrine)}
-                      className={`w-full py-3 px-4 bg-slate-100 dark:bg-slate-800/80 ${doctrine.btnHover} text-slate-800 dark:text-slate-200 font-bold rounded-xl text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-2 group/btn shadow-2xs active:scale-[0.99]`}
+                      onClick={() => setSelectedDoctrineId(doctrine.id)}
+                      className={`w-full py-3 px-4 bg-slate-100 dark:bg-slate-800/80 ${doctrine.btnHover} text-slate-800 dark:text-slate-200 font-bold rounded-xl text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-2 group/btn shadow-2xs active:scale-[0.99] cursor-pointer no-print`}
                     >
                       <span>{pageT.readScripture || "Deep Dive & Verses"}</span>
                       <ChevronRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
@@ -581,7 +688,7 @@ export default function BeliefsPage() {
       </section>
 
       {/* 🌟 Our Kingdom Core Values Grid */}
-      <section className="py-16 sm:py-24 bg-slate-100/70 dark:bg-slate-900/40 border-y border-slate-200/60 dark:border-slate-800/80">
+      <section className="py-16 sm:py-24 bg-slate-100/70 dark:bg-slate-900/40 border-y border-slate-200/60 dark:border-slate-800/80 values-grid-print">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-amber-500/15 border border-amber-300/40 dark:border-amber-500/30 text-amber-700 dark:text-amber-300 rounded-full text-xs font-bold uppercase tracking-wider mb-4 shadow-2xs">
@@ -602,7 +709,7 @@ export default function BeliefsPage() {
               return (
                 <div
                   key={idx}
-                  className={`relative bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-7 shadow-xl shadow-slate-900/5 dark:shadow-black/20 border border-slate-200/80 dark:border-slate-800 ${val.hoverBorder} hover:scale-[1.02] transition-all duration-300 flex flex-col justify-between group overflow-hidden`}
+                  className={`relative bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-7 shadow-xl shadow-slate-900/5 dark:shadow-black/20 border border-slate-200/80 dark:border-slate-800 ${val.hoverBorder} hover:scale-[1.02] transition-all duration-300 flex flex-col justify-between group overflow-hidden doctrine-card-print`}
                 >
                   <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${val.accent}`} />
                   <div>
@@ -629,60 +736,59 @@ export default function BeliefsPage() {
         </div>
       </section>
 
-      {/* 📄 Statement of Faith Download & Share Card */}
-      <section className="py-16 sm:py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto bg-gradient-to-br from-purple-900/5 via-slate-900/5 to-indigo-900/5 dark:from-purple-950/40 dark:via-slate-900/60 dark:to-indigo-950/40 border border-purple-200/60 dark:border-purple-800/40 rounded-3xl p-6 sm:p-10 md:p-12 shadow-xl relative overflow-hidden backdrop-blur-xl">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
-
-            <div className="flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-8">
-              <div className="space-y-3 text-center md:text-left">
-                <div className="inline-flex items-center gap-2 px-3 py-1 bg-purple-500/10 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300 border border-purple-200/60 dark:border-purple-800/60 rounded-full text-xs font-bold uppercase tracking-wider">
-                  <FileText className="h-3.5 w-3.5" />
-                  <span>{pageT.downloadTitle || "Full Statement of Faith"}</span>
-                </div>
-                <h3 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-                  {pageT.studyFurtherTitle || "Want to Study Our Beliefs Further?"}
-                </h3>
-                <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base max-w-xl leading-relaxed font-normal">
-                  {pageT.downloadDesc || "Explore, copy, or print our complete, detailed statement of faith for personal or group Bible study."}
-                </p>
+      {/* 🚀 3. Bottom CTA Hierarchy: Compact Resource Bar (Doesn't Compete with Dark Closing CTA) */}
+      <section className="py-8 sm:py-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 no-print">
+        <div className="bg-slate-100/90 dark:bg-slate-900/80 border border-slate-200/90 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-xs flex flex-col md:flex-row items-center justify-between gap-4 transition-all">
+          
+          {/* Left: Compact Resource Indicator */}
+          <div className="flex items-center gap-3.5 text-center md:text-left">
+            <div className="w-10 h-10 rounded-xl bg-purple-500/10 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 border border-purple-200/60 dark:border-purple-800/60 shadow-2xs">
+              <FileText className="h-5 w-5" />
+            </div>
+            <div>
+              <div className="text-sm sm:text-base font-bold text-slate-900 dark:text-white leading-tight">
+                {pageT.studyFurtherTitle || "Want to Study Our Beliefs Further?"}
               </div>
-
-              <div className="flex-shrink-0 flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                <button
-                  onClick={handleCopyStatement}
-                  className="w-full sm:w-auto px-6 py-3.5 bg-purple-600 hover:bg-purple-700 active:scale-95 text-white font-bold rounded-xl shadow-lg shadow-purple-600/25 transition-all duration-200 flex items-center justify-center gap-2 text-sm sm:text-base cursor-pointer"
-                >
-                  {copied ? (
-                    <>
-                      <Check className="h-4 w-4 text-emerald-300" />
-                      <span>{pageT.copiedToast || "Copied to Clipboard!"}</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="h-4 w-4" />
-                      <span>{pageT.copyStatement || "Copy Summary Statement"}</span>
-                    </>
-                  )}
-                </button>
-
-                <button
-                  onClick={handlePrintStatement}
-                  className="w-full sm:w-auto px-6 py-3.5 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95 text-slate-800 dark:text-slate-200 font-bold rounded-xl border border-slate-200 dark:border-slate-700 shadow-xs transition-all duration-200 flex items-center justify-center gap-2 text-sm sm:text-base cursor-pointer"
-                >
-                  <Printer className="h-4 w-4 text-slate-500 dark:text-slate-400" />
-                  <span>{pageT.printStatement || "Print / Save PDF"}</span>
-                </button>
-              </div>
+              <p className="text-xs text-slate-600 dark:text-slate-400 font-medium leading-normal mt-0.5">
+                {pageT.downloadDesc || "Copy the doctrinal summary statement or export a clean printable PDF for study."}
+              </p>
             </div>
           </div>
+
+          {/* Right: Compact Resource Action Controls */}
+          <div className="flex items-center gap-2.5 w-full md:w-auto justify-center shrink-0">
+            <button
+              onClick={handleCopyStatement}
+              className="px-4 py-2 bg-purple-600 hover:bg-purple-700 active:scale-95 text-white font-bold rounded-xl shadow-xs transition-all duration-200 flex items-center gap-1.5 text-xs sm:text-sm cursor-pointer whitespace-nowrap"
+            >
+              {copied ? (
+                <>
+                  <Check className="h-3.5 w-3.5 text-emerald-300" />
+                  <span>{pageT.copiedToast || "Copied!"}</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="h-3.5 w-3.5" />
+                  <span>{pageT.copyStatement || "Copy Summary"}</span>
+                </>
+              )}
+            </button>
+
+            <button
+              onClick={handlePrintStatement}
+              className="px-4 py-2 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 active:scale-95 text-slate-800 dark:text-slate-200 font-bold rounded-xl border border-slate-200 dark:border-slate-700 shadow-2xs transition-all duration-200 flex items-center gap-1.5 text-xs sm:text-sm cursor-pointer whitespace-nowrap"
+            >
+              <Printer className="h-3.5 w-3.5 text-slate-500 dark:text-slate-400" />
+              <span>{pageT.printStatement || "Print / Save PDF"}</span>
+            </button>
+          </div>
+
         </div>
       </section>
 
-      {/* 🚀 Call to Action Section with Distinct Visual Hierarchy */}
-      <section className="py-20 sm:py-28 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 relative overflow-hidden text-white border-t border-slate-800/80">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-15" />
+      {/* 🚀 Primary Dark Closing Call to Action Section (Definitive Visual Climax) */}
+      <section className="py-20 sm:py-28 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 relative overflow-hidden text-white border-t border-slate-800/80 no-print">
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-15 pointer-events-none" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-purple-600/15 rounded-full blur-3xl pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -720,92 +826,124 @@ export default function BeliefsPage() {
         </div>
       </section>
 
-      {/* 📖 Doctrinal Detail Modal — Customized to Active Doctrine's Palette */}
-      {selectedDoctrine && (
+      {/* 📖 2. Interactive Deep Dive & Notes Modal with Proper Error/Empty-State Handling */}
+      {selectedDoctrineId && (
         <div 
-          className="fixed inset-0 z-[10005] flex items-center justify-center p-3 sm:p-4 md:p-6 bg-slate-950/80 backdrop-blur-md animate-fade-in"
-          onClick={() => setSelectedDoctrine(null)}
+          className="fixed inset-0 z-[10005] flex items-center justify-center p-3 sm:p-4 md:p-6 bg-slate-950/80 backdrop-blur-md animate-fade-in no-print"
+          onClick={() => setSelectedDoctrineId(null)}
           role="dialog"
           aria-modal="true"
           aria-labelledby="doctrinal-detail-title"
         >
-          <div 
-            className="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden max-h-[90dvh] flex flex-col animate-scale-in"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Modal Header */}
-            <div className={`p-5 sm:p-6 bg-gradient-to-r ${selectedDoctrine.accent} text-white relative shrink-0 z-10`}>
-              <div className="pr-12">
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-bold uppercase tracking-wider mb-2">
-                  <BookOpen className="h-3.5 w-3.5" />
-                  <span>{selectedDoctrine.verse}</span>
+          {selectedDoctrine ? (
+            <div 
+              className="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden max-h-[90dvh] flex flex-col animate-scale-in"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Modal Header */}
+              <div className={`p-5 sm:p-6 bg-gradient-to-r ${selectedDoctrine.accent} text-white relative shrink-0 z-10`}>
+                <div className="pr-12">
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-bold uppercase tracking-wider mb-2">
+                    <BookOpen className="h-3.5 w-3.5" />
+                    <span>{selectedDoctrine.verse}</span>
+                  </div>
+                  <h3 id="doctrinal-detail-title" className="text-xl sm:text-2xl md:text-3xl font-black leading-tight">
+                    {selectedDoctrine.title}
+                  </h3>
                 </div>
-                <h3 id="doctrinal-detail-title" className="text-xl sm:text-2xl md:text-3xl font-black leading-tight">
-                  {selectedDoctrine.title}
-                </h3>
+
+                {/* Close Button */}
+                <button
+                  onClick={() => setSelectedDoctrineId(null)}
+                  className="absolute top-4 right-4 sm:top-5 sm:right-5 p-2 bg-black/25 hover:bg-black/40 active:scale-95 rounded-xl text-white transition-all cursor-pointer"
+                  aria-label="Close dialog"
+                >
+                  <X className="h-5 w-5" />
+                </button>
               </div>
 
-              {/* Close Button */}
-              <button
-                onClick={() => setSelectedDoctrine(null)}
-                className="absolute top-4 right-4 sm:top-5 sm:right-5 p-2 bg-black/25 hover:bg-black/40 active:scale-95 rounded-xl text-white transition-all"
-                aria-label="Close dialog"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
+              {/* Modal Body */}
+              <div className="p-5 sm:p-6 md:p-8 overflow-y-auto space-y-5 sm:space-y-6 text-slate-700 dark:text-slate-300 overscroll-contain flex-1">
+                <div>
+                  <h4 className={`text-xs font-bold uppercase tracking-wider ${selectedDoctrine.themeColor} mb-2`}>
+                    {pageT.modalSummary || "Doctrinal Overview"}
+                  </h4>
+                  <p className="text-sm sm:text-base md:text-lg leading-relaxed font-normal">
+                    {selectedDoctrine.desc}
+                  </p>
+                </div>
 
-            {/* Modal Body */}
-            <div className="p-5 sm:p-6 md:p-8 overflow-y-auto space-y-5 sm:space-y-6 text-slate-700 dark:text-slate-300 overscroll-contain flex-1">
-              <div>
-                <h4 className={`text-xs font-bold uppercase tracking-wider ${selectedDoctrine.themeColor} mb-2`}>
-                  {pageT.modalSummary || "Doctrinal Overview"}
-                </h4>
-                <p className="text-sm sm:text-base md:text-lg leading-relaxed font-normal">
-                  {selectedDoctrine.desc}
-                </p>
-              </div>
+                {selectedDoctrine.quote && (
+                  <div className={`p-4 sm:p-5 ${selectedDoctrine.quoteBg} rounded-2xl border-l-4 ${selectedDoctrine.quoteBorder}`}>
+                    <p className={`text-xs sm:text-sm md:text-base italic font-semibold ${selectedDoctrine.quoteText} leading-relaxed`}>
+                      "{selectedDoctrine.quote}"
+                    </p>
+                  </div>
+                )}
 
-              <div className={`p-4 sm:p-5 ${selectedDoctrine.quoteBg} rounded-2xl border-l-4 ${selectedDoctrine.quoteBorder}`}>
-                <p className={`text-xs sm:text-sm md:text-base italic font-semibold ${selectedDoctrine.quoteText} leading-relaxed`}>
-                  "{selectedDoctrine.quote}"
-                </p>
-              </div>
+                {selectedDoctrine.deep && (
+                  <div>
+                    <h4 className={`text-xs font-bold uppercase tracking-wider ${selectedDoctrine.themeColor} mb-2`}>
+                      {pageT.pastoralExplanation || "Pastoral Explanation"}
+                    </h4>
+                    <p className="text-xs sm:text-sm md:text-base leading-relaxed text-slate-600 dark:text-slate-300 font-normal">
+                      {selectedDoctrine.deep}
+                    </p>
+                  </div>
+                )}
 
-              <div>
-                <h4 className={`text-xs font-bold uppercase tracking-wider ${selectedDoctrine.themeColor} mb-2`}>
-                  {pageT.pastoralExplanation || "Pastoral Explanation"}
-                </h4>
-                <p className="text-xs sm:text-sm md:text-base leading-relaxed text-slate-600 dark:text-slate-300 font-normal">
-                  {selectedDoctrine.deep}
-                </p>
-              </div>
-
-              <div>
-                <h4 className={`text-xs font-bold uppercase tracking-wider ${selectedDoctrine.themeColor} mb-2.5`}>
-                  {pageT.modalScripture || "Key Scripture Passages"}
-                </h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {selectedDoctrine.passages.map((passage: string, i: number) => (
-                    <div key={i} className="flex items-center gap-2.5 p-2.5 sm:p-3 bg-slate-100 dark:bg-slate-800/60 rounded-xl text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200">
-                      <CheckCircle2 className={`h-4 w-4 ${selectedDoctrine.checkColor} flex-shrink-0`} />
-                      <span>{passage}</span>
+                {selectedDoctrine.passages && selectedDoctrine.passages.length > 0 ? (
+                  <div>
+                    <h4 className={`text-xs font-bold uppercase tracking-wider ${selectedDoctrine.themeColor} mb-2.5`}>
+                      {pageT.modalScripture || "Key Scripture Passages"}
+                    </h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {selectedDoctrine.passages.map((passage: string, i: number) => (
+                        <div key={i} className="flex items-center gap-2.5 p-2.5 sm:p-3 bg-slate-100 dark:bg-slate-800/60 rounded-xl text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200">
+                          <CheckCircle2 className={`h-4 w-4 ${selectedDoctrine.checkColor} flex-shrink-0`} />
+                          <span>{passage}</span>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ) : (
+                  <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl text-xs text-slate-500">
+                    No additional passages listed.
+                  </div>
+                )}
+              </div>
+
+              {/* Modal Footer */}
+              <div className="p-4 sm:p-5 bg-slate-50 dark:bg-slate-950/80 border-t border-slate-200 dark:border-slate-800 shrink-0 flex justify-end">
+                <button
+                  onClick={() => setSelectedDoctrineId(null)}
+                  className="w-full sm:w-auto px-6 py-2.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold rounded-xl text-xs sm:text-sm hover:opacity-90 active:scale-98 transition-all cursor-pointer"
+                >
+                  {pageT.modalClose || "Close"}
+                </button>
               </div>
             </div>
-
-            {/* Modal Footer */}
-            <div className="p-4 sm:p-5 bg-slate-50 dark:bg-slate-950/80 border-t border-slate-200 dark:border-slate-800 shrink-0 flex justify-end">
+          ) : (
+            /* Graceful Empty / Error State Fallback */
+            <div 
+              className="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 text-center animate-scale-in"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <AlertCircle className="h-10 w-10 text-amber-500 mx-auto mb-3" />
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">
+                Doctrinal Note Not Found
+              </h3>
+              <p className="text-xs text-slate-600 dark:text-slate-400 mb-5">
+                The requested doctrinal detail could not be retrieved. Please try selecting another doctrine.
+              </p>
               <button
-                onClick={() => setSelectedDoctrine(null)}
-                className="w-full sm:w-auto px-6 py-2.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold rounded-xl text-xs sm:text-sm hover:opacity-90 active:scale-98 transition-all"
+                onClick={() => setSelectedDoctrineId(null)}
+                className="px-5 py-2.5 bg-purple-600 text-white rounded-xl text-xs font-bold hover:bg-purple-700 transition-all cursor-pointer"
               >
                 {pageT.modalClose || "Close"}
               </button>
             </div>
-          </div>
+          )}
         </div>
       )}
 

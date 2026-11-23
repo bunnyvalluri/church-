@@ -9,6 +9,7 @@ import {
   ApiRequestOptions,
   ApiResponse,
   ErrorClassification,
+  responseCache,
 } from '../../lib/apiClient';
 
 export interface RequestConfig<T = any> extends ApiRequestOptions<T> {
@@ -93,7 +94,18 @@ export class ApiService {
       ...config,
     });
   }
+
+  /** Invalidate cached responses matching an endpoint or pattern */
+  invalidateCache(pattern?: string | RegExp): void {
+    responseCache.invalidate(pattern);
+  }
+
+  /** Clear all response caches */
+  clearCache(): void {
+    responseCache.clear();
+  }
 }
 
 export const api = new ApiService();
+export { responseCache };
 export type { ApiResponse, ErrorClassification };

@@ -73,7 +73,7 @@ const DEFAULT_PRAYERS: Prayer[] = [
     status: "ANSWERED",
     createdAt: "2026-07-16T10:00:00.000Z",
     user: { name: "Anonymous Believer", email: "hidden@kcm.org" },
-    assignedPartners: ["Pastor Samuel Valluri"]
+    assignedPartners: ["Bishop Kurra Kristhu Raju"]
   },
   {
     id: "pr_004",

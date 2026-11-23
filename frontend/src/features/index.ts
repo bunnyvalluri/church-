@@ -20,4 +20,5 @@ export * from './groups';
 export * from './announcements';
 export * from './reports';
 export * from './admin';
+export * from './leadership/services';
 

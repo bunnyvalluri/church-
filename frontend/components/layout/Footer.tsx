@@ -226,7 +226,17 @@ export default function Footer() {
             <div className="flex flex-wrap items-center justify-center lg:justify-end gap-3 w-full lg:w-auto shrink-0 pt-2 lg:pt-0">
               {/* Primary Action: Prayer Request */}
               <Link
-                href="/prayer"
+                href="/prayer#prayer-form"
+                onClick={(e) => {
+                  if (pathname === "/prayer") {
+                    e.preventDefault();
+                    const el = document.getElementById("prayer-form");
+                    if (el) {
+                      el.scrollIntoView({ behavior: "smooth", block: "start" });
+                      window.history.replaceState(null, "", "#prayer-form");
+                    }
+                  }
+                }}
                 aria-label="Submit a prayer request"
                 className="flex-1 sm:flex-none h-11 sm:h-12 px-6 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-violet-600 hover:from-purple-500 hover:to-indigo-500 text-white font-extrabold text-xs sm:text-sm shadow-lg shadow-purple-600/30 hover:shadow-purple-600/50 transition-all hover:scale-[1.02] sm:hover:scale-105 active:scale-95 flex items-center justify-center gap-2 select-none shrink-0"
               >
