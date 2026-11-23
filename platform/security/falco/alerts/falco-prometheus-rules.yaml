@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=none
 # =============================================================================
 # Falco Prometheus Alert Rules — Kingdom of Christ Ministries
 # PrometheusRule CRD for kube-prometheus-stack

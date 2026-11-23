@@ -36,10 +36,6 @@ export class SimpleStore<T> {
       this.listeners.delete(listener);
     };
   }
-
-  useStore(): T {
-    return useSyncExternalStore(this.subscribe, this.getState, this.getState);
-  }
 }
 
 export function useStore<T>(store: SimpleStore<T>): T {

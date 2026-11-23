@@ -12,6 +12,17 @@
   "docker.lsp.experimental.scout.vulnerabilities": false,
   "docker.lsp.experimental.scout.recommendedTag": false,
   "docker.lsp.experimental.scout.notPinnedDigest": false,
+  "yaml.customTags": [
+    "!Ref",
+    "!Sub",
+    "!GetAtt",
+    "!FindInMap",
+    "!Equals",
+    "!Not",
+    "!And",
+    "!Or",
+    "!If"
+  ],
   "files.exclude": {
     "**/.git": true,
     "**/.svn": true,
