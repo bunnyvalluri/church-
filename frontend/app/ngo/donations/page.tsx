@@ -1167,7 +1167,7 @@ function NgoDonationsContent() {
           </div>
 
           {/* ── RIGHT COLUMN: Interactive Donation Wizard Form ─────────────────────── */}
-          <div className="lg:col-span-7 lg:sticky lg:top-24 self-start bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border border-slate-200/90 dark:border-white/10 rounded-3xl p-6 sm:p-8 lg:p-9 shadow-2xl shadow-purple-500/5 relative overflow-hidden">
+          <div className="lg:col-span-7 lg:sticky lg:top-24 self-start bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border border-slate-200/90 dark:border-white/10 rounded-3xl p-4 sm:p-7 lg:p-9 shadow-2xl shadow-purple-500/5 relative overflow-hidden">
             
             {/* ── WIZARD STEP INDICATOR ────────────────────────────────────── */}
             <div className="mb-6 pb-4 border-b border-slate-100 dark:border-white/10">
@@ -1234,16 +1234,16 @@ function NgoDonationsContent() {
                 className="space-y-6 text-left"
               >
                 <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <label className="text-xs font-black uppercase tracking-wider text-slate-600 dark:text-slate-300">
-                      {dp.step1Title || "Step 1: Choose Donation Amount"}
+                  <div className="flex items-center justify-between mb-3 gap-2">
+                    <label className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300 truncate font-outfit">
+                      {dp.step1Title || "Select Donation Amount"}
                     </label>
-                    <span className="text-[11px] font-extrabold text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/60 px-2 py-0.5 rounded-md border border-purple-200 dark:border-purple-800/60">
+                    <span className="text-[10px] sm:text-[11px] font-extrabold text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/60 px-2.5 py-1 rounded-full border border-purple-200/80 dark:border-purple-800/60 whitespace-nowrap shrink-0 shadow-2xs">
                       {frequency === "MONTHLY" ? (dp.monthlyRecurring || "Monthly Partnership") : (dp.oneTimeGiving || "One-Time Giving")}
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3">
                     {presetAmounts.map((preset) => {
                       const isSelected = amount === preset.amount.toString() && !customAmount;
                       return (
@@ -1254,20 +1254,24 @@ function NgoDonationsContent() {
                             setAmount(preset.amount.toString());
                             setCustomAmount("");
                           }}
-                          className={`relative py-3.5 px-3 rounded-2xl border font-black text-sm sm:text-base transition-all duration-200 flex flex-col items-center justify-center gap-1 touch-manipulation select-none ${
+                          className={`relative py-3.5 px-2.5 sm:py-4 sm:px-3 rounded-2xl border font-black text-sm sm:text-base transition-all duration-200 flex flex-col items-center justify-center gap-1.5 touch-manipulation select-none active:scale-[0.98] ${
                             isSelected
-                              ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white border-purple-500 shadow-lg shadow-purple-500/25 scale-[1.02]"
-                              : "bg-slate-50/80 hover:bg-purple-50/60 dark:bg-slate-800/80 dark:hover:bg-slate-700/80 border-slate-200 dark:border-white/10 text-slate-800 dark:text-white hover:border-purple-300 dark:hover:border-purple-500/50"
+                              ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white border-purple-500 shadow-md shadow-purple-500/25 ring-2 ring-purple-500/40 ring-offset-2 dark:ring-offset-slate-900"
+                              : "bg-white dark:bg-slate-800/90 hover:bg-purple-50/50 dark:hover:bg-slate-750 border-slate-200/90 dark:border-white/10 text-slate-900 dark:text-white hover:border-purple-300 dark:hover:border-purple-500/40 shadow-xs"
                           }`}
                         >
                           {preset.tag && (
-                            <span className={`text-[9px] uppercase tracking-wider font-extrabold px-2 py-0.5 rounded-full ${
-                              isSelected ? "bg-white/20 text-white" : "text-purple-700 dark:text-purple-300 bg-purple-100 dark:bg-purple-900/50 border border-purple-200/60 dark:border-purple-800/40"
+                            <span className={`text-[9px] sm:text-[10px] uppercase tracking-wider font-extrabold px-2.5 py-0.5 rounded-full transition-colors ${
+                              isSelected
+                                ? "bg-white/20 text-white"
+                                : "text-purple-700 dark:text-purple-300 bg-purple-100/80 dark:bg-purple-900/40 border border-purple-200/60 dark:border-purple-800/40"
                             }`}>
                               {preset.tag}
                             </span>
                           )}
-                          <span className="text-base sm:text-lg font-black tracking-tight">₹{formatNumber(preset.amount)}</span>
+                          <span className="text-base sm:text-lg font-black tracking-tight font-outfit">
+                            ₹{formatNumber(preset.amount)}
+                          </span>
                         </button>
                       );
                     })}
