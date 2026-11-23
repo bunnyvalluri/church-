@@ -203,7 +203,11 @@ const NavigationBar = memo(function NavigationBar() {
           // Safe area for iOS notch and screen edge insets
           "pt-[env(safe-area-inset-top)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]",
           // Prevent CLS — stable width
-          "max-w-[100vw]"
+          "max-w-[100vw]",
+          // Frosted glass background when scrolled to prevent page content bleeding through
+          isScrolled
+            ? "bg-white/85 dark:bg-slate-950/85 backdrop-blur-xl border-b border-slate-200/50 dark:border-white/5 transition-[background-color,border-color,box-shadow] duration-200"
+            : "bg-transparent transition-[background-color] duration-200"
         )}
       >
         {/* ── Floating Capsule Navbar ── */}

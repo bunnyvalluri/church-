@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useReducer, useEffect, useCallback, useRef } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, useCallback, useRef, useMemo } from 'react';
 import {
   DonationState,
   DonationEvent,
@@ -280,27 +280,41 @@ export function DonationAgentProvider({ children }: { children: React.ReactNode 
 
   const currentState = agentState.machine.state;
 
+  const contextValue = useMemo(() => ({
+    state: currentState,
+    context: agentState.machine.context,
+    wizardStep: stateToWizardStep(currentState),
+    label: stateLabel(currentState),
+    color: stateColor(currentState),
+    agentMessage: agentState.agentMessage,
+    isPolling: agentState.isPolling,
+    pollError: agentState.pollError,
+    selectAmount,
+    fillDonorInfo,
+    setOrderCreated,
+    startPolling,
+    stopPolling,
+    cancelSession,
+    resetAgent,
+    trackEvent,
+  }), [
+    currentState,
+    agentState.machine.context,
+    agentState.agentMessage,
+    agentState.isPolling,
+    agentState.pollError,
+    selectAmount,
+    fillDonorInfo,
+    setOrderCreated,
+    startPolling,
+    stopPolling,
+    cancelSession,
+    resetAgent,
+    trackEvent,
+  ]);
+
   return (
-    <DonationAgentContext.Provider
-      value={{
-        state: currentState,
-        context: agentState.machine.context,
-        wizardStep: stateToWizardStep(currentState),
-        label: stateLabel(currentState),
-        color: stateColor(currentState),
-        agentMessage: agentState.agentMessage,
-        isPolling: agentState.isPolling,
-        pollError: agentState.pollError,
-        selectAmount,
-        fillDonorInfo,
-        setOrderCreated,
-        startPolling,
-        stopPolling,
-        cancelSession,
-        resetAgent,
-        trackEvent,
-      }}
-    >
+    <DonationAgentContext.Provider value={contextValue}>
       {children}
     </DonationAgentContext.Provider>
   );

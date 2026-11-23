@@ -30,20 +30,30 @@ export default function SmoothScroll() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Smooth scroll for all anchor links
+  // Smooth scroll for all anchor links (non-blocking for instant INP / Paint)
   useEffect(() => {
     const handleAnchorClick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      const anchor = target.closest("a");
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+
+      // Fast early return in <0.01ms if clicked element is not an anchor link
+      const anchor = target.tagName === "A" ? (target as HTMLAnchorElement) : target.closest("a");
       if (!anchor) return;
 
       const href = anchor.getAttribute("href");
       if (!href || !href.startsWith("#") || href === "#") return;
 
-      const el = document.querySelector(href);
-      if (el) {
-        e.preventDefault();
-        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      try {
+        const el = document.querySelector(href);
+        if (el) {
+          e.preventDefault();
+          // Never block synchronous click execution — dispatch scroll to next animation frame
+          window.requestAnimationFrame(() => {
+            el.scrollIntoView({ behavior: "smooth", block: "start" });
+          });
+        }
+      } catch {
+        // Safe guard for invalid CSS selector
       }
     };
     document.addEventListener("click", handleAnchorClick, { passive: false });

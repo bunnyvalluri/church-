@@ -1,12 +1,12 @@
 "use client";
 
-import React from 'react';
+import React, { memo } from 'react';
 import { motion } from 'framer-motion';
 import { Check, Clock, ShieldCheck, Loader2, QrCode, FileCheck, Send } from 'lucide-react';
 import { useDonationAgent } from './DonationAgentProvider';
 import { DonationState } from '@/lib/donationStateMachine';
 
-export function PaymentStateMonitor() {
+export const PaymentStateMonitor = memo(function PaymentStateMonitor() {
   const { state } = useDonationAgent();
 
   const STEPS = [
@@ -150,4 +150,4 @@ export function PaymentStateMonitor() {
       </div>
     </div>
   );
-}
+});

@@ -1,11 +1,11 @@
 "use client";
 
-import React from 'react';
+import React, { memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bot, ShieldCheck, Sparkles, AlertCircle, RefreshCw, CheckCircle2 } from 'lucide-react';
 import { useDonationAgent } from './DonationAgentProvider';
 
-export function AgentStatusBar() {
+export const AgentStatusBar = memo(function AgentStatusBar() {
   const { state, label, color, agentMessage, isPolling } = useDonationAgent();
 
   const colorStyles = {
@@ -76,4 +76,4 @@ export function AgentStatusBar() {
       </motion.div>
     </div>
   );
-}
+});

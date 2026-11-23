@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo, memo, startTransition } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -315,6 +315,442 @@ function getImpactDisplayCopy(amount: number, lang: string): string {
   return "Funds a dedicated hospital outreach drive, emergency surgery medicines, and mobility wheelchair aids.";
 }
 
+// ─── MEMOIZED SUBCOMPONENTS FOR INSTANT <50MS INP & ZERO RE-RENDERS ──────────
+
+interface ImpactMetricsProps {
+  dp: Record<string, string>;
+}
+
+const ImpactMetricsBar = memo(function ImpactMetricsBar({ dp }: ImpactMetricsProps) {
+  return (
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+      {/* 1. Govt Registered */}
+      <div className="flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white/90 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200/80 dark:border-white/10 shadow-xs hover:shadow-md hover:border-purple-300 dark:hover:border-purple-500/40 transition-all group active:scale-[0.99]">
+        <div className="w-9 h-9 rounded-xl bg-purple-500/10 dark:bg-purple-500/20 text-purple-600 dark:text-purple-300 border border-purple-500/20 flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform mb-2.5">
+          <ShieldCheck className="w-5 h-5" />
+        </div>
+        <div className="space-y-0.5 min-w-0">
+          <p className="text-xs sm:text-sm font-black text-slate-900 dark:text-white leading-tight font-outfit truncate">
+            {dp.regdNo || "Regd No: 206/2024"}
+          </p>
+          <p className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 font-semibold leading-tight truncate">
+            {dp.govtRegd || "Govt. Registered NGO"}
+          </p>
+        </div>
+      </div>
+
+      {/* 2. Beneficiaries Assisted */}
+      <div className="flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white/90 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200/80 dark:border-white/10 shadow-xs hover:shadow-md hover:border-emerald-300 dark:hover:border-emerald-500/40 transition-all group active:scale-[0.99]">
+        <div className="w-9 h-9 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border border-emerald-500/20 flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform mb-2.5">
+          <Users className="w-5 h-5" />
+        </div>
+        <div className="space-y-0.5 min-w-0">
+          <p className="text-xs sm:text-sm font-black text-slate-900 dark:text-white leading-tight font-outfit truncate">
+            {dp.assistedCount || "5,000+ Assisted"}
+          </p>
+          <p className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 font-semibold leading-tight truncate">
+            {dp.assistedDesc || "Patients & Families"}
+          </p>
+        </div>
+      </div>
+
+      {/* 3. Volunteers */}
+      <div className="flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white/90 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200/80 dark:border-white/10 shadow-xs hover:shadow-md hover:border-amber-300 dark:hover:border-amber-500/40 transition-all group active:scale-[0.99]">
+        <div className="w-9 h-9 rounded-xl bg-amber-500/10 dark:bg-amber-500/20 text-amber-600 dark:text-amber-300 border border-amber-500/20 flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform mb-2.5">
+          <Flame className="w-5 h-5" />
+        </div>
+        <div className="space-y-0.5 min-w-0">
+          <p className="text-xs sm:text-sm font-black text-slate-900 dark:text-white leading-tight font-outfit truncate">
+            {dp.volunteersCount || "100+ Volunteers"}
+          </p>
+          <p className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 font-semibold leading-tight truncate">
+            {dp.volunteersDesc || "Active Ground Team"}
+          </p>
+        </div>
+      </div>
+
+      {/* 4. Direct Aid / Impact */}
+      <div className="flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white/90 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200/80 dark:border-white/10 shadow-xs hover:shadow-md hover:border-sky-300 dark:hover:border-sky-500/40 transition-all group active:scale-[0.99]">
+        <div className="w-9 h-9 rounded-xl bg-sky-500/10 dark:bg-sky-500/20 text-sky-600 dark:text-sky-300 border border-sky-500/20 flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform mb-2.5">
+          <Award className="w-5 h-5" />
+        </div>
+        <div className="space-y-0.5 min-w-0">
+          <p className="text-xs sm:text-sm font-black text-slate-900 dark:text-white leading-tight font-outfit truncate">
+            {dp.taxExempt || "100% Direct Impact"}
+          </p>
+          <p className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 font-semibold leading-tight truncate">
+            {dp.taxExemptDesc || "Zero Platform Fees"}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+});
+
+interface GivingFrequencyProps {
+  frequency: "ONE_TIME" | "MONTHLY";
+  onSelect: (freq: "ONE_TIME" | "MONTHLY") => void;
+  dp: Record<string, string>;
+}
+
+const GivingFrequencySwitcher = memo(function GivingFrequencySwitcher({
+  frequency,
+  onSelect,
+  dp,
+}: GivingFrequencyProps) {
+  return (
+    <div role="radiogroup" aria-label={dp.tag || "Giving Frequency"} className="p-1 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200/80 dark:border-white/10 flex items-center justify-between gap-1 shadow-inner">
+      <button
+        type="button"
+        role="radio"
+        aria-checked={frequency === "ONE_TIME"}
+        onClick={() => onSelect("ONE_TIME")}
+        className={`flex-1 py-3 px-3 rounded-xl text-xs sm:text-sm font-black transition-all duration-200 flex items-center justify-center gap-2 touch-manipulation select-none cursor-pointer ${
+          frequency === "ONE_TIME"
+            ? "bg-white dark:bg-purple-600 text-purple-900 dark:text-white shadow-md border border-purple-200 dark:border-purple-500/50"
+            : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+        }`}
+      >
+        <Zap className={`w-4 h-4 ${frequency === "ONE_TIME" ? "text-purple-600 dark:text-white" : "text-purple-500"}`} />
+        <span>{dp.oneTime || "One-Time Donation"}</span>
+      </button>
+
+      <button
+        type="button"
+        role="radio"
+        aria-checked={frequency === "MONTHLY"}
+        onClick={() => onSelect("MONTHLY")}
+        className={`flex-1 py-3 px-3 rounded-xl text-xs sm:text-sm font-black transition-all duration-200 flex items-center justify-center gap-2 relative touch-manipulation select-none cursor-pointer ${
+          frequency === "MONTHLY"
+            ? "bg-purple-600 text-white shadow-md shadow-purple-500/25 border border-purple-400"
+            : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+        }`}
+      >
+        <Calendar className={`w-4 h-4 ${frequency === "MONTHLY" ? "text-white" : "text-slate-500 dark:text-slate-400"}`} />
+        <span>{dp.monthly || "Monthly Partner"}</span>
+        <span className="hidden sm:inline-block bg-amber-400 text-slate-950 text-[9px] font-black uppercase px-2 py-0.5 rounded-full">
+          {dp.impact2x || "2x Impact"}
+        </span>
+      </button>
+    </div>
+  );
+});
+
+interface CauseExplorerProps {
+  causes: CauseItem[];
+  selectedCause: string;
+  onSelect: (code: string) => void;
+  language: string;
+  dp: Record<string, string>;
+}
+
+const CauseExplorer = memo(function CauseExplorer({
+  causes,
+  selectedCause,
+  onSelect,
+  language,
+  dp,
+}: CauseExplorerProps) {
+  return (
+    <div className="space-y-3 pt-1">
+      <div className="flex items-center justify-between">
+        <label className="text-xs font-black uppercase tracking-wider text-slate-600 dark:text-slate-300 block">
+          {dp.selectCause || "Select Cause to Support"}
+        </label>
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+          Real-Time Verified Aid
+        </span>
+      </div>
+
+      <div className="space-y-2.5" role="radiogroup" aria-label={dp.selectCause || "Select Cause to Support"}>
+        {causes.map((c) => {
+          const isSelected = selectedCause === c.code;
+          const target = c.targetAmount || 0;
+          const raised = c.raisedAmount || 0;
+          const hasTarget = Boolean(target && target > 1000);
+          const pct = hasTarget ? Math.min(100, Math.round((raised / target) * 100)) : 0;
+          const causeName = getCauseDisplayName(c, language);
+
+          return (
+            <button
+              key={c.id}
+              type="button"
+              role="radio"
+              aria-checked={isSelected}
+              aria-label={hasTarget ? `${causeName}, ${pct}% funded` : causeName}
+              onClick={() => onSelect(c.code)}
+              className={`w-full text-left p-4 rounded-2xl border transition-all duration-200 cursor-pointer touch-manipulation select-none active:scale-[0.99] ${
+                isSelected
+                  ? "bg-purple-50/90 dark:bg-purple-950/60 border-purple-500 dark:border-purple-400 shadow-md shadow-purple-500/10 ring-2 ring-purple-500/20"
+                  : "bg-white/80 dark:bg-slate-900/80 border-slate-200 dark:border-white/10 hover:border-purple-300 dark:hover:border-purple-500/40 hover:bg-slate-50 dark:hover:bg-slate-800"
+              }`}
+            >
+              <div className="flex items-center justify-between gap-3 mb-1.5">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div
+                    className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${
+                      isSelected
+                        ? "border-purple-600 bg-purple-600 text-white shadow-2xs"
+                        : "border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800"
+                    }`}
+                  >
+                    {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
+                  </div>
+                  <span
+                    className={`text-xs sm:text-sm font-black tracking-tight ${
+                      isSelected ? "text-purple-950 dark:text-purple-100" : "text-slate-900 dark:text-white"
+                    }`}
+                  >
+                    {causeName}
+                  </span>
+                </div>
+
+                {hasTarget ? (
+                  <span
+                    className={`text-xs font-mono font-black px-2.5 py-0.5 rounded-full shrink-0 shadow-2xs ${
+                      isSelected
+                        ? "bg-purple-600 text-white"
+                        : "bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300"
+                    }`}
+                  >
+                    {pct}%
+                  </span>
+                ) : raised > 0 ? (
+                  <span className="inline-flex items-center gap-1 text-[11px] font-mono font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800/50 shrink-0">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    ₹{formatNumber(raised)}
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-1 rounded-full border border-emerald-200 dark:border-emerald-800/60 shrink-0">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    Active
+                  </span>
+                )}
+              </div>
+
+              {c.descEn && (
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed pl-7.5">
+                  {c.descEn}
+                </p>
+              )}
+
+              {hasTarget && (
+                <div className="pl-7.5 mt-2.5 space-y-1.5">
+                  <div className="w-full bg-slate-200/80 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                    <div
+                      className="bg-gradient-to-r from-purple-600 via-indigo-600 to-rose-500 h-full rounded-full transition-all duration-500"
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 dark:text-slate-400">
+                    <span>
+                      <strong className={`font-bold ${isSelected ? "text-purple-950 dark:text-white" : "text-slate-900 dark:text-slate-200"}`}>
+                        ₹{formatNumber(raised)}
+                      </strong>{" "}
+                      raised
+                    </span>
+                    <span>
+                      Target: <strong className="font-bold text-slate-700 dark:text-slate-300">₹{formatNumber(target)}</strong>
+                    </span>
+                  </div>
+                </div>
+              )}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+});
+
+interface DonationStepperProps {
+  currentStep: 1 | 2 | 3 | 4;
+  dp: Record<string, string>;
+}
+
+const DonationStepper = memo(function DonationStepper({ currentStep, dp }: DonationStepperProps) {
+  const steps = [
+    { num: 1, label: dp.stepAmount || "Amount" },
+    { num: 2, label: dp.stepDetails || "Details" },
+    { num: 3, label: dp.stepUpi || "Pay UPI" },
+    { num: 4, label: dp.stepReceipt || "Receipt" },
+  ];
+
+  return (
+    <div className="mb-6 pb-4 border-b border-slate-100 dark:border-white/10">
+      <div className="flex items-center justify-between relative">
+        {steps.map((s) => {
+          const isCurrent = currentStep === s.num;
+          const isDone = currentStep > s.num;
+
+          return (
+            <div key={s.num} className="flex flex-col items-center gap-1 z-10">
+              <div
+                className={`w-8 h-8 rounded-full text-xs font-black flex items-center justify-center transition-all ${
+                  isDone
+                    ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/20"
+                    : isCurrent
+                    ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-500/30 ring-4 ring-purple-100 dark:ring-purple-950"
+                    : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700"
+                }`}
+              >
+                {isDone ? <Check className="w-4 h-4 stroke-[3]" /> : s.num}
+              </div>
+              <span
+                className={`text-[10px] font-black uppercase tracking-wider ${
+                  isCurrent
+                    ? "text-purple-700 dark:text-purple-300"
+                    : isDone
+                    ? "text-emerald-600 dark:text-emerald-400"
+                    : "text-slate-400 dark:text-slate-500"
+                }`}
+              >
+                {s.label}
+              </span>
+            </div>
+          );
+        })}
+
+        {/* Stepper background line */}
+        <div className="absolute top-4 left-6 right-6 h-0.5 bg-slate-200 dark:bg-slate-800 z-0" />
+      </div>
+    </div>
+  );
+});
+
+interface PresetAmountsGridProps {
+  presetAmounts: PresetAmount[];
+  selectedAmount: string;
+  isCustom: boolean;
+  onSelect: (amount: number) => void;
+}
+
+const PresetAmountsGrid = memo(function PresetAmountsGrid({
+  presetAmounts,
+  selectedAmount,
+  isCustom,
+  onSelect,
+}: PresetAmountsGridProps) {
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3">
+      {presetAmounts.map((preset) => {
+        const isSelected = selectedAmount === preset.amount.toString() && !isCustom;
+        return (
+          <button
+            key={preset.id}
+            type="button"
+            onClick={() => onSelect(preset.amount)}
+            className={`relative py-3.5 px-3 sm:py-4 rounded-2xl border font-black text-base sm:text-lg transition-all duration-200 flex items-center justify-center touch-manipulation select-none cursor-pointer active:scale-[0.98] ${
+              isSelected
+                ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white border-purple-500 shadow-md shadow-purple-500/25 ring-2 ring-purple-500/40 ring-offset-2 dark:ring-offset-slate-900"
+                : "bg-white dark:bg-slate-800/90 hover:bg-purple-50/50 dark:hover:bg-slate-750 border-slate-200/90 dark:border-white/10 text-slate-900 dark:text-white hover:border-purple-300 dark:hover:border-purple-500/40 shadow-xs"
+            }`}
+          >
+            <span className="font-outfit font-black tracking-tight">
+              ₹{formatNumber(preset.amount)}
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
+});
+
+interface QuickAddRowProps {
+  onAdd: (addVal: number) => void;
+  dp: Record<string, string>;
+}
+
+const QuickAddRow = memo(function QuickAddRow({ onAdd, dp }: QuickAddRowProps) {
+  return (
+    <div className="pt-3 flex items-center gap-2 flex-wrap">
+      <span className="text-[11px] font-black text-slate-500 dark:text-slate-400">{dp.quickAdd || "Quick add:"}</span>
+      {[500, 1000, 5000].map((addVal) => (
+        <button
+          key={addVal}
+          type="button"
+          onClick={() => onAdd(addVal)}
+          className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-purple-100 dark:bg-slate-800 dark:hover:bg-purple-950/60 text-slate-800 dark:text-slate-100 hover:text-purple-700 dark:hover:text-purple-300 text-xs font-black border border-slate-200 dark:border-white/10 transition-all touch-manipulation select-none cursor-pointer active:scale-95"
+        >
+          +₹{formatNumber(addVal)}
+        </button>
+      ))}
+    </div>
+  );
+});
+
+interface FaqAccordionProps {
+  faqItems: { question: string; answer: string }[];
+  activeFaq: number | null;
+  onToggle: (idx: number) => void;
+  dp: Record<string, string>;
+}
+
+const FaqAccordion = memo(function FaqAccordion({
+  faqItems,
+  activeFaq,
+  onToggle,
+  dp,
+}: FaqAccordionProps) {
+  return (
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 space-y-6">
+      <div className="text-center space-y-2">
+        <h3 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
+          {dp.faqTitle || "Frequently Asked Questions"}
+        </h3>
+        <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium max-w-xl mx-auto">
+          {dp.faqSubtitle || "Learn more about our transparent fund allocation, payment methods, and instant digital receipts."}
+        </p>
+      </div>
+
+      <div className="space-y-3">
+        {faqItems.map((item, idx) => {
+          const isOpen = activeFaq === idx;
+          return (
+            <div
+              key={idx}
+              className={`rounded-2xl border transition-all shadow-xs overflow-hidden ${
+                isOpen
+                  ? "border-purple-300 dark:border-purple-700/60 bg-purple-50/30 dark:bg-purple-950/20"
+                  : "border-slate-200/80 dark:border-white/10 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md"
+              }`}
+            >
+              <button
+                type="button"
+                aria-expanded={isOpen}
+                onClick={() => onToggle(idx)}
+                className="w-full p-4 min-h-[48px] text-left font-extrabold text-sm sm:text-base text-slate-900 dark:text-white flex items-center justify-between gap-3 hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors touch-manipulation select-none cursor-pointer"
+              >
+                <span className="flex items-center gap-2.5">
+                  <HelpCircle className="w-4 h-4 text-purple-600 dark:text-purple-400 flex-shrink-0" />
+                  {item.question}
+                </span>
+                {isOpen ? <ChevronUp className="w-4 h-4 text-purple-600 dark:text-purple-400 flex-shrink-0" /> : <ChevronDown className="w-4 h-4 text-slate-400 flex-shrink-0" />}
+              </button>
+
+              <AnimatePresence>
+                {isOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="px-4 pb-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed border-t border-slate-100 dark:border-white/10 pt-3 font-medium"
+                  >
+                    {item.answer}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+});
+
+// ─── MAIN NGO DONATIONS CONTENT COMPONENT ────────────────────────────────────
+
 function NgoDonationsContent() {
   const { user } = useAuth();
   const { language, t } = useLanguage();
@@ -406,27 +842,30 @@ function NgoDonationsContent() {
     setMounted(true);
   }, []);
 
-  const ngoT = t?.ngo || {};
-  const dp = ngoT?.donationsPage || {};
+  const ngoT = useMemo(() => t?.ngo || {}, [t]);
+  const dp = useMemo(() => ngoT?.donationsPage || {}, [ngoT]);
 
-  const faqItems = [
-    {
-      question: dp.faq1Q || "Where does my donation go?",
-      answer: dp.faq1A || "100% of your contributions directly fund food distribution drives, hospital patient kits, wheelchairs, medicines, and Ashramam shelter assistance across Hyderabad with zero platform fees."
-    },
-    {
-      question: dp.faq2Q || "How do I pay using UPI on mobile or desktop?",
-      answer: dp.faq2A || "On desktop, simply scan the dynamic QR code using Google Pay, PhonePe, Paytm, or BHIM. On mobile, tap any of the UPI app buttons to open your preferred payment app directly."
-    },
-    {
-      question: dp.faq3Q || "Will I receive an instant digital receipt?",
-      answer: dp.faq3A || "Yes! As soon as your payment is verified, you can download an official PDF digital receipt, share it on WhatsApp, or have it sent directly to your email address."
-    },
-    {
-      question: dp.faq4Q || "Can I donate anonymously?",
-      answer: dp.faq4A || "Yes! In Step 2, simply toggle 'Make my donation anonymous' and your name will remain strictly confidential while still receiving your verified receipt."
-    }
-  ];
+  const faqItems = useMemo(
+    () => [
+      {
+        question: dp.faq1Q || "Where does my donation go?",
+        answer: dp.faq1A || "100% of your contributions directly fund food distribution drives, hospital patient kits, wheelchairs, medicines, and Ashramam shelter assistance across Hyderabad with zero platform fees.",
+      },
+      {
+        question: dp.faq2Q || "How do I pay using UPI on mobile or desktop?",
+        answer: dp.faq2A || "On desktop, simply scan the dynamic QR code using Google Pay, PhonePe, Paytm, or BHIM. On mobile, tap any of the UPI app buttons to open your preferred payment app directly.",
+      },
+      {
+        question: dp.faq3Q || "Will I receive an instant digital receipt?",
+        answer: dp.faq3A || "Yes! As soon as your payment is verified, you can download an official PDF digital receipt, share it on WhatsApp, or have it sent directly to your email address.",
+      },
+      {
+        question: dp.faq4Q || "Can I donate anonymously?",
+        answer: dp.faq4A || "Yes! In Step 2, simply toggle 'Make my donation anonymous' and your name will remain strictly confidential while still receiving your verified receipt.",
+      },
+    ],
+    [dp]
+  );
 
   // Fetch dynamic configuration
   useEffect(() => {
@@ -564,22 +1003,51 @@ function NgoDonationsContent() {
     }
   }, [user]);
 
-  const showToast = (msg: string, type: "success" | "error" = "success") => {
+  const showToast = useCallback((msg: string, type: "success" | "error" = "success") => {
     setToast({ msg, type });
     setTimeout(() => setToast(null), 4000);
-  };
+  }, []);
 
   const getFinalAmount = useCallback(() => (customAmount ? customAmount : amount), [customAmount, amount]);
 
-  // Quick Amount Adjuster
-  const handleQuickAdd = (addVal: number) => {
+  // Memoized Action Callbacks with startTransition for Sub-50ms INP
+  const handleSelectPreset = useCallback((presetAmt: number) => {
+    startTransition(() => {
+      setAmount(presetAmt.toString());
+      setCustomAmount("");
+      setErrorMessage("");
+    });
+  }, []);
+
+  const handleQuickAdd = useCallback((addVal: number) => {
     const current = Number(getFinalAmount() || 0);
     const nextVal = current + addVal;
-    setCustomAmount(nextVal.toString());
-    setAmount("");
-  };
+    startTransition(() => {
+      setCustomAmount(nextVal.toString());
+      setAmount("");
+      setErrorMessage("");
+    });
+  }, [getFinalAmount]);
 
-  const validateStep1 = () => {
+  const handleSelectCause = useCallback((code: string) => {
+    startTransition(() => {
+      setSelectedCause(code);
+    });
+  }, []);
+
+  const handleSelectFrequency = useCallback((freq: "ONE_TIME" | "MONTHLY") => {
+    startTransition(() => {
+      setFrequency(freq);
+    });
+  }, []);
+
+  const handleToggleFaq = useCallback((idx: number) => {
+    startTransition(() => {
+      setActiveFaq((prev) => (prev === idx ? null : idx));
+    });
+  }, []);
+
+  const validateStep1 = useCallback(() => {
     const finalAmt = Number(getFinalAmount());
     if (isNaN(finalAmt) || finalAmt <= 0) {
       setErrorMessage("Please select or enter a valid donation amount.");
@@ -587,9 +1055,9 @@ function NgoDonationsContent() {
     }
     setErrorMessage("");
     return true;
-  };
+  }, [getFinalAmount]);
 
-  const validateStep2 = () => {
+  const validateStep2 = useCallback(() => {
     for (const field of formFields) {
       if (field.isVisible && field.isRequired) {
         const val = donorDetails[field.fieldName];
@@ -616,13 +1084,23 @@ function NgoDonationsContent() {
 
     setErrorMessage("");
     return true;
-  };
+  }, [formFields, donorDetails]);
 
-  const handleProceedToStep2 = () => {
+  const handleProceedToStep2 = useCallback(() => {
     if (validateStep1()) {
-      setStep(2);
+      startTransition(() => {
+        setStep(2);
+        setErrorMessage("");
+      });
     }
-  };
+  }, [validateStep1]);
+
+  const handleBackToStep = useCallback((targetStep: 1 | 2 | 3 | 4) => {
+    startTransition(() => {
+      setStep(targetStep);
+      setErrorMessage("");
+    });
+  }, []);
 
   const handleCreatePaymentOrder = async () => {
     if (loading) return;
@@ -654,16 +1132,18 @@ function NgoDonationsContent() {
         throw new Error(data.error || "Failed to create donation payment order.");
       }
 
-      setSessionId(data.sessionId);
-      setDonationId(data.donationId);
-      setOrderId(data.orderId);
-      setReferenceNumber(data.referenceNumber);
-      setQrCodeBase64(data.qrCode);
-      setUpiUri(data.upiUri);
-      setExpiresAt(new Date(data.expiresAt));
+      startTransition(() => {
+        setSessionId(data.sessionId);
+        setDonationId(data.donationId);
+        setOrderId(data.orderId);
+        setReferenceNumber(data.referenceNumber);
+        setQrCodeBase64(data.qrCode);
+        setUpiUri(data.upiUri);
+        setExpiresAt(new Date(data.expiresAt));
 
-      setPaymentStatus("PROCESSING");
-      setStep(3);
+        setPaymentStatus("PROCESSING");
+        setStep(3);
+      });
 
       startPollingStatus(data.sessionId, data.donationId);
       connectSocket(data.sessionId, data.referenceNumber);
@@ -716,25 +1196,29 @@ function NgoDonationsContent() {
       const branchObj = branches.find((b) => b.id === selectedBranch);
       const causeObj = causes.find((c) => c.code === selectedCause);
 
-      setReceiptData({
-        receiptNumber: confirmedReceiptNumber || serverData?.receipt?.receiptNumber || serverData?.receiptNumber || `REC-${Date.now().toString().slice(-8)}`,
-        transactionId: confirmedPaymentId || serverData?.razorpayPaymentId || "pay_verified",
-        amount: Number(serverData?.amount || getFinalAmount()),
-        issuedAt: new Date().toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" }),
-        donorName: donorDetails.isAnonymous ? "Anonymous Donor" : donorDetails.donorName || "Beloved Donor",
-        purpose: causeObj ? getCauseDisplayName(causeObj, language) : selectedCause,
-        branch: branchObj ? getBranchDisplayName(branchObj, language) : "Shapur Nagar (Main)",
-      });
+      startTransition(() => {
+        setReceiptData({
+          receiptNumber: confirmedReceiptNumber || serverData?.receipt?.receiptNumber || serverData?.receiptNumber || `REC-${Date.now().toString().slice(-8)}`,
+          transactionId: confirmedPaymentId || serverData?.razorpayPaymentId || "pay_verified",
+          amount: Number(serverData?.amount || getFinalAmount()),
+          issuedAt: new Date().toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" }),
+          donorName: donorDetails.isAnonymous ? "Anonymous Donor" : donorDetails.donorName || "Beloved Donor",
+          purpose: causeObj ? getCauseDisplayName(causeObj, language) : selectedCause,
+          branch: branchObj ? getBranchDisplayName(branchObj, language) : "Shapur Nagar (Main)",
+        });
 
-      setPaymentStatus("SUCCESS");
-      setStep(4);
+        setPaymentStatus("SUCCESS");
+        setStep(4);
+      });
       showToast("🎉 Payment verified successfully!", "success");
     } catch (err) {
       console.error("[DONATION_PAGE] Receipt resolution failed:", err);
-      setPaymentStatus("SUCCESS");
-      setStep(4);
+      startTransition(() => {
+        setPaymentStatus("SUCCESS");
+        setStep(4);
+      });
     }
-  }, [branches, causes, selectedBranch, selectedCause, donorDetails, getFinalAmount, language]);
+  }, [branches, causes, selectedBranch, selectedCause, donorDetails, getFinalAmount, language, showToast]);
 
   // Real-Time Polling
   const startPollingStatus = useCallback((sid: string, donId: string) => {
@@ -953,17 +1437,21 @@ function NgoDonationsContent() {
     }
   };
 
-  const resetDonationWizard = () => {
-    setStep(1);
-    setPaymentStatus("PENDING");
-    setErrorMessage("");
-    setSessionId("");
-    setDonationId("");
-    setQrCodeBase64("");
-  };
+  const resetDonationWizard = useCallback(() => {
+    startTransition(() => {
+      setStep(1);
+      setPaymentStatus("PENDING");
+      setErrorMessage("");
+      setSessionId("");
+      setDonationId("");
+      setQrCodeBase64("");
+      setUpiUri("");
+      setReceiptData(null);
+    });
+  }, []);
 
-  const currentNumAmount = Number(getFinalAmount() || "0");
-  const currentImpactText = getImpactDisplayCopy(currentNumAmount, language);
+  const currentNumAmount = useMemo(() => Number(getFinalAmount() || "0"), [getFinalAmount]);
+  const currentImpactText = useMemo(() => getImpactDisplayCopy(currentNumAmount, language), [currentNumAmount, language]);
 
   return (
     <div className="relative py-8 sm:py-14 min-h-[85vh] space-y-8 sm:space-y-12 overflow-hidden">
@@ -1000,67 +1488,7 @@ function NgoDonationsContent() {
         {step === 3 && <PaymentStateMonitor />}
 
         {/* ── TOP IMPACT METRICS BAR (CLEAN, MINIMALIST, ZERO BADGE CLUTTER) ── */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
-          {/* 1. Govt Registered */}
-          <div className="flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white/90 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200/80 dark:border-white/10 shadow-xs hover:shadow-md hover:border-purple-300 dark:hover:border-purple-500/40 transition-all group active:scale-[0.99]">
-            <div className="w-9 h-9 rounded-xl bg-purple-500/10 dark:bg-purple-500/20 text-purple-600 dark:text-purple-300 border border-purple-500/20 flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform mb-2.5">
-              <ShieldCheck className="w-5 h-5" />
-            </div>
-            <div className="space-y-0.5 min-w-0">
-              <p className="text-xs sm:text-sm font-black text-slate-900 dark:text-white leading-tight font-outfit truncate">
-                {dp.regdNo || "Regd No: 206/2024"}
-              </p>
-              <p className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 font-semibold leading-tight truncate">
-                {dp.govtRegd || "Govt. Registered NGO"}
-              </p>
-            </div>
-          </div>
-
-          {/* 2. Beneficiaries Assisted */}
-          <div className="flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white/90 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200/80 dark:border-white/10 shadow-xs hover:shadow-md hover:border-emerald-300 dark:hover:border-emerald-500/40 transition-all group active:scale-[0.99]">
-            <div className="w-9 h-9 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border border-emerald-500/20 flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform mb-2.5">
-              <Users className="w-5 h-5" />
-            </div>
-            <div className="space-y-0.5 min-w-0">
-              <p className="text-xs sm:text-sm font-black text-slate-900 dark:text-white leading-tight font-outfit truncate">
-                {dp.assistedCount || "5,000+ Assisted"}
-              </p>
-              <p className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 font-semibold leading-tight truncate">
-                {dp.assistedDesc || "Patients & Families"}
-              </p>
-            </div>
-          </div>
-
-          {/* 3. Volunteers */}
-          <div className="flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white/90 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200/80 dark:border-white/10 shadow-xs hover:shadow-md hover:border-amber-300 dark:hover:border-amber-500/40 transition-all group active:scale-[0.99]">
-            <div className="w-9 h-9 rounded-xl bg-amber-500/10 dark:bg-amber-500/20 text-amber-600 dark:text-amber-300 border border-amber-500/20 flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform mb-2.5">
-              <Flame className="w-5 h-5" />
-            </div>
-            <div className="space-y-0.5 min-w-0">
-              <p className="text-xs sm:text-sm font-black text-slate-900 dark:text-white leading-tight font-outfit truncate">
-                {dp.volunteersCount || "100+ Volunteers"}
-              </p>
-              <p className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 font-semibold leading-tight truncate">
-                {dp.volunteersDesc || "Active Ground Team"}
-              </p>
-            </div>
-          </div>
-
-          {/* 4. Direct Aid / Impact */}
-          <div className="flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white/90 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200/80 dark:border-white/10 shadow-xs hover:shadow-md hover:border-sky-300 dark:hover:border-sky-500/40 transition-all group active:scale-[0.99]">
-            <div className="w-9 h-9 rounded-xl bg-sky-500/10 dark:bg-sky-500/20 text-sky-600 dark:text-sky-300 border border-sky-500/20 flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform mb-2.5">
-              <Award className="w-5 h-5" />
-            </div>
-            <div className="space-y-0.5 min-w-0">
-              <p className="text-xs sm:text-sm font-black text-slate-900 dark:text-white leading-tight font-outfit truncate">
-                {dp.taxExempt || "100% Direct Impact"}
-              </p>
-              <p className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 font-semibold leading-tight truncate">
-                {dp.taxExemptDesc || "Zero Platform Fees"}
-              </p>
-            </div>
-          </div>
-        </div>
+        <ImpactMetricsBar dp={dp} />
       </div>
 
       {/* Main Grid Section */}
@@ -1084,152 +1512,10 @@ function NgoDonationsContent() {
             </div>
 
             {/* Interactive Giving Frequency Switcher */}
-            <div role="radiogroup" aria-label={dp.tag || "Giving Frequency"} className="p-1 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200/80 dark:border-white/10 flex items-center justify-between gap-1 shadow-inner">
-              <button
-                type="button"
-                role="radio"
-                aria-checked={frequency === "ONE_TIME"}
-                onClick={() => setFrequency("ONE_TIME")}
-                className={`flex-1 py-3 px-3 rounded-xl text-xs sm:text-sm font-black transition-all duration-200 flex items-center justify-center gap-2 touch-manipulation select-none ${
-                  frequency === "ONE_TIME"
-                    ? "bg-white dark:bg-purple-600 text-purple-900 dark:text-white shadow-md border border-purple-200 dark:border-purple-500/50"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-                }`}
-              >
-                <Zap className={`w-4 h-4 ${frequency === "ONE_TIME" ? "text-purple-600 dark:text-white" : "text-purple-500"}`} />
-                <span>{dp.oneTime || "One-Time Donation"}</span>
-              </button>
-
-              <button
-                type="button"
-                role="radio"
-                aria-checked={frequency === "MONTHLY"}
-                onClick={() => setFrequency("MONTHLY")}
-                className={`flex-1 py-3 px-3 rounded-xl text-xs sm:text-sm font-black transition-all duration-200 flex items-center justify-center gap-2 relative touch-manipulation select-none ${
-                  frequency === "MONTHLY"
-                    ? "bg-purple-600 text-white shadow-md shadow-purple-500/25 border border-purple-400"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-                }`}
-              >
-                <Calendar className={`w-4 h-4 ${frequency === "MONTHLY" ? "text-white" : "text-slate-500 dark:text-slate-400"}`} />
-                <span>{dp.monthly || "Monthly Partner"}</span>
-                <span className="hidden sm:inline-block bg-amber-400 text-slate-950 text-[9px] font-black uppercase px-2 py-0.5 rounded-full">
-                  {dp.impact2x || "2x Impact"}
-                </span>
-              </button>
-            </div>
+            <GivingFrequencySwitcher frequency={frequency} onSelect={handleSelectFrequency} dp={dp} />
 
             {/* Live Cause Explorer Selector */}
-            <div className="space-y-3 pt-1">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-black uppercase tracking-wider text-slate-600 dark:text-slate-300 block">
-                  {dp.selectCause || "Select Cause to Support"}
-                </label>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  Real-Time Verified Aid
-                </span>
-              </div>
-
-              <div className="space-y-2.5" role="radiogroup" aria-label={dp.selectCause || "Select Cause to Support"}>
-                {causes.map((c) => {
-                  const isSelected = selectedCause === c.code;
-                  const target = c.targetAmount || 0;
-                  const raised = c.raisedAmount || 0;
-                  const hasTarget = Boolean(target && target > 1000);
-                  const pct = hasTarget ? Math.min(100, Math.round((raised / target) * 100)) : 0;
-                  const causeName = getCauseDisplayName(c, language);
-
-                  return (
-                    <button
-                      key={c.id}
-                      type="button"
-                      role="radio"
-                      aria-checked={isSelected}
-                      aria-label={hasTarget ? `${causeName}, ${pct}% funded` : causeName}
-                      onClick={() => setSelectedCause(c.code)}
-                      className={`w-full text-left p-4 rounded-2xl border transition-all duration-200 cursor-pointer touch-manipulation select-none active:scale-[0.99] ${
-                        isSelected
-                          ? "bg-purple-50/90 dark:bg-purple-950/60 border-purple-500 dark:border-purple-400 shadow-md shadow-purple-500/10 ring-2 ring-purple-500/20"
-                          : "bg-white/80 dark:bg-slate-900/80 border-slate-200 dark:border-white/10 hover:border-purple-300 dark:hover:border-purple-500/40 hover:bg-slate-50 dark:hover:bg-slate-800"
-                      }`}
-                    >
-                      <div className="flex items-center justify-between gap-3 mb-1.5">
-                        <div className="flex items-center gap-2.5 min-w-0">
-                          <div
-                            className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${
-                              isSelected
-                                ? "border-purple-600 bg-purple-600 text-white shadow-2xs"
-                                : "border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800"
-                            }`}
-                          >
-                            {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
-                          </div>
-                          <span
-                            className={`text-xs sm:text-sm font-black tracking-tight ${
-                              isSelected ? "text-purple-950 dark:text-purple-100" : "text-slate-900 dark:text-white"
-                            }`}
-                          >
-                            {causeName}
-                          </span>
-                        </div>
-
-                        {hasTarget ? (
-                          <span
-                            className={`text-xs font-mono font-black px-2.5 py-0.5 rounded-full shrink-0 shadow-2xs ${
-                              isSelected
-                                ? "bg-purple-600 text-white"
-                                : "bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300"
-                            }`}
-                          >
-                            {pct}%
-                          </span>
-                        ) : raised > 0 ? (
-                          <span className="inline-flex items-center gap-1 text-[11px] font-mono font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800/50 shrink-0">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                            ₹{formatNumber(raised)}
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-1 rounded-full border border-emerald-200 dark:border-emerald-800/60 shrink-0">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                            Active
-                          </span>
-                        )}
-                      </div>
-
-                      {/* Real description of the relief mission */}
-                      {c.descEn && (
-                        <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed pl-7.5">
-                          {c.descEn}
-                        </p>
-                      )}
-
-                      {hasTarget && (
-                        <div className="pl-7.5 mt-2.5 space-y-1.5">
-                          <div className="w-full bg-slate-200/80 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
-                            <div
-                              className="bg-gradient-to-r from-purple-600 via-indigo-600 to-rose-500 h-full rounded-full transition-all duration-500"
-                              style={{ width: `${pct}%` }}
-                            />
-                          </div>
-                          <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 dark:text-slate-400">
-                            <span>
-                              <strong className={`font-bold ${isSelected ? "text-purple-950 dark:text-white" : "text-slate-900 dark:text-slate-200"}`}>
-                                ₹{formatNumber(raised)}
-                              </strong>{" "}
-                              raised
-                            </span>
-                            <span>
-                              Target: <strong className="font-bold text-slate-700 dark:text-slate-300">₹{formatNumber(target)}</strong>
-                            </span>
-                          </div>
-                        </div>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
+            <CauseExplorer causes={causes} selectedCause={selectedCause} onSelect={handleSelectCause} language={language} dp={dp} />
 
             {/* Dynamic Impact Calculator Display */}
             <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-purple-50 via-indigo-50/60 to-purple-50/30 dark:from-purple-950/60 dark:via-indigo-950/40 dark:to-slate-900 border border-purple-200 dark:border-purple-500/30 text-xs sm:text-sm space-y-2 shadow-sm">
@@ -1286,49 +1572,7 @@ function NgoDonationsContent() {
           <div className="lg:col-span-7 lg:sticky lg:top-24 self-start bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border border-slate-200/90 dark:border-white/10 rounded-3xl p-4 sm:p-7 lg:p-9 shadow-2xl shadow-purple-500/5 relative overflow-hidden">
             
             {/* ── WIZARD STEP INDICATOR ────────────────────────────────────── */}
-            <div className="mb-6 pb-4 border-b border-slate-100 dark:border-white/10">
-              <div className="flex items-center justify-between relative">
-                {[
-                  { num: 1, label: dp.stepAmount || "Amount" },
-                  { num: 2, label: dp.stepDetails || "Details" },
-                  { num: 3, label: dp.stepUpi || "Pay UPI" },
-                  { num: 4, label: dp.stepReceipt || "Receipt" },
-                ].map((s) => {
-                  const isCurrent = step === s.num;
-                  const isDone = step > s.num;
-
-                  return (
-                    <div key={s.num} className="flex flex-col items-center gap-1 z-10">
-                      <div
-                        className={`w-8 h-8 rounded-full text-xs font-black flex items-center justify-center transition-all ${
-                          isDone
-                            ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/20"
-                            : isCurrent
-                            ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-500/30 ring-4 ring-purple-100 dark:ring-purple-950"
-                            : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700"
-                        }`}
-                      >
-                        {isDone ? <Check className="w-4 h-4 stroke-[3]" /> : s.num}
-                      </div>
-                      <span
-                        className={`text-[10px] font-black uppercase tracking-wider ${
-                          isCurrent
-                            ? "text-purple-700 dark:text-purple-300"
-                            : isDone
-                            ? "text-emerald-600 dark:text-emerald-400"
-                            : "text-slate-400 dark:text-slate-500"
-                        }`}
-                      >
-                        {s.label}
-                      </span>
-                    </div>
-                  );
-                })}
-
-                {/* Stepper background line */}
-                <div className="absolute top-4 left-6 right-6 h-0.5 bg-slate-200 dark:bg-slate-800 z-0" />
-              </div>
-            </div>
+            <DonationStepper currentStep={step} dp={dp} />
 
             {/* Error Banner */}
             {errorMessage && (
@@ -1359,30 +1603,12 @@ function NgoDonationsContent() {
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3">
-                    {presetAmounts.map((preset) => {
-                      const isSelected = amount === preset.amount.toString() && !customAmount;
-                      return (
-                        <button
-                          key={preset.id}
-                          type="button"
-                          onClick={() => {
-                            setAmount(preset.amount.toString());
-                            setCustomAmount("");
-                          }}
-                          className={`relative py-3.5 px-3 sm:py-4 rounded-2xl border font-black text-base sm:text-lg transition-all duration-200 flex items-center justify-center touch-manipulation select-none active:scale-[0.98] ${
-                            isSelected
-                              ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white border-purple-500 shadow-md shadow-purple-500/25 ring-2 ring-purple-500/40 ring-offset-2 dark:ring-offset-slate-900"
-                              : "bg-white dark:bg-slate-800/90 hover:bg-purple-50/50 dark:hover:bg-slate-750 border-slate-200/90 dark:border-white/10 text-slate-900 dark:text-white hover:border-purple-300 dark:hover:border-purple-500/40 shadow-xs"
-                          }`}
-                        >
-                          <span className="font-outfit font-black tracking-tight">
-                            ₹{formatNumber(preset.amount)}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
+                  <PresetAmountsGrid
+                    presetAmounts={presetAmounts}
+                    selectedAmount={amount}
+                    isCustom={Boolean(customAmount)}
+                    onSelect={handleSelectPreset}
+                  />
 
                   {/* Custom Amount Input Box */}
                   <div className="mt-3.5 space-y-2">
@@ -1398,8 +1624,14 @@ function NgoDonationsContent() {
                         placeholder="Enter any amount"
                         value={customAmount}
                         onChange={(e) => {
-                          setCustomAmount(e.target.value);
-                          setAmount("");
+                          const val = e.target.value;
+                          setCustomAmount(val);
+                          if (val) {
+                            startTransition(() => {
+                              setAmount("");
+                              setErrorMessage("");
+                            });
+                          }
                         }}
                         className={`w-full py-3 pl-8 pr-4 rounded-2xl border text-sm font-bold placeholder:text-slate-400 focus:outline-none transition-all ${
                           customAmount
@@ -1411,19 +1643,7 @@ function NgoDonationsContent() {
                   </div>
 
                   {/* Quick Add Pills */}
-                  <div className="pt-3 flex items-center gap-2 flex-wrap">
-                    <span className="text-[11px] font-black text-slate-500 dark:text-slate-400">{dp.quickAdd || "Quick add:"}</span>
-                    {[500, 1000, 5000].map((addVal) => (
-                      <button
-                        key={addVal}
-                        type="button"
-                        onClick={() => handleQuickAdd(addVal)}
-                        className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-purple-100 dark:bg-slate-800 dark:hover:bg-purple-950/60 text-slate-800 dark:text-slate-100 hover:text-purple-700 dark:hover:text-purple-300 text-xs font-black border border-slate-200 dark:border-white/10 transition-all touch-manipulation select-none active:scale-95"
-                      >
-                        +₹{formatNumber(addVal)}
-                      </button>
-                    ))}
-                  </div>
+                  <QuickAddRow onAdd={handleQuickAdd} dp={dp} />
                 </div>
 
                 <button
@@ -1563,8 +1783,8 @@ function NgoDonationsContent() {
                 <div className="flex items-center gap-2.5 pt-3">
                   <button
                     type="button"
-                    onClick={() => setStep(1)}
-                    className="px-4 py-3.5 min-h-[44px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-white border border-slate-200 dark:border-white/10 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 shrink-0 touch-manipulation select-none active:scale-95 transition-all"
+                    onClick={() => handleBackToStep(1)}
+                    className="px-4 py-3.5 min-h-[44px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-white border border-slate-200 dark:border-white/10 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 shrink-0 touch-manipulation select-none active:scale-95 transition-all cursor-pointer"
                   >
                     <ArrowLeft className="w-3.5 h-3.5" />
                     <span>{dp.back || "Back"}</span>
@@ -1761,8 +1981,8 @@ function NgoDonationsContent() {
                 <div className="pt-3 w-full max-w-sm flex items-center justify-between border-t border-slate-100 dark:border-white/10 text-xs">
                   <button
                     type="button"
-                    onClick={() => setStep(2)}
-                    className="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-bold flex items-center gap-1 min-h-[36px] touch-manipulation select-none"
+                    onClick={() => handleBackToStep(2)}
+                    className="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-bold flex items-center gap-1 min-h-[36px] touch-manipulation select-none cursor-pointer"
                   >
                     <ArrowLeft className="w-3.5 h-3.5" />
                     <span>{dp.editDetails || "Edit Details"}</span>
@@ -1945,59 +2165,8 @@ function NgoDonationsContent() {
         </div>
       </div>
 
-      {/* ── BOTTOM SECTION: FAQ ACCORDION ─────────────── */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 space-y-6">
-        <div className="text-center space-y-2">
-          <h3 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
-            {dp.faqTitle || "Frequently Asked Questions"}
-          </h3>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium max-w-xl mx-auto">
-            {dp.faqSubtitle || "Learn more about our transparent fund allocation, payment methods, and instant digital receipts."}
-          </p>
-        </div>
-
-        <div className="space-y-3">
-          {faqItems.map((item, idx) => {
-            const isOpen = activeFaq === idx;
-            return (
-              <div
-                key={idx}
-                className={`rounded-2xl border transition-all shadow-xs overflow-hidden ${
-                  isOpen
-                    ? "border-purple-300 dark:border-purple-700/60 bg-purple-50/30 dark:bg-purple-950/20"
-                    : "border-slate-200/80 dark:border-white/10 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md"
-                }`}
-              >
-                <button
-                  type="button"
-                  aria-expanded={isOpen}
-                  onClick={() => setActiveFaq(isOpen ? null : idx)}
-                  className="w-full p-4 min-h-[48px] text-left font-extrabold text-sm sm:text-base text-slate-900 dark:text-white flex items-center justify-between gap-3 hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors touch-manipulation select-none"
-                >
-                  <span className="flex items-center gap-2.5">
-                    <HelpCircle className="w-4 h-4 text-purple-600 dark:text-purple-400 flex-shrink-0" />
-                    {item.question}
-                  </span>
-                  {isOpen ? <ChevronUp className="w-4 h-4 text-purple-600 dark:text-purple-400 flex-shrink-0" /> : <ChevronDown className="w-4 h-4 text-slate-400 flex-shrink-0" />}
-                </button>
-
-                <AnimatePresence>
-                  {isOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="px-4 pb-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed border-t border-slate-100 dark:border-white/10 pt-3 font-medium"
-                    >
-                      {item.answer}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+      {/* ── BOTTOM SECTION: FAQ ACCORDION (MEMOIZED) ─────────────── */}
+      <FaqAccordion faqItems={faqItems} activeFaq={activeFaq} onToggle={handleToggleFaq} dp={dp} />
     </div>
   );
 }

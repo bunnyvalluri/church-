@@ -102,7 +102,7 @@ const NgoSubNav = memo(function NgoSubNav() {
   const navRef = useRef<HTMLElement>(null);
   const mobileScrollRef = useRef<HTMLDivElement>(null);
 
-  // ── Auto-scroll mobile nav track to keep active tab in view ──
+  // ── Auto-scroll mobile nav track to center the active tab into view ──
   useEffect(() => {
     if (!mobileScrollRef.current) return;
     const activeEl = mobileScrollRef.current.querySelector<HTMLElement>("[data-active='true']");
@@ -127,17 +127,21 @@ const NgoSubNav = memo(function NgoSubNav() {
       className={cn(
         // Sticky position directly below the main KCM header using the measured CSS variable
         "w-full sticky top-[var(--kcm-header-height,56px)] z-[900]",
-        // Premium glassmorphism matching KCM design system
+        // Seamless glassmorphism matching KCM design system
         "bg-white/95 dark:bg-slate-950/95 backdrop-blur-2xl",
         "border-b border-slate-200/80 dark:border-slate-800/80",
-        "shadow-[0_2px_12px_rgba(0,0,0,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)]",
+        "shadow-xs dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)]",
         "transition-[background-color,border-color,box-shadow] duration-200"
       )}
     >
-      <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-1.5 sm:py-2">
-        {/* ── Mobile View (< md): 6-column balanced dock showing ALL complete names simultaneously ── */}
-        <div className="md:hidden" ref={mobileScrollRef}>
-          <div className="grid grid-cols-6 gap-0.5 min-[360px]:gap-1 p-1 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 shadow-sm w-full">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-1.5 sm:py-2">
+        {/* ── Mobile View (< md): Fluid Horizontal Scrollable Chip Dock ── */}
+        <div className="md:hidden relative">
+          <div
+            ref={mobileScrollRef}
+            className="flex items-center gap-1.5 overflow-x-auto no-scrollbar scroll-smooth py-1 px-1 -mx-1"
+            style={{ WebkitOverflowScrolling: "touch" }}
+          >
             {NGO_NAV_ITEMS.map((item) => {
               const isActive = isItemActive(item.href);
               const Icon = item.icon;
@@ -151,28 +155,20 @@ const NgoSubNav = memo(function NgoSubNav() {
                   data-active={isActive ? "true" : "false"}
                   aria-current={isActive ? "page" : undefined}
                   className={cn(
-                    "touch-manipulation flex flex-col items-center justify-center py-1.5 px-0.5 rounded-xl transition-all duration-150 text-center select-none w-full min-w-0 active:scale-95 cursor-pointer",
+                    "touch-manipulation flex items-center gap-1.5 px-3.5 py-1.5 rounded-full transition-all duration-200 select-none shrink-0 cursor-pointer active:scale-95 text-xs font-bold",
                     isActive
-                      ? "bg-purple-50/90 dark:bg-slate-800 text-purple-700 dark:text-purple-300 shadow-sm border border-purple-300 dark:border-purple-600 font-extrabold"
-                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                      ? "bg-purple-600 text-white shadow-md shadow-purple-600/30 border border-purple-500 font-extrabold"
+                      : "bg-slate-100/90 dark:bg-slate-850/90 text-slate-700 dark:text-slate-300 hover:bg-slate-200/90 dark:hover:bg-slate-800 border border-slate-200/60 dark:border-white/5"
                   )}
                 >
-                  <span
+                  <Icon
                     className={cn(
-                      "flex items-center justify-center mb-0.5 transition-colors",
-                      isActive ? "text-purple-600 dark:text-purple-400" : item.iconColor
+                      "w-3.5 h-3.5 shrink-0",
+                      isActive ? "text-white" : item.iconColor
                     )}
-                  >
-                    <Icon className={cn("w-3.5 h-3.5 min-[360px]:w-4 min-[360px]:h-4", isActive && "stroke-[2.5]")} aria-hidden="true" />
-                  </span>
-                  <span
-                    className={cn(
-                      "text-[9px] min-[360px]:text-[9.5px] min-[390px]:text-[10px] leading-tight font-bold tracking-tight text-center w-full",
-                      isActive ? "text-purple-700 dark:text-purple-300" : "text-slate-700 dark:text-slate-300"
-                    )}
-                  >
-                    {label}
-                  </span>
+                    aria-hidden="true"
+                  />
+                  <span className="whitespace-nowrap tracking-tight">{label}</span>
                 </Link>
               );
             })}
@@ -180,7 +176,7 @@ const NgoSubNav = memo(function NgoSubNav() {
         </div>
 
         {/* ── Desktop View (≥ md): Brand logo badge on left + Horizontal pills dock on right ── */}
-        <div className="hidden md:flex items-center justify-between gap-4 h-12 lg:h-14">
+        <div className="hidden md:flex items-center justify-between gap-4 h-11 lg:h-12">
           {/* Brand badge */}
           <Link
             href="/ngo"
@@ -188,10 +184,10 @@ const NgoSubNav = memo(function NgoSubNav() {
             className="touch-manipulation flex items-center gap-2.5 flex-shrink-0 group py-1 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600"
             aria-label="KCM Social Service NGO Home"
           >
-            <div className="w-8 h-8 lg:w-9 lg:h-9 rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200/90 dark:border-rose-900/60 flex items-center justify-center text-rose-500 shadow-sm group-hover:scale-105 transition-transform">
-              <Heart className="w-4 h-4 lg:w-4.5 lg:h-4.5 fill-rose-500/20" aria-hidden="true" />
+            <div className="w-7 h-7 lg:w-8 lg:h-8 rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200/90 dark:border-rose-900/60 flex items-center justify-center text-rose-500 shadow-2xs group-hover:scale-105 transition-transform">
+              <Heart className="w-3.5 h-3.5 lg:w-4 lg:h-4 fill-rose-500/20" aria-hidden="true" />
             </div>
-            <span className="text-xs lg:text-sm font-black tracking-widest uppercase bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 dark:from-purple-400 dark:via-pink-400 dark:to-indigo-400 bg-clip-text text-transparent select-none whitespace-nowrap">
+            <span className="text-xs lg:text-[13px] font-black tracking-widest uppercase bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 dark:from-purple-400 dark:via-pink-400 dark:to-indigo-400 bg-clip-text text-transparent select-none whitespace-nowrap">
               {ngoNavT.socialService || "KCM SOCIAL SERVICE"}
             </span>
           </Link>
@@ -200,7 +196,7 @@ const NgoSubNav = memo(function NgoSubNav() {
           <div
             role="menubar"
             aria-label="NGO Navigation Sections"
-            className="flex items-center gap-1.5 p-1 rounded-2xl bg-slate-100/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200/60 dark:border-slate-800/60 flex-shrink-0"
+            className="flex items-center gap-1 p-0.5 rounded-full bg-slate-100/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/60 dark:border-slate-800/60 flex-shrink-0"
           >
             {NGO_NAV_ITEMS.map((item) => {
               const isActive = isItemActive(item.href);
@@ -215,21 +211,20 @@ const NgoSubNav = memo(function NgoSubNav() {
                   role="menuitem"
                   aria-current={isActive ? "page" : undefined}
                   className={cn(
-                    "touch-manipulation flex items-center gap-2 px-3.5 lg:px-4 py-1.5 lg:py-2 rounded-xl text-xs lg:text-sm font-semibold transition-all duration-200 whitespace-nowrap select-none active:scale-95 cursor-pointer",
+                    "touch-manipulation flex items-center gap-1.5 px-3 lg:px-3.5 py-1.5 rounded-full text-xs lg:text-[13px] font-semibold transition-all duration-200 whitespace-nowrap select-none active:scale-95 cursor-pointer",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 focus-visible:ring-offset-1",
                     isActive
-                      ? "bg-white dark:bg-slate-800 text-purple-700 dark:text-purple-300 shadow-sm border border-purple-200/80 dark:border-purple-700/60 font-bold scale-[1.01]"
+                      ? "bg-white dark:bg-slate-800 text-purple-700 dark:text-purple-300 shadow-xs border border-purple-200/80 dark:border-purple-700/60 font-black scale-[1.01]"
                       : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-slate-800/60"
                   )}
                 >
-                  <span
+                  <Icon
                     className={cn(
-                      "flex items-center justify-center transition-colors",
+                      "w-3.5 h-3.5 transition-colors",
                       isActive ? "text-purple-600 dark:text-purple-400" : item.iconColor
                     )}
-                  >
-                    <Icon className="w-4 h-4" aria-hidden="true" />
-                  </span>
+                    aria-hidden="true"
+                  />
                   <span>{label}</span>
                 </Link>
               );
