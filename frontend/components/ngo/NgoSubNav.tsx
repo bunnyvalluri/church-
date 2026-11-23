@@ -134,14 +134,10 @@ const NgoSubNav = memo(function NgoSubNav() {
         "transition-[background-color,border-color,box-shadow] duration-200"
       )}
     >
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-1.5 sm:py-2">
-        {/* ── Mobile View (< md): Fluid Horizontal Scrollable Chip Dock ── */}
-        <div className="md:hidden relative">
-          <div
-            ref={mobileScrollRef}
-            className="flex items-center gap-1.5 overflow-x-auto no-scrollbar scroll-smooth py-1 px-1 -mx-1"
-            style={{ WebkitOverflowScrolling: "touch" }}
-          >
+      <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-1.5 sm:py-2">
+        {/* ── Mobile View (< md): 6-column balanced dock showing ALL complete names simultaneously ── */}
+        <div className="md:hidden" ref={mobileScrollRef}>
+          <div className="grid grid-cols-6 gap-0.5 min-[360px]:gap-1 p-1 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 shadow-sm w-full">
             {NGO_NAV_ITEMS.map((item) => {
               const isActive = isItemActive(item.href);
               const Icon = item.icon;
@@ -155,20 +151,28 @@ const NgoSubNav = memo(function NgoSubNav() {
                   data-active={isActive ? "true" : "false"}
                   aria-current={isActive ? "page" : undefined}
                   className={cn(
-                    "touch-manipulation flex items-center gap-1.5 px-3.5 py-1.5 rounded-full transition-all duration-200 select-none shrink-0 cursor-pointer active:scale-95 text-xs font-bold",
+                    "touch-manipulation flex flex-col items-center justify-center py-1.5 px-0.5 rounded-xl transition-all duration-150 text-center select-none w-full min-w-0 active:scale-95 cursor-pointer",
                     isActive
-                      ? "bg-purple-600 text-white shadow-md shadow-purple-600/30 border border-purple-500 font-extrabold"
-                      : "bg-slate-100/90 dark:bg-slate-850/90 text-slate-700 dark:text-slate-300 hover:bg-slate-200/90 dark:hover:bg-slate-800 border border-slate-200/60 dark:border-white/5"
+                      ? "bg-purple-50/90 dark:bg-slate-800 text-purple-700 dark:text-purple-300 shadow-sm border border-purple-300 dark:border-purple-600 font-extrabold"
+                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                   )}
                 >
-                  <Icon
+                  <span
                     className={cn(
-                      "w-3.5 h-3.5 shrink-0",
-                      isActive ? "text-white" : item.iconColor
+                      "flex items-center justify-center mb-0.5 transition-colors",
+                      isActive ? "text-purple-600 dark:text-purple-400" : item.iconColor
                     )}
-                    aria-hidden="true"
-                  />
-                  <span className="whitespace-nowrap tracking-tight">{label}</span>
+                  >
+                    <Icon className={cn("w-3.5 h-3.5 min-[360px]:w-4 min-[360px]:h-4", isActive && "stroke-[2.5]")} aria-hidden="true" />
+                  </span>
+                  <span
+                    className={cn(
+                      "text-[9px] min-[360px]:text-[9.5px] min-[390px]:text-[10px] leading-tight font-bold tracking-tight text-center w-full",
+                      isActive ? "text-purple-700 dark:text-purple-300" : "text-slate-700 dark:text-slate-300"
+                    )}
+                  >
+                    {label}
+                  </span>
                 </Link>
               );
             })}
