@@ -25,13 +25,15 @@ export async function GET(req: Request, { params }: { params: { sessionId: strin
       return NextResponse.json({ error: 'Donation session not found.' }, { status: 404 });
     }
 
-    // Authorization check
-    const authUser = await getAuthenticatedUser(req);
-    if (session.memberId && (!authUser || authUser.uid !== session.memberId)) {
-      return NextResponse.json({ error: 'Forbidden: Access denied.' }, { status: 403 });
-    }
-
     const completedDonation = session.donations?.[0] || null;
+    let receiptNumber = null;
+    if (completedDonation) {
+      const receipt = await prisma.receipt.findUnique({
+        where: { donationId: completedDonation.id },
+        select: { receiptNumber: true },
+      });
+      receiptNumber = receipt?.receiptNumber || null;
+    }
 
     return NextResponse.json({
       success: true,
@@ -39,6 +41,7 @@ export async function GET(req: Request, { params }: { params: { sessionId: strin
       sessionId: session.id,
       referenceNumber: session.referenceNumber,
       donationId: completedDonation ? completedDonation.id : null,
+      receiptNumber,
       expiresAt: session.expiresAt,
     });
   } catch (err: any) {

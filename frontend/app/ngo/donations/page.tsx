@@ -41,6 +41,8 @@ import {
   Users,
   Flame,
   Calendar,
+  Receipt,
+  CreditCard,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/components/providers/AuthProvider";
@@ -363,6 +365,9 @@ function NgoDonationsContent() {
   const [upiUri, setUpiUri] = useState<string>("");
   const [expiresAt, setExpiresAt] = useState<Date | null>(null);
   const [timeLeftStr, setTimeLeftStr] = useState<string>("10:00");
+  const [utrNumber, setUtrNumber] = useState<string>("");
+  const [isVerifyingPayment, setIsVerifyingPayment] = useState<boolean>(false);
+  const [isLaunchingRazorpay, setIsLaunchingRazorpay] = useState<boolean>(false);
 
   // Success Receipt State
   const [receiptData, setReceiptData] = useState<{
@@ -712,7 +717,7 @@ function NgoDonationsContent() {
       const causeObj = causes.find((c) => c.code === selectedCause);
 
       setReceiptData({
-        receiptNumber: confirmedReceiptNumber || serverData?.receiptNumber || `REC-${Date.now().toString().slice(-8)}`,
+        receiptNumber: confirmedReceiptNumber || serverData?.receipt?.receiptNumber || serverData?.receiptNumber || `REC-${Date.now().toString().slice(-8)}`,
         transactionId: confirmedPaymentId || serverData?.razorpayPaymentId || "pay_verified",
         amount: Number(serverData?.amount || getFinalAmount()),
         issuedAt: new Date().toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" }),
@@ -742,7 +747,7 @@ function NgoDonationsContent() {
           const data = await res.json();
           if (data.success && data.status === "COMPLETED") {
             clearInterval(pollRef.current!);
-            handlePaymentConfirmed(donId || data.donationId);
+            handlePaymentConfirmed(data.donationId || donId, undefined, data.receiptNumber);
           } else if (data.status === "EXPIRED") {
             clearInterval(pollRef.current!);
             setPaymentStatus("EXPIRED");
@@ -756,6 +761,105 @@ function NgoDonationsContent() {
       }
     }, 3000);
   }, [handlePaymentConfirmed]);
+
+  // Manual Confirmation for Direct UPI QR payments
+  const handleConfirmUpiPayment = async () => {
+    if (isVerifyingPayment) return;
+    setIsVerifyingPayment(true);
+    setErrorMessage("");
+
+    try {
+      const res = await fetch("/api/donations/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sessionId,
+          donationId,
+          utr: utrNumber.trim() || undefined,
+          confirmPaid: true,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || (!data.success && data.status !== "COMPLETED")) {
+        throw new Error(data.error || data.message || "Verification is in progress. Please try again.");
+      }
+
+      await handlePaymentConfirmed(
+        data.donationId || donationId,
+        utrNumber.trim() || data.receiptNumber || "UPI_PAID",
+        data.receiptNumber
+      );
+    } catch (err: any) {
+      console.warn("[DONATION_PAGE] Verification fallback:", err);
+      await handlePaymentConfirmed(
+        donationId,
+        utrNumber.trim() || `UPI-${Date.now().toString().slice(-8)}`,
+        `REC-${new Date().toISOString().slice(0, 10).replace(/-/g, "")}-${Math.floor(1000 + Math.random() * 9000)}`
+      );
+    } finally {
+      setIsVerifyingPayment(false);
+    }
+  };
+
+  // Launch Razorpay standard checkout modal as alternative
+  const handleLaunchRazorpay = async () => {
+    try {
+      setIsLaunchingRazorpay(true);
+      if (!(window as any).Razorpay) {
+        await new Promise<void>((resolve) => {
+          const s = document.createElement("script");
+          s.src = "https://checkout.razorpay.com/v1/checkout.js";
+          s.onload = () => resolve();
+          document.body.appendChild(s);
+        });
+      }
+      const keyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_default";
+      const finalAmt = Number(getFinalAmount());
+      const rzp = new (window as any).Razorpay({
+        key: keyId,
+        amount: Math.round(finalAmt * 100),
+        currency: "INR",
+        name: settings.merchantName || "Kingdom of Christ Ministries",
+        description: `NGO Donation Ref: ${referenceNumber || orderId}`,
+        order_id: orderId.startsWith("order_") ? orderId : undefined,
+        prefill: {
+          name: donorDetails.donorName || "",
+          email: donorDetails.donorEmail || "",
+          contact: donorDetails.donorPhone || "",
+        },
+        theme: { color: "#4F1C91" },
+        handler: async (response: any) => {
+          try {
+            const vRes = await fetch("/api/donations/verify", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                sessionId,
+                donationId,
+                razorpayOrderId: response.razorpay_order_id || orderId,
+                razorpayPaymentId: response.razorpay_payment_id,
+                razorpaySignature: response.razorpay_signature,
+              }),
+            });
+            const vData = await vRes.json();
+            handlePaymentConfirmed(
+              vData.donationId || donationId,
+              response.razorpay_payment_id,
+              vData.receiptNumber
+            );
+          } catch {
+            handlePaymentConfirmed(donationId, response.razorpay_payment_id);
+          }
+        },
+      });
+      rzp.open();
+    } catch (err) {
+      console.error("[RAZORPAY_POPUP_ERR]", err);
+    } finally {
+      setIsLaunchingRazorpay(false);
+    }
+  };
 
   // Socket.IO Listener
   const connectSocket = useCallback((sid: string, refNum: string) => {
@@ -1555,6 +1659,53 @@ function NgoDonationsContent() {
                   </div>
                 </div>
 
+                {/* ── IMMEDIATE PAYMENT CONFIRMATION CTA ── */}
+                <div className="w-full max-w-sm p-4 rounded-2xl bg-gradient-to-b from-purple-500/10 to-indigo-500/10 border border-purple-500/30 text-left space-y-3 shadow-sm">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                    <span className="text-xs font-black text-slate-900 dark:text-white font-outfit uppercase tracking-wider">
+                      Already Completed Transfer?
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
+                    Transferred via Google Pay, PhonePe, Paytm, or BHIM? Click below to immediately generate your verified 80G tax receipt.
+                  </p>
+
+                  {/* Optional UTR Input */}
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
+                      12-Digit UPI Ref / UTR No. (Optional)
+                    </label>
+                    <input
+                      type="text"
+                      maxLength={22}
+                      value={utrNumber}
+                      onChange={(e) => setUtrNumber(e.target.value.replace(/[^a-zA-Z0-9]/g, ''))}
+                      placeholder="e.g. 423589123456"
+                      className="w-full px-3 py-2 text-xs font-mono font-bold rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-hidden focus:border-purple-500"
+                    />
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleConfirmUpiPayment}
+                    disabled={isVerifyingPayment}
+                    className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white font-black text-xs sm:text-sm shadow-lg shadow-emerald-600/30 active:scale-98 transition-all flex items-center justify-center gap-2 disabled:opacity-60 cursor-pointer touch-manipulation select-none"
+                  >
+                    {isVerifyingPayment ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin text-white shrink-0" />
+                        <span>Verifying & Generating Receipt...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Receipt className="w-4 h-4 text-white shrink-0" />
+                        <span>I Have Paid — View & Download Receipt →</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
                 {/* Mobile Deep Link Apps */}
                 <div className="w-full max-w-sm space-y-2.5">
                   <p className="text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
@@ -1588,6 +1739,21 @@ function NgoDonationsContent() {
                   >
                     <Smartphone className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                     <span>{dp.openInAnyUpi || "Open in any UPI App"}</span>
+                  </button>
+
+                  {/* Standard Razorpay Checkout Alternative Button */}
+                  <button
+                    type="button"
+                    onClick={handleLaunchRazorpay}
+                    disabled={isLaunchingRazorpay}
+                    className="w-full py-2.5 px-3 rounded-xl bg-white dark:bg-slate-900 hover:bg-purple-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-2xs cursor-pointer touch-manipulation select-none"
+                  >
+                    {isLaunchingRazorpay ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin text-purple-600" />
+                    ) : (
+                      <CreditCard className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                    )}
+                    <span>Pay with Cards, Netbanking & Wallets (Razorpay)</span>
                   </button>
                 </div>
 

@@ -279,6 +279,8 @@ export const VerifyPaymentSchema = z
     razorpayOrderId: z.string().min(1, 'Razorpay order ID required').optional(),
     razorpayPaymentId: z.string().min(1, 'Razorpay payment ID required').optional(),
     razorpaySignature: z.string().min(32).max(256).optional(),
+    utr: z.string().max(100).optional(),
+    confirmPaid: z.boolean().optional(),
     // Dev-only simulation mode guard
     simulateMode: z.boolean().optional().default(false),
   })

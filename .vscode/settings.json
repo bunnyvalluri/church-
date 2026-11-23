@@ -12,6 +12,7 @@
   "docker.lsp.experimental.scout.vulnerabilities": false,
   "docker.lsp.experimental.scout.recommendedTag": false,
   "docker.lsp.experimental.scout.notPinnedDigest": false,
+  "yaml.validate": false,
   "yaml.customTags": [
     "!Ref",
     "!Sub",

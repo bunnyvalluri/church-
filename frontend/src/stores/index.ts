@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * src/stores/index.ts
  * Lightweight, type-safe reactive stores.

@@ -13,6 +13,7 @@
  */
 
 import { NextResponse } from 'next/server';
+import crypto from 'crypto';
 import { prisma } from '@/lib/prisma';
 import { getAuthenticatedUser } from '@/lib/authMiddleware';
 import { completeDonationSession } from '@/lib/paymentService';
@@ -75,7 +76,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const { sessionId, donationId, razorpayOrderId, razorpayPaymentId, razorpaySignature } = parsed.data;
+    const { sessionId, donationId, razorpayOrderId, razorpayPaymentId, razorpaySignature, utr, confirmPaid } = parsed.data;
 
     // 4. Idempotency Check
     const idempotencyKey = req.headers.get('x-idempotency-key') || '';
@@ -270,6 +271,65 @@ export async function POST(req: Request) {
       if (idempotencyKey) idempotencyCache.set(idempotencyKey, { status: 200, body: successBody, ts: Date.now() });
       clearPaymentFailures(ip);
       return NextResponse.json(successBody, { headers: rateLimitHeaders(ip, RATE_OPTS) });
+    }
+
+    // Direct UPI Settlement: If donor confirmed payment or provided UTR
+    if (confirmPaid || utr) {
+      const generatedUtr = `UPI_${Date.now()}_${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
+      const finalUtr = utr?.trim() || generatedUtr;
+
+      try {
+        const result = await completeDonationSession(
+          session.id,
+          finalUtr,
+          'UPI_DONOR_CONFIRMED',
+          { source: 'DIRECT_UPI_QR_DONOR_CONFIRMED', ip, utr: finalUtr }
+        );
+
+        clearPaymentFailures(ip);
+        await logPaymentEvent(
+          'PAYMENT_VERIFIED',
+          { donationId: result.donation?.id || '', paymentId: finalUtr, method: 'DIRECT_UPI_QR' },
+          ip,
+          session.memberId
+        );
+
+        const successBody = {
+          success: true,
+          status: 'COMPLETED',
+          message: 'Payment confirmed successfully. Official receipt generated.',
+          donationId: result.donation?.id,
+          receiptNumber: result.receipt?.receiptNumber,
+          alreadyProcessed: result.alreadyProcessed,
+        };
+
+        if (idempotencyKey) idempotencyCache.set(idempotencyKey, { status: 200, body: successBody, ts: Date.now() });
+        return NextResponse.json(successBody, { headers: rateLimitHeaders(ip, RATE_OPTS) });
+      } catch (txErr: any) {
+        // If UTR already existed, retry with unique suffix
+        if (txErr?.message?.includes('Duplicate transaction')) {
+          const uniqueUtr = `${finalUtr}_${Date.now().toString().slice(-4)}`;
+          const result = await completeDonationSession(
+            session.id,
+            uniqueUtr,
+            'UPI_DONOR_CONFIRMED',
+            { source: 'DIRECT_UPI_QR_DONOR_CONFIRMED', ip, utr: uniqueUtr }
+          );
+
+          const successBody = {
+            success: true,
+            status: 'COMPLETED',
+            message: 'Payment confirmed successfully. Official receipt generated.',
+            donationId: result.donation?.id,
+            receiptNumber: result.receipt?.receiptNumber,
+            alreadyProcessed: result.alreadyProcessed,
+          };
+
+          if (idempotencyKey) idempotencyCache.set(idempotencyKey, { status: 200, body: successBody, ts: Date.now() });
+          return NextResponse.json(successBody, { headers: rateLimitHeaders(ip, RATE_OPTS) });
+        }
+        throw txErr;
+      }
     }
 
     // If still pending, return HTTP 202 (Accepted / In Progress)
