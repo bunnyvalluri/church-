@@ -1337,12 +1337,13 @@ function NgoDonationsContent() {
                 animate={{ opacity: 1, x: 0 }}
                 className="space-y-4 text-left"
               >
-                <div className="flex items-center justify-between mb-1">
-                  <label className="text-xs font-black uppercase tracking-wider text-slate-600 dark:text-slate-300">
-                    {dp.step2Title || "Step 2: Donor Information"}
+                <div className="flex items-center justify-between mb-3 gap-2">
+                  <label className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300 truncate font-outfit">
+                    {dp.step2Title || "Donor & Allocation Details"}
                   </label>
-                  <span className="text-xs font-extrabold text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/80 px-2.5 py-1 rounded-lg border border-purple-200 dark:border-purple-800/60">
-                    {dp.amountPrefix || "Amount:"} ₹{formatNumber(getFinalAmount())}
+                  <span className="text-[10px] sm:text-[11px] font-extrabold text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/80 px-2.5 py-1 rounded-full border border-purple-200/80 dark:border-purple-800/60 whitespace-nowrap shrink-0 flex items-center gap-1 shadow-2xs">
+                    <span>{dp.amountPrefix || "Amount:"}</span>
+                    <span className="font-mono font-black">₹{formatNumber(getFinalAmount())}</span>
                   </span>
                 </div>
 
@@ -1411,14 +1412,14 @@ function NgoDonationsContent() {
                 {/* Purpose & Branch Selectors - Stacked on mobile so full location names are completely visible */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
                   <div>
-                    <label className="block text-xs font-black uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1">
+                    <label className="block text-[11px] sm:text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1 font-outfit">
                       {dp.donationCause || "Support Category"}
                     </label>
                     <div className="relative">
                       <select
                         value={selectedCause}
                         onChange={(e) => setSelectedCause(e.target.value)}
-                        className="w-full py-3.5 pl-4 pr-10 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-sm font-semibold focus:outline-none focus:border-purple-500 touch-manipulation appearance-none cursor-pointer shadow-xs"
+                        className="w-full py-3 pl-3.5 pr-8 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-xs sm:text-sm font-semibold focus:outline-none focus:border-purple-500 touch-manipulation appearance-none cursor-pointer shadow-2xs truncate"
                       >
                         {causes.map((c) => (
                           <option key={c.id} value={c.code}>
@@ -1426,19 +1427,19 @@ function NgoDonationsContent() {
                           </option>
                         ))}
                       </select>
-                      <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                      <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-black uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1">
+                    <label className="block text-[11px] sm:text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1 font-outfit">
                       {dp.branch || "Select Branch / Zone"}
                     </label>
                     <div className="relative">
                       <select
                         value={selectedBranch}
                         onChange={(e) => setSelectedBranch(e.target.value)}
-                        className="w-full py-3.5 pl-4 pr-10 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-sm font-semibold focus:outline-none focus:border-purple-500 touch-manipulation appearance-none cursor-pointer shadow-xs"
+                        className="w-full py-3 pl-3.5 pr-8 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-xs sm:text-sm font-semibold focus:outline-none focus:border-purple-500 touch-manipulation appearance-none cursor-pointer shadow-2xs truncate"
                       >
                         {branches.map((b) => (
                           <option key={b.id} value={b.id}>
@@ -1446,19 +1447,19 @@ function NgoDonationsContent() {
                           </option>
                         ))}
                       </select>
-                      <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                      <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
                     </div>
                   </div>
                 </div>
 
-                {/* Navigation Action Buttons */}
-                <div className="flex gap-3 pt-3">
+                {/* Navigation Action Buttons (Compact Back, High-Contrast Single-Line Proceed) */}
+                <div className="flex items-center gap-2.5 pt-3">
                   <button
                     type="button"
                     onClick={() => setStep(1)}
-                    className="flex-1 py-3.5 min-h-[44px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-white border border-slate-200 dark:border-white/10 font-extrabold rounded-xl text-xs flex items-center justify-center gap-1.5 touch-manipulation select-none"
+                    className="px-4 py-3.5 min-h-[44px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-white border border-slate-200 dark:border-white/10 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 shrink-0 touch-manipulation select-none active:scale-95 transition-all"
                   >
-                    <ArrowLeft className="w-4 h-4" />
+                    <ArrowLeft className="w-3.5 h-3.5" />
                     <span>{dp.back || "Back"}</span>
                   </button>
 
@@ -1466,7 +1467,7 @@ function NgoDonationsContent() {
                     type="button"
                     onClick={handleCreatePaymentOrder}
                     disabled={loading}
-                    className="flex-[2] py-3.5 min-h-[44px] bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-extrabold rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-purple-500/25 disabled:opacity-50 touch-manipulation select-none"
+                    className="flex-1 py-3.5 min-h-[44px] bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-extrabold rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-purple-500/25 disabled:opacity-50 touch-manipulation select-none active:scale-[0.99] transition-all whitespace-nowrap"
                   >
                     {loading ? (
                       <>
@@ -1475,7 +1476,7 @@ function NgoDonationsContent() {
                       </>
                     ) : (
                       <>
-                        <span>{dp.generateQr || "Generate UPI QR & Checkout"}</span>
+                        <span>{dp.generateQr || "Proceed to UPI & Checkout"}</span>
                         <ArrowRight className="w-4 h-4" />
                       </>
                     )}
@@ -1492,22 +1493,22 @@ function NgoDonationsContent() {
                 className="space-y-6 flex flex-col items-center text-center"
               >
                 {/* Status Bar */}
-                <div className="w-full flex items-center justify-between bg-purple-500/10 border border-purple-500/30 px-4 py-2.5 rounded-2xl text-xs font-bold text-purple-800 dark:text-purple-200">
-                  <div className="flex items-center gap-2">
-                    <Loader2 className="w-4 h-4 animate-spin text-purple-600 dark:text-purple-400" />
-                    <span>{dp.waitingPayment || "Awaiting Payment Confirmation…"}</span>
+                <div className="w-full flex items-center justify-between bg-purple-500/10 border border-purple-500/30 px-3.5 py-2.5 rounded-2xl text-[11px] sm:text-xs font-bold text-purple-800 dark:text-purple-200 gap-2">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <Loader2 className="w-4 h-4 animate-spin text-purple-600 dark:text-purple-400 shrink-0" />
+                    <span className="truncate">{dp.waitingPayment || "Awaiting Payment Confirmation…"}</span>
                   </div>
-                  <div className="flex items-center gap-1 text-slate-700 dark:text-slate-200 font-mono font-bold">
-                    <Clock className="w-3.5 h-3.5 text-purple-500" />
-                    <span>{dp.expiresIn || "Expires in:"} {timeLeftStr}</span>
+                  <div className="flex items-center gap-1 text-slate-700 dark:text-slate-200 font-mono font-bold shrink-0">
+                    <Clock className="w-3.5 h-3.5 text-purple-500 shrink-0" />
+                    <span className="whitespace-nowrap">{dp.expiresIn || "Expires:"} {timeLeftStr}</span>
                   </div>
                 </div>
 
                 {/* Dynamic QR Code Container */}
-                <div className={`p-6 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-white/10 rounded-3xl flex flex-col items-center w-full max-w-sm relative transition-all ${
+                <div className={`p-4 sm:p-6 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-white/10 rounded-3xl flex flex-col items-center w-full max-w-sm relative transition-all ${
                   paymentStatus === "EXPIRED" ? "opacity-40 grayscale pointer-events-none" : ""
                 }`}>
-                  <div className="relative w-56 aspect-square bg-white rounded-2xl p-3 border border-slate-200 dark:border-white/20 shadow-inner flex items-center justify-center">
+                  <div className="relative w-52 sm:w-56 aspect-square bg-white rounded-2xl p-3 border border-slate-200 dark:border-white/20 shadow-inner flex items-center justify-center">
                     {qrCodeBase64 ? (
                       <Image
                         src={qrCodeBase64}
@@ -1522,7 +1523,7 @@ function NgoDonationsContent() {
                     )}
                   </div>
 
-                  <p className="mt-3 text-sm font-black text-slate-900 dark:text-white">
+                  <p className="mt-3 text-sm font-black text-slate-900 dark:text-white font-outfit">
                     {dp.scanToPay || "Scan with any UPI App to Pay"} ₹{formatNumber(getFinalAmount())}
                   </p>
 
@@ -1530,17 +1531,22 @@ function NgoDonationsContent() {
                     {dp.orderRef || "Order Ref:"} {referenceNumber || orderId}
                   </p>
 
-                  {/* Merchant UPI ID Copy Box */}
-                  <div className="mt-4 w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 px-4 py-2.5 rounded-xl flex items-center justify-between text-xs">
-                    <span className="text-slate-800 dark:text-white font-black font-mono truncate mr-2">
-                      {dp.upiId || "UPI ID:"} {settings.upiId}
-                    </span>
+                  {/* Merchant UPI ID Copy Box (Structured Two-Line Layout — Zero Truncation) */}
+                  <div className="mt-3.5 w-full bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-white/10 p-3 rounded-2xl flex items-center justify-between gap-2 shadow-2xs text-left">
+                    <div className="min-w-0 flex-1">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 block leading-none mb-1 font-outfit">
+                        {dp.upiId || "Merchant UPI ID"}
+                      </span>
+                      <span className="text-xs sm:text-[13px] text-slate-900 dark:text-white font-black font-mono select-all break-all leading-tight">
+                        {settings.upiId}
+                      </span>
+                    </div>
                     <button
                       type="button"
                       onClick={() => copyToClipboard(settings.upiId, "upi")}
-                      className="text-purple-700 dark:text-purple-300 font-extrabold hover:text-purple-500 flex items-center gap-1 min-h-[36px] px-2 touch-manipulation select-none flex-shrink-0"
+                      className="py-1.5 px-3 rounded-xl bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/60 dark:hover:bg-purple-900/60 text-purple-700 dark:text-purple-300 font-extrabold text-xs flex items-center gap-1.5 border border-purple-200/60 dark:border-purple-800/60 shrink-0 touch-manipulation select-none active:scale-95 transition-all shadow-2xs"
                     >
-                      <Copy className="w-3.5 h-3.5" />
+                      {copiedLabel === "upi" ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                       <span>{copiedLabel === "upi" ? (dp.copied || "Copied!") : (dp.copy || "Copy")}</span>
                     </button>
                   </div>
