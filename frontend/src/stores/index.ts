@@ -3,16 +3,18 @@
  * Lightweight, type-safe reactive stores.
  */
 
-import { useState, useEffect } from 'react';
+import { useSyncExternalStore } from 'react';
 
 type Listener<T> = (state: T) => void;
 
-class SimpleStore<T> {
+export class SimpleStore<T> {
   private state: T;
   private listeners: Set<Listener<T>> = new Set();
 
   constructor(initialState: T) {
     this.state = initialState;
+    this.getState = this.getState.bind(this);
+    this.subscribe = this.subscribe.bind(this);
   }
 
   getState(): T {
@@ -36,12 +38,12 @@ class SimpleStore<T> {
   }
 
   useStore(): T {
-    const [currentState, setCurrentState] = useState(this.state);
-    useEffect(() => {
-      return this.subscribe(setCurrentState);
-    }, []);
-    return currentState;
+    return useSyncExternalStore(this.subscribe, this.getState, this.getState);
   }
+}
+
+export function useStore<T>(store: SimpleStore<T>): T {
+  return useSyncExternalStore(store.subscribe, store.getState, store.getState);
 }
 
 export interface UIState {
@@ -55,4 +57,3 @@ export const uiStore = new SimpleStore<UIState>({
   activeModal: null,
   selectedCampusId: 'branch_kukatpally',
 });
-

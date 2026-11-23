@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 export async function GET() {
   try {
     // Execute all DB queries concurrently in parallel using Promise.all
-    let [heroConfig, amounts, causes, branches, formFields, settings] = await Promise.all([
+    let [heroConfig, amounts, causes, branches, formFields, settings, liveDonations] = await Promise.all([
       prisma.givingHeroConfig.findUnique({
         where: { id: 'giving_hero' },
       }),
@@ -28,6 +28,11 @@ export async function GET() {
       prisma.churchSettings.findUnique({
         where: { id: 'settings' },
       }),
+      prisma.donation.groupBy({
+        by: ['purposeId', 'purpose'],
+        where: { status: 'COMPLETED' },
+        _sum: { amount: true },
+      }).catch(() => []),
     ]);
 
     const defaultHeroConfig = {
@@ -50,14 +55,15 @@ export async function GET() {
       ],
     };
 
-    // Fast fallbacks if empty
+    // Fast fallbacks if empty (6 balanced presets)
     if (amounts.length === 0) {
       amounts = [
         { id: '1', amount: 500, label: '₹500', displayOrder: 1, isDefault: false, isActive: true, currency: 'INR', campaignId: null, createdAt: new Date(), updatedAt: new Date() },
         { id: '2', amount: 1000, label: '₹1,000', displayOrder: 2, isDefault: true, isActive: true, currency: 'INR', campaignId: null, createdAt: new Date(), updatedAt: new Date() },
         { id: '3', amount: 2000, label: '₹2,000', displayOrder: 3, isDefault: false, isActive: true, currency: 'INR', campaignId: null, createdAt: new Date(), updatedAt: new Date() },
-        { id: '4', amount: 5000, label: '₹5,000', displayOrder: 4, isDefault: false, isActive: true, currency: 'INR', campaignId: null, createdAt: new Date(), updatedAt: new Date() },
-        { id: '5', amount: 10000, label: '₹10,000', displayOrder: 5, isDefault: false, isActive: true, currency: 'INR', campaignId: null, createdAt: new Date(), updatedAt: new Date() },
+        { id: '4', amount: 3000, label: '₹3,000', displayOrder: 4, isDefault: false, isActive: true, currency: 'INR', campaignId: null, createdAt: new Date(), updatedAt: new Date() },
+        { id: '5', amount: 5000, label: '₹5,000', displayOrder: 5, isDefault: false, isActive: true, currency: 'INR', campaignId: null, createdAt: new Date(), updatedAt: new Date() },
+        { id: '6', amount: 10000, label: '₹10,000', displayOrder: 6, isDefault: false, isActive: true, currency: 'INR', campaignId: null, createdAt: new Date(), updatedAt: new Date() },
       ];
     }
 
@@ -75,8 +81,8 @@ export async function GET() {
           icon: 'Heart',
           colorTheme: 'violet',
           category: 'OUTREACH',
-          targetAmount: 500000,
-          raisedAmount: 145000,
+          targetAmount: null,
+          raisedAmount: 0,
           imageUrl: null,
           sortOrder: 1,
           isActive: true,
@@ -96,8 +102,8 @@ export async function GET() {
           icon: 'Gift',
           colorTheme: 'violet',
           category: 'BENEVOLENCE',
-          targetAmount: 300000,
-          raisedAmount: 98000,
+          targetAmount: null,
+          raisedAmount: 0,
           imageUrl: null,
           sortOrder: 2,
           isActive: true,
@@ -107,6 +113,29 @@ export async function GET() {
         },
       ];
     }
+
+    // Dynamically compute real-time verified raised amounts from completed donations
+    const donationTotalsByPurposeId = new Map<string, number>();
+    const donationTotalsByCode = new Map<string, number>();
+
+    (liveDonations as any[] || []).forEach((item: any) => {
+      const sum = Number(item._sum?.amount || 0);
+      if (item.purposeId) {
+        donationTotalsByPurposeId.set(item.purposeId, (donationTotalsByPurposeId.get(item.purposeId) || 0) + sum);
+      }
+      if (item.purpose) {
+        donationTotalsByCode.set(item.purpose, (donationTotalsByCode.get(item.purpose) || 0) + sum);
+      }
+    });
+
+    // Real-time verified raisedAmount dynamically attached
+    causes = causes.map((c: any) => {
+      const realSum = donationTotalsByPurposeId.get(c.id) || donationTotalsByCode.get(c.code) || c.raisedAmount || 0;
+      return {
+        ...c,
+        raisedAmount: realSum,
+      };
+    });
 
     if (branches.length === 0) {
       branches = [

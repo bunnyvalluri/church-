@@ -19,7 +19,9 @@ import {
   TrendingUp,
   Building2,
   Eye,
-  Gift
+  Gift,
+  X,
+  FileCheck,
 } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
@@ -216,7 +218,7 @@ export default function NgoProjectsPage() {
       raisedAmount: 0,
       status: "ACTIVE",
       category: "CHILDREN_CARE",
-      location: "Sneha Charitable Trust, Yalampet, Medchal District",
+      location: "Sneha Charitable Trust, Yalampet, Medchal",
       beneficiaries: "60+ Disabled Children",
       createdAt: "2026-10-25T00:00:00.000Z",
     },
@@ -316,8 +318,8 @@ export default function NgoProjectsPage() {
         (p.category && p.category.toUpperCase() === selectedCategory.toUpperCase());
       const pTitle = getProjTitle(p).toLowerCase();
       const pDesc = getProjDesc(p).toLowerCase();
-      const q = searchQuery.toLowerCase();
-      const matchesSearch = pTitle.includes(q) || pDesc.includes(q);
+      const q = searchQuery.toLowerCase().trim();
+      const matchesSearch = !q || pTitle.includes(q) || pDesc.includes(q);
       return matchesCategory && matchesSearch;
     });
   }, [projects, selectedCategory, searchQuery, language]);
@@ -335,45 +337,56 @@ export default function NgoProjectsPage() {
   ];
 
   return (
-    <div className="py-10 sm:py-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+    <div className="relative py-6 sm:py-12">
+      {/* Ambient background glow */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -top-20 left-1/2 -translate-x-1/2 w-full max-w-4xl h-[300px] bg-gradient-to-tr from-rose-500/10 via-purple-500/10 to-indigo-500/5 blur-3xl rounded-full -z-10"
+      />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 sm:space-y-12">
         
-        {/* 1. Hero Section & Impact Metrics Banner */}
-        <div className="space-y-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <div className="space-y-4 max-w-2xl text-left">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-red-500/10 border border-purple-500/20 text-purple-700 dark:text-purple-300 text-xs font-bold uppercase tracking-wider shadow-sm">
-                <Heart className="w-4 h-4 text-red-500 animate-pulse fill-red-500/20" />
+        {/* ═══ 1. HERO HEADER ═══ */}
+        <section aria-label="Social Service Projects Overview" className="space-y-5">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-5 text-left">
+            <div className="space-y-3 max-w-2xl">
+              <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-rose-50 dark:bg-rose-950/40 border border-rose-200/80 dark:border-rose-800/60 text-rose-700 dark:text-rose-300 text-xs font-semibold uppercase tracking-wider shadow-xs">
+                <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500/30 animate-pulse" />
                 <span>
                   {language === "te" ? "క్రియాశీల మానవతా సేవా కార్యక్రమాలు" : language === "hi" ? "सक्रिय मानव सेवा अभियान" : "Active Humanitarian Relief Campaigns"}
                 </span>
               </div>
 
-              <h1 className="text-4xl sm:text-5xl font-black tracking-tight leading-tight bg-gradient-to-r from-slate-900 via-slate-800 to-purple-700 dark:from-white dark:via-slate-100 dark:to-purple-300 bg-clip-text text-transparent">
-                {projectsPage.title || "Social Service Projects"}
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight text-slate-900 dark:text-white">
+                <span>{language === "te" ? "సామాజిక సేవా " : language === "hi" ? "सामाजिक सेवा " : "Social Service "}</span>
+                <span className="bg-gradient-to-r from-rose-600 via-pink-600 to-purple-600 dark:from-rose-400 dark:via-pink-300 dark:to-purple-300 bg-clip-text text-transparent">
+                  {language === "te" ? "ప్రాజెక్ట్‌లు" : language === "hi" ? "परियोजनाएं" : "Projects"}
+                </span>
               </h1>
 
-              <p className="text-slate-600 dark:text-slate-300 text-base leading-relaxed">
+              <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base leading-relaxed">
                 {projectsPage.desc || "Discover our active community initiatives and help us achieve our goals. Your support directly finances medical items, wheelchairs, food campaigns, and Ashramam expenses."}
               </p>
             </div>
 
-            {/* Quick Action Button */}
-            <Link
-              href="/ngo/donations"
-              className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 bg-gradient-to-r from-red-500 via-pink-600 to-purple-600 hover:from-red-600 hover:to-purple-700 text-white font-bold rounded-2xl shadow-xl shadow-purple-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all text-sm whitespace-nowrap"
-            >
-              <Gift className="w-4 h-4" />
-              <span>{language === "te" ? "అన్ని ప్రాజెక్టులకు విరాళం ఇవ్వండి" : language === "hi" ? "सभी परियोजनाओं के लिए दान करें" : "Donate to All Projects"}</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
+            {/* Top Action Button */}
+            <div className="shrink-0 w-full sm:w-auto">
+              <Link
+                href="/ngo/donations"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-gradient-to-r from-rose-600 via-pink-600 to-purple-600 hover:from-rose-500 hover:to-purple-500 text-white font-bold rounded-xl shadow-lg shadow-rose-500/20 active:scale-[0.98] transition-all text-sm whitespace-nowrap"
+              >
+                <Gift className="w-4 h-4" />
+                <span>{language === "te" ? "అన్ని ప్రాజెక్టులకు విరాళం ఇవ్వండి" : language === "hi" ? "सभी परियोजनाओं के लिए दान करें" : "Donate to All Projects"}</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
           </div>
 
-          {/* Active Campaigns Banner */}
+          {/* Active Campaigns Trust Ribbon */}
           {activeCampaigns > 0 && (
-            <div className="flex items-center gap-3 px-5 py-4 rounded-2xl bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-red-500/10 border border-purple-500/20 text-left">
-              <TrendingUp className="w-5 h-5 text-emerald-500 flex-shrink-0" />
-              <span className="text-sm font-bold text-slate-800 dark:text-slate-100">
+            <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-emerald-50/80 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-800/60 text-left">
+              <TrendingUp className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+              <span className="text-xs sm:text-sm font-semibold text-emerald-900 dark:text-emerald-200">
                 {language === "te"
                   ? `${activeCampaigns} క్రియాశీల సేవా కార్యక్రమాలు — మీ మద్దతు నేరుగా ఆపన్నులకు చేరుతుంది.`
                   : language === "hi"
@@ -382,80 +395,77 @@ export default function NgoProjectsPage() {
               </span>
             </div>
           )}
-        </div>
+        </section>
 
-        {/* 2. Filter & Search Controls */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 shadow-sm">
-          {/* Category Tabs */}
-          <div className="w-full md:w-auto">
-            {/* Mobile: 2-col grid so all 4 category names are 100% visible */}
-            <div className="grid grid-cols-2 gap-2 sm:hidden w-full">
-              {categoryTabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setSelectedCategory(tab.id)}
-                  className={`px-3 py-2 rounded-xl text-xs font-bold transition-all text-center truncate ${
-                    selectedCategory === tab.id
-                      ? "bg-purple-600 text-white shadow-md shadow-purple-500/20 dark:bg-purple-500"
-                      : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200/80 dark:border-white/5"
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
+        {/* ═══ 2. FILTER & SEARCH CONTROLS (NO TRUNCATION!) ═══ */}
+        <section aria-label="Project Filters and Search" className="space-y-3">
+          <div className="p-3 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+            {/* Category Tabs: Natural flex wrap with complete text (NO TRUNCATION ELLIPSIS) */}
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+              {categoryTabs.map((tab) => {
+                const isSelected = selectedCategory === tab.id;
+                return (
+                  <button
+                    type="button"
+                    key={tab.id}
+                    onClick={() => setSelectedCategory(tab.id)}
+                    className={`px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap active:scale-95 cursor-pointer ${
+                      isSelected
+                        ? "bg-purple-600 text-white shadow-sm shadow-purple-500/30 dark:bg-purple-500"
+                        : "bg-slate-100 hover:bg-slate-200/80 dark:bg-slate-800 dark:hover:bg-slate-700/80 text-slate-700 dark:text-slate-200 border border-slate-200/80 dark:border-slate-700/60"
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                );
+              })}
             </div>
 
-            {/* Desktop / Tablet: horizontal row */}
-            <div className="hidden sm:flex items-center gap-1.5">
-              {categoryTabs.map((tab) => (
+            {/* Search Box with instant clear button */}
+            <div className="relative w-full md:w-72 shrink-0">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                placeholder={language === "te" ? "ప్రాజెక్ట్‌లను శోధించండి..." : language === "hi" ? "परियोजनाएं खोजें..." : "Search initiatives..."}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-9 pr-8 py-2 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500/40"
+              />
+              {searchQuery && (
                 <button
-                  key={tab.id}
-                  onClick={() => setSelectedCategory(tab.id)}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
-                    selectedCategory === tab.id
-                      ? "bg-purple-600 text-white shadow-md shadow-purple-500/20 dark:bg-purple-500"
-                      : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200/80 dark:border-white/5"
-                  }`}
+                  type="button"
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                  aria-label="Clear search"
                 >
-                  {tab.label}
+                  <X className="w-3.5 h-3.5" />
                 </button>
-              ))}
+              )}
             </div>
           </div>
+        </section>
 
-          {/* Search Box */}
-          <div className="relative w-full md:w-72">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              placeholder={language === "te" ? "ప్రాజెక్ట్‌లను శోధించండి..." : language === "hi" ? "परियोजनाएं खोजें..." : "Search projects..."}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500/30"
-            />
-          </div>
-        </div>
-
-        {/* 3. Projects Grid */}
+        {/* ═══ 3. PROJECTS GRID ═══ */}
         {loading ? (
-          <div className="min-h-[40vh] flex items-center justify-center">
+          <div className="min-h-[35vh] flex items-center justify-center">
             <div className="text-center space-y-3">
-              <Loader2 className="w-10 h-10 animate-spin text-purple-500 mx-auto" />
+              <Loader2 className="w-8 h-8 animate-spin text-purple-600 dark:text-purple-400 mx-auto" />
               <p className="text-slate-500 dark:text-slate-400 text-xs font-mono">
                 {projectsPage.fetching || "Loading active initiatives..."}
               </p>
             </div>
           </div>
         ) : filteredProjects.length === 0 ? (
-          <div className="min-h-[30vh] flex flex-col items-center justify-center p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-center space-y-3">
-            <Filter className="w-10 h-10 text-slate-400" />
-            <h3 className="text-lg font-bold text-slate-800 dark:text-white">
-              {language === "te" ? "ప్రాజెక్ట్‌లు ఏవీ కనుగొనబడలేదు" : language === "hi" ? "कोई परियोजना नहीं मिली" : "No projects found"}
+          <div className="min-h-[25vh] flex flex-col items-center justify-center p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center space-y-3">
+            <Filter className="w-8 h-8 text-slate-400" />
+            <h3 className="text-base sm:text-lg font-bold text-slate-800 dark:text-white">
+              {language === "te" ? "ప్రాజెక్ట్‌లు ఏవీ కనుగొనబడలేదు" : language === "hi" ? "कोई परियोजना नहीं मिली" : "No initiatives found"}
             </h3>
             <p className="text-slate-500 text-xs max-w-sm">
               {language === "te" ? "మీ శోధనకు సరిపోయే సేవా ప్రాజెక్ట్‌లు ఏవీ లేవు." : language === "hi" ? "आपकी खोज से मेल खाने वाली कोई परियोजना नहीं मिली।" : "No active initiatives match your selected filter or search query."}
             </p>
             <button
+              type="button"
               onClick={() => {
                 setSelectedCategory("ALL");
                 setSearchQuery("");
@@ -466,7 +476,7 @@ export default function NgoProjectsPage() {
             </button>
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
             {filteredProjects.map((project) => {
               const displayTitle = getProjTitle(project);
               const displayDesc = getProjDesc(project);
@@ -476,11 +486,11 @@ export default function NgoProjectsPage() {
               return (
                 <div
                   key={project.id}
-                  className="bg-white dark:bg-slate-900/90 border border-slate-200/90 dark:border-white/10 hover:border-purple-500/40 dark:hover:border-purple-500/40 rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl flex flex-col justify-between group transition-all duration-300 hover:-translate-y-1.5 text-left"
+                  className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-purple-400/50 dark:hover:border-purple-500/50 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl flex flex-col justify-between group transition-all duration-300 text-left"
                 >
                   <div>
-                    {/* Cover image & Floating Badges */}
-                    <div className="relative aspect-video overflow-hidden bg-slate-950">
+                    {/* Cover image & Category Tag */}
+                    <div className="relative aspect-[16/10] overflow-hidden bg-slate-950">
                       {project.imageUrl ? (
                         <Image
                           src={encodeSrc(project.imageUrl)}
@@ -496,16 +506,10 @@ export default function NgoProjectsPage() {
                         </div>
                       )}
 
-                      {/* Status Tag */}
-                      <div className="absolute top-3.5 right-3.5 bg-slate-950/80 backdrop-blur-md border border-white/20 text-amber-400 text-[10px] font-bold font-mono uppercase px-3 py-1 rounded-full shadow-md flex items-center gap-1">
-                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                        <span>{language === "te" ? "క్రియాశీలం" : language === "hi" ? "सक्रिय" : project.status}</span>
-                      </div>
-
-                      {/* Category Pill */}
+                      {/* Clean Category Chip */}
                       {project.category && (
-                        <div className="absolute bottom-3.5 left-3.5 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider text-white bg-slate-950/90 backdrop-blur-md border border-white/30 shadow-xl flex items-center gap-1.5 font-mono">
-                          <span className={`w-2 h-2 rounded-full ${
+                        <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-white bg-slate-950/85 backdrop-blur-md border border-white/20 shadow-md flex items-center gap-1.5">
+                          <span className={`w-1.5 h-1.5 rounded-full ${
                             project.category.toUpperCase() === "CHILDREN_CARE" ? "bg-amber-400" :
                             project.category.toUpperCase() === "HOSPITAL" ? "bg-blue-400" :
                             project.category.toUpperCase() === "ASHRAMAM" ? "bg-pink-400" :
@@ -515,27 +519,36 @@ export default function NgoProjectsPage() {
                           <span>{getCategoryLabel(project.category)}</span>
                         </div>
                       )}
+
+                      {/* Active Status Pill */}
+                      <div className="absolute top-3 right-3 bg-slate-950/85 backdrop-blur-md border border-emerald-500/40 text-emerald-300 text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full shadow-xs flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                        <span>{language === "te" ? "క్రియాశీలం" : language === "hi" ? "सक्रिय" : "Active"}</span>
+                      </div>
                     </div>
 
                     {/* Content Details */}
-                    <div className="p-6 space-y-3.5 text-left">
-                      {/* Location / Beneficiary indicator */}
-                      {(displayLoc || displayBen) && (
-                        <div className="flex flex-wrap items-center gap-3 text-[11px] text-slate-500 dark:text-slate-400 font-semibold">
-                          <span className="flex items-center gap-1">
-                            <MapPin className="w-3.5 h-3.5 text-red-500 flex-shrink-0" />
-                            <span className="truncate max-w-[160px]">{displayLoc}</span>
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Users className="w-3.5 h-3.5 text-purple-500 flex-shrink-0" />
-                            <span>{displayBen}</span>
-                          </span>
-                        </div>
-                      )}
+                    <div className="p-4 sm:p-5 space-y-3 text-left">
+                      {/* Location & Beneficiaries: Fully readable (NO TRUNCATION!) */}
+                      <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[11px] font-semibold">
+                          <MapPin className="w-3 h-3 text-rose-500 shrink-0" />
+                          <span>{displayLoc}</span>
+                        </span>
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-purple-500/10 text-purple-700 dark:text-purple-300 text-[11px] font-semibold">
+                          <Users className="w-3 h-3 text-purple-500 shrink-0" />
+                          <span>{displayBen}</span>
+                        </span>
+                      </div>
 
-                      <h3 className="text-xl font-extrabold text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-300 transition-colors leading-snug">
-                        {displayTitle}
-                      </h3>
+                      <Link
+                        href={`/ngo/projects/${project.id}`}
+                        className="block group/link"
+                      >
+                        <h3 className="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white group-hover/link:text-purple-600 dark:group-hover/link:text-purple-400 transition-colors leading-snug">
+                          {displayTitle}
+                        </h3>
+                      </Link>
 
                       <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-sm line-clamp-3 leading-relaxed">
                         {displayDesc}
@@ -543,11 +556,12 @@ export default function NgoProjectsPage() {
                     </div>
                   </div>
 
-                  <div className="p-6 pt-0 space-y-2.5">
-                    <div className="flex gap-2.5">
+                  {/* Refined Action Footer */}
+                  <div className="p-4 sm:p-5 pt-0 space-y-2">
+                    <div className="grid grid-cols-2 gap-2">
                       <Link
                         href={`/ngo/donations?project=${project.id}`}
-                        className="flex-1 py-3 bg-gradient-to-r from-red-500 via-pink-600 to-purple-600 hover:from-red-600 hover:to-purple-700 text-white font-bold text-center rounded-xl text-xs transition-all shadow-md shadow-purple-500/10 flex items-center justify-center gap-1.5 hover:scale-[1.02] active:scale-[0.98]"
+                        className="py-2.5 px-3 bg-gradient-to-r from-rose-600 to-purple-600 hover:from-rose-500 hover:to-purple-500 text-white font-bold text-center rounded-xl text-xs transition-all shadow-xs flex items-center justify-center gap-1.5 active:scale-95"
                       >
                         <Heart className="w-3.5 h-3.5 fill-current" />
                         <span>{projectsPage.donateBtn || (language === "te" ? "విరాళం ఇవ్వండి" : language === "hi" ? "दान करें" : "Donate")}</span>
@@ -555,7 +569,7 @@ export default function NgoProjectsPage() {
                       
                       <Link
                         href={`/ngo/volunteers?project=${project.id}`}
-                        className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-white/10 font-bold text-center rounded-xl text-xs transition-all flex items-center justify-center gap-1.5 hover:scale-[1.02] active:scale-[0.98]"
+                        className="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-800 dark:text-slate-200 border border-slate-200/80 dark:border-slate-700 font-bold text-center rounded-xl text-xs transition-all flex items-center justify-center gap-1.5 active:scale-95"
                       >
                         <Users className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
                         <span>{projectsPage.volunteerBtn || (language === "te" ? "వాలంటీర్" : language === "hi" ? "स्वयंसेवक" : "Volunteer")}</span>
@@ -564,10 +578,11 @@ export default function NgoProjectsPage() {
 
                     <Link
                       href={`/ngo/projects/${project.id}`}
-                      className="w-full py-2.5 bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/30 dark:hover:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200/80 dark:border-purple-800/50 font-bold text-center rounded-xl text-xs transition-all flex items-center justify-center gap-2 hover:scale-[1.01] active:scale-[0.99]"
+                      className="w-full py-2 bg-purple-50/70 hover:bg-purple-100 dark:bg-purple-950/30 dark:hover:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200/70 dark:border-purple-800/50 font-bold text-center rounded-xl text-xs transition-all flex items-center justify-center gap-1.5 active:scale-98"
                     >
                       <Eye className="w-3.5 h-3.5" />
-                      <span>{language === "te" ? "ప్రాజెక్ట్ వివరాలు & లాగ్స్ చూడండి" : language === "hi" ? "परियोजना विवरण और लॉग देखें" : "View Project Details & Logs"}</span>
+                      <span>{language === "te" ? "ప్రాజెక్ట్ వివరాలు & లాగ్స్ చూడండి" : language === "hi" ? "परियोजना विवरण और लॉग देखें" : "View Story, Photos & Logs"}</span>
+                      <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
                     </Link>
                   </div>
                 </div>
@@ -576,28 +591,31 @@ export default function NgoProjectsPage() {
           </div>
         )}
 
-        {/* 4. Tax Exemption & Verification Trust Footer Banner */}
-        <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-purple-500/10 via-indigo-500/5 to-blue-500/10 dark:from-slate-900 dark:via-indigo-950/50 dark:to-slate-900 border border-purple-200/80 dark:border-white/10 flex flex-col md:flex-row items-center justify-between gap-6 text-left shadow-lg">
+        {/* ═══ 4. TAX EXEMPTION & COMPLIANCE FOOTER BANNER ═══ */}
+        <section
+          aria-label="Tax Exemption Certification"
+          className="p-5 sm:p-8 rounded-3xl bg-gradient-to-br from-emerald-50/70 via-white to-teal-50/40 dark:from-slate-900 dark:via-slate-900 dark:to-emerald-950/25 border border-emerald-200/90 dark:border-emerald-800/70 flex flex-col md:flex-row items-center justify-between gap-5 text-left shadow-lg"
+        >
           <div className="space-y-2 max-w-xl">
-            <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
+            <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-300">
               <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
               <span>Section 80G Tax Exemption Certified</span>
             </div>
-            <h3 className="text-xl font-black text-slate-900 dark:text-white">
+            <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
               Every Donation is Tax-Deductible & Fully Audited
             </h3>
             <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-sm leading-relaxed">
-              KCM Society NGO is registered under Regd No: 206/2024 with 12A & 80G(5)(VI) approvals. Instant tax receipts are generated for all campaign donations.
+              KCM Society NGO is registered under Regd No: 206/2024 with 12A & 80G(5)(VI) approvals. Instant 80G tax receipts are generated for all campaign donations.
             </p>
           </div>
 
           <Link
             href="/ngo/donations"
-            className="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl shadow-md text-xs whitespace-nowrap transition-all hover:scale-105"
+            className="w-full md:w-auto px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold rounded-xl shadow-md text-xs sm:text-sm whitespace-nowrap transition-all text-center active:scale-95 shrink-0"
           >
             Support Active Relief Drives
           </Link>
-        </div>
+        </section>
 
       </div>
     </div>

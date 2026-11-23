@@ -37,7 +37,6 @@ export default function robots(): MetadataRoute.Robots {
           "/ngo/videos",
           "/ngo/volunteers",
           "/contact",
-          "/give",
           "/privacy",
           "/terms",
         ],

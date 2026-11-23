@@ -185,6 +185,11 @@ const nextConfig = {
   async redirects() {
     return [
       {
+        source: '/give',
+        destination: '/member/give',
+        permanent: true,
+      },
+      {
         source: '/about/contact',
         destination: '/contact',
         permanent: true,

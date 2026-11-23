@@ -176,6 +176,16 @@ export async function completeDonationSession(
       },
     });
 
+    // h. Atomically increment DonationPurpose raisedAmount in real time
+    if (existingSession.purposeId) {
+      await tx.donationPurpose.update({
+        where: { id: existingSession.purposeId },
+        data: {
+          raisedAmount: { increment: existingSession.amount },
+        },
+      }).catch(() => {});
+    }
+
     return { donation: donationRecord, receipt: receiptRecord };
   });
 
@@ -211,6 +221,18 @@ export async function completeDonationSession(
       socketPayload.type,
       socketPayload.payload,
       `member:${existingSession.memberId || 'guest'}`
+    );
+
+    // Broadcast live event to open NGO donation pages
+    await safeTriggerCompanionEvent(
+      'donation.success',
+      {
+        ...socketPayload.payload,
+        amount: existingSession.amount,
+        purposeId: existingSession.purpose.id,
+        purposeCode: existingSession.purpose.code,
+      },
+      'ngo:donations'
     );
 
     await safeTriggerCompanionEvent(

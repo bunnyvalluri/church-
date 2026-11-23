@@ -209,7 +209,7 @@ self.addEventListener("fetch", (event) => {
       url.pathname.startsWith("/ngo") ||
       url.pathname.startsWith("/about") ||
       url.pathname.startsWith("/prayer") ||
-      url.pathname.startsWith("/give") ||
+      url.pathname.startsWith("/give/receipt") ||
       url.pathname.startsWith("/api/events") ||
       url.pathname.startsWith("/api/sermons") ||
       url.pathname.startsWith("/api/gallery") ||

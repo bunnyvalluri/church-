@@ -33,9 +33,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/get-involved/volunteer",    priority: 0.7, changeFrequency: "monthly", lastModified: new Date("2026-08-01") },
     { path: "/get-involved/serve",        priority: 0.7, changeFrequency: "monthly", lastModified: new Date("2026-08-01") },
 
-    // ── Membership & Support ──────────────────────────────────────────────────
+    // ── Membership ────────────────────────────────────────────────────────────
     { path: "/membership",                priority: 0.8, changeFrequency: "monthly", lastModified: new Date("2026-07-01") },
-    { path: "/give",                      priority: 0.7, changeFrequency: "monthly", lastModified: new Date("2026-08-01") },
 
     // ── Locations ─────────────────────────────────────────────────────────────
     { path: "/locations",                 priority: 0.9, changeFrequency: "monthly", lastModified: new Date("2026-08-01") },

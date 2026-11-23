@@ -74,15 +74,15 @@ const loadedImagesCache = new Set<string>();
 
 // Category config
 const CATEGORIES = [
-  { label: "All Photos", value: "ALL" },
-  { label: "Sneha Charitable Trust", value: "SNEHA-CHARITABLE-TRUST" },
-  { label: "NIMS Hospital", value: "NIMS-HOSPITAL" },
-  { label: "Govt Hospital", value: "GOVT-HOSPITAL" },
-  { label: "Gandhi Hospital", value: "GANDHI-HOSPITAL" },
-  { label: "Bethany Ashramam", value: "ASHRAMAM" },
-  { label: "Home for Disabled (Secunderabad)", value: "DISABLED-SECUNDERABAD" },
-  { label: "Missionaries of Charity", value: "MISSIONARIES-OF-CHARITY" },
-  { label: "Home for Disabled Ashramam", value: "DISABLED-AASHRAMAM" },
+  { label: "All Photos", value: "ALL", shortLabel: "All Photos" },
+  { label: "Sneha Charitable Trust", value: "SNEHA-CHARITABLE-TRUST", shortLabel: "Sneha Trust" },
+  { label: "NIMS Hospital", value: "NIMS-HOSPITAL", shortLabel: "NIMS Hospital" },
+  { label: "Govt Hospital", value: "GOVT-HOSPITAL", shortLabel: "Govt Hospital" },
+  { label: "Gandhi Hospital", value: "GANDHI-HOSPITAL", shortLabel: "Gandhi Hospital" },
+  { label: "Bethany Ashramam", value: "ASHRAMAM", shortLabel: "Bethany Ashramam" },
+  { label: "Home for Disabled (Secunderabad)", value: "DISABLED-SECUNDERABAD", shortLabel: "Disabled (Secunderabad)" },
+  { label: "Missionaries of Charity", value: "MISSIONARIES-OF-CHARITY", shortLabel: "Charity Mission" },
+  { label: "Home for Disabled Ashramam", value: "DISABLED-AASHRAMAM", shortLabel: "Disabled Ashramam" },
 ];
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -169,6 +169,62 @@ const CATEGORY_STYLES: Record<string, {
   },
 };
 
+const getCategoryLabel = (
+  cat: (typeof CATEGORIES)[number],
+  lang: string,
+  short = false
+) => {
+  if (lang === "te") {
+    switch (cat.value) {
+      case "ALL":
+        return "అన్ని ఫోటోలు";
+      case "SNEHA-CHARITABLE-TRUST":
+        return short ? "స్నేహ ట్రస్ట్" : "స్నేహ చారిటబుల్ ట్రస్ట్";
+      case "NIMS-HOSPITAL":
+        return "నిమ్స్ హాస్పిటల్";
+      case "GOVT-HOSPITAL":
+        return "ప్రభుత్వ హాస్పిటల్";
+      case "GANDHI-HOSPITAL":
+        return "గాంధీ హాస్పిటల్";
+      case "ASHRAMAM":
+        return "బెథానీ ఆశ్రమం";
+      case "DISABLED-SECUNDERABAD":
+        return short ? "దివ్యాంగులు (సికింద్రాబాద్)" : "హోమ్ ఫర్ డిజేబుల్డ్ (సికింద్రాబాద్)";
+      case "MISSIONARIES-OF-CHARITY":
+        return "మిషనరీస్ ఆఫ్ చారిటీ";
+      case "DISABLED-AASHRAMAM":
+        return "దివ్యాంగుల ఆశ్రమం";
+      default:
+        return cat.label;
+    }
+  }
+  if (lang === "hi") {
+    switch (cat.value) {
+      case "ALL":
+        return "सभी तस्वीरें";
+      case "SNEHA-CHARITABLE-TRUST":
+        return short ? "स्नेहा ट्रस्ट" : "स्नेहा चैरिटेबल ट्रस्ट";
+      case "NIMS-HOSPITAL":
+        return "निम्स अस्पताल";
+      case "GOVT-HOSPITAL":
+        return "सरकारी अस्पताल";
+      case "GANDHI-HOSPITAL":
+        return "गांधी अस्पताल";
+      case "ASHRAMAM":
+        return "बेथानी आश्रम";
+      case "DISABLED-SECUNDERABAD":
+        return short ? "दिव्यांग (सिकंदराबाद)" : "होम फॉर डिसेबल्ड (सिकंदराबाद)";
+      case "MISSIONARIES-OF-CHARITY":
+        return "मिशनरीज ऑफ चैरिटी";
+      case "DISABLED-AASHRAMAM":
+        return "दिव्यांग आश्रम";
+      default:
+        return cat.label;
+    }
+  }
+  return short ? (cat.shortLabel || cat.label) : cat.label;
+};
+
 interface GalleryItem {
   id: string;
   imageUrl: string;
@@ -205,9 +261,12 @@ const GalleryCard = React.memo(function GalleryCard({
       onKeyDown={(e) => e.key === "Enter" && onClick()}
       aria-label={`Open ${item.title}`}
     >
-      {/* Category badge */}
-      <div className={`absolute top-2 left-2 sm:top-3 sm:left-3 z-20 px-2 py-0.5 sm:px-2.5 sm:py-0.5 rounded-full text-white text-[9px] sm:text-[10px] font-black uppercase tracking-wider bg-gradient-to-r ${CATEGORY_COLORS[item.category] ?? "from-slate-600 to-slate-500"} shadow-md transition-transform duration-300 group-hover:scale-105 backdrop-blur-md`}>
-        {CATEGORIES.find((c) => c.value === item.category)?.label || item.category}
+      {/* Category badge - Glassmorphic minimal chip with semantic color dot */}
+      <div className="absolute top-2 left-2 sm:top-2.5 sm:left-2.5 z-20 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-md sm:rounded-lg text-white/95 text-[9px] sm:text-[10px] font-bold tracking-wide bg-slate-950/75 hover:bg-slate-950/90 backdrop-blur-md border border-white/20 shadow-md flex items-center gap-1.5 transition-all duration-200">
+        <span className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${CATEGORY_COLORS[item.category] ?? "from-purple-400 to-indigo-400"} shrink-0`} />
+        <span className="truncate max-w-[110px] sm:max-w-[140px]">
+          {CATEGORIES.find((c) => c.value === item.category)?.shortLabel || item.category}
+        </span>
       </div>
 
       {/* Delete button (Admin Mode only) */}
@@ -727,10 +786,17 @@ export default function NgoGalleryPage() {
             <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base leading-relaxed">
               {ngoT.gallerySubtitle || "Witness our physical ministries in action. Browse through photographs showing food distributions, patient healthcare kits, and Ashramam support projects."}
             </p>
-            <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400 font-mono pt-1">
-              <span>{filteredItems.length} {language === "te" ? "ఫోటోలు ప్రదర్శించబడ్డాయి" : language === "hi" ? "तस्वीरें प्रदर्शित" : "photos displayed"}</span>
-              <span>•</span>
-              <span>{categoryCounts.ALL || 0} {language === "te" ? "మొత్తం ఫోటోలు" : language === "hi" ? "कुल तस्वीरें" : "total photos"}</span>
+            <div className="flex flex-wrap items-center gap-2 pt-1 text-xs">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-100 dark:bg-purple-900/40 border border-purple-200 dark:border-purple-800/60 text-purple-800 dark:text-purple-300 font-bold">
+                <span className="w-1.5 h-1.5 rounded-full bg-purple-600 dark:bg-purple-400 animate-pulse" />
+                {filteredItems.length} {language === "te" ? "ఫోటోలు" : language === "hi" ? "तस्वीरें" : "Photos"}
+              </span>
+              <span className="text-slate-300 dark:text-slate-700">•</span>
+              <span className="text-slate-600 dark:text-slate-400 font-medium">
+                {selectedCategory === "ALL"
+                  ? (language === "te" ? "8 సహాయ రంగాల నుండి ఫోటోలు" : language === "hi" ? "8 राहत अभियानों से फील्ड तस्वीरें" : "Documented across 8 relief initiatives")
+                  : (language === "te" ? "ఎంచుకున్న సేవా రంగం" : language === "hi" ? "चयनित सेवा क्षेत्र" : "Filtered by service field")}
+              </span>
             </div>
           </div>
 
@@ -742,12 +808,13 @@ export default function NgoGalleryPage() {
               placeholder={language === "te" ? "ఫోటో శీర్షికను శోధించండి..." : language === "hi" ? "तस्वीर शीर्षक खोजें..." : "Search photo title..."}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-9 py-2.5 text-xs rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500 transition-all shadow-sm"
+              className="w-full pl-10 pr-9 py-2.5 text-base sm:text-xs rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500 transition-all shadow-sm"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}
                 className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 text-slate-400 hover:text-slate-600 dark:hover:text-white"
+                aria-label="Clear search"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -755,100 +822,33 @@ export default function NgoGalleryPage() {
           </div>
         </div>
 
-        {/* Category Filter Chips */}
+        {/* Category Filter Chips Bar - Fluid, horizontal swipeable with zero truncation */}
         <div className="sticky top-[104px] sm:top-[120px] z-30 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-xl py-2.5 -mx-4 px-4 sm:mx-0 sm:px-0 border-y border-slate-200/60 dark:border-white/10 shadow-sm">
-
-          {/* Mobile: 2-column structured grid */}
-          <div className="sm:hidden grid grid-cols-2 gap-1.5">
+          <div className="flex items-center gap-2 overflow-x-auto scrollbar-none py-1 px-1 scroll-smooth overscroll-x-contain">
+            <div className="flex items-center gap-1.5 text-xs text-slate-400 mr-1 uppercase font-mono tracking-wider shrink-0">
+              <Filter className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">{language === "te" ? "ఫిల్టర్" : language === "hi" ? "फ़िल्टर" : "Filter"}</span>
+            </div>
             {CATEGORIES.map((cat) => {
               const count = categoryCounts[cat.value] || 0;
               const isSelected = selectedCategory === cat.value;
               const styles = CATEGORY_STYLES[cat.value] || CATEGORY_STYLES["ALL"];
-              const localizedLabel =
-                language === "te"
-                  ? cat.value === "ALL" ? "అన్ని ఫోటోలు" :
-                    cat.value === "SNEHA-CHARITABLE-TRUST" ? "స్నేహ చారిటబుల్ ట్రస్ట్" :
-                    cat.value === "NIMS-HOSPITAL" ? "నిమ్స్ హాస్పిటల్" :
-                    cat.value === "GOVT-HOSPITAL" ? "ప్రభుత్వ హాస్పిటల్" :
-                    cat.value === "GANDHI-HOSPITAL" ? "గాంధీ హాస్పిటల్" :
-                    cat.value === "ASHRAMAM" ? "బెథానీ ఆశ్రమం" :
-                    cat.value === "DISABLED-SECUNDERABAD" ? "హోమ్ ఫర్ డిజేబుల్డ్ (సికింద్రాబాద్)" :
-                    cat.value === "MISSIONARIES-OF-CHARITY" ? "మిషనరీస్ ఆఫ్ చారిటీ" : "దివ్యాంగుల ఆశ్రమం"
-                  : language === "hi"
-                  ? cat.value === "ALL" ? "सभी तस्वीरें" :
-                    cat.value === "SNEHA-CHARITABLE-TRUST" ? "स्नेहा चैरिटेबल ट्रस्ट" :
-                    cat.value === "NIMS-HOSPITAL" ? "निम्स अस्पताल" :
-                    cat.value === "GOVT-HOSPITAL" ? "सरकारी अस्पताल" :
-                    cat.value === "GANDHI-HOSPITAL" ? "गांधी अस्पताल" :
-                    cat.value === "ASHRAMAM" ? "बेथानी आश्रम" :
-                    cat.value === "DISABLED-SECUNDERABAD" ? "होम फॉर डिसेबल्ड (सिकंदराबाद)" :
-                    cat.value === "MISSIONARIES-OF-CHARITY" ? "मिशनरीज ऑफ चैरिटी" : "दिव्यांग आश्रम"
-                  : cat.label;
+              const localizedLabel = getCategoryLabel(cat, language, true);
 
               return (
                 <button
                   key={cat.value}
                   id={`gallery-filter-${cat.value.toLowerCase()}`}
                   onClick={() => setSelectedCategory(cat.value)}
-                  className={`px-2.5 py-2 text-[11px] font-bold rounded-xl border transition-all duration-200 flex items-center justify-between gap-1 cursor-pointer min-w-0 ${
+                  className={`px-3.5 py-2 sm:px-4 sm:py-2.5 text-xs font-bold rounded-xl sm:rounded-2xl border transition-all duration-200 flex items-center gap-2 shrink-0 cursor-pointer whitespace-nowrap active:scale-95 ${
                     isSelected ? styles.active : styles.inactive
                   }`}
                 >
-                  <div className="flex items-center gap-1.5 truncate min-w-0">
-                    <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${isSelected ? "bg-white" : styles.dot}`} />
-                    <span className="truncate">{localizedLabel}</span>
-                  </div>
-                  <span className={`px-1.5 py-0.5 rounded-md text-[9px] font-mono flex-shrink-0 ${isSelected ? styles.badgeActive : styles.badgeInactive}`}>
+                  <span className={`w-2 h-2 rounded-full shrink-0 ${isSelected ? "bg-white animate-pulse" : styles.dot}`} />
+                  <span>{localizedLabel}</span>
+                  <span className={`px-2 py-0.5 rounded-lg text-[10px] font-mono transition-colors ${isSelected ? styles.badgeActive : styles.badgeInactive}`}>
                     {count}
                   </span>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Desktop: single-row scroll */}
-          <div className="hidden sm:flex items-center gap-2.5 overflow-x-auto scrollbar-none">
-            <div className="flex items-center gap-1.5 text-xs text-slate-400 mr-1 uppercase font-mono tracking-wider flex-shrink-0">
-              <Filter className="w-3.5 h-3.5" />
-              <span>{language === "te" ? "ఫిల్టర్" : language === "hi" ? "फ़िल्टर" : "Filter"}</span>
-            </div>
-            {CATEGORIES.map((cat) => {
-              const count = categoryCounts[cat.value] || 0;
-              const isSelected = selectedCategory === cat.value;
-              const styles = CATEGORY_STYLES[cat.value] || CATEGORY_STYLES["ALL"];
-              const localizedLabel =
-                language === "te"
-                  ? cat.value === "ALL" ? "అన్ని ఫోటోలు" :
-                    cat.value === "SNEHA-CHARITABLE-TRUST" ? "స్నేహ చారిటబుల్ ట్రస్ట్" :
-                    cat.value === "NIMS-HOSPITAL" ? "నిమ్స్ హాస్పిటల్" :
-                    cat.value === "GOVT-HOSPITAL" ? "ప్రభుత్వ హాస్పిటల్" :
-                    cat.value === "GANDHI-HOSPITAL" ? "గాంధీ హాస్పిటల్" :
-                    cat.value === "ASHRAMAM" ? "బెథానీ ఆశ్రమం" :
-                    cat.value === "DISABLED-SECUNDERABAD" ? "హోమ్ ఫర్ డిజేబుల్డ్ (సికింద్రాబాద్)" :
-                    cat.value === "MISSIONARIES-OF-CHARITY" ? "మిషనరీస్ ఆఫ్ చారిటీ" : "దివ్యాంగుల ఆశ్రమం"
-                  : language === "hi"
-                  ? cat.value === "ALL" ? "सभी तस्वीरें" :
-                    cat.value === "SNEHA-CHARITABLE-TRUST" ? "स्नेहा चैरिटेबल ट्रस्ट" :
-                    cat.value === "NIMS-HOSPITAL" ? "निम्स अस्पताल" :
-                    cat.value === "GOVT-HOSPITAL" ? "सरकारी अस्पताल" :
-                    cat.value === "GANDHI-HOSPITAL" ? "गांधी अस्पताल" :
-                    cat.value === "ASHRAMAM" ? "बेथानी आश्रम" :
-                    cat.value === "DISABLED-SECUNDERABAD" ? "होम फॉर डिसेबल्ड (सिकंदराबाद)" :
-                    cat.value === "MISSIONARIES-OF-CHARITY" ? "मिशनरीज ऑफ चैरिटी" : "दिव्यांग आश्रम"
-                  : cat.label;
-
-              return (
-                <button
-                  key={cat.value}
-                  id={`gallery-filter-${cat.value.toLowerCase()}-desktop`}
-                  onClick={() => setSelectedCategory(cat.value)}
-                  className={`px-4 py-2.5 text-xs font-bold rounded-2xl border transition-all duration-300 flex items-center gap-2.5 flex-shrink-0 cursor-pointer ${
-                    isSelected ? styles.active : styles.inactive
-                  }`}
-                >
-                  <span className={`w-2 h-2 rounded-full flex-shrink-0 ${isSelected ? "bg-white animate-pulse" : styles.dot}`} />
-                  <span>{localizedLabel}</span>
-                  <span className={`px-2 py-0.5 rounded-lg text-[10px] font-mono transition-colors ${isSelected ? styles.badgeActive : styles.badgeInactive}`}>{count}</span>
                 </button>
               );
             })}

@@ -57,7 +57,6 @@ test.describe("Universal Mobile & Cross-Browser Compatibility Verification", () 
       "/prayer",
       "/gallery",
       "/ngo",
-      "/give",
       "/login",
       "/register",
       "/offline"

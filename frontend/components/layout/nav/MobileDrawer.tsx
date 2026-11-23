@@ -175,7 +175,7 @@ const MobileDrawer = memo(function MobileDrawer({
         </div>
 
         {/* ── 2. Scrollable Body ── */}
-        <div className="flex-1 overflow-y-auto overscroll-contain px-3.5 py-3.5 sm:px-5 sm:py-4 space-y-4 pb-6 custom-scrollbar font-sans">
+        <div className="flex-1 overflow-y-auto overscroll-contain px-3.5 py-3 sm:px-5 sm:py-3.5 space-y-3.5 pb-8 sm:pb-10 custom-scrollbar font-sans">
           
           {/* ── A. SLEEK 1-ROW SEGMENTED LANGUAGE SELECTOR (INSTANT ACCESSIBILITY, ZERO WASTED SPACE) ── */}
           <div className="bg-slate-100/80 dark:bg-white/[0.05] p-1 rounded-2xl border border-slate-200/80 dark:border-white/10">
@@ -189,7 +189,7 @@ const MobileDrawer = memo(function MobileDrawer({
                     onClick={() => handleLanguageChange(lang.code)}
                     aria-pressed={isSelected}
                     className={cn(
-                      "py-2 px-2 rounded-xl text-xs sm:text-[13px] transition-all duration-200 cursor-pointer flex items-center justify-center gap-1.5 min-h-[38px] select-none active:scale-[0.98]",
+                      "py-1.5 px-2 rounded-xl text-xs sm:text-[13px] transition-all duration-200 cursor-pointer flex items-center justify-center gap-1.5 min-h-[36px] select-none active:scale-[0.98]",
                       isSelected
                         ? "bg-violet-600 text-white font-extrabold shadow-sm shadow-violet-600/30"
                         : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-white/10 font-medium"
@@ -212,10 +212,10 @@ const MobileDrawer = memo(function MobileDrawer({
             </div>
           </div>
 
-          {/* ── B. PRIMARY NAVIGATION (HERO OF THE DRAWER - IMMEDIATELY VISIBLE ON LOAD) ── */}
+          {/* ── B. PRIMARY NAVIGATION (COMPACT, TOUCH-OPTIMIZED, NO WASTED VERTICAL PADDING) ── */}
           <div>
-            <div className="px-1 mb-2 flex items-center justify-between">
-              <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 font-outfit">
+            <div className="px-1 mb-1.5 flex items-center justify-between">
+              <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 font-outfit">
                 Navigation
               </span>
             </div>
@@ -235,25 +235,25 @@ const MobileDrawer = memo(function MobileDrawer({
                       onClick={onClose}
                       aria-current={isActive ? "page" : undefined}
                       className={cn(
-                        "group relative flex items-center justify-between px-3.5 py-2.5",
-                        "text-[13px] min-[360px]:text-[14px] font-bold transition-all duration-200 select-none",
-                        "min-h-[44px]", // WCAG 2.2 AA compliant touch target
+                        "group relative flex items-center justify-between px-3 py-2",
+                        "text-[13px] sm:text-[14px] font-bold transition-all duration-200 select-none",
+                        "min-h-[42px]",
                         isActive
                           ? "bg-violet-600/10 dark:bg-violet-500/20 text-violet-700 dark:text-violet-300 font-extrabold"
                           : "text-slate-800 dark:text-slate-200 hover:bg-white/90 dark:hover:bg-white/[0.06] active:bg-slate-100 dark:active:bg-white/10"
                       )}
                     >
                       {/* Left: Icon capsule + Title */}
-                      <div className="relative z-10 flex items-center gap-3 min-w-0">
+                      <div className="relative z-10 flex items-center gap-2.5 min-w-0">
                         <div
                           className={cn(
-                            "w-7 h-7 min-[360px]:w-8 min-[360px]:h-8 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform duration-200 group-hover:scale-105",
+                            "w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-105",
                             isActive
-                              ? "bg-violet-600 text-white shadow-sm shadow-violet-600/30"
+                              ? "bg-violet-600 text-white shadow-xs shadow-violet-600/30"
                               : "bg-slate-200/80 dark:bg-white/10 text-slate-600 dark:text-slate-300"
                           )}
                         >
-                          {Icon && <Icon className="w-3.5 h-3.5 min-[360px]:w-4 min-[360px]:h-4" aria-hidden="true" />}
+                          {Icon && <Icon className="w-3.5 h-3.5" aria-hidden="true" />}
                         </div>
                         <span className="tracking-tight truncate font-sans">{item.name}</span>
                       </div>
@@ -262,13 +262,13 @@ const MobileDrawer = memo(function MobileDrawer({
                       <div className="relative z-10 flex items-center gap-1.5 shrink-0 ml-2">
                         {isActive ? (
                           <div className="flex items-center gap-1.5">
-                            <span className="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-violet-600/15 dark:bg-violet-400/20 text-violet-700 dark:text-violet-300">
+                            <span className="text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-violet-600/15 dark:bg-violet-400/20 text-violet-700 dark:text-violet-300">
                               Active
                             </span>
-                            <ChevronRight className="w-4 h-4 text-violet-600 dark:text-violet-400" />
+                            <ChevronRight className="w-3.5 h-3.5 text-violet-600 dark:text-violet-400" />
                           </div>
                         ) : (
-                          <ChevronRight className="w-4 h-4 text-slate-400 dark:text-slate-500 group-hover:text-slate-700 dark:group-hover:text-slate-300 group-hover:translate-x-0.5 transition-all" />
+                          <ChevronRight className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 group-hover:text-slate-700 dark:group-hover:text-slate-300 group-hover:translate-x-0.5 transition-all" />
                         )}
                       </div>
                     </Link>
@@ -278,48 +278,48 @@ const MobileDrawer = memo(function MobileDrawer({
             </nav>
           </div>
 
-          {/* ── C. HIGH-CONVERSION QUICK ACTIONS (PRAYER & ONLINE GIVING) ── */}
+          {/* ── C. HIGH-CONVERSION QUICK ACTIONS (ERGONOMIC HORIZONTAL CARDS — NO VERTICAL CHOP) ── */}
           <div>
-            <div className="px-1 mb-2">
-              <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 font-outfit">
+            <div className="px-1 mb-1.5">
+              <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 font-outfit">
                 Quick Actions
               </span>
             </div>
 
-            <div className="grid grid-cols-2 gap-2.5">
+            <div className="grid grid-cols-2 gap-2">
               {/* Prayer Request */}
               <Link
                 href="/prayer"
                 onClick={onClose}
-                className="p-3 rounded-2xl bg-violet-50/80 hover:bg-violet-100/90 dark:bg-violet-950/25 dark:hover:bg-violet-950/40 border border-violet-200/80 dark:border-violet-500/25 transition-all flex flex-col justify-between gap-2.5 group active:scale-[0.98] shadow-xs"
+                className="p-2.5 rounded-xl bg-violet-50/90 hover:bg-violet-100/90 dark:bg-violet-950/30 dark:hover:bg-violet-950/50 border border-violet-200/80 dark:border-violet-500/30 transition-all flex items-center gap-2.5 group active:scale-[0.98] shadow-xs"
               >
-                <div className="w-7 h-7 rounded-xl bg-violet-600 text-white flex items-center justify-center shadow-xs shadow-violet-600/20 group-hover:scale-110 transition-transform">
-                  <Heart className="w-3.5 h-3.5 fill-white/20" />
+                <div className="w-8 h-8 rounded-lg bg-violet-600 text-white flex items-center justify-center shadow-xs shadow-violet-600/20 shrink-0 group-hover:scale-105 transition-transform">
+                  <Heart className="w-4 h-4 fill-white/20" />
                 </div>
-                <div>
-                  <h4 className="text-xs font-black text-violet-950 dark:text-violet-200 leading-tight font-outfit">
+                <div className="min-w-0">
+                  <h4 className="text-xs font-black text-violet-950 dark:text-violet-100 leading-tight font-outfit truncate">
                     Prayer Request
                   </h4>
-                  <p className="text-[10px] text-violet-800/70 dark:text-violet-300/70 font-medium truncate">
+                  <p className="text-[10px] text-violet-700/80 dark:text-violet-300/70 font-medium truncate">
                     Pastoral care 24/7
                   </p>
                 </div>
               </Link>
 
-              {/* Give & Support */}
+              {/* Give & Support — Links directly to Member Giving */}
               <Link
-                href="/give"
+                href="/member/give"
                 onClick={onClose}
-                className="p-3 rounded-2xl bg-emerald-50/80 hover:bg-emerald-100/90 dark:bg-emerald-950/25 dark:hover:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-500/25 transition-all flex flex-col justify-between gap-2.5 group active:scale-[0.98] shadow-xs"
+                className="p-2.5 rounded-xl bg-emerald-50/90 hover:bg-emerald-100/90 dark:bg-emerald-950/30 dark:hover:bg-emerald-950/50 border border-emerald-200/80 dark:border-emerald-500/30 transition-all flex items-center gap-2.5 group active:scale-[0.98] shadow-xs"
               >
-                <div className="w-7 h-7 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-xs shadow-emerald-600/20 group-hover:scale-110 transition-transform">
-                  <Gift className="w-3.5 h-3.5" />
+                <div className="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center shadow-xs shadow-emerald-600/20 shrink-0 group-hover:scale-105 transition-transform">
+                  <Gift className="w-4 h-4" />
                 </div>
-                <div>
-                  <h4 className="text-xs font-black text-emerald-950 dark:text-emerald-200 leading-tight font-outfit">
+                <div className="min-w-0">
+                  <h4 className="text-xs font-black text-emerald-950 dark:text-emerald-100 leading-tight font-outfit truncate">
                     Give Online
                   </h4>
-                  <p className="text-[10px] text-emerald-800/70 dark:text-emerald-300/70 font-medium truncate">
+                  <p className="text-[10px] text-emerald-700/80 dark:text-emerald-300/70 font-medium truncate">
                     Tithes & 80G tax-exempt
                   </p>
                 </div>
@@ -327,83 +327,89 @@ const MobileDrawer = memo(function MobileDrawer({
             </div>
           </div>
 
-          {/* ── D. YOUTUBE CHANNEL BANNER (THEME-ADAPTIVE, PREMIUM LIGHT & DARK) ── */}
+          {/* ── D. YOUTUBE CHANNEL BANNER (COMPACT, THEME-ADAPTIVE) ── */}
           <a
             href="https://youtube.com/@kcmchurchshapur7107?si=NbnoJjdl5lqt7fkO"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="KCM YouTube Channel - Sunday worship, sermons & music"
-            className="p-3 rounded-2xl bg-slate-50 hover:bg-slate-100/90 dark:bg-white/[0.04] dark:hover:bg-white/[0.07] border border-slate-200/90 dark:border-white/10 hover:border-red-500/40 text-slate-900 dark:text-white transition-all shadow-xs flex items-center justify-between group active:scale-[0.99]"
+            className="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100/90 dark:bg-white/[0.04] dark:hover:bg-white/[0.07] border border-slate-200/90 dark:border-white/10 hover:border-red-500/40 text-slate-900 dark:text-white transition-all shadow-xs flex items-center justify-between group active:scale-[0.99]"
           >
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-red-600 flex items-center justify-center shrink-0 shadow-sm shadow-red-600/30 group-hover:scale-105 transition-transform">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-8 h-8 rounded-lg bg-red-600 flex items-center justify-center shrink-0 shadow-sm shadow-red-600/30 group-hover:scale-105 transition-transform">
                 <Youtube className="w-4.5 h-4.5 text-white" />
               </div>
-              <div className="text-left">
-                <div className="text-xs font-black leading-tight flex items-center gap-1.5 font-outfit">
+              <div className="text-left min-w-0">
+                <div className="text-xs font-black leading-tight flex items-center gap-1.5 font-outfit truncate">
                   <span>Watch on YouTube</span>
-                  <span className="px-1.5 py-0.2 rounded-full bg-red-500/15 dark:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/25 text-[9px] uppercase font-bold tracking-wider">
+                  <span className="px-1.5 py-0.5 rounded-full bg-red-500/15 dark:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/25 text-[9px] uppercase font-bold tracking-wider shrink-0">
                     Live
                   </span>
                 </div>
-                <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">
+                <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium truncate">
                   Sunday worship, sermons & music
                 </p>
               </div>
             </div>
-            <ExternalLink className="w-4 h-4 text-slate-400 group-hover:text-red-600 dark:group-hover:text-white group-hover:translate-x-0.5 transition-all shrink-0" />
+            <ExternalLink className="w-4 h-4 text-slate-400 group-hover:text-red-600 dark:group-hover:text-white group-hover:translate-x-0.5 transition-all shrink-0 ml-2" />
           </a>
 
-          {/* ── E. DISPLAY & APPEARANCE (COMPACT, BRAND-COHESIVE, ZERO MUSTARD-YELLOW) ── */}
-          <div className="p-3 sm:p-3.5 rounded-2xl bg-slate-50/90 dark:bg-white/[0.03] border border-slate-200/80 dark:border-white/10 space-y-2.5 shadow-xs">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5">
-                <Sun className="w-3.5 h-3.5 text-violet-600 dark:text-violet-400" />
-                <span className="text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 font-outfit">
-                  Theme & Appearance
+          {/* ── E. DISPLAY & APPEARANCE (UNIFIED SINGLE-ROW ERGONOMIC BAR — ZERO VERTICAL BLOAT) ── */}
+          <div className="p-2.5 sm:p-3 rounded-2xl bg-slate-50/90 dark:bg-white/[0.03] border border-slate-200/80 dark:border-white/10 flex items-center justify-between gap-2 shadow-xs">
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="w-7 h-7 rounded-lg bg-violet-600/10 dark:bg-violet-400/15 text-violet-600 dark:text-violet-400 flex items-center justify-center shrink-0">
+                {currentTheme === "dark" ? <Moon className="w-3.5 h-3.5" /> : <Sun className="w-3.5 h-3.5" />}
+              </div>
+              <div className="min-w-0">
+                <span className="text-xs font-black text-slate-800 dark:text-slate-200 block truncate font-outfit">
+                  Appearance
+                </span>
+                <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium capitalize">
+                  {currentTheme} Mode
                 </span>
               </div>
-              
-              {/* Palette Preferences Toggle */}
-              <PaletteToggle variant="pill" />
             </div>
 
-            <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Theme mode">
-              {/* Light Mode Button */}
-              <button
-                type="button"
-                onClick={() => handleThemeChange("light")}
-                role="radio"
-                aria-checked={currentTheme === "light"}
-                className={cn(
-                  "py-2 px-3 rounded-xl border text-xs sm:text-[13px] transition-all cursor-pointer flex items-center justify-center gap-2 min-h-[40px] select-none active:scale-[0.98]",
-                  currentTheme === "light"
-                    ? "bg-white text-slate-900 border-slate-300 shadow-sm ring-2 ring-violet-500/20 font-bold"
-                    : "bg-transparent text-slate-600 dark:text-slate-400 border-slate-200/60 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 font-medium"
-                )}
-              >
-                <Sun className={cn("w-4 h-4", currentTheme === "light" ? "text-amber-500 fill-amber-400/40" : "text-slate-400")} />
-                <span>Light</span>
-                {currentTheme === "light" && <Check className="w-3.5 h-3.5 text-violet-600 ml-0.5" />}
-              </button>
+            <div className="flex items-center gap-1.5 shrink-0">
+              {/* Segmented Light/Dark Toggle */}
+              <div className="flex items-center p-0.5 rounded-xl bg-slate-200/70 dark:bg-white/10 border border-slate-300/50 dark:border-white/10" role="radiogroup" aria-label="Theme mode">
+                <button
+                  type="button"
+                  onClick={() => handleThemeChange("light")}
+                  role="radio"
+                  aria-checked={currentTheme === "light"}
+                  className={cn(
+                    "px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 select-none cursor-pointer",
+                    currentTheme === "light"
+                      ? "bg-white text-slate-900 shadow-xs"
+                      : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                  )}
+                  aria-label="Light mode"
+                >
+                  <Sun className={cn("w-3.5 h-3.5", currentTheme === "light" ? "text-amber-500 fill-amber-400/40" : "")} />
+                  <span>Light</span>
+                </button>
 
-              {/* Dark Mode Button */}
-              <button
-                type="button"
-                onClick={() => handleThemeChange("dark")}
-                role="radio"
-                aria-checked={currentTheme === "dark"}
-                className={cn(
-                  "py-2 px-3 rounded-xl border text-xs sm:text-[13px] transition-all cursor-pointer flex items-center justify-center gap-2 min-h-[40px] select-none active:scale-[0.98]",
-                  currentTheme === "dark"
-                    ? "bg-violet-950/40 text-violet-200 border-violet-500/40 shadow-sm ring-2 ring-violet-500/30 font-bold"
-                    : "bg-transparent text-slate-600 dark:text-slate-400 border-slate-200/60 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 font-medium"
-                )}
-              >
-                <Moon className={cn("w-4 h-4", currentTheme === "dark" ? "text-violet-400 fill-violet-400/30" : "text-slate-400")} />
-                <span>Dark</span>
-                {currentTheme === "dark" && <Check className="w-3.5 h-3.5 text-violet-400 ml-0.5" />}
-              </button>
+                <button
+                  type="button"
+                  onClick={() => handleThemeChange("dark")}
+                  role="radio"
+                  aria-checked={currentTheme === "dark"}
+                  className={cn(
+                    "px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 select-none cursor-pointer",
+                    currentTheme === "dark"
+                      ? "bg-violet-950/70 text-violet-200 shadow-xs border border-violet-500/30"
+                      : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                  )}
+                  aria-label="Dark mode"
+                >
+                  <Moon className={cn("w-3.5 h-3.5", currentTheme === "dark" ? "text-violet-400 fill-violet-400/30" : "")} />
+                  <span>Dark</span>
+                </button>
+              </div>
+
+              {/* Palette Preferences Toggle */}
+              <PaletteToggle variant="pill" />
             </div>
           </div>
 
