@@ -136,12 +136,12 @@ interface PaymentSettings {
 
 // Instant Default Metadata for 0ms Page Load Speed (Balanced 6 presets for clean 2-col mobile / 3-col desktop)
 const DEFAULT_PRESETS: PresetAmount[] = [
-  { id: "1", amount: 500, label: "₹500", tag: "Warm Meals", displayOrder: 1, isDefault: false },
-  { id: "2", amount: 1000, label: "₹1,000", tag: "Most Popular", displayOrder: 2, isDefault: true },
-  { id: "3", amount: 2000, label: "₹2,000", tag: "Patient Kit", displayOrder: 3, isDefault: false },
-  { id: "4", amount: 3000, label: "₹3,000", tag: "Mobility Aid", displayOrder: 4, isDefault: false },
-  { id: "5", amount: 5000, label: "₹5,000", tag: "Elderly Care", displayOrder: 5, isDefault: false },
-  { id: "6", amount: 10000, label: "₹10,000", tag: "Ward Sponsor", displayOrder: 6, isDefault: false },
+  { id: "1", amount: 500, label: "₹500", displayOrder: 1, isDefault: false },
+  { id: "2", amount: 1000, label: "₹1,000", displayOrder: 2, isDefault: true },
+  { id: "3", amount: 2000, label: "₹2,000", displayOrder: 3, isDefault: false },
+  { id: "4", amount: 3000, label: "₹3,000", displayOrder: 4, isDefault: false },
+  { id: "5", amount: 5000, label: "₹5,000", displayOrder: 5, isDefault: false },
+  { id: "6", amount: 10000, label: "₹10,000", displayOrder: 6, isDefault: false },
 ];
 
 const DEFAULT_CAUSES: CauseItem[] = [
@@ -1254,22 +1254,13 @@ function NgoDonationsContent() {
                             setAmount(preset.amount.toString());
                             setCustomAmount("");
                           }}
-                          className={`relative py-3.5 px-2.5 sm:py-4 sm:px-3 rounded-2xl border font-black text-sm sm:text-base transition-all duration-200 flex flex-col items-center justify-center gap-1.5 touch-manipulation select-none active:scale-[0.98] ${
+                          className={`relative py-3.5 px-3 sm:py-4 rounded-2xl border font-black text-base sm:text-lg transition-all duration-200 flex items-center justify-center touch-manipulation select-none active:scale-[0.98] ${
                             isSelected
                               ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white border-purple-500 shadow-md shadow-purple-500/25 ring-2 ring-purple-500/40 ring-offset-2 dark:ring-offset-slate-900"
                               : "bg-white dark:bg-slate-800/90 hover:bg-purple-50/50 dark:hover:bg-slate-750 border-slate-200/90 dark:border-white/10 text-slate-900 dark:text-white hover:border-purple-300 dark:hover:border-purple-500/40 shadow-xs"
                           }`}
                         >
-                          {preset.tag && (
-                            <span className={`text-[9px] sm:text-[10px] uppercase tracking-wider font-extrabold px-2.5 py-0.5 rounded-full transition-colors ${
-                              isSelected
-                                ? "bg-white/20 text-white"
-                                : "text-purple-700 dark:text-purple-300 bg-purple-100/80 dark:bg-purple-900/40 border border-purple-200/60 dark:border-purple-800/40"
-                            }`}>
-                              {preset.tag}
-                            </span>
-                          )}
-                          <span className="text-base sm:text-lg font-black tracking-tight font-outfit">
+                          <span className="font-outfit font-black tracking-tight">
                             ₹{formatNumber(preset.amount)}
                           </span>
                         </button>
