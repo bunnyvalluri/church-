@@ -1191,10 +1191,15 @@ html[lang="hi"] h3 {
   animation: liquid-pulse-glow 3s infinite ease-in-out;
 }
 
-/* Automatically hide AI chat FAB & window when mobile navigation drawer is open */
+/* Automatically hide AI chat FAB & floating page widgets when mobile navigation drawer or gallery lightbox is open */
 html[data-mobile-menu-open="true"] [aria-label="Open KCM Assistant"],
 html[data-mobile-menu-open="true"] div:has(> button[aria-label="Open KCM Assistant"]),
-html[data-mobile-menu-open="true"] .fixed.bottom-4.right-4 {
+html[data-mobile-menu-open="true"] .fixed.bottom-4.right-4,
+html[data-gallery-lightbox-open="true"] [aria-label="Open KCM Assistant"],
+html[data-gallery-lightbox-open="true"] div:has(> button[aria-label="Open KCM Assistant"]),
+html[data-gallery-lightbox-open="true"] button[aria-label="Scroll to top of page"],
+html[data-gallery-lightbox-open="true"] .fixed.bottom-4.right-4,
+html[data-gallery-lightbox-open="true"] .fixed.bottom-4.left-4 {
   display: none !important;
   opacity: 0 !important;
   pointer-events: none !important;

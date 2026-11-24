@@ -24,8 +24,7 @@ const SERVICE_EMAIL   = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
 const SERVICE_KEY_B64 = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
 const SHEET_RANGE     = process.env.GOOGLE_SHEETS_RANGE || 'KCM Members Database!A:M';
 
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const prisma = require('../utils/db');
 
 const COL = {
   TIMESTAMP:          0,

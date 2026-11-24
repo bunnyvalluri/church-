@@ -8,8 +8,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const prisma = require('../utils/db');
 
 const STATE_FILE_PATH = path.join(__dirname, '../../../STATE.md');
 

@@ -204,7 +204,7 @@ export default function Sermons({ initialSermons = [] }: { initialSermons?: any[
   }, []);
 
   return (
-    <section id="sermons" className="py-14 sm:py-20 md:py-28 bg-white dark:bg-transparent relative z-10 overflow-hidden transition-colors duration-300">
+    <section id="sermons" className="scroll-mt-[var(--kcm-header-height,80px)] sm:scroll-mt-28 py-14 sm:py-20 md:py-28 bg-white dark:bg-transparent relative z-10 overflow-hidden transition-colors duration-300">
       <div className="container mx-auto px-3 sm:px-4 relative z-10">
         
         {/* Section Header */}

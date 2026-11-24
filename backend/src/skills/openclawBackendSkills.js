@@ -6,8 +6,7 @@
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const prisma = require('../utils/db');
 
 async function handleBackendOpenClawSkillExecution(skillId, input, userContext = {}, io = null) {
   const startTime = Date.now();

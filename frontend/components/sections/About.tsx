@@ -233,7 +233,7 @@ export default function About({ initialAboutData, initialContactsData, initialPa
   return (
     <section
       id="about"
-      className="py-16 md:py-24 lg:py-28 relative overflow-hidden transition-colors duration-300 bg-slate-50 dark:bg-transparent"
+      className="scroll-mt-[var(--kcm-header-height,80px)] sm:scroll-mt-28 py-16 md:py-24 lg:py-28 relative overflow-hidden transition-colors duration-300 bg-slate-50 dark:bg-transparent"
     >
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
 

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useTransition } from "react";
+import React, { useState, useMemo, useTransition, useEffect } from "react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import Link from "next/link";
 import {
@@ -88,6 +88,25 @@ export default function SmallGroupsPage() {
   const [isSubmittingLeader, setIsSubmittingLeader] = useState<boolean>(false);
   const [isLeaderSuccess, setIsLeaderSuccess] = useState<boolean>(false);
   const [leaderSubmitError, setLeaderSubmitError] = useState<string | null>(null);
+
+  // Prevent background scroll and support Escape key when either modal is open
+  useEffect(() => {
+    if (activeModalGroup || isLeaderModalOpen) {
+      const prevOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") {
+          setActiveModalGroup(null);
+          setIsLeaderModalOpen(false);
+        }
+      };
+      window.addEventListener("keydown", handleKeyDown);
+      return () => {
+        document.body.style.overflow = prevOverflow;
+        window.removeEventListener("keydown", handleKeyDown);
+      };
+    }
+  }, [activeModalGroup, isLeaderModalOpen]);
 
   // Resolved categories with dynamic translation
   const categories = useMemo(() => {
@@ -1069,25 +1088,36 @@ export default function SmallGroupsPage() {
 
       {/* 📥 Join Group Modal with Smart Pre-Selection, Input Validation & Loading States */}
       {activeModalGroup && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl relative">
-            <div className="p-6 bg-gradient-to-r from-purple-600 to-indigo-600 text-white relative">
+        <div 
+          className="fixed inset-0 z-[10005] flex items-center justify-center p-3 sm:p-4 md:p-6 bg-slate-950/80 backdrop-blur-md animate-fade-in"
+          onClick={() => setActiveModalGroup(null)}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="join-group-modal-title"
+        >
+          <div 
+            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl relative max-h-[min(90dvh,820px)] flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-5 sm:p-6 bg-gradient-to-r from-purple-600 to-indigo-600 text-white relative shrink-0">
               <button
                 type="button"
                 onClick={() => setActiveModalGroup(null)}
                 aria-label="Close modal"
-                className="absolute top-5 right-5 p-2 rounded-full bg-black/20 hover:bg-black/40 text-white transition-colors cursor-pointer"
+                className="absolute top-4 right-4 sm:top-5 sm:right-5 p-2 rounded-full bg-black/20 hover:bg-black/40 text-white transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
               <span className="text-xs uppercase font-bold px-3 py-1 rounded-full bg-white/20 text-white mb-2 inline-block">
                 {language === "te" ? "రిజిస్ట్రేషన్" : language === "hi" ? "पंजीकरण" : "Sign Up"}
               </span>
-              <h3 className="text-2xl font-bold text-white tracking-tight font-outfit">{resolvedModalGroup.title}</h3>
+              <h3 id="join-group-modal-title" className="text-2xl font-bold text-white tracking-tight font-outfit pr-8">
+                {resolvedModalGroup.title}
+              </h3>
               <p className="text-xs text-purple-100 mt-1">{resolvedModalGroup.time} • {resolvedModalGroup.location}</p>
             </div>
 
-            <div className="p-6 text-slate-900 dark:text-slate-100">
+            <div className="p-5 sm:p-6 text-slate-900 dark:text-slate-100 overflow-y-auto flex-1 overscroll-contain">
               {isJoinSuccess ? (
                 <div className="text-center py-8 animate-fade-in">
                   <div className="w-16 h-16 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-500/20 shadow-lg shadow-emerald-500/10">
@@ -1117,16 +1147,17 @@ export default function SmallGroupsPage() {
                   {/* Smart Pre-Selected Group Selector */}
                   <div>
                     <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                      {language === "te" ? "ఎంచుకున్న గ్రూప్ *" : language === "hi" ? "चयनित समूह *" : "Selected Group *"}
+                      {language === "te" ? "ఎంచుకున్న గ్రూప్" : language === "hi" ? "चयनित समूह" : "Selected Group"}
+                      <span className="text-rose-500 ml-1">*</span>
                     </label>
                     <select
                       value={joinSelectedGroupId}
                       onChange={(e) => setJoinSelectedGroupId(e.target.value)}
-                      className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs sm:text-sm font-semibold focus:ring-2 focus:ring-purple-500 outline-none text-slate-900 dark:text-slate-100 cursor-pointer"
+                      className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs sm:text-sm font-semibold focus:ring-2 focus:ring-purple-500 outline-none text-slate-900 dark:text-slate-100 cursor-pointer truncate"
                     >
                       {groups.map((g) => (
                         <option key={g.id} value={g.id}>
-                          {g.title} ({g.dayLabel} • {g.format})
+                          {g.title} ({g.dayLabel})
                         </option>
                       ))}
                     </select>
@@ -1134,8 +1165,8 @@ export default function SmallGroupsPage() {
 
                   <div>
                     <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                      {language === "te" ? "పూర్తి పేరు *" : language === "hi" ? "पूरा नाम *" : "Full Name *"}{" "}
-                      <span className="text-rose-500">*</span>
+                      {language === "te" ? "పూర్తి పేరు" : language === "hi" ? "पूरा नाम" : "Full Name"}
+                      <span className="text-rose-500 ml-1">*</span>
                     </label>
                     <input
                       type="text"
@@ -1150,8 +1181,8 @@ export default function SmallGroupsPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                        {language === "te" ? "ఈమెయిల్ *" : language === "hi" ? "ईमेल *" : "Email Address *"}{" "}
-                        <span className="text-rose-500">*</span>
+                        {language === "te" ? "ఈమెయిల్" : language === "hi" ? "ईमेल" : "Email Address"}
+                        <span className="text-rose-500 ml-1">*</span>
                       </label>
                       <input
                         type="email"
@@ -1164,8 +1195,8 @@ export default function SmallGroupsPage() {
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                        {language === "te" ? "ఫోన్ నంబర్ *" : language === "hi" ? "फोन नंबर *" : "Phone Number *"}{" "}
-                        <span className="text-rose-500">*</span>
+                        {language === "te" ? "ఫోన్ నంబర్" : language === "hi" ? "फोन नंबर" : "Phone Number"}
+                        <span className="text-rose-500 ml-1">*</span>
                       </label>
                       <input
                         type="tel"
@@ -1217,18 +1248,27 @@ export default function SmallGroupsPage() {
 
       {/* 👥 Leader Application Modal with Input Validation & Loading States */}
       {isLeaderModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl relative">
-            <div className="p-6 bg-gradient-to-r from-purple-600 to-indigo-600 text-white relative">
+        <div 
+          className="fixed inset-0 z-[10005] flex items-center justify-center p-3 sm:p-4 md:p-6 bg-slate-950/80 backdrop-blur-md animate-fade-in"
+          onClick={() => setIsLeaderModalOpen(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="leader-modal-title"
+        >
+          <div 
+            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl relative max-h-[min(90dvh,820px)] flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-5 sm:p-6 bg-gradient-to-r from-purple-600 to-indigo-600 text-white relative shrink-0">
               <button
                 type="button"
                 onClick={() => setIsLeaderModalOpen(false)}
                 aria-label="Close modal"
-                className="absolute top-5 right-5 p-2 rounded-full bg-black/20 hover:bg-black/40 text-white transition-colors cursor-pointer"
+                className="absolute top-4 right-4 sm:top-5 sm:right-5 p-2 rounded-full bg-black/20 hover:bg-black/40 text-white transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
-              <h3 className="text-2xl font-bold text-white tracking-tight font-outfit">
+              <h3 id="leader-modal-title" className="text-2xl font-bold text-white tracking-tight font-outfit pr-8">
                 {language === "te" ? "గ్రూప్ లీడర్‌షిప్ దరఖాస్తు" : language === "hi" ? "समूह नेतृत्व आवेदन" : "Group Leadership Application"}
               </h3>
               <p className="text-xs text-purple-100 mt-1">
@@ -1236,7 +1276,7 @@ export default function SmallGroupsPage() {
               </p>
             </div>
 
-            <div className="p-6 text-slate-900 dark:text-slate-100">
+            <div className="p-5 sm:p-6 text-slate-900 dark:text-slate-100 overflow-y-auto flex-1 overscroll-contain">
               {isLeaderSuccess ? (
                 <div className="text-center py-8 animate-fade-in">
                   <div className="w-16 h-16 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-500/20 shadow-lg shadow-emerald-500/10">
@@ -1265,8 +1305,8 @@ export default function SmallGroupsPage() {
 
                   <div>
                     <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                      {language === "te" ? "పూర్తి పేరు *" : language === "hi" ? "पूरा नाम *" : "Full Name *"}{" "}
-                      <span className="text-rose-500">*</span>
+                      {language === "te" ? "పూర్తి పేరు" : language === "hi" ? "पूरा नाम" : "Full Name"}
+                      <span className="text-rose-500 ml-1">*</span>
                     </label>
                     <input
                       type="text"
@@ -1281,8 +1321,8 @@ export default function SmallGroupsPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                        {language === "te" ? "ఈమెయిల్ *" : language === "hi" ? "ईमेल *" : "Email Address *"}{" "}
-                        <span className="text-rose-500">*</span>
+                        {language === "te" ? "ఈమెయిల్" : language === "hi" ? "ईमेल" : "Email Address"}
+                        <span className="text-rose-500 ml-1">*</span>
                       </label>
                       <input
                         type="email"
@@ -1295,8 +1335,8 @@ export default function SmallGroupsPage() {
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                        {language === "te" ? "ఫోన్ నంబర్ *" : language === "hi" ? "फोन नंबर *" : "Phone Number *"}{" "}
-                        <span className="text-rose-500">*</span>
+                        {language === "te" ? "ఫోన్ నంబర్" : language === "hi" ? "फोन नंबर" : "Phone Number"}
+                        <span className="text-rose-500 ml-1">*</span>
                       </label>
                       <input
                         type="tel"
@@ -1311,8 +1351,8 @@ export default function SmallGroupsPage() {
 
                   <div>
                     <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                      {language === "te" ? "మీరు ఎలాంటి గ్రూపును నడిపించాలనుకుంటున్నారు? *" : language === "hi" ? "आप किस प्रकार के समूह का नेतृत्व करना चाहते हैं? *" : "What type of group would you like to lead/start? *"}{" "}
-                      <span className="text-rose-500">*</span>
+                      {language === "te" ? "మీరు ఎలాంటి గ్రూపును నడిపించాలనుకుంటున్నారు?" : language === "hi" ? "आप किस प्रकार के समूह का नेतृत्व करना चाहते हैं?" : "What type of group would you like to lead/start?"}
+                      <span className="text-rose-500 ml-1">*</span>
                     </label>
                     <textarea
                       rows={3}

@@ -60,8 +60,12 @@ export default function LocationsPage() {
     return () => controller.abort();
   }, []);
 
-  // Keyboard Escape listener for accessible modal dismissal
+  // Body scroll lock and Keyboard Escape listener for accessible modal dismissal
   useEffect(() => {
+    if (!selectedBranch) return;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape" && selectedBranch) {
         startTransition(() => {
@@ -70,7 +74,10 @@ export default function LocationsPage() {
       }
     };
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
   }, [selectedBranch]);
 
   const handleOpenBranchModal = (branch: any) => {
@@ -579,24 +586,24 @@ export default function LocationsPage() {
           role="dialog"
           aria-modal="true"
           aria-labelledby="branch-modal-title"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md animate-in fade-in duration-200"
+          className="fixed inset-0 z-[10005] flex items-center justify-center p-3 sm:p-5 bg-slate-950/80 backdrop-blur-md animate-fade-in overflow-y-auto"
           onClick={handleCloseBranchModal}
         >
           <div
-            className="relative w-full max-w-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl overflow-y-auto max-h-[90vh] text-slate-900 dark:text-white"
+            className="relative w-full max-w-xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl shadow-2xl overflow-hidden my-auto flex flex-col max-h-[min(90dvh,820px)] text-slate-900 dark:text-white transition-all duration-300"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Modal Header */}
-            <div className="flex items-start justify-between gap-4 mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
-              <div className="flex items-center gap-3.5">
+            {/* Pinned Modal Header (Always visible, never scrolled away or covered by navbar) */}
+            <div className="flex items-center justify-between gap-4 px-6 py-5 sm:px-7 sm:py-5 border-b border-slate-100 dark:border-slate-800 shrink-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md">
+              <div className="flex items-center gap-3.5 min-w-0">
                 <div className={`w-12 h-12 rounded-2xl flex items-center justify-center border shadow-xs shrink-0 ${selectedBranch.iconBg}`}>
                   {selectedBranch.Icon && <selectedBranch.Icon className="w-6 h-6" />}
                 </div>
-                <div>
-                  <h3 id="branch-modal-title" className="text-xl sm:text-2xl font-black font-outfit tracking-tight">
+                <div className="min-w-0">
+                  <h3 id="branch-modal-title" className="text-lg sm:text-xl font-black font-outfit tracking-tight truncate">
                     {selectedBranch.name}
                   </h3>
-                  <p className="text-xs sm:text-sm font-bold text-slate-500 dark:text-slate-400">
+                  <p className="text-xs sm:text-sm font-bold text-slate-500 dark:text-slate-400 truncate">
                     {selectedBranch.subtitle}
                   </p>
                 </div>
@@ -605,110 +612,113 @@ export default function LocationsPage() {
                 type="button"
                 onClick={handleCloseBranchModal}
                 aria-label="Close modal"
-                className="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center text-slate-500 dark:text-slate-400 transition-colors cursor-pointer"
+                className="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 transition-colors cursor-pointer shrink-0 border border-slate-200/80 dark:border-slate-700 shadow-2xs"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            {/* Description */}
-            <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed mb-6">
-              {selectedBranch.description}
-            </p>
+            {/* Scrollable Modal Body */}
+            <div className="p-5 sm:p-7 pb-8 sm:pb-9 overflow-y-auto overscroll-contain flex-1 space-y-6">
+              {/* Description */}
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
+                {selectedBranch.description}
+              </p>
 
-            {/* Timetable Section */}
-            <div className="mb-6 space-y-3">
-              <h4 className="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2">
-                <Clock className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-                <span>{isTelugu ? "ఆరాధన సమయ పట్టిక" : isHindi ? "आराधना समय सारिणी" : "Service Timetable"}</span>
-              </h4>
-              <div className="space-y-2">
-                {selectedBranch.services.map((srv: any, idx: number) => (
-                  <div
-                    key={idx}
-                    className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 flex items-center justify-between gap-3 text-xs"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className={`px-2 py-0.5 rounded-md font-bold text-[10px] ${srv.dayBadge || "bg-purple-600 text-white"}`}>
-                        {srv.day}
-                      </span>
-                      <span className="font-bold text-slate-900 dark:text-white">{srv.type}</span>
+              {/* Timetable Section */}
+              <div className="space-y-3">
+                <h4 className="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                  <span>{isTelugu ? "ఆరాధన సమయ పట్టిక" : isHindi ? "आराधना समय सारिणी" : "Service Timetable"}</span>
+                </h4>
+                <div className="space-y-2">
+                  {selectedBranch.services.map((srv: any, idx: number) => (
+                    <div
+                      key={idx}
+                      className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 flex items-center justify-between gap-3 text-xs"
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className={`px-2 py-0.5 rounded-md font-bold text-[10px] shrink-0 ${srv.dayBadge || "bg-purple-600 text-white"}`}>
+                          {srv.day}
+                        </span>
+                        <span className="font-bold text-slate-900 dark:text-white truncate">{srv.type}</span>
+                      </div>
+                      <span className="font-extrabold text-purple-600 dark:text-purple-400 shrink-0">{srv.time}</span>
                     </div>
-                    <span className="font-extrabold text-purple-600 dark:text-purple-400 shrink-0">{srv.time}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Address & Directions */}
-            <div className="mb-6 p-4 rounded-2xl bg-purple-50/60 dark:bg-purple-950/20 border border-purple-100 dark:border-purple-900/40 space-y-3">
-              <div className="flex items-start justify-between gap-2">
-                <div className="flex items-start gap-2.5">
-                  <MapPin className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0 mt-0.5" />
-                  <div>
-                    <span className="font-bold text-xs text-slate-900 dark:text-white block mb-0.5">
-                      {isTelugu ? "చిరునామా" : isHindi ? "पता" : "Physical Address"}
-                    </span>
-                    <span className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed block">
-                      {selectedBranch.address}
-                    </span>
-                  </div>
+                  ))}
                 </div>
-                <button
-                  type="button"
-                  onClick={() => handleCopyAddress(selectedBranch.address)}
-                  className="p-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 text-xs flex items-center gap-1 cursor-pointer shrink-0"
-                  title="Copy Address"
-                >
-                  {copiedAddress ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
-                  <span className="text-[10px] font-bold">{copiedAddress ? "Copied" : "Copy"}</span>
-                </button>
               </div>
 
-              {selectedBranch.directions && (
-                <div className="pt-2 border-t border-purple-100/80 dark:border-purple-900/30 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-                  <span className="font-bold text-purple-700 dark:text-purple-300 mr-1.5">
-                    {isTelugu ? "మార్గదర్శనం:" : isHindi ? "दिशा-निर्देश:" : "Directions:"}
+              {/* Address & Directions */}
+              <div className="p-4 rounded-2xl bg-purple-50/60 dark:bg-purple-950/20 border border-purple-100 dark:border-purple-900/40 space-y-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-start gap-2.5">
+                    <MapPin className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-bold text-xs text-slate-900 dark:text-white block mb-0.5">
+                        {isTelugu ? "చిరునామా" : isHindi ? "पता" : "Physical Address"}
+                      </span>
+                      <span className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed block">
+                        {selectedBranch.address}
+                      </span>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleCopyAddress(selectedBranch.address)}
+                    className="p-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 text-xs flex items-center gap-1 cursor-pointer shrink-0"
+                    title="Copy Address"
+                  >
+                    {copiedAddress ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                    <span className="text-[10px] font-bold">{copiedAddress ? "Copied" : "Copy"}</span>
+                  </button>
+                </div>
+
+                {selectedBranch.directions && (
+                  <div className="pt-2 border-t border-purple-100/80 dark:border-purple-900/30 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                    <span className="font-bold text-purple-700 dark:text-purple-300 mr-1.5">
+                      {isTelugu ? "మార్గదర్శనం:" : isHindi ? "दिशा-निर्देश:" : "Directions:"}
+                    </span>
+                    <span>{selectedBranch.directions}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Phone Pastoral Helpline */}
+              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 flex items-center justify-between gap-3 text-xs">
+                <div className="flex items-center gap-2.5">
+                  <Phone className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0" />
+                  <span className="font-bold text-slate-800 dark:text-slate-200">
+                    {selectedBranch.phone || "+91 97040 90069"}
                   </span>
-                  <span>{selectedBranch.directions}</span>
                 </div>
-              )}
-            </div>
-
-            {/* Phone Pastoral Helpline */}
-            <div className="mb-6 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 flex items-center justify-between gap-3 text-xs">
-              <div className="flex items-center gap-2.5">
-                <Phone className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0" />
-                <span className="font-bold text-slate-800 dark:text-slate-200">
-                  {selectedBranch.phone || "+91 97040 90069"}
-                </span>
+                <a
+                  href={`tel:${(selectedBranch.phone || "+919704090069").replace(/\s/g, "")}`}
+                  className="px-3.5 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs transition-colors shadow-2xs"
+                >
+                  {isTelugu ? "కాల్ చేయండి" : isHindi ? "कॉल करें" : "Call Now"}
+                </a>
               </div>
-              <a
-                href={`tel:${(selectedBranch.phone || "+919704090069").replace(/\s/g, "")}`}
-                className="px-3 py-1 rounded-xl bg-purple-600 text-white font-bold text-[11px] hover:bg-purple-700 transition-colors"
-              >
-                {isTelugu ? "కాల్ చేయండి" : isHindi ? "कॉल करें" : "Call Now"}
-              </a>
-            </div>
 
-            {/* Modal Action Buttons */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-              <a
-                href={selectedBranch.mapUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="h-11 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-black flex items-center justify-center gap-2 shadow-md transition-all active:scale-[0.98]"
-              >
-                <Navigation className="w-4 h-4" />
-                <span>{isTelugu ? "గూగుల్ మ్యాప్స్ లో తెరవండి" : isHindi ? "गूगल मैप्स में खोलें" : "Open in Google Maps"}</span>
-              </a>
-              <Link
-                href={`/locations/${selectedBranch.slug}`}
-                className="h-11 rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-black flex items-center justify-center gap-2 border border-slate-200 dark:border-slate-700 transition-all active:scale-[0.98]"
-              >
-                <ExternalLink className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-                <span>{isTelugu ? "పూర్తి పేజీ చూడండి" : isHindi ? "पूरा पृष्ठ देखें" : "View Full Page"}</span>
-              </Link>
+              {/* Modal Action Buttons */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                <a
+                  href={selectedBranch.mapUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="min-h-[46px] rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-black flex items-center justify-center gap-2 shadow-md transition-all active:scale-[0.98]"
+                >
+                  <Navigation className="w-4 h-4" />
+                  <span>{isTelugu ? "గూగుల్ మ్యాప్స్ లో తెరవండి" : isHindi ? "गूगल मैप्स में खोलें" : "Open in Google Maps"}</span>
+                </a>
+                <Link
+                  href={`/locations/${selectedBranch.slug}`}
+                  className="min-h-[46px] rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-black flex items-center justify-center gap-2 border border-slate-200 dark:border-slate-700 transition-all active:scale-[0.98]"
+                >
+                  <ExternalLink className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                  <span>{isTelugu ? "పూర్తి పేజీ చూడండి" : isHindi ? "पूरा पृष्ठ देखें" : "View Full Page"}</span>
+                </Link>
+              </div>
             </div>
           </div>
         </div>

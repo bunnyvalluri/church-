@@ -11,8 +11,7 @@
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const prisma = require('../utils/db');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const Parser = require('rss-parser');
 const rssParser = new Parser();

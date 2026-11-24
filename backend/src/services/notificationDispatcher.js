@@ -33,8 +33,7 @@ const { logAuditEvent }             = require('./auditLogger');
 const https = require('https');
 const http  = require('http');
 
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const prisma = require('../utils/db');
 
 const GOOGLE_SCRIPT_URL  = process.env.GOOGLE_SCRIPT_WEBHOOK_URL;
 const GOOGLE_WH_SECRET   = process.env.GOOGLE_WEBHOOK_SECRET || 'kcm_google_webhook_secret';

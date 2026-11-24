@@ -11,8 +11,7 @@
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const prisma = require('../utils/db');
 const crypto = require('crypto');
 
 const FIRECRAWL_API_KEY = process.env.FIRECRAWL_API_KEY || '';

@@ -208,7 +208,7 @@ const PrayerRequestFormCard = React.memo(function PrayerRequestFormCard({ pageT,
   return (
     <div 
       id="prayer-form" 
-      className="scroll-mt-24 sm:scroll-mt-28 bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-6 sm:p-10 shadow-xl shadow-slate-900/5 dark:shadow-black/25 mb-16 relative overflow-hidden transition-all duration-300"
+      className="scroll-mt-24 sm:scroll-mt-28 bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-6 sm:p-10 pb-8 sm:pb-12 shadow-xl shadow-slate-900/5 dark:shadow-black/25 mb-16 relative overflow-hidden transition-all duration-300"
     >
       {isSubmitted ? (
         /* Success Confirmation View */
@@ -437,11 +437,24 @@ const PrayerRequestFormCard = React.memo(function PrayerRequestFormCard({ pageT,
               </div>
             </div>
 
+            {/* Validation Feedback & Helper Notice */}
+            {!isFormValid && (
+              <div className="flex items-center justify-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 font-medium text-center px-2 py-1">
+                <span>
+                  {language === "te"
+                    ? "దయచేసి పేరు, సరైన ఈమెయిల్ మరియు మీ ప్రార్థన విన్నపాన్ని (కనీసం 5 అక్షరాలు) నమోదు చేయండి."
+                    : language === "hi"
+                    ? "कृपया नाम, वैध ईमेल और अपना प्रार्थना अनुरोध (कम से कम 5 अक्षर) दर्ज करें।"
+                    : "Please enter your name, valid email, and prayer request (min 5 characters) to submit."}
+                </span>
+              </div>
+            )}
+
             {/* Submit Button with Disabled / Loading State */}
             <button
               type="submit"
               disabled={isSubmitting || !isFormValid}
-              className="w-full py-4 px-8 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-700 hover:to-indigo-800 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-2xl shadow-xl shadow-purple-600/25 hover:shadow-purple-600/40 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer min-h-[52px]"
+              className="w-full py-4 px-8 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-700 hover:to-indigo-800 disabled:from-slate-200 disabled:via-slate-200 disabled:to-slate-200 dark:disabled:from-slate-800 dark:disabled:via-slate-800 dark:disabled:to-slate-800 disabled:text-slate-500 dark:disabled:text-slate-400 disabled:border disabled:border-slate-300/80 dark:disabled:border-slate-700/80 disabled:shadow-none disabled:cursor-not-allowed disabled:scale-100 text-white font-bold rounded-2xl shadow-xl shadow-purple-600/25 hover:shadow-purple-600/40 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer min-h-[52px]"
             >
               {isSubmitting ? (
                 <>

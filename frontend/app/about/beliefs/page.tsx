@@ -39,6 +39,7 @@ export default function BeliefsPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [copied, setCopied] = useState<boolean>(false);
+  const [copiedVerse, setCopiedVerse] = useState<string | null>(null);
 
   // Modal doctrine selection — storing ID preserves language state seamlessly
   const [selectedDoctrineId, setSelectedDoctrineId] = useState<string | null>(null);
@@ -72,21 +73,21 @@ export default function BeliefsPage() {
     },
     { 
       value: "100%", 
-      label: pageT.statScripture || (language === "te" ? "లేఖన ప్రామాణికత" : language === "hi" ? "బाइबిల్ కా అధికార" : "Biblical Authority"), 
+      label: pageT.statScripture || (language === "te" ? "లేఖన ప్రామాణికత" : language === "hi" ? "बाइबिल का अधिकार" : "Biblical Authority"), 
       icon: ShieldCheck, 
       iconColor: "text-indigo-600 dark:text-indigo-400", 
       iconBg: "bg-indigo-500/10 dark:bg-indigo-500/20 border-indigo-200/50 dark:border-indigo-700/50" 
     },
     { 
       value: "3+", 
-      label: pageT.statCampuses || (language === "te" ? "పరిచర్య శాఖలు" : language === "hi" ? "సక్రియ శాఖాయేం" : "Active Campuses"), 
+      label: pageT.statCampuses || (language === "te" ? "పరిచర్య శాఖలు" : language === "hi" ? "सक्रिय शाखाएं" : "Active Campuses"), 
       icon: Church, 
       iconColor: "text-rose-600 dark:text-rose-400", 
       iconBg: "bg-rose-500/10 dark:bg-rose-500/20 border-rose-200/50 dark:border-rose-700/50" 
     },
     { 
       value: "24/7", 
-      label: pageT.statGospel || (language === "te" ? "సువార్త ప్రభావం" : language === "hi" ? "సుసమాచార ప్రభావ" : "Gospel Reach"), 
+      label: pageT.statGospel || (language === "te" ? "సువార్త ప్రభావం" : language === "hi" ? "सुसमाचार प्रभाव" : "Gospel Reach"), 
       icon: Flame, 
       iconColor: "text-amber-600 dark:text-amber-400", 
       iconBg: "bg-amber-500/10 dark:bg-amber-500/20 border-amber-200/50 dark:border-amber-700/50" 
@@ -264,6 +265,16 @@ export default function BeliefsPage() {
       checkColor: "text-sky-600 dark:text-sky-400"
     }
   ], [pageT]);
+
+  // Category counts for tab badges
+  const categoryCounts = useMemo(() => {
+    return {
+      all: doctrines.length,
+      god: doctrines.filter((d) => d.category === "god").length,
+      salvation: doctrines.filter((d) => d.category === "salvation").length,
+      life: doctrines.filter((d) => d.category === "life").length,
+    };
+  }, [doctrines]);
 
   // Derived selected doctrine — automatically updates when language changes
   const selectedDoctrine = useMemo(() => {
@@ -586,10 +597,10 @@ export default function BeliefsPage() {
                 style={{ WebkitOverflowScrolling: "touch" }}
               >
                 {[
-                  { id: "all", label: pageT.filterAll || "All Doctrines" },
-                  { id: "god", label: pageT.filterGod || "God & Scripture" },
-                  { id: "salvation", label: pageT.filterSalvation || "Salvation & Church" },
-                  { id: "life", label: pageT.filterLife || "Christian Life & Hope" },
+                  { id: "all", label: pageT.filterAll || "All Doctrines", count: categoryCounts.all },
+                  { id: "god", label: pageT.filterGod || "God & Scripture", count: categoryCounts.god },
+                  { id: "salvation", label: pageT.filterSalvation || "Salvation & Church", count: categoryCounts.salvation },
+                  { id: "life", label: pageT.filterLife || "Christian Life & Hope", count: categoryCounts.life },
                 ].map((tab) => {
                   const isSelected = selectedCategory === tab.id;
                   return (
@@ -598,17 +609,48 @@ export default function BeliefsPage() {
                       role="tab"
                       aria-selected={isSelected}
                       onClick={(e) => handleCategorySelect(tab.id, e)}
-                      className={`snap-start shrink-0 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-200 cursor-pointer touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 ${
+                      className={`snap-start shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-200 cursor-pointer touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 ${
                         isSelected
                           ? "bg-purple-600 text-white shadow-md shadow-purple-600/25 scale-[1.02]"
                           : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-800 active:scale-95"
                       }`}
                     >
-                      {tab.label}
+                      <span>{tab.label}</span>
+                      <span className={`text-[10px] sm:text-xs px-1.5 py-0.5 rounded-full font-semibold transition-colors ${
+                        isSelected ? "bg-white/25 text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400"
+                      }`}>
+                        {tab.count}
+                      </span>
                     </button>
                   );
                 })}
               </div>
+            </div>
+
+            {/* Live Filter / Search Count Feedback */}
+            <div className="flex items-center justify-between text-xs sm:text-sm text-slate-500 dark:text-slate-400 px-1 font-medium">
+              <span>
+                {language === "te" ? "కనిపిస్తున్నవి: " : language === "hi" ? "दिखाए जा रहे हैं: " : "Showing "}
+                <strong className="text-slate-900 dark:text-white font-bold">{filteredDoctrines.length}</strong>
+                {" "}{language === "te" ? `మొత్తం ${doctrines.length} లో` : language === "hi" ? `कुल ${doctrines.length} में से` : `of ${doctrines.length} doctrines`}
+                {searchQuery && (
+                  <span className="ml-1">
+                    {language === "te" ? "కోసం " : language === "hi" ? "के लिए " : "for "}
+                    &ldquo;<span className="text-purple-600 dark:text-purple-400 font-semibold">{searchQuery}</span>&rdquo;
+                  </span>
+                )}
+              </span>
+              {(searchQuery || selectedCategory !== "all") && (
+                <button
+                  onClick={() => {
+                    setSearchQuery("");
+                    setSelectedCategory("all");
+                  }}
+                  className="text-xs text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-semibold underline underline-offset-2 cursor-pointer transition-colors"
+                >
+                  {pageT.resetFilter || "Reset all"}
+                </button>
+              )}
             </div>
 
           </div>
@@ -738,47 +780,53 @@ export default function BeliefsPage() {
 
       {/* 🚀 3. Bottom CTA Hierarchy: Compact Resource Bar (Doesn't Compete with Dark Closing CTA) */}
       <section className="py-8 sm:py-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 no-print">
-        <div className="bg-slate-100/90 dark:bg-slate-900/80 border border-slate-200/90 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-xs flex flex-col md:flex-row items-center justify-between gap-4 transition-all">
+        <div className="relative overflow-hidden bg-white/95 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200/90 dark:border-slate-800 rounded-3xl p-5 sm:p-6 md:p-8 shadow-lg shadow-purple-900/5 flex flex-col md:flex-row items-start md:items-center justify-between gap-5 transition-all">
           
+          {/* Subtle Ambient Decorative Glow */}
+          <div className="absolute -top-16 -right-16 w-44 h-44 bg-purple-500/10 dark:bg-purple-600/15 rounded-full blur-2xl pointer-events-none" />
+          <div className="absolute -bottom-16 -left-16 w-44 h-44 bg-indigo-500/10 dark:bg-indigo-600/15 rounded-full blur-2xl pointer-events-none" />
+
           {/* Left: Compact Resource Indicator */}
-          <div className="flex items-center gap-3.5 text-center md:text-left">
-            <div className="w-10 h-10 rounded-xl bg-purple-500/10 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 border border-purple-200/60 dark:border-purple-800/60 shadow-2xs">
-              <FileText className="h-5 w-5" />
+          <div className="relative z-10 flex items-start sm:items-center gap-3.5 sm:gap-4 text-left w-full md:w-auto">
+            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-purple-500/10 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 border border-purple-200/70 dark:border-purple-800/70 shadow-2xs">
+              <FileText className="h-5 w-5 sm:h-6 sm:w-6" />
             </div>
-            <div>
-              <div className="text-sm sm:text-base font-bold text-slate-900 dark:text-white leading-tight">
+            <div className="space-y-0.5">
+              <div className="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-snug tracking-tight">
                 {pageT.studyFurtherTitle || "Want to Study Our Beliefs Further?"}
               </div>
-              <p className="text-xs text-slate-600 dark:text-slate-400 font-medium leading-normal mt-0.5">
-                {pageT.downloadDesc || "Copy the doctrinal summary statement or export a clean printable PDF for study."}
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-normal leading-relaxed max-w-xl">
+                {pageT.downloadDesc || "Explore or print our complete, detailed statement of faith for personal or group Bible study."}
               </p>
             </div>
           </div>
 
-          {/* Right: Compact Resource Action Controls */}
-          <div className="flex items-center gap-2.5 w-full md:w-auto justify-center shrink-0">
+          {/* Right: Compact Resource Action Controls (Responsive flex: full width stack on mobile, horizontal row on tablet/desktop) */}
+          <div className="relative z-10 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 w-full md:w-auto justify-end shrink-0">
             <button
               onClick={handleCopyStatement}
-              className="px-4 py-2 bg-purple-600 hover:bg-purple-700 active:scale-95 text-white font-bold rounded-xl shadow-xs transition-all duration-200 flex items-center gap-1.5 text-xs sm:text-sm cursor-pointer whitespace-nowrap"
+              className="w-full sm:w-auto min-h-[44px] px-5 py-2.5 bg-purple-600 hover:bg-purple-700 active:scale-[0.98] text-white font-bold rounded-xl shadow-md shadow-purple-600/25 hover:shadow-lg hover:shadow-purple-600/30 transition-all duration-200 flex items-center justify-center gap-2 text-xs sm:text-sm cursor-pointer whitespace-nowrap"
+              aria-label="Copy doctrinal statement summary to clipboard"
             >
               {copied ? (
                 <>
-                  <Check className="h-3.5 w-3.5 text-emerald-300" />
+                  <Check className="h-4 w-4 text-emerald-300 shrink-0" />
                   <span>{pageT.copiedToast || "Copied!"}</span>
                 </>
               ) : (
                 <>
-                  <Copy className="h-3.5 w-3.5" />
-                  <span>{pageT.copyStatement || "Copy Summary"}</span>
+                  <Copy className="h-4 w-4 shrink-0" />
+                  <span>{pageT.copyStatement || "Copy Summary Statement"}</span>
                 </>
               )}
             </button>
 
             <button
               onClick={handlePrintStatement}
-              className="px-4 py-2 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 active:scale-95 text-slate-800 dark:text-slate-200 font-bold rounded-xl border border-slate-200 dark:border-slate-700 shadow-2xs transition-all duration-200 flex items-center gap-1.5 text-xs sm:text-sm cursor-pointer whitespace-nowrap"
+              className="w-full sm:w-auto min-h-[44px] px-5 py-2.5 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-750 active:scale-[0.98] text-slate-800 dark:text-slate-200 font-bold rounded-xl border border-slate-200/90 dark:border-slate-700 shadow-2xs hover:shadow-md transition-all duration-200 flex items-center justify-center gap-2 text-xs sm:text-sm cursor-pointer whitespace-nowrap"
+              aria-label="Print or save statement of faith as PDF"
             >
-              <Printer className="h-3.5 w-3.5 text-slate-500 dark:text-slate-400" />
+              <Printer className="h-4 w-4 text-slate-500 dark:text-slate-400 shrink-0" />
               <span>{pageT.printStatement || "Print / Save PDF"}</span>
             </button>
           </div>
@@ -898,12 +946,36 @@ export default function BeliefsPage() {
                       {pageT.modalScripture || "Key Scripture Passages"}
                     </h4>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                      {selectedDoctrine.passages.map((passage: string, i: number) => (
-                        <div key={i} className="flex items-center gap-2.5 p-2.5 sm:p-3 bg-slate-100 dark:bg-slate-800/60 rounded-xl text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200">
-                          <CheckCircle2 className={`h-4 w-4 ${selectedDoctrine.checkColor} flex-shrink-0`} />
-                          <span>{passage}</span>
-                        </div>
-                      ))}
+                      {selectedDoctrine.passages.map((passage: string, i: number) => {
+                        const isThisCopied = copiedVerse === passage;
+                        return (
+                          <div 
+                            key={i} 
+                            className="group flex items-center justify-between gap-2 p-2.5 sm:p-3 bg-slate-100 dark:bg-slate-800/60 rounded-xl text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200 hover:bg-purple-50 dark:hover:bg-purple-950/30 transition-colors"
+                          >
+                            <div className="flex items-center gap-2 truncate">
+                              <CheckCircle2 className={`h-4 w-4 ${selectedDoctrine.checkColor} flex-shrink-0`} />
+                              <span className="truncate">{passage}</span>
+                            </div>
+                            <button
+                              onClick={() => {
+                                navigator.clipboard.writeText(passage);
+                                setCopiedVerse(passage);
+                                setTimeout(() => setCopiedVerse(null), 2000);
+                              }}
+                              title="Copy scripture reference"
+                              aria-label={`Copy reference ${passage}`}
+                              className="p-1 rounded-md text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-white dark:hover:bg-slate-700 transition-all opacity-80 group-hover:opacity-100 cursor-pointer"
+                            >
+                              {isThisCopied ? (
+                                <Check className="h-3.5 w-3.5 text-emerald-500" />
+                              ) : (
+                                <Copy className="h-3.5 w-3.5" />
+                              )}
+                            </button>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 ) : (

@@ -680,7 +680,7 @@ export default function MembershipPage() {
           onClick={(e) => {
             if (e.target === e.currentTarget) setIsCovenantModalOpen(false);
           }}
-          className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-5 bg-slate-950/80 backdrop-blur-md animate-fade-in overflow-y-auto"
+          className="fixed inset-0 z-[10005] flex items-center justify-center p-3 sm:p-5 bg-slate-950/80 backdrop-blur-md animate-fade-in overflow-y-auto"
         >
           <div 
             onClick={(e) => e.stopPropagation()}
@@ -769,7 +769,7 @@ export default function MembershipPage() {
           onClick={(e) => {
             if (e.target === e.currentTarget) setIsRegisterModalOpen(false);
           }}
-          className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-5 bg-slate-950/80 backdrop-blur-md animate-fade-in overflow-y-auto"
+          className="fixed inset-0 z-[10005] flex items-center justify-center p-3 sm:p-5 bg-slate-950/80 backdrop-blur-md animate-fade-in overflow-y-auto"
         >
           <div 
             onClick={(e) => e.stopPropagation()}
@@ -801,7 +801,7 @@ export default function MembershipPage() {
             </div>
 
             {/* Modal Body with smooth scrolling */}
-            <div className="p-5 sm:p-7 text-slate-900 dark:text-slate-100 overflow-y-auto overscroll-contain flex-1">
+            <div className="p-5 sm:p-7 pb-8 sm:pb-10 text-slate-900 dark:text-slate-100 overflow-y-auto overscroll-contain flex-1">
               {isSubmitted ? (
                 <div className="text-center py-10 animate-fade-in space-y-4">
                   <div className="w-16 h-16 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-2 border border-emerald-500/20 shadow-lg shadow-emerald-500/20 animate-bounce">
@@ -841,7 +841,7 @@ export default function MembershipPage() {
                         placeholder="e.g. David Raju"
                         value={regForm.name}
                         onChange={(e) => setRegForm({ ...regForm, name: e.target.value })}
-                        className="w-full pl-10 pr-4 py-3 bg-slate-50/90 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl text-xs sm:text-sm font-medium focus:ring-2 focus:ring-purple-500/25 focus:border-purple-600 dark:focus:border-purple-400 outline-none text-slate-900 dark:text-slate-100 placeholder:text-slate-400 transition-all"
+                        className="w-full pl-10 pr-4 py-3.5 min-h-[48px] bg-slate-50/90 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl text-sm font-medium leading-normal focus:ring-2 focus:ring-purple-500/25 focus:border-purple-600 dark:focus:border-purple-400 outline-none text-slate-900 dark:text-slate-100 placeholder:text-slate-400 transition-all"
                       />
                     </div>
                   </div>
@@ -860,7 +860,7 @@ export default function MembershipPage() {
                           placeholder="david@example.com"
                           value={regForm.email}
                           onChange={(e) => setRegForm({ ...regForm, email: e.target.value })}
-                          className="w-full pl-10 pr-4 py-3 bg-slate-50/90 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl text-xs sm:text-sm font-medium focus:ring-2 focus:ring-purple-500/25 focus:border-purple-600 dark:focus:border-purple-400 outline-none text-slate-900 dark:text-slate-100 placeholder:text-slate-400 transition-all"
+                          className="w-full pl-10 pr-4 py-3.5 min-h-[48px] bg-slate-50/90 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl text-sm font-medium leading-normal focus:ring-2 focus:ring-purple-500/25 focus:border-purple-600 dark:focus:border-purple-400 outline-none text-slate-900 dark:text-slate-100 placeholder:text-slate-400 transition-all"
                         />
                       </div>
                     </div>
@@ -876,7 +876,7 @@ export default function MembershipPage() {
                           placeholder="+91 98765 43210"
                           value={regForm.phone}
                           onChange={(e) => setRegForm({ ...regForm, phone: e.target.value })}
-                          className="w-full pl-10 pr-4 py-3 bg-slate-50/90 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl text-xs sm:text-sm font-medium focus:ring-2 focus:ring-purple-500/25 focus:border-purple-600 dark:focus:border-purple-400 outline-none text-slate-900 dark:text-slate-100 placeholder:text-slate-400 transition-all"
+                          className="w-full pl-10 pr-4 py-3.5 min-h-[48px] bg-slate-50/90 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl text-sm font-medium leading-normal focus:ring-2 focus:ring-purple-500/25 focus:border-purple-600 dark:focus:border-purple-400 outline-none text-slate-900 dark:text-slate-100 placeholder:text-slate-400 transition-all"
                         />
                       </div>
                     </div>
@@ -892,12 +892,12 @@ export default function MembershipPage() {
                       <select
                         value={regForm.preferredBranch}
                         onChange={(e) => setRegForm({ ...regForm, preferredBranch: e.target.value })}
-                        className="w-full pl-10 pr-12 py-3 bg-slate-50/90 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl text-xs sm:text-sm font-semibold focus:ring-2 focus:ring-purple-500/25 focus:border-purple-600 dark:focus:border-purple-400 outline-none text-slate-900 dark:text-slate-100 transition-all cursor-pointer appearance-none truncate"
+                        className="w-full pl-10 pr-12 py-3.5 min-h-[48px] bg-slate-50/90 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl text-sm font-semibold leading-normal focus:ring-2 focus:ring-purple-500/25 focus:border-purple-600 dark:focus:border-purple-400 outline-none text-slate-900 dark:text-slate-100 transition-all cursor-pointer appearance-none"
                       >
-                        <option value="Shapur Main Campus">Shapur Main Campus</option>
-                        <option value="Subhash Nagar Campus">Subhash Nagar Campus</option>
-                        <option value="Bahadurpally Campus">Bahadurpally Campus</option>
-                        <option value="Online Zoom Session">Online Zoom Session</option>
+                        <option value="Shapur Main Campus" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 py-1">Shapur Main Campus</option>
+                        <option value="Subhash Nagar Campus" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 py-1">Subhash Nagar Campus</option>
+                        <option value="Bahadurpally Campus" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 py-1">Bahadurpally Campus</option>
+                        <option value="Online Zoom Session" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 py-1">Online Zoom Session</option>
                       </select>
                       <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 dark:text-slate-400 pointer-events-none" />
                     </div>
@@ -913,15 +913,15 @@ export default function MembershipPage() {
                       <select
                         value={regForm.preferredDate}
                         onChange={(e) => setRegForm({ ...regForm, preferredDate: e.target.value })}
-                        className="w-full pl-10 pr-12 py-3 bg-slate-50/90 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl text-xs sm:text-sm font-semibold focus:ring-2 focus:ring-purple-500/25 focus:border-purple-600 dark:focus:border-purple-400 outline-none text-slate-900 dark:text-slate-100 transition-all cursor-pointer appearance-none truncate"
+                        className="w-full pl-10 pr-12 py-3.5 min-h-[48px] bg-slate-50/90 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl text-sm font-semibold leading-normal focus:ring-2 focus:ring-purple-500/25 focus:border-purple-600 dark:focus:border-purple-400 outline-none text-slate-900 dark:text-slate-100 transition-all cursor-pointer appearance-none"
                       >
-                        <option value="Upcoming Sunday • 11:30 AM">
+                        <option value="Upcoming Sunday • 11:30 AM" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 py-1">
                           {language === "te" ? "ఈ ఆదివారం • 11:30 AM" : language === "hi" ? "इस रविवार • 11:30 AM" : "Upcoming Sunday • 11:30 AM"}
                         </option>
-                        <option value="1st Sunday Next Month • 11:30 AM">
+                        <option value="1st Sunday Next Month • 11:30 AM" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 py-1">
                           {language === "te" ? "వచ్చే నెల 1వ ఆదివారం • 11:30 AM" : language === "hi" ? "अगले महीने का पहला रविवार • 11:30 AM" : "1st Sunday Next Month • 11:30 AM"}
                         </option>
-                        <option value="Wednesday Online • 7:00 PM (Zoom)">
+                        <option value="Wednesday Online • 7:00 PM (Zoom)" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 py-1">
                           {language === "te" ? "బుధవారం ఆన్‌లైన్ • 7:00 PM (జూమ్)" : language === "hi" ? "बुधवार ऑनलाइन • 7:00 PM (ज़ूम)" : "Wednesday Online • 7:00 PM (Zoom)"}
                         </option>
                       </select>
@@ -929,11 +929,24 @@ export default function MembershipPage() {
                     </div>
                   </div>
 
+                  {/* Real-time localized validation helper hint */}
+                  {!isFormValid && (
+                    <div className="flex items-center justify-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 font-medium text-center px-2 py-1 mt-2">
+                      <span>
+                        {language === "te"
+                          ? "దయచేసి మీ పూర్తి పేరు, సరైన ఈమెయిల్ మరియు 10 అంకెల ఫోన్ నంబర్‌ను నమోదు చేయండి."
+                          : language === "hi"
+                          ? "कृपया अपना पूरा नाम, वैध ईमेल और 10 अंकों का फोन नंबर दर्ज करें।"
+                          : "Please complete all required fields (Full Name, valid email, and 10-digit phone) to register."}
+                      </span>
+                    </div>
+                  )}
+
                   {/* Submit CTA with Disabled Loading State */}
                   <button
                     type="submit"
                     disabled={isSubmitting || !isFormValid}
-                    className="w-full min-h-[50px] py-3.5 px-6 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-700 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-2xl font-bold text-sm tracking-wide transition-all shadow-lg shadow-purple-600/25 hover:shadow-purple-600/40 flex items-center justify-center gap-2 mt-5 cursor-pointer"
+                    className="w-full min-h-[50px] py-3.5 px-6 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-700 hover:to-indigo-700 disabled:from-slate-200 disabled:via-slate-200 disabled:to-slate-200 dark:disabled:from-slate-800 dark:disabled:via-slate-800 dark:disabled:to-slate-800 disabled:text-slate-500 dark:disabled:text-slate-400 disabled:border disabled:border-slate-300/80 dark:disabled:border-slate-700/80 disabled:shadow-none disabled:cursor-not-allowed disabled:scale-100 text-white rounded-2xl font-bold text-sm tracking-wide transition-all shadow-lg shadow-purple-600/25 hover:shadow-purple-600/40 flex items-center justify-center gap-2 mt-4 cursor-pointer"
                   >
                     {isSubmitting ? (
                       <>

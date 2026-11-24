@@ -7,8 +7,7 @@
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const prisma = require('../utils/db');
 const firecrawlService = require('./firecrawlService');
 
 const NGO_SEARCH_QUERIES = [

@@ -206,7 +206,7 @@ const VolunteerApplicationFormCard = React.memo(function VolunteerApplicationFor
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 sm:p-12 border border-slate-200/90 dark:border-slate-800 shadow-2xl shadow-purple-500/5 relative overflow-hidden transition-all duration-300">
+    <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-10 md:p-12 pb-10 sm:pb-14 border border-slate-200/90 dark:border-slate-800 shadow-2xl shadow-purple-500/5 relative overflow-hidden transition-all duration-300">
       <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-purple-500 via-indigo-500 to-purple-500 opacity-90" />
 
       <div className="text-center max-w-xl mx-auto mb-10">
@@ -382,10 +382,22 @@ const VolunteerApplicationFormCard = React.memo(function VolunteerApplicationFor
             </div>
           </div>
 
+          {!isFormValid && (
+            <div className="flex items-center justify-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 font-medium text-center px-2 py-1">
+              <span>
+                {language === "te"
+                  ? "దయచేసి పేరు, ఇంటిపేరు, సరైన ఈమెయిల్ మరియు 10 అంకెల ఫోన్ నంబర్‌ను నమోదు చేయండి."
+                  : language === "hi"
+                  ? "कृपया पहला व अंतिम नाम, वैध ईमेल और 10 अंकों का फोन नंबर दर्ज करें।"
+                  : "Please complete all required fields (First & Last Name, valid email, and 10-digit phone) to submit."}
+              </span>
+            </div>
+          )}
+
           <button
             type="submit"
             disabled={isSubmitting || !isFormValid}
-            className="w-full min-h-[52px] py-4 px-8 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-700 hover:to-indigo-800 disabled:opacity-50 disabled:cursor-not-allowed text-white font-black text-sm rounded-2xl shadow-xl shadow-purple-600/30 hover:scale-[1.01] active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
+            className="w-full min-h-[52px] py-4 px-8 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-700 hover:to-indigo-800 disabled:from-slate-200 disabled:via-slate-200 disabled:to-slate-200 dark:disabled:from-slate-800 dark:disabled:via-slate-800 dark:disabled:to-slate-800 disabled:text-slate-500 dark:disabled:text-slate-400 disabled:border disabled:border-slate-300/80 dark:disabled:border-slate-700/80 disabled:shadow-none disabled:cursor-not-allowed disabled:scale-100 text-white font-black text-sm rounded-2xl shadow-xl shadow-purple-600/30 hover:scale-[1.01] active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
           >
             {isSubmitting ? (
               <>

@@ -8,8 +8,7 @@
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const prisma = require('../utils/db');
 const config = require('./config');
 const { logAuditEvent } = require('../services/auditLogger');
 const fs = require('fs');

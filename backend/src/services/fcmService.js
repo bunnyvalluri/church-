@@ -129,8 +129,7 @@ async function sendEventPushNotification(event, prismaClient = null) {
 
   let prisma = prismaClient;
   if (!prisma) {
-    const { PrismaClient } = require('@prisma/client');
-    prisma = new PrismaClient();
+    prisma = require('../utils/db');
   }
 
   let tokens = [];

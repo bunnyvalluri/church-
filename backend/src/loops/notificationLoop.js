@@ -20,8 +20,7 @@
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const prisma = require('../utils/db');
 const { logAuditEvent } = require('../services/auditLogger');
 
 // Lazily load external notification services

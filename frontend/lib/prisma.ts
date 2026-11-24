@@ -9,18 +9,25 @@ const globalForPrisma = globalThis as unknown as {
 // ── Neon Serverless Connection Recovery Helper ───────────────────────────────
 function isConnectionClosedError(error: any): boolean {
   if (!error) return false;
-  const msg = String(error.message || error || '');
+  const msg = String(error?.message || error || '');
+  const cause = String(error?.cause?.message || error?.cause || '');
+  const stack = String(error?.stack || '');
+  const code = String(error?.code || '');
+  const combined = `${msg} ${cause} ${stack} ${code}`.toLowerCase();
+
   return (
-    msg.includes('Closed') ||
-    msg.includes('kind: Closed') ||
-    msg.includes('P1017') ||
-    msg.includes('P1001') ||
-    msg.includes('P2024') ||
-    msg.includes('Connection closed') ||
-    msg.includes('Connection reset by peer') ||
-    msg.includes('Connection terminated') ||
-    error.code === 'P1017' ||
-    error.code === 'P1001'
+    combined.includes('closed') ||
+    combined.includes('kind: closed') ||
+    combined.includes('p1017') ||
+    combined.includes('p1001') ||
+    combined.includes('p2024') ||
+    combined.includes('connection closed') ||
+    combined.includes('connection reset') ||
+    combined.includes('connection terminated') ||
+    combined.includes('server has closed the connection') ||
+    combined.includes("can't reach database server") ||
+    code === 'P1017' ||
+    code === 'P1001'
   );
 }
 
@@ -32,7 +39,9 @@ async function executeWithRetry<T>(fn: () => Promise<T>, client: PrismaClient, m
     } catch (err: any) {
       attempt++;
       if (isConnectionClosedError(err) && attempt <= maxRetries) {
-        console.warn(`[Prisma:Neon] Connection dropped (kind: Closed). Retrying query (attempt ${attempt}/${maxRetries}) after backoff...`);
+        if (process.env.NODE_ENV === 'development') {
+          console.warn(`[Prisma:Neon] Connection dropped (kind: Closed). Retrying query (attempt ${attempt}/${maxRetries}) after backoff...`);
+        }
         try {
           await client.$disconnect().catch(() => {});
           // Delay briefly to allow Neon compute to finish waking up from sleep
@@ -60,7 +69,7 @@ function createPrismaClient(): PrismaClient {
   // Intercept and handle connection events gracefully
   (client as any).$on('error', (e: any) => {
     const msg = String(e?.message || '');
-    if (isConnectionClosedError(msg)) {
+    if (isConnectionClosedError(e) || isConnectionClosedError(msg)) {
       if (process.env.NODE_ENV === 'development') {
         console.info('[Prisma:Neon] Idle pooled connection closed by serverless PgBouncer; reconnecting automatically on next query.');
       }
@@ -71,7 +80,7 @@ function createPrismaClient(): PrismaClient {
 
   (client as any).$on('warn', (e: any) => {
     const msg = String(e?.message || '');
-    if (isConnectionClosedError(msg)) return;
+    if (isConnectionClosedError(e) || isConnectionClosedError(msg)) return;
     console.warn('[Prisma Warning]:', msg || e);
   });
 

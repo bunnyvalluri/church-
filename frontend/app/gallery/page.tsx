@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import React, { useState, useEffect, useMemo, useRef, useCallback, useTransition } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -259,7 +259,7 @@ const GALLERY_I18N: Record<"en" | "te" | "hi", GalleryTranslations> = {
     viewStandard: "Standard Grid",
     viewCompact: "Compact Grid",
     savedPhotos: "Saved Favorites",
-    searchPlaceholder: "Search photos by keyword, category, or branch...",
+    searchPlaceholder: "Search photos, events, or tags...",
     videoSearchPlaceholder: "Search videos...",
     loadingPhotos: "Loading sacred moments...",
     noMomentsFound: "No sacred moments found",
@@ -312,7 +312,7 @@ const GALLERY_I18N: Record<"en" | "te" | "hi", GalleryTranslations> = {
     viewStandard: "గ్రిడ్ లేఅవుట్",
     viewCompact: "కాంపాక్ట్ గ్రిడ్",
     savedPhotos: "సేవ్ చేసిన ఫోటోలు",
-    searchPlaceholder: "శీర్షిక, వర్గం లేదా బ్రాంచ్ ద్వారా శోధించండి...",
+    searchPlaceholder: "ఫోటోలు, ఈవెంట్‌లు లేదా ట్యాగ్‌లు...",
     videoSearchPlaceholder: "వీడియోలను శోధించండి...",
     loadingPhotos: "ఫోటోలు లోడ్ అవుతున్నాయి...",
     noMomentsFound: "ఎలాంటి ఫోటోలు కనుగొనబడలేదు",
@@ -364,7 +364,7 @@ const GALLERY_I18N: Record<"en" | "te" | "hi", GalleryTranslations> = {
     viewStandard: "मानक ग्रिड",
     viewCompact: "कॉम्पैक्ट ग्रिड",
     savedPhotos: "सहेजे गए फोटो",
-    searchPlaceholder: "फोटो, श्रेणी या शाखा द्वारा खोजें...",
+    searchPlaceholder: "फोटो, इवेंट या टैग खोजें...",
     videoSearchPlaceholder: "वीडियो खोजें...",
     loadingPhotos: "फोटो लोड हो रहे हैं...",
     noMomentsFound: "कोई फोटो नहीं मिला",
@@ -456,11 +456,13 @@ export default function ChurchGalleryPage() {
 
   // Top-Level Media Section Tab: "photos" | "videos" | "pastor" | "all"
   const [activeMediaTab, setActiveMediaTab] = useState<"photos" | "videos" | "pastor" | "all">("photos");
+  const [isPending, startTransition] = useTransition();
 
   // ══════════════════════ PHOTO GALLERY STATE ══════════════════════
   const [items, setItems] = useState<GalleryItem[]>(CURATED_GALLERY_ITEMS);
   const [isLoading, setIsLoading] = useState(false);
   const [activeCategory, setActiveCategory] = useState("All");
+  const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedBranch, setSelectedBranch] = useState<string>("all");
   const [sortOrder, setSortOrder] = useState<"order-asc" | "order-desc" | "newest" | "title-asc">("order-asc");
@@ -469,10 +471,38 @@ export default function ChurchGalleryPage() {
   const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
 
-  // Progressive batch rendering for photos (fast loading of complete church moments)
-  const INITIAL_BATCH = 40;
-  const BATCH_SIZE = 24;
-  const [displayCount, setDisplayCount] = useState(INITIAL_BATCH);
+  // Debounced search input (150ms) wrapped in startTransition for sub-100ms INP
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      startTransition(() => {
+        setSearchQuery(searchInput);
+      });
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
+  const handleClearSearch = useCallback(() => {
+    setSearchInput("");
+    startTransition(() => {
+      setSearchQuery("");
+    });
+  }, []);
+
+  // Detect mobile viewport for responsive progressive pagination & priority batch
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(typeof window !== "undefined" && window.innerWidth < 640);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile, { passive: true });
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  // Progressive batch rendering: 12 on desktop, 8 on mobile (prevents 34+ images loading at once)
+  const initialBatch = isMobile ? 8 : 12;
+  const batchStep = isMobile ? 8 : 12;
+  const [displayCount, setDisplayCount] = useState(12);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
   // Progressive video grid display count
@@ -487,6 +517,7 @@ export default function ChurchGalleryPage() {
   const [toast, setToast] = useState<ToastMessage | null>(null);
   const thumbnailContainerRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
 
   // ══════════════════════ VIDEO THEATER STATE ══════════════════════
   const [activeVideoId, setActiveVideoId] = useState<string>(GALLERY_VIDEO_ITEMS[0].id);
@@ -520,9 +551,11 @@ export default function ChurchGalleryPage() {
     return GALLERY_VIDEO_ITEMS.find((v) => v.id === activeVideoId) || GALLERY_VIDEO_ITEMS[0];
   }, [activeVideoId]);
 
-  // Tab Switch Handlers
+  // Tab Switch Handlers wrapped in startTransition for sub-100ms INP
   const handleSwitchToPastor = useCallback(() => {
-    setActiveMediaTab("pastor");
+    startTransition(() => {
+      setActiveMediaTab("pastor");
+    });
     setTimeout(() => {
       const el = document.getElementById("pastor-spotlight-section");
       el?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -530,22 +563,54 @@ export default function ChurchGalleryPage() {
   }, []);
 
   const handleSwitchToVideoTheater = useCallback(() => {
-    setActiveMediaTab("videos");
-    setActiveVideoId(GALLERY_VIDEO_ITEMS[0].id); // Always set to 1st video
+    startTransition(() => {
+      setActiveMediaTab("videos");
+      setActiveVideoId(GALLERY_VIDEO_ITEMS[0].id); // Always set to 1st video
+    });
     setTimeout(() => {
       videoTheaterRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 60);
   }, []);
 
   const handleSwitchToPhotoGallery = useCallback(() => {
-    setActiveMediaTab("photos");
+    startTransition(() => {
+      setActiveMediaTab("photos");
+    });
     setTimeout(() => {
       photoGalleryRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 60);
   }, []);
 
   const handleSwitchToAllMedia = useCallback(() => {
-    setActiveMediaTab("all");
+    startTransition(() => {
+      setActiveMediaTab("all");
+    });
+  }, []);
+
+  // Filter handlers wrapped in startTransition for zero-jank INP
+  const handleSelectCategory = useCallback((catName: string) => {
+    startTransition(() => {
+      setActiveCategory(catName);
+      setFavoritesOnly(false);
+    });
+  }, []);
+
+  const handleSelectBranch = useCallback((branch: string) => {
+    startTransition(() => {
+      setSelectedBranch(branch);
+    });
+  }, []);
+
+  const handleSelectSort = useCallback((order: "order-asc" | "order-desc" | "newest" | "title-asc") => {
+    startTransition(() => {
+      setSortOrder(order);
+    });
+  }, []);
+
+  const handleToggleFavorites = useCallback(() => {
+    startTransition(() => {
+      setFavoritesOnly((prev) => !prev);
+    });
   }, []);
 
   // Filtered video list for main grid
@@ -569,17 +634,20 @@ export default function ChurchGalleryPage() {
     return GALLERY_VIDEO_ITEMS.findIndex((v) => v.id === activeVideo.id);
   }, [activeVideo.id]);
 
-  // Load favorites from localStorage
+  // Load favorites from localStorage reliably
   useEffect(() => {
     try {
       const saved = localStorage.getItem("kcm-gallery-favorites");
       if (saved) {
-        setFavorites(new Set(JSON.parse(saved)));
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          setFavorites(new Set(parsed));
+        }
       }
     } catch {}
   }, []);
 
-  // Save favorites to localStorage
+  // Save favorites to localStorage reliably
   const toggleFavorite = useCallback(
     (id: string, e?: React.MouseEvent) => {
       if (e) e.stopPropagation();
@@ -610,12 +678,17 @@ export default function ChurchGalleryPage() {
     }, 2800);
   };
 
+  // Sync displayCount when isMobile is resolved on client
+  useEffect(() => {
+    setDisplayCount(isMobile ? 8 : 12);
+  }, [isMobile]);
+
   // Reset pagination when active filter or sort changes
   useEffect(() => {
-    setDisplayCount(INITIAL_BATCH);
-  }, [activeCategory, searchQuery, selectedBranch, favoritesOnly, sortOrder]);
+    setDisplayCount(isMobile ? 8 : 12);
+  }, [activeCategory, searchQuery, selectedBranch, favoritesOnly, sortOrder, isMobile]);
 
-  // Fetch gallery items from API (non-blocking background sync)
+  // Fetch gallery items from API (non-blocking background sync with real-time revalidation)
   useEffect(() => {
     let isMounted = true;
     const fetchGallery = async () => {
@@ -624,7 +697,10 @@ export default function ChurchGalleryPage() {
       }
       try {
         const branchParam = selectedBranch === "all" ? "" : `&branch=${encodeURIComponent(selectedBranch)}`;
-        const res = await fetch(`/api/gallery?limit=300&sort=${sortOrder}${branchParam}`);
+        const res = await fetch(`/api/gallery?limit=300&sort=${sortOrder}${branchParam}`, {
+          cache: "no-store",
+          headers: { Pragma: "no-cache", "Cache-Control": "no-cache" },
+        });
         if (res.ok) {
           const data = await res.json();
           if (isMounted && data.success && Array.isArray(data.galleryItems) && data.galleryItems.length > 0) {
@@ -715,7 +791,7 @@ export default function ChurchGalleryPage() {
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
-          setDisplayCount((prev) => Math.min(prev + BATCH_SIZE, filteredItems.length));
+          setDisplayCount((prev) => Math.min(prev + batchStep, filteredItems.length));
         }
       },
       { rootMargin: "350px" }
@@ -725,7 +801,7 @@ export default function ChurchGalleryPage() {
     return () => {
       if (target) observer.unobserve(target);
     };
-  }, [hasMore, filteredItems.length]);
+  }, [hasMore, filteredItems.length, batchStep]);
 
   // Navigation handlers for video theater
   const handleSelectVideo = (video: GalleryVideoItem) => {
@@ -877,6 +953,37 @@ export default function ChurchGalleryPage() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [lightboxIndex, nextPhoto, prevPhoto]);
 
+  // Body scroll locking and floating widget suppression when lightbox or video modal is open
+  useEffect(() => {
+    if (lightboxIndex !== null || videoModalActive) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      document.documentElement.setAttribute("data-gallery-lightbox-open", "true");
+      return () => {
+        document.body.style.overflow = originalOverflow;
+        document.documentElement.removeAttribute("data-gallery-lightbox-open");
+      };
+    }
+  }, [lightboxIndex, videoModalActive]);
+
+  // Next / Previous image preloading for instantaneous zero-latency lightbox transitions
+  useEffect(() => {
+    if (lightboxIndex === null || filteredItems.length === 0) return;
+    const nextIdx = (lightboxIndex + 1) % filteredItems.length;
+    const prevIdx = (lightboxIndex - 1 + filteredItems.length) % filteredItems.length;
+    const urlsToPreload = [
+      filteredItems[nextIdx]?.url,
+      filteredItems[prevIdx]?.url,
+    ].filter(Boolean);
+
+    urlsToPreload.forEach((url) => {
+      if (url && typeof window !== "undefined") {
+        const img = new window.Image();
+        img.src = encodeSrc(url);
+      }
+    });
+  }, [lightboxIndex, filteredItems]);
+
   // Download Handler
   const handleDownload = async (item: GalleryItem, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
@@ -909,7 +1016,10 @@ export default function ChurchGalleryPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 selection:bg-purple-500 selection:text-white transition-colors duration-300">
-      <Navbar />
+      {/* 🧭 Responsive Floating Navbar above Back To Home */}
+      <div className="sticky top-0 z-[1000] w-full">
+        <Navbar />
+      </div>
 
       {/* Floating Toast Notification */}
       <AnimatePresence>
@@ -933,7 +1043,7 @@ export default function ChurchGalleryPage() {
       </AnimatePresence>
 
       {/* ══════════════════════════ HERO SECTION ══════════════════════════ */}
-      <section className="relative pt-28 pb-12 sm:pt-32 sm:pb-16 overflow-hidden bg-gradient-to-b from-purple-100/70 via-slate-50 to-slate-50 dark:from-purple-950/40 dark:via-slate-950 dark:to-slate-950 border-b border-slate-200/80 dark:border-white/5">
+      <section className="relative pt-6 sm:pt-12 pb-10 sm:pb-16 overflow-hidden bg-gradient-to-b from-purple-100/70 via-slate-50 to-slate-50 dark:from-purple-950/40 dark:via-slate-950 dark:to-slate-950 border-b border-slate-200/80 dark:border-white/5">
         {/* Ambient Lights & Sacred Aura */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(147,51,234,0.18),rgba(255,255,255,0))] dark:bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(147,51,234,0.35),rgba(255,255,255,0))]" />
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[750px] h-[380px] bg-purple-500/15 dark:bg-purple-600/20 blur-[130px] rounded-full pointer-events-none animate-pulse" style={{ animationDuration: "8s" }} />
@@ -1096,19 +1206,22 @@ export default function ChurchGalleryPage() {
 
             {/* Photo Search Bar & Controls Bar */}
             <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2.5 p-2.5 sm:p-3 rounded-2xl bg-white/90 dark:bg-slate-900/80 border border-slate-200/90 dark:border-white/10 backdrop-blur-xl shadow-md">
-              {/* Search */}
+              {/* Search — Debounced with immediate input response */}
               <div className="relative flex-1">
                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input
                   type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
                   placeholder={gt.searchPlaceholder}
-                  className="w-full pl-10 pr-9 py-2.5 sm:py-2 rounded-xl bg-slate-50 dark:bg-white/[0.04] border border-slate-200/90 dark:border-white/10 text-slate-900 dark:text-white placeholder-slate-400 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                  aria-label="Search gallery photos"
+                  className="w-full pl-10 pr-9 py-2.5 sm:py-2 rounded-xl bg-slate-50 dark:bg-white/[0.04] border border-slate-200/90 dark:border-white/10 text-slate-900 dark:text-white placeholder-slate-400 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all placeholder:text-ellipsis"
                 />
-                {searchQuery && (
+                {searchInput && (
                   <button
-                    onClick={() => setSearchQuery("")}
+                    type="button"
+                    onClick={handleClearSearch}
+                    aria-label="Clear search query"
                     className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer"
                   >
                     <X className="w-3.5 h-3.5" />
@@ -1123,7 +1236,7 @@ export default function ChurchGalleryPage() {
                   <MapPin className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400 shrink-0 mr-2" />
                   <select
                     value={selectedBranch}
-                    onChange={(e) => setSelectedBranch(e.target.value)}
+                    onChange={(e) => handleSelectBranch(e.target.value)}
                     aria-label="Filter photos by church branch"
                     className="bg-transparent text-slate-900 dark:text-white font-bold focus:outline-none cursor-pointer pr-8 text-xs sm:text-sm w-full appearance-none"
                   >
@@ -1148,7 +1261,7 @@ export default function ChurchGalleryPage() {
                   <ArrowUpDown className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0 mr-2" />
                   <select
                     value={sortOrder}
-                    onChange={(e) => setSortOrder(e.target.value as any)}
+                    onChange={(e) => handleSelectSort(e.target.value as any)}
                     aria-label="Sort gallery photos"
                     className="bg-transparent text-slate-900 dark:text-white font-bold focus:outline-none cursor-pointer pr-8 text-xs sm:text-sm w-full appearance-none"
                   >
@@ -1218,18 +1331,15 @@ export default function ChurchGalleryPage() {
               </div>
             </div>
 
-            {/* Category Filter Pills for Photos */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-purple-600/30">
+            {/* Category Filter Pills for Photos — Smooth edge-to-edge touch horizontal scrolling on mobile */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-2.5 pt-1 scrollbar-none overscroll-x-contain touch-pan-x flex-nowrap -mx-4 px-4 sm:mx-0 sm:px-0 w-auto max-w-full">
               {photoCategories.map((cat) => {
                 const isActive = activeCategory === cat.name && !favoritesOnly;
                 return (
                   <button
                     key={cat.name}
-                    onClick={() => {
-                      setActiveCategory(cat.name);
-                      setFavoritesOnly(false);
-                    }}
-                    className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold tracking-wide transition-all whitespace-nowrap flex items-center gap-2 border shadow-sm ${
+                    onClick={() => handleSelectCategory(cat.name)}
+                    className={`shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold tracking-wide transition-all whitespace-nowrap flex items-center gap-2 border shadow-xs ${
                       isActive
                         ? "bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 text-white border-purple-500/50 shadow-md shadow-purple-900/25 scale-[1.02]"
                         : "bg-white dark:bg-slate-900/70 border-slate-200/90 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/10"
@@ -1251,8 +1361,8 @@ export default function ChurchGalleryPage() {
 
               {/* Saved Favorites Toggle */}
               <button
-                onClick={() => setFavoritesOnly((prev) => !prev)}
-                className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold tracking-wide transition-all whitespace-nowrap flex items-center gap-2 border shadow-sm ${
+                onClick={handleToggleFavorites}
+                className={`shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold tracking-wide transition-all whitespace-nowrap flex items-center gap-2 border shadow-xs ${
                   favoritesOnly
                     ? "bg-gradient-to-r from-rose-600 to-pink-600 text-white border-rose-500/50 shadow-md shadow-rose-900/25 scale-[1.02]"
                     : "bg-white dark:bg-slate-900/70 border-slate-200/90 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/10"
@@ -1290,11 +1400,14 @@ export default function ChurchGalleryPage() {
               <p className="text-sm text-slate-600 dark:text-slate-400">{gt.adjustSearchTip}</p>
               <button
                 onClick={() => {
-                  setActiveCategory("All");
-                  setSearchQuery("");
-                  setFavoritesOnly(false);
-                  setSelectedBranch("all");
-                  setSortOrder("order-asc");
+                  startTransition(() => {
+                    setActiveCategory("All");
+                    setSearchInput("");
+                    setSearchQuery("");
+                    setFavoritesOnly(false);
+                    setSelectedBranch("all");
+                    setSortOrder("order-asc");
+                  });
                 }}
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition-all shadow-md"
               >
@@ -1344,7 +1457,7 @@ export default function ChurchGalleryPage() {
                         <GalleryCardImage
                           src={item.url}
                           title={localizedItem.title}
-                          priority={index < 12}
+                          priority={index < (isMobile ? 4 : 6)}
                         />
 
                         {/* Top Badges */}
@@ -1432,8 +1545,8 @@ export default function ChurchGalleryPage() {
               {hasMore && (
                 <div ref={sentinelRef} className="pt-12 pb-6 flex flex-col items-center justify-center gap-3">
                   <button
-                    onClick={() => setDisplayCount((prev) => Math.min(prev + BATCH_SIZE, filteredItems.length))}
-                    className="inline-flex items-center gap-2 px-8 py-3.5 rounded-2xl bg-purple-50 dark:bg-purple-600/20 hover:bg-purple-600 text-purple-700 dark:text-purple-300 hover:text-white border border-purple-200 dark:border-purple-500/30 text-xs sm:text-sm font-bold transition-all shadow-md hover:scale-105 active:scale-95"
+                    onClick={() => setDisplayCount((prev) => Math.min(prev + batchStep, filteredItems.length))}
+                    className="inline-flex items-center gap-2 px-8 py-3.5 rounded-2xl bg-purple-50 dark:bg-purple-600/20 hover:bg-purple-600 text-purple-700 dark:text-purple-300 hover:text-white border border-purple-200 dark:border-purple-500/30 text-xs sm:text-sm font-bold transition-all shadow-md hover:scale-105 active:scale-95 cursor-pointer"
                   >
                     <Sparkles className="w-4 h-4" />
                     <span>
@@ -2096,10 +2209,10 @@ export default function ChurchGalleryPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[120] bg-black/95 backdrop-blur-2xl flex flex-col"
+              className="fixed inset-0 z-[99999] bg-black/98 backdrop-blur-3xl flex flex-col select-none"
             >
               {/* Header */}
-              <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-white/10 bg-slate-950/80 backdrop-blur-xl flex-shrink-0">
+              <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-3.5 pt-[max(0.75rem,env(safe-area-inset-top))] border-b border-white/10 bg-slate-950/80 backdrop-blur-xl flex-shrink-0">
                 <div className="flex items-center gap-3">
                   <span className="px-3 py-1 rounded-full bg-rose-600/30 border border-rose-500/40 text-rose-300 text-xs font-black">
                     {videoModalIndex + 1} / {GALLERY_VIDEO_ITEMS.length}
@@ -2229,77 +2342,99 @@ export default function ChurchGalleryPage() {
       <AnimatePresence>
         {lightboxIndex !== null && currentLightboxItem && (
           <motion.div
+            key="photo-lightbox"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[120] flex flex-col bg-black/95 backdrop-blur-2xl select-none"
+            data-lightbox-modal="true"
+            className="fixed inset-0 z-[99999] flex flex-col bg-black/98 backdrop-blur-3xl select-none"
             onTouchStart={(e) => {
               touchStartX.current = e.touches[0].clientX;
+              touchStartY.current = e.touches[0].clientY;
             }}
             onTouchEnd={(e) => {
-              if (touchStartX.current === null) return;
-              const diff = touchStartX.current - e.changedTouches[0].clientX;
-              if (diff > 50) nextPhoto();
-              else if (diff < -50) prevPhoto();
+              if (touchStartX.current === null || touchStartY.current === null) return;
+              const diffX = touchStartX.current - e.changedTouches[0].clientX;
+              const diffY = touchStartY.current - e.changedTouches[0].clientY;
+              if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 40) {
+                if (diffX > 0) nextPhoto();
+                else prevPhoto();
+              }
               touchStartX.current = null;
+              touchStartY.current = null;
             }}
           >
-            {/* Top Toolbar */}
-            <div className="relative z-30 flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-white/10 bg-slate-950/80 backdrop-blur-xl">
-              <div className="flex items-center gap-3">
-                <span className="px-3 py-1 rounded-full bg-purple-600/30 border border-purple-500/40 text-purple-300 text-xs font-black tracking-widest uppercase">
+            {/* Top Toolbar — Clean, accessible & positioned cleanly fullscreen above all page layers */}
+            <div className="relative z-30 flex items-center justify-between px-3 sm:px-6 py-2 sm:py-3 pt-[max(0.75rem,env(safe-area-inset-top))] border-b border-white/10 bg-slate-950/90 backdrop-blur-2xl flex-shrink-0">
+              {/* Left Info Group: Photo Counter & Responsive Badges */}
+              <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                <span className="px-2.5 sm:px-3 py-1 rounded-full bg-purple-600/35 border border-purple-400/50 text-purple-200 text-xs font-black font-mono tracking-wider shrink-0 shadow-sm">
                   {lightboxIndex + 1} / {filteredItems.length}
                 </span>
-                <span className="hidden sm:inline-block text-xs font-semibold text-slate-400">
-                  {currentLightboxLocalized?.category} • {currentLightboxItem.eventName || currentLightboxLocalized?.branchName}
-                </span>
+                <div className="hidden sm:flex items-center gap-2 min-w-0">
+                  <span className="px-2.5 py-0.5 rounded-lg bg-white/10 border border-white/15 text-slate-200 text-xs font-bold uppercase tracking-wide truncate max-w-[150px] shrink-0">
+                    {currentLightboxLocalized?.category}
+                  </span>
+                  <span className="hidden md:inline-block text-xs font-semibold text-slate-300 truncate max-w-xs lg:max-w-md">
+                    {currentLightboxLocalized?.title}
+                  </span>
+                </div>
               </div>
 
-              <div className="flex items-center gap-2">
+              {/* Right Action Group: Non-overlapping Controls with Balanced Spacing */}
+              <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2 shrink-0">
                 {/* Slideshow Play / Pause */}
                 <button
+                  type="button"
                   onClick={() => setIsSlideshowPlaying((prev) => !prev)}
                   title={isSlideshowPlaying ? gt.pauseSlideshow : gt.playSlideshow}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
+                  aria-label={isSlideshowPlaying ? "Pause slideshow" : "Play slideshow"}
+                  className={`inline-flex items-center justify-center gap-1.5 p-2 sm:px-3 sm:py-2 rounded-xl text-xs font-bold transition-all border cursor-pointer active:scale-95 ${
                     isSlideshowPlaying
-                      ? "bg-purple-600 text-white border-purple-400 shadow-md shadow-purple-600/30"
-                      : "bg-white/10 hover:bg-white/20 text-slate-200 border-white/10"
+                      ? "bg-purple-600 text-white border-purple-400 shadow-lg shadow-purple-600/40 ring-1 ring-purple-300"
+                      : "bg-white/10 hover:bg-white/20 text-slate-200 border-white/15"
                   }`}
                 >
                   {isSlideshowPlaying ? (
                     <>
-                      <Pause className="w-3.5 h-3.5 fill-current" />
-                      <span className="hidden sm:inline">{gt.pauseSlideshow}</span>
+                      <Pause className="w-4 h-4 fill-current" />
+                      <span className="hidden lg:inline">{gt.pauseSlideshow}</span>
                     </>
                   ) : (
                     <>
-                      <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
-                      <span className="hidden sm:inline">{gt.playSlideshow}</span>
+                      <Play className="w-4 h-4 fill-current ml-0.5" />
+                      <span className="hidden lg:inline">{gt.playSlideshow}</span>
                     </>
                   )}
                 </button>
 
-                {/* Zoom Controls */}
-                <div className="hidden sm:flex items-center bg-white/10 rounded-xl p-0.5 border border-white/10">
+                {/* Zoom Controls (Desktop / Tablet) */}
+                <div className="hidden md:flex items-center bg-white/10 rounded-xl p-0.5 border border-white/15">
                   <button
+                    type="button"
                     onClick={() => setZoomLevel((z) => Math.min(z + 0.5, 3))}
                     title={gt.zoomIn}
-                    className="p-1.5 hover:bg-white/10 rounded-lg text-slate-200"
+                    aria-label="Zoom in photo"
+                    className="p-1.5 hover:bg-white/10 rounded-lg text-slate-200 cursor-pointer"
                   >
                     <ZoomIn className="w-4 h-4" />
                   </button>
                   <button
+                    type="button"
                     onClick={() => setZoomLevel((z) => Math.max(z - 0.5, 1))}
                     title={gt.zoomOut}
-                    className="p-1.5 hover:bg-white/10 rounded-lg text-slate-200"
+                    aria-label="Zoom out photo"
+                    className="p-1.5 hover:bg-white/10 rounded-lg text-slate-200 cursor-pointer"
                   >
                     <ZoomOut className="w-4 h-4" />
                   </button>
                   {zoomLevel > 1 && (
                     <button
+                      type="button"
                       onClick={() => setZoomLevel(1)}
                       title={gt.resetZoom}
-                      className="p-1.5 hover:bg-white/10 rounded-lg text-purple-300"
+                      aria-label="Reset zoom"
+                      className="p-1.5 hover:bg-white/10 rounded-lg text-purple-300 cursor-pointer"
                     >
                       <RotateCcw className="w-4 h-4" />
                     </button>
@@ -2308,21 +2443,25 @@ export default function ChurchGalleryPage() {
 
                 {/* Download */}
                 <button
+                  type="button"
                   onClick={(e) => handleDownload(currentLightboxItem, e)}
                   title={gt.downloadHighRes}
-                  className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 border border-white/10 transition-colors"
+                  aria-label="Download high-resolution photo"
+                  className="p-2 sm:p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 border border-white/15 transition-colors cursor-pointer active:scale-95"
                 >
                   <Download className="w-4 h-4" />
                 </button>
 
                 {/* Favorite */}
                 <button
+                  type="button"
                   onClick={(e) => toggleFavorite(currentLightboxItem.id, e)}
                   title={favorites.has(currentLightboxItem.id) ? gt.removeFavorite : gt.saveFavorite}
-                  className={`p-2 rounded-xl border transition-colors ${
+                  aria-label={favorites.has(currentLightboxItem.id) ? "Remove from favorites" : "Save to favorites"}
+                  className={`p-2 sm:p-2.5 rounded-xl border transition-colors cursor-pointer active:scale-95 ${
                     favorites.has(currentLightboxItem.id)
-                      ? "bg-rose-600 text-white border-rose-400"
-                      : "bg-white/10 hover:bg-white/20 text-slate-200 border-white/10"
+                      ? "bg-rose-600 text-white border-rose-400 shadow-md shadow-rose-600/30"
+                      : "bg-white/10 hover:bg-white/20 text-slate-200 border-white/15"
                   }`}
                 >
                   <Heart
@@ -2332,27 +2471,31 @@ export default function ChurchGalleryPage() {
 
                 {/* Toggle Info */}
                 <button
+                  type="button"
                   onClick={() => setShowInfoPanel((prev) => !prev)}
                   title={showInfoPanel ? gt.hideInfo : gt.photoInfo}
-                  className={`p-2 rounded-xl border transition-colors ${
+                  aria-label="Toggle photo information"
+                  className={`p-2 sm:p-2.5 rounded-xl border transition-colors cursor-pointer active:scale-95 ${
                     showInfoPanel
                       ? "bg-purple-600 text-white border-purple-400"
-                      : "bg-white/10 hover:bg-white/20 text-slate-200 border-white/10"
+                      : "bg-white/10 hover:bg-white/20 text-slate-200 border-white/15"
                   }`}
                 >
                   <Info className="w-4 h-4" />
                 </button>
 
-                {/* Close */}
+                {/* Prominent Close (X) Button */}
                 <button
+                  type="button"
                   onClick={() => {
                     setLightboxIndex(null);
                     setIsSlideshowPlaying(false);
                   }}
                   title={gt.closeEsc}
-                  className="p-2 rounded-xl bg-white/10 hover:bg-rose-600 hover:text-white text-slate-200 border border-white/10 transition-colors ml-1"
+                  aria-label="Close lightbox modal (Esc)"
+                  className="p-2 sm:p-2.5 rounded-xl bg-white/15 hover:bg-rose-600 text-white border border-white/20 hover:border-rose-400/50 transition-all ml-0.5 sm:ml-2 shadow-md active:scale-95 cursor-pointer flex items-center justify-center"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]" />
                 </button>
               </div>
             </div>
@@ -2369,18 +2512,35 @@ export default function ChurchGalleryPage() {
 
             {/* Main Lightbox Display Area */}
             <div className="relative flex-1 flex items-center justify-center p-1 sm:p-4 overflow-hidden">
+              {/* Mobile Floating Category & Title Pill — Positioned with breathing room below top bar */}
+              <div className="sm:hidden absolute top-2.5 left-1/2 -translate-x-1/2 z-20 pointer-events-none max-w-[85vw]">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-950/85 backdrop-blur-md border border-white/15 text-center truncate shadow-lg">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-purple-300 truncate">
+                    {currentLightboxLocalized?.category}
+                  </span>
+                  {currentLightboxLocalized?.title && (
+                    <span className="text-[11px] text-slate-300 font-medium truncate max-w-[160px]">
+                      • {currentLightboxLocalized?.title}
+                    </span>
+                  )}
+                </div>
+              </div>
               <button
+                type="button"
                 onClick={prevPhoto}
                 title={gt.prevPhoto}
-                className="absolute left-2 sm:left-5 z-20 w-9 h-9 sm:w-12 sm:h-12 rounded-2xl bg-black/40 hover:bg-purple-600 text-white/80 hover:text-white flex items-center justify-center backdrop-blur-md border border-white/10 shadow-2xl transition-all hover:scale-110 active:scale-95"
+                aria-label="Previous photo (ArrowLeft)"
+                className="absolute left-2.5 sm:left-6 z-30 w-10 h-10 sm:w-12 sm:h-12 rounded-full sm:rounded-2xl bg-black/60 hover:bg-purple-600 text-white flex items-center justify-center backdrop-blur-xl border border-white/20 shadow-2xl transition-all hover:scale-110 active:scale-95 cursor-pointer"
               >
                 <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
 
               <button
+                type="button"
                 onClick={nextPhoto}
                 title={gt.nextPhoto}
-                className="absolute right-2 sm:right-5 z-20 w-9 h-9 sm:w-12 sm:h-12 rounded-2xl bg-black/40 hover:bg-purple-600 text-white/80 hover:text-white flex items-center justify-center backdrop-blur-md border border-white/10 shadow-2xl transition-all hover:scale-110 active:scale-95"
+                aria-label="Next photo (ArrowRight)"
+                className="absolute right-2.5 sm:right-6 z-30 w-10 h-10 sm:w-12 sm:h-12 rounded-full sm:rounded-2xl bg-black/60 hover:bg-purple-600 text-white flex items-center justify-center backdrop-blur-xl border border-white/20 shadow-2xl transition-all hover:scale-110 active:scale-95 cursor-pointer"
               >
                 <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
@@ -2451,8 +2611,8 @@ export default function ChurchGalleryPage() {
               )}
             </div>
 
-            {/* Bottom Reel */}
-            <div className="relative z-30 px-4 py-3 bg-slate-950 border-t border-white/10">
+            {/* Bottom Reel with Safe Area Inset for mobile home bars */}
+            <div className="relative z-30 px-3 sm:px-4 py-2.5 sm:py-3 bg-slate-950 border-t border-white/10 pb-[max(0.75rem,env(safe-area-inset-bottom))] flex-shrink-0">
               <div
                 ref={thumbnailContainerRef}
                 className="flex items-center gap-2 overflow-x-auto py-1 scrollbar-thin scrollbar-thumb-purple-600/50 scrollbar-track-transparent scroll-smooth max-w-full"
@@ -2513,10 +2673,12 @@ const GalleryCardImage = React.memo(function GalleryCardImage({
 
   return (
     <div className="relative w-full h-full min-h-[200px] bg-slate-900 overflow-hidden flex items-center justify-center">
-      {/* Lightweight skeleton pulse while loading */}
+      {/* Smooth branded skeleton placeholder while loading */}
       {!isLoaded && !hasError && (
-        <div className="absolute inset-0 bg-slate-800/80 animate-pulse flex items-center justify-center z-10">
-          <Camera className="w-8 h-8 text-slate-500" />
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 animate-pulse flex items-center justify-center z-10">
+          <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center shadow-inner">
+            <Camera className="w-6 h-6 text-purple-400/60 animate-pulse" />
+          </div>
         </div>
       )}
 

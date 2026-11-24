@@ -194,7 +194,7 @@ export default function Contact({ initialContacts }: { initialContacts?: SiteCon
   return (
     <section
       id="contact"
-      className="py-14 sm:py-20 lg:py-24 bg-slate-50 dark:bg-transparent relative z-10 transition-colors duration-300 overflow-hidden"
+      className="scroll-mt-[var(--kcm-header-height,80px)] sm:scroll-mt-28 py-14 sm:py-20 lg:py-24 bg-slate-50 dark:bg-transparent relative z-10 transition-colors duration-300 overflow-hidden"
     >
       {/* Decorative background blobs */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">

@@ -84,7 +84,9 @@ export default async function Home() {
   return (
     <>
       <ScrollToTopOnMount />
-      <Navbar />
+      <div className="sticky top-0 z-[1000] w-full">
+        <Navbar />
+      </div>
       <main className="min-h-screen overflow-x-hidden relative">
         <Hero initialHeroData={heroData} initialStatsData={statsData} />
 

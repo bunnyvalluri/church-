@@ -196,7 +196,7 @@ export default function Events({ initialEvents = [] }: { initialEvents?: Dynamic
   };
 
   return (
-    <section id="events" className="py-14 sm:py-20 lg:py-24 bg-slate-50 dark:bg-transparent relative z-10 transition-colors duration-300">
+    <section id="events" className="scroll-mt-[var(--kcm-header-height,80px)] sm:scroll-mt-28 py-14 sm:py-20 lg:py-24 bg-slate-50 dark:bg-transparent relative z-10 transition-colors duration-300">
       <div className="container mx-auto px-3 sm:px-4 relative z-10">
         
         {/* Section Header */}

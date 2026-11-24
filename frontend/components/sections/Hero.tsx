@@ -309,10 +309,14 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
   const ctaContactShort =
     language === "te" ? "సంప్రదించండి" : language === "hi" ? "संपर्क" : "Contact";
 
+  const ctaNgoDisplay = language === "en" ? "NGO Portal" : ctaNgoText;
+  const ctaPrayerDisplay = language === "en" ? "Prayer Request" : ctaTertiaryText;
+  const ctaContactDisplay = language === "en" ? "Contact Us" : ctaContactText;
+
   return (
     <section
       id="home"
-      className="relative min-h-screen min-h-dvh flex items-center justify-center overflow-hidden bg-transparent"
+      className="relative min-h-[calc(100dvh-var(--kcm-header-height,76px))] flex flex-col justify-center overflow-hidden bg-transparent scroll-mt-[var(--kcm-header-height,80px)]"
     >
       {/* Animated Background Orbs (GPU accelerated) */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
@@ -322,7 +326,7 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
       </div>
 
       {/* Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 min-[360px]:py-20 md:py-28 lg:py-32">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 md:pt-10 lg:pt-12 pb-10 sm:pb-12 md:pb-14 w-full">
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -330,7 +334,7 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
           className="max-w-5xl mx-auto text-center"
         >
           {/* Live pulsing tag badge */}
-          <motion.div variants={itemVariants} className="flex justify-center mb-4 min-[360px]:mb-6 md:mb-8">
+          <motion.div variants={itemVariants} className="flex justify-center mb-3.5 sm:mb-4 md:mb-5">
             <div className="inline-flex items-center gap-2 px-3.5 sm:px-4 py-1.5 sm:py-2 bg-slate-100/90 dark:bg-white/[0.06] backdrop-blur-md border border-slate-200/90 dark:border-white/10 rounded-full text-slate-700 dark:text-slate-300 shadow-xs hover:border-purple-400/40 transition-all duration-300">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
@@ -389,7 +393,7 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
           <motion.p
             suppressHydrationWarning
             variants={itemVariants}
-            className="text-slate-600 dark:text-slate-300 mt-3 sm:mt-4 mb-6 sm:mb-8 md:mb-10 max-w-2xl mx-auto leading-relaxed font-medium text-sm sm:text-base md:text-lg px-4"
+            className="text-slate-600 dark:text-slate-300 mt-2.5 sm:mt-3 mb-5 sm:mb-7 md:mb-8 max-w-2xl mx-auto leading-relaxed font-medium text-sm sm:text-base md:text-lg px-4"
           >
             {subtitle}
           </motion.p>
@@ -397,14 +401,14 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
           {/* CTA Actions: Clean High-Conversion Visual Hierarchy */}
           <motion.div
             variants={itemVariants}
-            className="flex flex-col items-center justify-center gap-3 sm:gap-3.5 mb-8 sm:mb-12 md:mb-16 max-w-xl mx-auto px-4 w-full"
+            className="flex flex-col items-center justify-center gap-3 sm:gap-3.5 mb-6 sm:mb-8 md:mb-10 max-w-xl mx-auto px-4 w-full"
           >
             {/* Primary & Secondary Action Pair */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full max-w-md mx-auto">
               {/* Primary: Plan A Visit / Join Worship */}
               <Link
                 href={hero?.ctaPrimaryHref ?? "#services"}
-                className="w-full sm:flex-1 min-h-[48px] px-6 sm:px-8 py-3.5 bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 hover:from-violet-500 hover:to-indigo-500 text-white rounded-2xl text-sm sm:text-base font-extrabold shadow-lg shadow-violet-600/30 hover:shadow-violet-600/50 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 border border-violet-400/30 select-none"
+                className="w-full sm:flex-1 min-h-[48px] px-6 sm:px-8 py-3.5 bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 hover:from-violet-500 hover:to-indigo-500 text-white rounded-2xl text-sm sm:text-base font-extrabold shadow-lg shadow-violet-600/30 hover:shadow-violet-600/50 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 border border-violet-400/30 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2"
               >
                 <Church className="h-4 w-4" />
                 <span>{ctaPrimaryText}</span>
@@ -414,42 +418,42 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
               {/* Secondary: Watch Gallery */}
               <Link
                 href={ctaSecondaryHref}
-                className="w-full sm:flex-1 min-h-[48px] px-6 sm:px-8 py-3.5 bg-white dark:bg-white/[0.08] hover:bg-slate-50 dark:hover:bg-white/[0.14] text-slate-800 dark:text-white rounded-2xl text-sm sm:text-base font-bold shadow-sm border border-slate-200/90 dark:border-white/15 hover:border-violet-300 dark:hover:border-violet-400/40 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 select-none"
+                className="w-full sm:flex-1 min-h-[48px] px-6 sm:px-8 py-3.5 bg-white dark:bg-white/[0.08] hover:bg-slate-50 dark:hover:bg-white/[0.14] text-slate-800 dark:text-white rounded-2xl text-sm sm:text-base font-bold shadow-sm border border-slate-200/90 dark:border-white/15 hover:border-violet-300 dark:hover:border-violet-400/40 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2"
               >
                 <Images className="h-4 w-4 text-violet-600 dark:text-violet-400" />
                 <span>{ctaSecondaryText}</span>
               </Link>
             </div>
 
-            {/* Balanced Supporting Quick Actions (Symmetrical 3-Column Pill Strip - No Orphans) */}
+            {/* Balanced Supporting Quick Actions (Symmetrical 3-Column Pill Strip - No Orphans & No Truncation) */}
             <div className="grid grid-cols-3 gap-2 w-full max-w-md mx-auto pt-0.5">
               <Link
                 href="/prayer"
-                aria-label={`Prayer: ${ctaTertiaryText}`}
-                className="flex items-center justify-center gap-1.5 py-2 px-1.5 sm:px-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 bg-slate-100/90 dark:bg-white/[0.05] hover:bg-rose-50 dark:hover:bg-rose-950/30 border border-slate-200/80 dark:border-white/10 hover:border-rose-300 dark:hover:border-rose-500/40 hover:text-rose-700 dark:hover:text-rose-300 transition-all select-none min-h-[38px] active:scale-95"
+                aria-label={`Prayer: ${ctaPrayerDisplay}`}
+                className="flex items-center justify-center gap-1.5 py-2.5 px-2 sm:px-2.5 rounded-xl text-[11.5px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 bg-slate-100/90 dark:bg-white/[0.05] hover:bg-rose-50 dark:hover:bg-rose-950/30 border border-slate-200/80 dark:border-white/10 hover:border-rose-300 dark:hover:border-rose-500/40 hover:text-rose-700 dark:hover:text-rose-300 transition-all select-none min-h-[44px] active:scale-95 shadow-xs"
               >
                 <Heart className="h-3.5 w-3.5 text-rose-500 shrink-0" />
-                <span className="hidden sm:inline truncate">{ctaTertiaryText}</span>
+                <span className="hidden sm:inline whitespace-nowrap">{ctaPrayerDisplay}</span>
                 <span className="sm:hidden whitespace-nowrap">{ctaTertiaryShort}</span>
               </Link>
 
               <Link
                 href={ctaNgoHref}
-                aria-label={`NGO: ${ctaNgoText}`}
-                className="flex items-center justify-center gap-1.5 py-2 px-1.5 sm:px-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 bg-slate-100/90 dark:bg-white/[0.05] hover:bg-violet-50 dark:hover:bg-violet-950/30 border border-slate-200/80 dark:border-white/10 hover:border-violet-300 dark:hover:border-violet-500/40 hover:text-violet-700 dark:hover:text-violet-300 transition-all select-none min-h-[38px] active:scale-95"
+                aria-label={`NGO: ${ctaNgoDisplay}`}
+                className="flex items-center justify-center gap-1.5 py-2.5 px-2 sm:px-2.5 rounded-xl text-[11.5px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 bg-slate-100/90 dark:bg-white/[0.05] hover:bg-violet-50 dark:hover:bg-violet-950/30 border border-slate-200/80 dark:border-white/10 hover:border-violet-300 dark:hover:border-violet-500/40 hover:text-violet-700 dark:hover:text-violet-300 transition-all select-none min-h-[44px] active:scale-95 shadow-xs"
               >
                 <Globe className="h-3.5 w-3.5 text-violet-500 shrink-0" />
-                <span className="hidden sm:inline truncate">{ctaNgoText}</span>
+                <span className="hidden sm:inline whitespace-nowrap">{ctaNgoDisplay}</span>
                 <span className="sm:hidden whitespace-nowrap">{ctaNgoShort}</span>
               </Link>
 
               <Link
                 href="/contact"
-                aria-label={`Contact: ${ctaContactText}`}
-                className="flex items-center justify-center gap-1.5 py-2 px-1.5 sm:px-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 bg-slate-100/90 dark:bg-white/[0.05] hover:bg-emerald-50 dark:hover:bg-emerald-950/30 border border-slate-200/80 dark:border-white/10 hover:border-emerald-300 dark:hover:border-emerald-500/40 hover:text-emerald-700 dark:hover:text-emerald-300 transition-all select-none min-h-[38px] active:scale-95"
+                aria-label={`Contact: ${ctaContactDisplay}`}
+                className="flex items-center justify-center gap-1.5 py-2.5 px-2 sm:px-2.5 rounded-xl text-[11.5px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 bg-slate-100/90 dark:bg-white/[0.05] hover:bg-emerald-50 dark:hover:bg-emerald-950/30 border border-slate-200/80 dark:border-white/10 hover:border-emerald-300 dark:hover:border-emerald-500/40 hover:text-emerald-700 dark:hover:text-emerald-300 transition-all select-none min-h-[44px] active:scale-95 shadow-xs"
               >
                 <Phone className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
-                <span className="hidden sm:inline truncate">{ctaContactText}</span>
+                <span className="hidden sm:inline whitespace-nowrap">{ctaContactDisplay}</span>
                 <span className="sm:hidden whitespace-nowrap">{ctaContactShort}</span>
               </Link>
             </div>

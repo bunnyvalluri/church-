@@ -8,7 +8,7 @@
 
 'use strict';
 
-const { PrismaClient } = require('@prisma/client');
+const defaultPrisma = require('../../../utils/db');
 const { SMS_STATUS } = require('./sms.constants');
 
 class SMSRepository {
@@ -16,7 +16,7 @@ class SMSRepository {
    * @param {PrismaClient} [prisma]
    */
   constructor(prisma) {
-    this.prisma = prisma || new PrismaClient();
+    this.prisma = prisma || defaultPrisma;
   }
 
   get smsModel() {
