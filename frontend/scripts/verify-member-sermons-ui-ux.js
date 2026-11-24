@@ -23,14 +23,12 @@ assert(fs.existsSync(sermonPagePath), 'Member sermons page.tsx must exist');
 
 const source = fs.readFileSync(sermonPagePath, 'utf8');
 
-// 1. Curated Church Broadcasts / Messages Fallback
-console.log('Checking #1: Curated spiritual messages fallback...');
-assert(source.includes('getCuratedMinistrySermons'), 'Must define getCuratedMinistrySermons');
-assert(source.includes('allSermons'), 'Must combine DB sermons with curated fallback');
-assert(source.includes('The Power of Unwavering Faith & Divine Miracles'), 'Curated sermons must include Bishop Kurra Kristhu Raju Garu message');
-assert(source.includes('Walking in Divine Healing, Deliverance & Peace'), 'Curated sermons must include divine healing message');
-assert(source.includes('The Anointing of the Holy Spirit for Everyday Victory'), 'Curated sermons must include Holy Spirit message');
-console.log('✓ Curated spiritual messages fallback verified.');
+// 1. Authentic Database Sermons Only (No Fake / Synthetic Fallback Sermons)
+console.log('Checking #1: Pure authentic database sermons without synthetic fallbacks...');
+assert(!source.includes('getCuratedMinistrySermons'), 'Curated fake sermons must be completely purged');
+assert(!source.includes('curated-sermon-'), 'Curated fake sermon IDs must be completely purged');
+assert(source.includes('const allSermons: Sermon[] = useMemo(() => {\n    return dbSermons;') || source.includes('const allSermons: Sermon[] = useMemo(() => {\r\n    return dbSermons;'), 'Must purely use DB sermons');
+console.log('✓ Pure authentic database sermons verified.');
 
 // 2. Interactive Top Stat Cards (Fitts's Law)
 console.log('Checking #2: Interactive stat cards acting as filter switches...');
