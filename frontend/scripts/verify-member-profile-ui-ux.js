@@ -102,6 +102,9 @@ const pagePath = path.join(__dirname, '../app/member/profile/page.tsx');
 const pageContent = fs.readFileSync(pagePath, 'utf8');
 
 assert(pageContent.includes("getHumanFriendlyName"), "Uses getHumanFriendlyName for human greeting");
+assert(pageContent.includes("w-20 h-20 sm:w-24 sm:h-24"), "Uses valid responsive avatar dimensions w-20 h-20 sm:w-24 sm:h-24 (fixes 0x0 collapsed avatar)");
+assert(!pageContent.includes("w-22 h-22"), "Does not use invalid w-22 h-22 class");
+assert(pageContent.includes("role=\"button\""), "Avatar container has role=button for mobile touch interactions");
 assert(pageContent.includes("pt.fellowship.changePhoto"), "Includes accessible camera photo upload trigger for touchscreen devices");
 assert(pageContent.includes("option value=\"Subhash Nagar\""), "Includes Subhash Nagar campus option");
 assert(pageContent.includes("option value=\"Shapur Nagar\""), "Includes Shapur Nagar campus option");

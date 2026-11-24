@@ -676,9 +676,21 @@ export default function MemberProfile() {
 
             {/* Profile Avatar & Identity Information */}
             <div className="px-5 pb-5">
-              <div className="relative -mt-12 mb-3.5 flex items-end justify-between">
+              <div className="relative -mt-10 sm:-mt-12 mb-3.5 flex items-end justify-between gap-3">
                 {/* Avatar with Accessible Camera Button for Touch & Desktop */}
-                <div className="relative w-22 h-22 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 border-4 border-white dark:border-gray-900 shadow-2xl overflow-hidden group">
+                <div
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => fileInputRef.current?.click()}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      fileInputRef.current?.click();
+                    }
+                  }}
+                  className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 border-4 border-white dark:border-gray-900 shadow-xl overflow-hidden group shrink-0 cursor-pointer"
+                  title="Click or tap to change profile photo"
+                >
                   <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
 
                   {photoUploading ? (
@@ -686,7 +698,7 @@ export default function MemberProfile() {
                       <Loader2 className="w-7 h-7 text-white animate-spin" />
                     </div>
                   ) : image && typeof image === "string" && image.length > 0 ? (
-                    <Image src={image} alt={name || user?.name || "Member"} fill unoptimized className="object-cover" />
+                    <Image src={image} alt={humanFriendlyName || "Member"} fill unoptimized className="object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center bg-purple-600 text-white">
                       <User className="w-10 h-10" />
@@ -696,19 +708,18 @@ export default function MemberProfile() {
                   {/* Desktop Hover Overlay */}
                   {!photoUploading && (
                     <div
-                      onClick={() => fileInputRef.current?.click()}
-                      className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                      className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                     >
                       <Camera className="w-5 h-5 text-white" />
                     </div>
                   )}
 
                   {/* Online Presence Indicator */}
-                  <div className="absolute bottom-1 right-1 w-3.5 h-3.5 bg-emerald-400 rounded-full border-2 border-white dark:border-gray-900 animate-pulse pointer-events-none" />
+                  <div className="absolute top-1 right-1 w-3.5 h-3.5 bg-emerald-400 rounded-full border-2 border-white dark:border-gray-900 animate-pulse pointer-events-none z-10" />
                 </div>
 
                 {/* Role Pill */}
-                <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border shadow-xs ${rc.bg} ${rc.color}`}>
+                <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border shadow-xs ${rc.bg} ${rc.color} shrink-0 mb-1`}>
                   <Shield className="w-3.5 h-3.5" />
                   {rc.label}
                 </div>
@@ -719,7 +730,7 @@ export default function MemberProfile() {
                 type="button"
                 disabled={photoUploading}
                 onClick={() => fileInputRef.current?.click()}
-                className="inline-flex items-center gap-1.5 text-[11px] font-bold text-purple-600 dark:text-purple-400 hover:text-purple-700 hover:underline mb-2 cursor-pointer"
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-purple-600 dark:text-purple-400 hover:text-purple-700 hover:underline mb-2.5 cursor-pointer"
               >
                 <Camera className="w-3.5 h-3.5" />
                 <span>{pt.fellowship.changePhoto}</span>
@@ -790,8 +801,8 @@ export default function MemberProfile() {
                     <p className="text-[9.5px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
                       Mobile
                     </p>
-                    <p className="text-xs font-semibold text-gray-900 dark:text-white">
-                      {phoneDigits ? `+91 ${phoneDigits}` : "Not provided"}
+                    <p className="text-xs font-semibold text-gray-900 dark:text-white font-mono">
+                      {phoneDigits ? `+91 ${phoneDigits.replace(/(\d{5})(\d{5})/, "$1 $2")}` : "Not provided"}
                     </p>
                   </div>
                 </div>
