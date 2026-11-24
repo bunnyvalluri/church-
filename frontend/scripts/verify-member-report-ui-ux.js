@@ -55,6 +55,13 @@ assert(source.includes('సమస్యను నివేదించండి'
 assert(source.includes('समस्या रिपोर्ट करें'), 'Hindi title must exist');
 console.log('✓ Trilingual localization verified.');
 
+// 7. Non-Truncating Urgent Support Capsule & Breakpoint Safety
+console.log('Checking #7: Non-truncating urgent support capsule...');
+assert(!source.includes('<span className="truncate">{rt.urgentSupport} +91 95052 88171</span>'), 'Urgent support phone number must NEVER have truncate');
+assert(source.includes('whitespace-nowrap font-bold') && source.includes('+91 95052 88171'), 'Urgent support must be non-truncating and formatted');
+assert(source.includes('xl:flex-row xl:items-center'), 'Hero banner must use xl:flex-row to prevent crowding with desktop sidebar');
+console.log('✓ Non-truncating urgent support capsule verified.');
+
 console.log('\n======================================================');
 console.log('ALL MEMBER REPORT UI/UX VERIFICATION TESTS PASSED! 🚀');
 console.log('======================================================');
