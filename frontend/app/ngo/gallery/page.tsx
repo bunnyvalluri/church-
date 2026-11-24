@@ -376,8 +376,37 @@ export default function NgoGalleryPage() {
 
   const thumbnailRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const sentinelRef = useRef<HTMLDivElement>(null);
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
   
   const queryClient = useQueryClient();
+
+  // Suppress page-level floating widgets & lock body scroll while lightbox is open
+  useEffect(() => {
+    if (lightboxIndex !== null) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      document.documentElement.setAttribute("data-gallery-lightbox-open", "true");
+      return () => {
+        document.body.style.overflow = originalOverflow;
+        document.documentElement.removeAttribute("data-gallery-lightbox-open");
+      };
+    } else {
+      document.body.style.overflow = "";
+      document.documentElement.removeAttribute("data-gallery-lightbox-open");
+    }
+  }, [lightboxIndex]);
+
+  // Auto-scroll active thumbnail into view smoothly
+  useEffect(() => {
+    if (lightboxIndex !== null && thumbnailRefs.current[lightboxIndex]) {
+      thumbnailRefs.current[lightboxIndex]?.scrollIntoView({
+        behavior: "smooth",
+        inline: "center",
+        block: "nearest",
+      });
+    }
+  }, [lightboxIndex]);
 
   useEffect(() => {
     setMounted(true);
@@ -563,6 +592,7 @@ export default function NgoGalleryPage() {
     setZoomScale(1);
     setDirection(0);
     document.body.style.overflow = "hidden";
+    document.documentElement.setAttribute("data-gallery-lightbox-open", "true");
   }, [filteredItems]);
 
   const closeLightbox = useCallback(() => {
@@ -573,6 +603,7 @@ export default function NgoGalleryPage() {
     setShowMobileInfo(false);
     setZoomScale(1);
     document.body.style.overflow = "";
+    document.documentElement.removeAttribute("data-gallery-lightbox-open");
     if (document.fullscreenElement) {
       document.exitFullscreen().catch(() => {});
     }
@@ -991,47 +1022,59 @@ export default function NgoGalleryPage() {
                   aria-modal="true"
                   aria-label="Image lightbox"
                 >
-                  {/* Prefetch adjacent images */}
-                  {filteredItems[lightboxIndex + 1] && (
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    <img src={encodeSrc(filteredItems[lightboxIndex + 1].imageUrl)} className="hidden" alt="" />
-                  )}
-                  {filteredItems[lightboxIndex - 1] && (
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    <img src={encodeSrc(filteredItems[lightboxIndex - 1].imageUrl)} className="hidden" alt="" />
-                  )}
+                  {/* Prefetch adjacent images (immediate previous & next full-res photos) */}
+                  {(() => {
+                    const nextIdx = (lightboxIndex + 1) % filteredItems.length;
+                    const prevIdx = (lightboxIndex - 1 + filteredItems.length) % filteredItems.length;
+                    const nextItem = filteredItems[nextIdx];
+                    const prevItem = filteredItems[prevIdx];
+                    return (
+                      <>
+                        {nextItem && nextIdx !== lightboxIndex && (
+                          /* eslint-disable-next-line @next/next/no-img-element */
+                          <img src={encodeSrc(nextItem.imageUrl || nextItem.thumbnailUrl)} className="hidden" alt="" />
+                        )}
+                        {prevItem && prevIdx !== lightboxIndex && prevIdx !== nextIdx && (
+                          /* eslint-disable-next-line @next/next/no-img-element */
+                          <img src={encodeSrc(prevItem.imageUrl || prevItem.thumbnailUrl)} className="hidden" alt="" />
+                        )}
+                      </>
+                    );
+                  })()}
 
-                  {/* Top Toolbar */}
+                  {/* Top Toolbar — Clean, compact spacing (gap-1.5, compact buttons) to avoid truncation */}
                   <motion.div
                     animate={{ y: showControls ? 0 : -80, opacity: showControls ? 1 : 0 }}
                     transition={{ duration: 0.25, ease: "easeInOut" }}
-                    className="absolute top-0 inset-x-0 z-50 flex items-center justify-between p-3 sm:p-5 bg-gradient-to-b from-black/90 via-black/60 to-transparent pointer-events-none gap-2"
+                    className="absolute top-0 inset-x-0 z-50 flex items-center justify-between px-2.5 py-2 sm:px-5 sm:py-3.5 bg-gradient-to-b from-black/95 via-black/75 to-transparent pointer-events-none gap-1.5 sm:gap-3"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <div className="flex items-center gap-2 sm:gap-3 pointer-events-auto min-w-0">
-                      <span className={`px-2.5 py-0.5 rounded-full text-white text-[9px] sm:text-[10px] font-black uppercase tracking-wider bg-gradient-to-r ${gradient} shadow-md truncate max-w-[120px] sm:max-w-none`}>
+                    <div className="flex items-center gap-1.5 sm:gap-2.5 pointer-events-auto min-w-0 shrink">
+                      <span className={`px-2 py-0.5 sm:px-2.5 sm:py-0.5 rounded-full text-white text-[8.5px] sm:text-[10px] font-black uppercase tracking-wider bg-gradient-to-r ${gradient} shadow-md whitespace-nowrap shrink-0`}>
                         {CATEGORIES.find((c) => c.value === currentItem?.category)?.label || currentItem?.category}
                       </span>
-                      <span className="text-white/80 text-[11px] sm:text-xs font-mono font-bold whitespace-nowrap">
+                      <span className="text-white/80 text-[10px] sm:text-xs font-mono font-bold whitespace-nowrap shrink-0">
                         {lightboxIndex + 1} / {filteredItems.length}
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-1 sm:gap-2 pointer-events-auto flex-shrink-0">
+                    <div className="flex items-center gap-1 sm:gap-1.5 pointer-events-auto shrink-0">
                       <button
                         onClick={() => setZoomScale((prev) => (prev > 1 ? 1 : 2.5))}
-                        className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all backdrop-blur-md border border-white/10"
+                        className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all backdrop-blur-md border border-white/10 active:scale-95"
                         title={zoomScale > 1 ? "Zoom Out" : "Zoom In"}
+                        aria-label={zoomScale > 1 ? "Zoom Out" : "Zoom In"}
                       >
-                        {zoomScale > 1 ? <ZoomOut className="w-4 h-4" /> : <ZoomIn className="w-4 h-4" />}
+                        {zoomScale > 1 ? <ZoomOut className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <ZoomIn className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
                       </button>
 
                       <button
                         onClick={toggleFullscreen}
-                        className="w-8 h-8 sm:w-9 sm:h-9 hidden sm:flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all backdrop-blur-md border border-white/10"
+                        className="w-7 h-7 sm:w-8 sm:h-8 hidden sm:flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all backdrop-blur-md border border-white/10 active:scale-95"
                         title="Toggle Fullscreen"
+                        aria-label="Toggle Fullscreen"
                       >
-                        {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                        {isFullscreen ? <Minimize2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <Maximize2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
                       </button>
 
                       <button
@@ -1044,10 +1087,11 @@ export default function NgoGalleryPage() {
                           link.click();
                           document.body.removeChild(link);
                         }}
-                        className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all backdrop-blur-md border border-white/10"
+                        className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all backdrop-blur-md border border-white/10 active:scale-95"
                         title="Download Photo"
+                        aria-label="Download Photo"
                       >
-                        <Download className="w-4 h-4" />
+                        <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       </button>
 
                       <button
@@ -1057,45 +1101,49 @@ export default function NgoGalleryPage() {
                           navigator.clipboard.writeText(absoluteUrl);
                           setToastMessage("Image link copied to clipboard");
                         }}
-                        className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all backdrop-blur-md border border-white/10"
+                        className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all backdrop-blur-md border border-white/10 active:scale-95"
                         title="Share Link"
+                        aria-label="Share Link"
                       >
-                        <Share2 className="w-4 h-4" />
+                        <Share2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       </button>
 
                       <button
                         onClick={() => setShowMobileInfo((prev) => !prev)}
-                        className={`w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-xl transition-all backdrop-blur-md border ${
+                        className={`w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-xl transition-all backdrop-blur-md border active:scale-95 ${
                           showMobileInfo
                             ? "bg-purple-600 border-purple-500 text-white"
                             : "bg-white/10 hover:bg-white/20 border-white/10 text-white"
                         }`}
                         title="Toggle Information"
+                        aria-label="Toggle Information"
                       >
-                        <Info className="w-4 h-4" />
+                        <Info className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       </button>
 
                       {isAdminMode && currentItem && (
                         <button
                           onClick={() => setDeletingItem(currentItem)}
-                          className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-xl bg-red-500/20 border border-red-500/30 hover:bg-red-600 text-red-400 hover:text-white transition-all duration-200"
+                          className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-xl bg-red-500/20 border border-red-500/30 hover:bg-red-600 text-red-400 hover:text-white transition-all duration-200 active:scale-95"
                           title="Delete Image"
+                          aria-label="Delete Image"
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                         </button>
                       )}
 
                       <button
                         onClick={closeLightbox}
-                        className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all backdrop-blur-md border border-white/10 ml-1"
+                        className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-xl bg-white/15 hover:bg-rose-600 text-white transition-all backdrop-blur-md border border-white/20 hover:border-rose-400/50 ml-0.5 active:scale-95"
                         title="Close Lightbox"
+                        aria-label="Close Lightbox"
                       >
-                        <X className="w-4 h-4" />
+                        <X className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5]" />
                       </button>
                     </div>
                   </motion.div>
 
-                  {/* Left/Right Navigation Buttons */}
+                  {/* Left/Right Navigation Buttons — Prominent touch sizing (w-10 h-10 sm:w-12 sm:h-12) & z-50 */}
                   <AnimatePresence>
                     {showControls && zoomScale === 1 && (
                       <>
@@ -1104,7 +1152,7 @@ export default function NgoGalleryPage() {
                           animate={{ opacity: 1, x: 0 }}
                           exit={{ opacity: 0, x: -20 }}
                           onClick={prevImage}
-                          className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 z-40 w-9 h-9 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-black/50 hover:bg-white/20 text-white border border-white/20 backdrop-blur-md transition-transform active:scale-95 shadow-lg"
+                          className="absolute left-2.5 sm:left-6 top-1/2 -translate-y-1/2 z-50 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-black/60 hover:bg-purple-600 text-white border border-white/20 backdrop-blur-md transition-all active:scale-95 shadow-2xl cursor-pointer"
                           aria-label="Previous Image"
                         >
                           <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -1115,7 +1163,7 @@ export default function NgoGalleryPage() {
                           animate={{ opacity: 1, x: 0 }}
                           exit={{ opacity: 0, x: 20 }}
                           onClick={nextImage}
-                          className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 z-40 w-5 h-5 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-black/50 hover:bg-white/20 text-white border border-white/20 backdrop-blur-md transition-transform active:scale-95 shadow-lg"
+                          className="absolute right-2.5 sm:right-6 top-1/2 -translate-y-1/2 z-50 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-black/60 hover:bg-purple-600 text-white border border-white/20 backdrop-blur-md transition-all active:scale-95 shadow-2xl cursor-pointer"
                           aria-label="Next Image"
                         >
                           <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -1124,10 +1172,34 @@ export default function NgoGalleryPage() {
                     )}
                   </AnimatePresence>
 
-                  {/* Main Viewport */}
+                  {/* Main Viewport with Native Smooth Touch Swipe Gestures */}
                   <div
-                    className="relative flex-1 w-full h-[calc(100dvh-150px)] sm:h-[calc(100dvh-180px)] flex items-center justify-center overflow-hidden py-14 sm:py-16"
+                    className="relative flex-1 w-full h-[calc(100dvh-150px)] sm:h-[calc(100dvh-180px)] flex items-center justify-center overflow-hidden py-14 sm:py-16 touch-pan-y"
                     onClick={closeLightbox}
+                    onTouchStart={(e) => {
+                      if (zoomScale > 1) return;
+                      touchStartX.current = e.touches[0].clientX;
+                      touchStartY.current = e.touches[0].clientY;
+                    }}
+                    onTouchEnd={(e) => {
+                      if (zoomScale > 1 || touchStartX.current === null || touchStartY.current === null) return;
+                      const diffX = touchStartX.current - e.changedTouches[0].clientX;
+                      const diffY = touchStartY.current - e.changedTouches[0].clientY;
+                      
+                      // Horizontal swipe (next/prev) with threshold 40px
+                      if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 40) {
+                        if (diffX > 0) {
+                          nextImage();
+                        } else {
+                          prevImage();
+                        }
+                      } else if (Math.abs(diffY) > Math.abs(diffX) * 1.5 && diffY < -75) {
+                        // Smooth swipe down to dismiss
+                        closeLightbox();
+                      }
+                      touchStartX.current = null;
+                      touchStartY.current = null;
+                    }}
                   >
                     {lbLoading && !lbError && (
                       <div className="absolute z-20 flex flex-col items-center gap-3 bg-black/40 p-6 rounded-2xl backdrop-blur-sm border border-white/10">
@@ -1161,26 +1233,6 @@ export default function NgoGalleryPage() {
                           x: { type: "spring", stiffness: 300, damping: 30 },
                           opacity: { duration: 0.2 },
                           scale: { duration: 0.3 },
-                        }}
-                        drag={zoomScale === 1}
-                        dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
-                        dragElastic={0.6}
-                        onDragEnd={(e, info) => {
-                          if (zoomScale === 1) {
-                            const swipeThresholdX = 100;
-                            const swipeThresholdY = 120;
-                            if (Math.abs(info.offset.x) > Math.abs(info.offset.y)) {
-                              if (info.offset.x > swipeThresholdX) {
-                                prevImage();
-                              } else if (info.offset.x < -swipeThresholdX) {
-                                nextImage();
-                              }
-                            } else {
-                              if (info.offset.y > swipeThresholdY) {
-                                closeLightbox();
-                              }
-                            }
-                          }
                         }}
                         className="absolute inset-0 flex items-center justify-center p-2 sm:p-6"
                         onClick={closeLightbox}
@@ -1278,35 +1330,76 @@ export default function NgoGalleryPage() {
                     )}
                   </AnimatePresence>
 
-                  {/* Bottom Thumbnail Strip */}
+                  {/* Bottom Thumbnail Strip — Windowed ±12 range for sub-100ms INP across 975+ photos */}
                   <motion.div
                     animate={{ y: showControls ? 0 : 100, opacity: showControls ? 1 : 0 }}
                     transition={{ duration: 0.25, ease: "easeInOut" }}
-                    className="absolute bottom-3 inset-x-0 z-50 flex flex-col items-center gap-2 w-full pb-[env(safe-area-inset-bottom)]"
+                    className="absolute bottom-2.5 sm:bottom-3 inset-x-0 z-50 flex flex-col items-center gap-1.5 sm:gap-2 w-full pb-[env(safe-area-inset-bottom)]"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <div className="w-full max-w-4xl px-3 flex items-center justify-start sm:justify-center gap-1.5 sm:gap-2 overflow-x-auto py-1.5 no-scrollbar select-none">
-                      {filteredItems.map((item, idx) => (
-                        <button
-                          key={item.id}
-                          ref={(el) => { thumbnailRefs.current[idx] = el; }}
-                          onClick={() => goTo(idx, idx > lightboxIndex ? 1 : -1)}
-                          className={`relative flex-shrink-0 w-9 h-9 sm:w-11 sm:h-11 rounded-lg overflow-hidden border-2 transition-all ${
-                            idx === lightboxIndex
-                              ? "border-purple-500 scale-110 opacity-100 shadow-lg shadow-purple-500/40"
-                              : "border-transparent opacity-40 hover:opacity-80"
-                          }`}
-                        >
-                          <Image
-                            src={encodeSrc(item.thumbnailUrl || item.imageUrl)}
-                            alt=""
-                            fill
-                            sizes="44px"
-                            loading="lazy"
-                            className="object-cover"
-                          />
-                        </button>
-                      ))}
+                      {(() => {
+                        const THUMBNAIL_WINDOW = 12; // Render only active ±12 photos (max 25 buttons instead of 975+)
+                        const startIdx = Math.max(0, lightboxIndex - THUMBNAIL_WINDOW);
+                        const endIdx = Math.min(filteredItems.length - 1, lightboxIndex + THUMBNAIL_WINDOW);
+
+                        return (
+                          <>
+                            {/* Fast-jump indicator to start if offset */}
+                            {startIdx > 0 && (
+                              <button
+                                onClick={() => goTo(0, -1)}
+                                className="flex-shrink-0 px-2 py-1 text-[10px] font-mono font-bold text-white/50 hover:text-white bg-white/5 hover:bg-white/10 rounded-lg border border-white/10 transition-all cursor-pointer active:scale-95"
+                                title="Jump to first photo"
+                                aria-label="Jump to first photo"
+                              >
+                                1..
+                              </button>
+                            )}
+
+                            {filteredItems.slice(startIdx, endIdx + 1).map((item, localIdx) => {
+                              const actualIdx = startIdx + localIdx;
+                              const isSelected = actualIdx === lightboxIndex;
+
+                              return (
+                                <button
+                                  key={item.id}
+                                  ref={(el) => { thumbnailRefs.current[actualIdx] = el; }}
+                                  onClick={() => goTo(actualIdx, actualIdx > lightboxIndex ? 1 : -1)}
+                                  className={`relative flex-shrink-0 w-9 h-9 sm:w-11 sm:h-11 rounded-lg overflow-hidden border-2 transition-all cursor-pointer active:scale-95 ${
+                                    isSelected
+                                      ? "border-purple-500 scale-110 opacity-100 shadow-lg shadow-purple-500/40 ring-2 ring-purple-400/50"
+                                      : "border-transparent opacity-40 hover:opacity-80"
+                                  }`}
+                                  title={`Photo ${actualIdx + 1} of ${filteredItems.length}`}
+                                  aria-label={`Jump to photo ${actualIdx + 1}`}
+                                >
+                                  <Image
+                                    src={encodeSrc(item.thumbnailUrl || item.imageUrl)}
+                                    alt=""
+                                    fill
+                                    sizes="44px"
+                                    loading="lazy"
+                                    className="object-cover"
+                                  />
+                                </button>
+                              );
+                            })}
+
+                            {/* Fast-jump indicator to end if offset */}
+                            {endIdx < filteredItems.length - 1 && (
+                              <button
+                                onClick={() => goTo(filteredItems.length - 1, 1)}
+                                className="flex-shrink-0 px-2 py-1 text-[10px] font-mono font-bold text-white/50 hover:text-white bg-white/5 hover:bg-white/10 rounded-lg border border-white/10 transition-all cursor-pointer active:scale-95"
+                                title={`Jump to photo ${filteredItems.length}`}
+                                aria-label="Jump to last photo"
+                              >
+                                ..{filteredItems.length}
+                              </button>
+                            )}
+                          </>
+                        );
+                      })()}
                     </div>
                   </motion.div>
                 </motion.div>

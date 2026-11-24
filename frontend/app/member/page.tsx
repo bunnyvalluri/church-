@@ -32,6 +32,9 @@ import {
   Zap,
   Sliders,
   AlertTriangle,
+  MapPin,
+  Star,
+  LifeBuoy,
 } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import LanguageToggle from "@/components/LanguageToggle";
@@ -80,14 +83,34 @@ const dashboardTranslations = {
     ],
     scriptureHeading: "Daily Scripture Promise",
     cards: [
-      { key: "profile", title: "My Profile", desc: "Update your details & photo", href: "/member/profile", icon: User, gradient: "from-violet-500 to-purple-700", glow: "shadow-purple-500/25", badge: "Update", badgeColor: "bg-purple-600 dark:bg-purple-700 text-white border border-purple-500 font-extrabold shadow-xs" },
-      { key: "events", title: "Church Events", desc: "Browse & RSVP for services", href: "/member/events", icon: Calendar, gradient: "from-blue-500 to-indigo-700", glow: "shadow-blue-500/25", badge: "Browse", badgeColor: "bg-indigo-600 dark:bg-indigo-700 text-white border border-indigo-500 font-extrabold shadow-xs" },
-      { key: "prayers", title: "Prayer Requests", desc: "Submit & track your prayers", href: "/member/prayers", icon: Heart, gradient: "from-rose-500 to-pink-700", glow: "shadow-rose-500/25", badge: "Submit", badgeColor: "bg-rose-600 dark:bg-rose-700 text-white border border-rose-500 font-extrabold shadow-xs" },
-      { key: "sermons", title: "Sermon Library", desc: "Watch & listen to messages", href: "/member/sermons", icon: Play, gradient: "from-indigo-500 to-blue-700", glow: "shadow-indigo-500/25", badge: "Watch", badgeColor: "bg-purple-600 dark:bg-purple-700 text-white border border-purple-500 font-extrabold shadow-xs" },
-      { key: "volunteer", title: "Volunteer", desc: "Serve in active ministries", href: "/member/volunteer", icon: Briefcase, gradient: "from-amber-500 to-orange-600", glow: "shadow-amber-500/25", badge: "Apply", badgeColor: "bg-amber-600 dark:bg-amber-700 text-white border border-amber-500 font-extrabold shadow-xs" },
-      { key: "give", title: "Giving & Tithe", desc: "Offerings & download receipts", href: "/member/give", icon: Gift, gradient: "from-emerald-500 to-green-700", glow: "shadow-emerald-500/25", badge: "Give Now", badgeColor: "bg-emerald-600 dark:bg-emerald-700 text-white border border-emerald-500 font-extrabold shadow-xs" },
-      { key: "report", title: "Report a Problem", desc: "Technical issue & diagnostics", href: "/member/report", icon: AlertTriangle, gradient: "from-rose-500 to-red-700", glow: "shadow-rose-500/25", badge: "Support", badgeColor: "bg-rose-600 dark:bg-rose-700 text-white border border-rose-500 font-extrabold shadow-xs" },
+      { key: "profile", title: "My Profile", desc: "Update your details, testimony & photo", href: "/member/profile", icon: User, gradient: "from-violet-500 to-purple-700", glow: "shadow-purple-500/20", badge: "Update", badgeColor: "bg-purple-50 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/50 font-bold" },
+      { key: "events", title: "Church Events", desc: "Browse & RSVP for upcoming services", href: "/member/events", icon: Calendar, gradient: "from-blue-500 to-indigo-700", glow: "shadow-blue-500/20", badge: "Browse", badgeColor: "bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/50 font-bold" },
+      { key: "prayers", title: "Prayer Requests", desc: "Submit & track your personal prayers", href: "/member/prayers", icon: Heart, gradient: "from-rose-500 to-pink-700", glow: "shadow-rose-500/20", badge: "Submit", badgeColor: "bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800/50 font-bold" },
+      { key: "sermons", title: "Sermon Library", desc: "Watch & listen to Bishop's anointed messages", href: "/member/sermons", icon: Play, gradient: "from-indigo-500 to-blue-700", glow: "shadow-indigo-500/20", badge: "Watch", badgeColor: "bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/50 font-bold" },
+      { key: "volunteer", title: "Volunteer Ministry", desc: "Serve in active departments & outreach", href: "/member/volunteer", icon: Briefcase, gradient: "from-amber-500 to-orange-600", glow: "shadow-amber-500/20", badge: "Apply", badgeColor: "bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/50 font-bold" },
+      { key: "give", title: "Giving & Tithe", desc: "Support the Lord's work & download receipts", href: "/member/give", icon: Gift, gradient: "from-emerald-500 to-green-700", glow: "shadow-emerald-500/20", badge: "Give Now", badgeColor: "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/50 font-bold" },
     ],
+    supportBanner: {
+      title: "Pastoral Care & Help Center",
+      desc: "Need prayer counseling, have a testimony to share, or experiencing technical problems? Our pastoral care and support team are with you 24/7.",
+      action: "Get Help & Report Issue",
+    },
+    serviceSpotlight: {
+      title: "Next Worship Gathering",
+      subtitle: "Join us in praise, worship & Word",
+      serviceName: "Sunday Celebration & Miracle Service",
+      serviceDate: "Every Sunday · 10:00 AM IST",
+      location: "Subhash Nagar Main Sanctuary",
+      pastor: "Bishop Kurra Kristhu Raju Garu",
+      rsvpBtn: "RSVP to Attend",
+      prayerBtn: "Request Prayer",
+    },
+    feedbackToggle: {
+      title: "Church Platform Feedback",
+      subtitle: "Help us serve our church family better",
+      tapToShare: "Share Feedback ★★★★★",
+      hideForm: "Close Feedback Form",
+    },
     directoryHeading: "Believer Services Directory",
     statsHeading: "Quick Fellowship Overview",
     stats: {
@@ -142,14 +165,34 @@ const dashboardTranslations = {
     ],
     scriptureHeading: "దైనందిన వాగ్దానం",
     cards: [
-      { key: "profile", title: "నా ప్రొఫైల్", desc: "మీ వివరాలు & ఫోటో అప్‌డేట్ చేయండి", href: "/member/profile", icon: User, gradient: "from-violet-500 to-purple-700", glow: "shadow-purple-500/25", badge: "అప్‌డేట్", badgeColor: "bg-purple-600 dark:bg-purple-700 text-white border border-purple-500 font-extrabold shadow-xs" },
-      { key: "events", title: "చర్చి కార్యక్రమాలు", desc: "కూడికల వివరాలు & షెడ్యూల్", href: "/member/events", icon: Calendar, gradient: "from-blue-500 to-indigo-700", glow: "shadow-blue-500/25", badge: "చూడండి", badgeColor: "bg-indigo-600 dark:bg-indigo-700 text-white border border-indigo-500 font-extrabold shadow-xs" },
-      { key: "prayers", title: "ప్రార్థన విన్నపాలు", desc: "ప్రార్థన పంపండి & ట్రాక్ చేయండి", href: "/member/prayers", icon: Heart, gradient: "from-rose-500 to-pink-700", glow: "shadow-rose-500/25", badge: "పంపండి", badgeColor: "bg-rose-600 dark:bg-rose-700 text-white border border-rose-500 font-extrabold shadow-xs" },
-      { key: "sermons", title: "ప్రసంగాల లైబ్రరీ", desc: "వాక్యమును చూడండి & వినండి", href: "/member/sermons", icon: Play, gradient: "from-indigo-500 to-blue-700", glow: "shadow-indigo-500/25", badge: "చూడండి", badgeColor: "bg-purple-600 dark:bg-purple-700 text-white border border-purple-500 font-extrabold shadow-xs" },
-      { key: "volunteer", title: "వాలంటీర్ పరిచర్య", desc: "దేవుని పరిచర్యలో పాల్గొనండి", href: "/member/volunteer", icon: Briefcase, gradient: "from-amber-500 to-orange-600", glow: "shadow-amber-500/25", badge: "చేరండి", badgeColor: "bg-amber-600 dark:bg-amber-700 text-white border border-amber-500 font-extrabold shadow-xs" },
-      { key: "give", title: "కానుకలు & దశమభాగాలు", desc: "కానుకలు పంపండి & రశీదులు", href: "/member/give", icon: Gift, gradient: "from-emerald-500 to-green-700", glow: "shadow-emerald-500/25", badge: "కానుక ఇవ్వండి", badgeColor: "bg-emerald-600 dark:bg-emerald-700 text-white border border-emerald-500 font-extrabold shadow-xs" },
-      { key: "report", title: "సమస్య నివేదిక", desc: "సాంకేతిక సమస్య & సహాయం", href: "/member/report", icon: AlertTriangle, gradient: "from-rose-500 to-red-700", glow: "shadow-rose-500/25", badge: "సహాయం", badgeColor: "bg-rose-600 dark:bg-rose-700 text-white border border-rose-500 font-extrabold shadow-xs" },
+      { key: "profile", title: "నా ప్రొఫైల్", desc: "మీ వివరాలు & ఫోటో అప్‌డేట్ చేయండి", href: "/member/profile", icon: User, gradient: "from-violet-500 to-purple-700", glow: "shadow-purple-500/20", badge: "అప్‌డేట్", badgeColor: "bg-purple-50 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/50 font-bold" },
+      { key: "events", title: "చర్చి కార్యక్రమాలు", desc: "కూడికల వివరాలు & షెడ్యూల్", href: "/member/events", icon: Calendar, gradient: "from-blue-500 to-indigo-700", glow: "shadow-blue-500/20", badge: "చూడండి", badgeColor: "bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/50 font-bold" },
+      { key: "prayers", title: "ప్రార్థన విన్నపాలు", desc: "ప్రార్థన పంపండి & ట్రాక్ చేయండి", href: "/member/prayers", icon: Heart, gradient: "from-rose-500 to-pink-700", glow: "shadow-rose-500/20", badge: "పంపండి", badgeColor: "bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800/50 font-bold" },
+      { key: "sermons", title: "ప్రసంగాల లైబ్రరీ", desc: "వాక్యమును చూడండి & వినండి", href: "/member/sermons", icon: Play, gradient: "from-indigo-500 to-blue-700", glow: "shadow-indigo-500/20", badge: "చూడండి", badgeColor: "bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/50 font-bold" },
+      { key: "volunteer", title: "వాలంటీర్ పరిచర్య", desc: "దేవుని పరిచర్యలో పాల్గొనండి", href: "/member/volunteer", icon: Briefcase, gradient: "from-amber-500 to-orange-600", glow: "shadow-amber-500/20", badge: "చేరండి", badgeColor: "bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/50 font-bold" },
+      { key: "give", title: "కానుకలు & దశమభాగాలు", desc: "కానుకలు పంపండి & రశీదులు", href: "/member/give", icon: Gift, gradient: "from-emerald-500 to-green-700", glow: "shadow-emerald-500/20", badge: "కానుక ఇవ్వండి", badgeColor: "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/50 font-bold" },
     ],
+    supportBanner: {
+      title: "పాస్టరల్ కేర్ & సహాయ కేంద్రం",
+      desc: "ఏదైనా సమస్య లేదా సాంకేతిక లోపం ఉందా? మా సహాయ బృందం మీకు సహాయం చేయడానికి సిద్ధంగా ఉంది.",
+      action: "సహాయం పొందండి & సమస్యను నివేదించండి",
+    },
+    serviceSpotlight: {
+      title: "తదుపరి ఆరాధన కూడిక",
+      subtitle: "స్తుతి, ఆరాధన & దైవ వాక్యంలో మాతో చేరండి",
+      serviceName: "ఆదివారపు ఆరాధన & అద్భుతాల కూడిక",
+      serviceDate: "ప్రతి ఆదివారం · ఉదయం 10:00 గంటలకు",
+      location: "సుభాష్ నగర్ ప్రధాన మందిరం",
+      pastor: "బిషప్ కుర్రా క్రీస్తు రాజు గారు",
+      rsvpBtn: "హాజరు కావడానికి నమోదు అవ్వండి",
+      prayerBtn: "పాస్టరల్ ప్రార్థన కోరండి",
+    },
+    feedbackToggle: {
+      title: "చర్చి ప్లాట్‌ఫారమ్ అభిప్రాయం",
+      subtitle: "మా చర్చి కుటుంబానికి మరింత మెరుగ్గా సేవ చేయడానికి సహాయపడండి",
+      tapToShare: "మీ అభిప్రాయాన్ని పంచుకోండి ★★★★★",
+      hideForm: "ఫారమ్ మూసివేయండి",
+    },
     directoryHeading: "విశ్వాసుల సేవల జాబితా",
     statsHeading: "పరిచర్య ముఖ్యాంశాలు",
     stats: {
@@ -204,14 +247,34 @@ const dashboardTranslations = {
     ],
     scriptureHeading: "दैनिक बाइबिल वचन",
     cards: [
-      { key: "profile", title: "मेरी प्रोफाइल", desc: "अपना विवरण और फोटो अपडेट करें", href: "/member/profile", icon: User, gradient: "from-violet-500 to-purple-700", glow: "shadow-purple-500/25", badge: "अपडेट", badgeColor: "bg-purple-600 dark:bg-purple-700 text-white border border-purple-500 font-extrabold shadow-xs" },
-      { key: "events", title: "चर्च कार्यक्रम", desc: "सभाएं और कार्यक्रम देखें", href: "/member/events", icon: Calendar, gradient: "from-blue-500 to-indigo-700", glow: "shadow-blue-500/25", badge: "देखें", badgeColor: "bg-indigo-600 dark:bg-indigo-700 text-white border border-indigo-500 font-extrabold shadow-xs" },
-      { key: "prayers", title: "प्रार्थना निवेदन", desc: "प्रार्थना भेजें और ट्रैक करें", href: "/member/prayers", icon: Heart, gradient: "from-rose-500 to-pink-700", glow: "shadow-rose-500/25", badge: "भेजें", badgeColor: "bg-rose-600 dark:bg-rose-700 text-white border border-rose-500 font-extrabold shadow-xs" },
-      { key: "sermons", title: "प्रवचन लाइब्रेरी", desc: "वचन देखें और सुनें", href: "/member/sermons", icon: Play, gradient: "from-indigo-500 to-blue-700", glow: "shadow-indigo-500/25", badge: "देखें", badgeColor: "bg-purple-600 dark:bg-purple-700 text-white border border-purple-500 font-extrabold shadow-xs" },
-      { key: "volunteer", title: "स्वयंसेवक सेवा", desc: "मंत्रालय में सेवा करें", href: "/member/volunteer", icon: Briefcase, gradient: "from-amber-500 to-orange-600", glow: "shadow-amber-500/25", badge: "जुड़ें", badgeColor: "bg-amber-600 dark:bg-amber-700 text-white border border-amber-500 font-extrabold shadow-xs" },
-      { key: "give", title: "दान और दशांश", desc: "दान दें और रसीद डाउनलोड करें", href: "/member/give", icon: Gift, gradient: "from-emerald-500 to-green-700", glow: "shadow-emerald-500/25", badge: "दान दें", badgeColor: "bg-emerald-600 dark:bg-emerald-700 text-white border border-emerald-500 font-extrabold shadow-xs" },
-      { key: "report", title: "समस्या रिपोर्ट", desc: "तकनीकी समस्या और सहायता", href: "/member/report", icon: AlertTriangle, gradient: "from-rose-500 to-red-700", glow: "shadow-rose-500/25", badge: "सहायता", badgeColor: "bg-rose-600 dark:bg-rose-700 text-white border border-rose-500 font-extrabold shadow-xs" },
+      { key: "profile", title: "मेरी प्रोफाइल", desc: "अपना विवरण और फोटो अपडेट करें", href: "/member/profile", icon: User, gradient: "from-violet-500 to-purple-700", glow: "shadow-purple-500/20", badge: "अपडेट", badgeColor: "bg-purple-50 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/50 font-bold" },
+      { key: "events", title: "चर्च कार्यक्रम", desc: "सभाएं और कार्यक्रम देखें", href: "/member/events", icon: Calendar, gradient: "from-blue-500 to-indigo-700", glow: "shadow-blue-500/20", badge: "देखें", badgeColor: "bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/50 font-bold" },
+      { key: "prayers", title: "प्रार्थना निवेदन", desc: "प्रार्थना भेजें और ट्रैक करें", href: "/member/prayers", icon: Heart, gradient: "from-rose-500 to-pink-700", glow: "shadow-rose-500/20", badge: "भेजें", badgeColor: "bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800/50 font-bold" },
+      { key: "sermons", title: "प्रवचन लाइब्रेरी", desc: "वचन देखें और सुनें", href: "/member/sermons", icon: Play, gradient: "from-indigo-500 to-blue-700", glow: "shadow-indigo-500/20", badge: "देखें", badgeColor: "bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/50 font-bold" },
+      { key: "volunteer", title: "स्वयंसेवक सेवा", desc: "मंत्रालय में सेवा करें", href: "/member/volunteer", icon: Briefcase, gradient: "from-amber-500 to-orange-600", glow: "shadow-amber-500/20", badge: "जुड़ें", badgeColor: "bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/50 font-bold" },
+      { key: "give", title: "दान और दशांश", desc: "दान दें और रसीद डाउनलोड करें", href: "/member/give", icon: Gift, gradient: "from-emerald-500 to-green-700", glow: "shadow-emerald-500/20", badge: "दान दें", badgeColor: "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/50 font-bold" },
     ],
+    supportBanner: {
+      title: "पास्टोरल देखभाल और सहायता केंद्र",
+      desc: "कोई समस्या या तकनीकी दिक्कत? हमारी सेवा टीम आपकी सहायता के लिए सदैव तत्पर है।",
+      action: "सहायता प्राप्त करें और समस्या दर्ज करें",
+    },
+    serviceSpotlight: {
+      title: "अगली आराधना सभा",
+      subtitle: "स्तुति, आराधना और वचन में हमारे साथ जुड़ें",
+      serviceName: "रविवार आराधना एवं चमत्कार सभा",
+      serviceDate: "प्रत्येक रविवार · प्रातः 10:00 बजे",
+      location: "सुभाष नगर मुख्य प्रार्थनालय",
+      pastor: "बिशप कुर्रा क्रिस्तु राजू गारू",
+      rsvpBtn: "उपस्थिति दर्ज करें",
+      prayerBtn: "प्रार्थना सहायता का अनुरोध करें",
+    },
+    feedbackToggle: {
+      title: "चर्च प्लेटफॉर्म फीडबैक",
+      subtitle: "चर्च परिवार की बेहतर सेवा करने में हमारी सहायता करें",
+      tapToShare: "अपने विचार साझा करें ★★★★★",
+      hideForm: "फ़ॉर्म बंद करें",
+    },
     directoryHeading: "विश्वास योग्य सेवाएं",
     statsHeading: "फैलोशिप सारांश",
     stats: {
@@ -248,6 +311,25 @@ const dashboardTranslations = {
 };
 
 /* ────────────────────────── Helpers ─────────────────────── */
+function getHumanFriendlyName(rawName: string | null | undefined): string {
+  if (!rawName) return "Believer";
+  const trimmed = rawName.trim();
+  if (!trimmed) return "Believer";
+
+  const parts = trimmed.split(/\s+/);
+  // Find first token that is purely alphabetical (at least 2 letters)
+  const humanPart = parts.find((p) => /^[a-zA-Z]{2,}$/.test(p));
+  if (humanPart) {
+    return humanPart.charAt(0).toUpperCase() + humanPart.slice(1).toLowerCase();
+  }
+
+  const first = parts[0].replace(/[^a-zA-Z0-9]/g, "");
+  if (/^[a-zA-Z]+$/.test(first)) {
+    return first.charAt(0).toUpperCase() + first.slice(1).toLowerCase();
+  }
+  return parts.length > 1 ? parts[1] : first || "Believer";
+}
+
 function getGreeting(lang: string): { text: string; icon: React.ElementType } {
   const dt = dashboardTranslations[lang as keyof typeof dashboardTranslations] || dashboardTranslations.en;
   const hour = new Date().getHours();
@@ -276,6 +358,7 @@ export default function MemberDashboard() {
   });
   const [loadingFeeds, setLoadingFeeds] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isFeedbackExpanded, setIsFeedbackExpanded] = useState(false);
   const [lastSynced, setLastSynced] = useState<Date | null>(null);
   const [toast, setToast] = useState<{ msg: string; type: "success" | "info" | "error" } | null>(null);
   const [scriptureIndex, setScriptureIndex] = useState(0);
@@ -388,7 +471,7 @@ export default function MemberDashboard() {
 
   if (status === "unauthenticated" && mounted) return null;
 
-  const firstName = user?.name?.split(" ")[0] || "Believer";
+  const firstName = getHumanFriendlyName(user?.name);
 
   /* ═════════════════════════════════════════════════════════
      RENDER
@@ -467,34 +550,17 @@ export default function MemberDashboard() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 sm:gap-3.5 shrink-0 w-full md:w-auto pt-2 md:pt-0">
+          <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5 sm:gap-3 shrink-0 pt-1 md:pt-0">
+            <div className="inline-flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-white shadow-xs">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-xs font-bold tracking-wide">{dt.memberTag}</span>
+            </div>
             <Link
               href="/member/events"
-              className="flex items-center gap-2.5 sm:gap-3 bg-white/15 hover:bg-white/25 active:scale-95 backdrop-blur-md border border-white/20 rounded-2xl p-2.5 sm:px-4 sm:py-3.5 min-w-0 shadow-xs transition-all cursor-pointer"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-2xl bg-white text-purple-900 font-extrabold text-xs sm:text-sm hover:bg-purple-50 active:scale-95 transition-all shadow-md shadow-purple-950/20"
             >
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-amber-400/20 flex items-center justify-center shrink-0 border border-amber-300/30">
-                <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-amber-300" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-lg sm:text-2xl font-black text-white leading-tight">{loadingFeeds ? "..." : stats.events}</p>
-                <p className="text-[9.5px] sm:text-xs text-purple-100 font-extrabold uppercase tracking-normal sm:tracking-wider mt-0.5 leading-tight break-words line-clamp-2">
-                  {dt.stats.events.label}
-                </p>
-              </div>
-            </Link>
-            <Link
-              href="/member/prayers"
-              className="flex items-center gap-2.5 sm:gap-3 bg-white/15 hover:bg-white/25 active:scale-95 backdrop-blur-md border border-white/20 rounded-2xl p-2.5 sm:px-4 sm:py-3.5 min-w-0 shadow-xs transition-all cursor-pointer"
-            >
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-rose-400/20 flex items-center justify-center shrink-0 border border-rose-300/30">
-                <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-rose-300" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-lg sm:text-2xl font-black text-white leading-tight">{loadingFeeds ? "..." : stats.prayers}</p>
-                <p className="text-[9.5px] sm:text-xs text-purple-100 font-extrabold uppercase tracking-normal sm:tracking-wider mt-0.5 leading-tight break-words line-clamp-2">
-                  {dt.stats.prayers.label}
-                </p>
-              </div>
+              <Calendar className="w-4 h-4 text-purple-700" />
+              <span>{dt.serviceSpotlight.rsvpBtn}</span>
             </Link>
           </div>
         </div>
@@ -507,7 +573,7 @@ export default function MemberDashboard() {
         transition={{ delay: 0.08 }}
         className="relative bg-gradient-to-r from-amber-50/80 via-orange-50/50 to-amber-50/80 dark:from-amber-950/30 dark:via-amber-900/10 dark:to-amber-950/30 border border-amber-200/70 dark:border-amber-800/30 rounded-2xl p-4 sm:p-5.5 overflow-hidden shadow-xs"
       >
-        <div className="absolute right-4 top-1/2 -translate-y-1/2 text-amber-500/10 dark:text-amber-500/10 pointer-events-none">
+        <div className="hidden sm:block absolute right-4 top-1/2 -translate-y-1/2 text-amber-500/10 dark:text-amber-500/10 pointer-events-none select-none">
           <BookOpen className="w-20 h-20 sm:w-24 sm:h-24" />
         </div>
         <div className="relative flex items-start gap-3 sm:gap-4">
@@ -651,6 +717,30 @@ export default function MemberDashboard() {
             );
           })}
         </div>
+
+        {/* Pastoral Care & Support Banner (Full-width balanced layout) */}
+        <div className="mt-3 sm:mt-4 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-purple-50 via-indigo-50/60 to-purple-50 dark:from-purple-950/40 dark:via-indigo-950/20 dark:to-purple-950/40 border border-purple-200/80 dark:border-purple-800/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
+          <div className="flex items-start gap-3.5">
+            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-purple-600 dark:bg-purple-500 text-white flex items-center justify-center shrink-0 shadow-sm">
+              <LifeBuoy className="w-5 h-5 sm:w-6 sm:h-6" />
+            </div>
+            <div className="space-y-0.5">
+              <h4 className="text-sm sm:text-base font-extrabold text-gray-900 dark:text-white">
+                {dt.supportBanner.title}
+              </h4>
+              <p className="text-xs text-gray-600 dark:text-gray-300 max-w-2xl leading-relaxed">
+                {dt.supportBanner.desc}
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/member/report"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs sm:text-sm shrink-0 transition-all shadow-sm active:scale-95 whitespace-nowrap"
+          >
+            <span>{dt.supportBanner.action}</span>
+            <ChevronRight className="w-4 h-4" />
+          </Link>
+        </div>
       </motion.section>
 
       {/* ── 2-Column Section for Secondary Content ──────── */}
@@ -782,69 +872,115 @@ export default function MemberDashboard() {
           </motion.div>
         </div>
 
-        {/* Right Col (Quick Actions & Feedback) */}
+        {/* Right Col (Service Spotlight & Collapsible Feedback) */}
         <div className="lg:col-span-5 xl:col-span-5 space-y-5 sm:space-y-6">
-          {/* ── Redesigned Responsive Quick Actions Card ─── */}
+          {/* ── Upcoming Service & Fellowship Spotlight ─── */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.22 }}
-            className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-white dark:bg-gray-900/80 border border-purple-200/80 dark:border-purple-900/40 p-4 sm:p-5 shadow-xl shadow-purple-500/5 backdrop-blur-xl"
+            className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900 text-white border border-purple-500/30 p-5 sm:p-6 shadow-xl shadow-purple-900/20"
           >
-            {/* Ambient subtle decorative glows */}
-            <div className="pointer-events-none absolute -top-12 -right-12 w-36 h-36 bg-purple-500/10 rounded-full blur-2xl" />
-            <div className="pointer-events-none absolute -bottom-12 -left-12 w-36 h-36 bg-indigo-500/10 rounded-full blur-2xl" />
+            <div className="pointer-events-none absolute -top-12 -right-12 w-36 h-36 bg-amber-400/10 rounded-full blur-2xl" />
+            <div className="pointer-events-none absolute -bottom-12 -left-12 w-36 h-36 bg-indigo-500/20 rounded-full blur-2xl" />
 
-            <div className="relative z-10 flex items-center justify-between gap-2 mb-3.5 sm:mb-4">
-              <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-8 h-8 sm:w-9 sm:h-9 bg-purple-100 dark:bg-purple-950/60 rounded-xl flex items-center justify-center border border-purple-200 dark:border-purple-800/60 shadow-xs shrink-0">
-                  <Zap className="w-4 h-4 text-purple-600 dark:text-purple-300" />
+            <div className="relative z-10 space-y-4">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 text-amber-300">
+                  <Star className="w-4 h-4 fill-amber-300" />
+                  <span className="text-[11px] font-black uppercase tracking-widest">{dt.serviceSpotlight.title}</span>
                 </div>
-                <div className="min-w-0">
-                  <h4 className="text-sm sm:text-base font-black text-gray-900 dark:text-white tracking-tight truncate">
-                    {dt.quickActionsTitle}
-                  </h4>
-                  <p className="text-[10px] text-gray-400 dark:text-gray-500 font-medium hidden sm:block truncate">
-                    {dt.quickActionsSub}
-                  </p>
+                <span className="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-white/10 border border-white/15 text-purple-200">
+                  Subhash Nagar
+                </span>
+              </div>
+
+              <div>
+                <h4 className="text-lg sm:text-xl font-black text-white leading-snug">
+                  {dt.serviceSpotlight.serviceName}
+                </h4>
+                <p className="text-xs text-purple-200/90 mt-1 font-medium">
+                  {dt.serviceSpotlight.subtitle}
+                </p>
+              </div>
+
+              <div className="space-y-2 pt-1 text-xs text-purple-100/90 border-t border-white/10">
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-amber-300 shrink-0" />
+                  <span className="font-semibold">{dt.serviceSpotlight.serviceDate}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-rose-300 shrink-0" />
+                  <span className="font-medium">{dt.serviceSpotlight.location}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <User className="w-4 h-4 text-emerald-300 shrink-0" />
+                  <span className="font-medium">{dt.serviceSpotlight.pastor}</span>
                 </div>
               </div>
-              <span className="text-[9px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-300 border border-purple-200/60 dark:border-purple-800/40 shrink-0">
-                Fast Links
-              </span>
-            </div>
 
-            <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-2.5">
-              {dt.quickActions.map(({ label, desc, href, icon: Icon, gradient, text, bg, border }) => (
+              <div className="grid grid-cols-2 gap-2.5 pt-2">
                 <Link
-                  key={href}
-                  href={href}
-                  className={`group relative flex items-center gap-3 p-3 sm:p-3.5 rounded-2xl bg-gray-50/80 dark:bg-gray-800/40 hover:bg-white dark:hover:bg-gray-800/90 border ${border} hover:shadow-md hover:border-purple-300 dark:hover:border-purple-700/60 transition-all duration-200 active:scale-[0.98] min-w-0`}
+                  href="/member/events"
+                  className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-purple-600 hover:bg-purple-500 active:scale-95 font-bold text-xs text-white transition-all shadow-md"
                 >
-                  <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center text-white shadow-xs shrink-0 group-hover:scale-105 transition-transform`}>
-                    <Icon className="w-4.5 h-4.5 text-white" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs sm:text-sm font-extrabold text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors leading-tight">
-                      {label}
-                    </p>
-                    <p className="text-[10.5px] text-gray-500 dark:text-gray-400 font-medium leading-tight mt-0.5 truncate">
-                      {desc}
-                    </p>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 group-hover:translate-x-0.5 transition-all shrink-0 ml-auto" />
+                  <Calendar className="w-3.5 h-3.5" />
+                  <span>{dt.serviceSpotlight.rsvpBtn}</span>
                 </Link>
-              ))}
+                <Link
+                  href="/member/prayers"
+                  className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-white/15 hover:bg-white/25 active:scale-95 border border-white/20 font-bold text-xs text-white transition-all"
+                >
+                  <Heart className="w-3.5 h-3.5 text-rose-300" />
+                  <span>{dt.serviceSpotlight.prayerBtn}</span>
+                </Link>
+              </div>
             </div>
           </motion.div>
 
-          {/* Feedback Widget */}
+          {/* ── Collapsible Church Platform Feedback ─── */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.26 }}
+            className="rounded-2xl sm:rounded-3xl bg-white dark:bg-gray-900/80 border border-purple-200/80 dark:border-purple-900/40 p-4 sm:p-5 shadow-xl shadow-purple-500/5 backdrop-blur-xl transition-all"
           >
-            <ChurchFeedbackWidget userId={user?.uid} userName={user?.name || undefined} />
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-lg bg-purple-100 dark:bg-purple-950/60 flex items-center justify-center text-purple-600 dark:text-purple-300 shrink-0">
+                    <Heart className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                  </div>
+                  <h4 className="text-sm font-extrabold text-gray-900 dark:text-white truncate">
+                    {dt.feedbackToggle.title}
+                  </h4>
+                </div>
+                <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1 truncate">
+                  {dt.feedbackToggle.subtitle}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsFeedbackExpanded(!isFeedbackExpanded)}
+                className="px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/50 hover:bg-purple-100 dark:hover:bg-purple-900/50 border border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 text-xs font-bold transition-all active:scale-95 shrink-0"
+              >
+                {isFeedbackExpanded ? dt.feedbackToggle.hideForm : dt.feedbackToggle.tapToShare}
+              </button>
+            </div>
+
+            <AnimatePresence>
+              {isFeedbackExpanded && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.25 }}
+                  className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800 overflow-hidden"
+                >
+                  <ChurchFeedbackWidget userId={user?.uid} userName={user?.name || undefined} />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         </div>
       </div>

@@ -1197,12 +1197,28 @@ html[data-mobile-menu-open="true"] div:has(> button[aria-label="Open KCM Assista
 html[data-mobile-menu-open="true"] .fixed.bottom-4.right-4,
 html[data-gallery-lightbox-open="true"] [aria-label="Open KCM Assistant"],
 html[data-gallery-lightbox-open="true"] div:has(> button[aria-label="Open KCM Assistant"]),
-html[data-gallery-lightbox-open="true"] button[aria-label="Scroll to top of page"],
+html[data-gallery-lightbox-open="true"] button[aria-label*="Scroll" i],
 html[data-gallery-lightbox-open="true"] .fixed.bottom-4.right-4,
-html[data-gallery-lightbox-open="true"] .fixed.bottom-4.left-4 {
+html[data-gallery-lightbox-open="true"] .fixed.bottom-4.left-4,
+html[data-gallery-lightbox-open="true"] .fixed.bottom-6.right-6,
+html[data-gallery-lightbox-open="true"] .fixed.bottom-3\.5.right-3\.5,
+html[data-gallery-lightbox-open="true"] body > [class*="fixed"]:not([role="dialog"]):not([role="dialog"] *):not([data-lightbox-modal]):not([data-lightbox-modal] *),
+html[data-gallery-lightbox-open="true"] body > div > [class*="fixed"]:not([role="dialog"]):not([role="dialog"] *):not([data-lightbox-modal]):not([data-lightbox-modal] *),
+html[data-gallery-lightbox-open="true"] [id*="read-aloud"],
+html[data-gallery-lightbox-open="true"] [class*="read-aloud"],
+html[data-gallery-lightbox-open="true"] [id*="speech"],
+html[data-gallery-lightbox-open="true"] [class*="speech"],
+html[data-gallery-lightbox-open="true"] [id*="accessibility"],
+html[data-gallery-lightbox-open="true"] [class*="accessibility"],
+html[data-gallery-lightbox-open="true"] [aria-label*="audio" i],
+html[data-gallery-lightbox-open="true"] [aria-label*="listen" i],
+html[data-gallery-lightbox-open="true"] [aria-label*="voice" i],
+html[data-gallery-lightbox-open="true"] [aria-label*="speech" i] {
   display: none !important;
   opacity: 0 !important;
   pointer-events: none !important;
+  visibility: hidden !important;
+  z-index: -1 !important;
 }
 
 @keyframes kcmSpriteProgress {

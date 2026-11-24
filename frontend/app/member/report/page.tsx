@@ -185,7 +185,7 @@ const reportTranslations = {
     needHelpTitle: "Need Immediate Help with your Church Account?",
     needHelpDesc: "You can contact our lead support coordinator directly by email or phone.",
     emailSupport: "Email Support",
-    callSupport: "Call +91 9505288171",
+    callSupport: "Call +91 95052 88171",
 
     // Modal
     modalDescription: "Description",
@@ -345,7 +345,7 @@ const reportTranslations = {
     needHelpTitle: "మీ చర్చి ఖాతాతో తక్షణ సహాయం కావాలా?",
     needHelpDesc: "మీరు మా ముఖ్య సహాయ సమన్వయకర్తను నేరుగా ఇమెయిల్ లేదా ఫోన్ ద్వారా సంప్రదించవచ్చు.",
     emailSupport: "ఇమెయిల్ సహాయం",
-    callSupport: "కాల్ చేయండి: +91 9505288171",
+    callSupport: "కాల్ చేయండి: +91 95052 88171",
 
     // Modal
     modalDescription: "వివరణ",
@@ -505,7 +505,7 @@ const reportTranslations = {
     needHelpTitle: "क्या आपको अपने चर्च खाते में तुरंत सहायता चाहिए?",
     needHelpDesc: "आप हमारे प्रमुख सहायता समन्वयक से सीधे ईमेल या फ़ोन द्वारा संपर्क कर सकते हैं।",
     emailSupport: "ईमेल सहायता",
-    callSupport: "कॉल करें: +91 9505288171",
+    callSupport: "कॉल करें: +91 95052 88171",
 
     // Modal
     modalDescription: "विवरण",
@@ -910,17 +910,17 @@ export default function MemberReportPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-slate-100/60 to-slate-50 dark:from-slate-950 dark:via-slate-900/80 dark:to-slate-950 text-slate-900 dark:text-slate-100 py-4 sm:py-8 px-3 sm:px-6 lg:px-8 max-w-full overflow-x-hidden">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-slate-100/60 to-slate-50 dark:from-slate-950 dark:via-slate-900/80 dark:to-slate-950 text-slate-900 dark:text-slate-100 py-4 sm:py-8 px-3 sm:px-6 lg:px-8 pb-28 sm:pb-32 lg:pb-12 max-w-full overflow-x-hidden">
       <div className="max-w-5xl mx-auto space-y-4 sm:space-y-6">
         
         {/* Navigation Breadcrumb & QA Pill */}
         <div className="flex items-center justify-between gap-2 min-w-0">
           <button
             onClick={() => router.push("/member")}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 transition-colors p-1 -ml-1 rounded-lg shrink-0 max-w-[50%] xs:max-w-none"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 transition-colors p-1 -ml-1 rounded-lg shrink-0 cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4 shrink-0" />
-            <span className="truncate">{rt.backToPortal}</span>
+            <span className="whitespace-nowrap">{rt.backToPortal}</span>
           </button>
 
           <div className="flex items-center gap-2 shrink-0 min-w-0">
@@ -968,7 +968,7 @@ export default function MemberReportPage() {
                   <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
                 </span>
                 <Phone className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 group-hover:rotate-12 transition-transform" />
-                <span className="truncate">{rt.urgentSupport} +91 9505288171</span>
+                <span className="truncate">{rt.urgentSupport} +91 95052 88171</span>
               </a>
             </div>
           </div>
@@ -1168,7 +1168,7 @@ export default function MemberReportPage() {
                   <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">{rt.selectOne}</span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3">
                   {BASE_ISSUE_CATEGORIES.map((cat) => {
                     const Icon = cat.icon;
                     const isSelected = category === cat.id;
@@ -1182,26 +1182,26 @@ export default function MemberReportPage() {
                         type="button"
                         onClick={() => setCategory(cat.id)}
                         aria-label={cat.defaultLabel}
-                        className={`group relative p-3.5 sm:p-4 rounded-2xl border text-left flex items-start gap-3.5 transition-all duration-200 select-none ${
+                        className={`group relative p-2.5 sm:p-4 rounded-2xl border text-left flex items-start gap-2.5 sm:gap-3.5 transition-all duration-200 select-none cursor-pointer active:scale-98 ${
                           isSelected
                             ? "border-purple-600 dark:border-purple-400 bg-purple-50/70 dark:bg-purple-950/40 ring-2 ring-purple-600/20 shadow-md shadow-purple-950/5 scale-[1.01]"
                             : `border-slate-200/90 dark:border-slate-800 hover:border-purple-300 dark:hover:border-purple-700 hover:bg-slate-50/80 dark:hover:bg-slate-850/60 bg-slate-50/30 dark:bg-slate-900/40 hover:-translate-y-0.5`
                         }`}
                       >
-                        <div className={`p-2.5 rounded-xl border shrink-0 transition-transform group-hover:scale-110 shadow-xs ${cat.iconBg}`}>
-                          <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${cat.iconColor}`} />
+                        <div className={`p-2 sm:p-2.5 rounded-xl border shrink-0 transition-transform group-hover:scale-110 shadow-xs ${cat.iconBg}`}>
+                          <Icon className={`w-3.5 h-3.5 sm:w-5 sm:h-5 ${cat.iconColor}`} />
                         </div>
-                        <div className="min-w-0 flex-1 pr-6 sm:pr-2">
+                        <div className="min-w-0 flex-1 pr-5 sm:pr-2">
                           <div className={`text-xs sm:text-sm font-extrabold leading-tight ${isSelected ? "text-purple-950 dark:text-purple-200" : "text-slate-900 dark:text-slate-100"}`}>
                             {label}
                           </div>
-                          <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed line-clamp-2">
+                          <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed line-clamp-2 hidden sm:block">
                             {desc}
                           </div>
                         </div>
                         {isSelected && (
-                          <div className="absolute top-3.5 right-3.5 w-5 h-5 rounded-full bg-purple-600 text-white flex items-center justify-center shadow-sm animate-in zoom-in-50 duration-150">
-                            <Check className="w-3 h-3 stroke-[3]" />
+                          <div className="absolute top-2.5 right-2.5 sm:top-3.5 sm:right-3.5 w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-purple-600 text-white flex items-center justify-center shadow-sm animate-in zoom-in-50 duration-150">
+                            <Check className="w-2.5 h-2.5 sm:w-3 sm:h-3 stroke-[3]" />
                           </div>
                         )}
                       </button>
@@ -1540,7 +1540,7 @@ export default function MemberReportPage() {
               </div>
               <div className="flex flex-col xs:flex-row items-stretch sm:items-center gap-2.5 text-xs sm:text-sm font-extrabold w-full md:w-auto shrink-0">
                 <a
-                  href="mailto:codewithrahul3@gmail.com?subject=KCM%20Portal%20Support%20Request"
+                  href="mailto:support@kcmchurch.org?subject=KCM%20Portal%20Support%20Request"
                   className="px-5 py-3 rounded-2xl bg-white dark:bg-slate-850 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200/90 dark:border-slate-700/80 transition-all text-center shadow-xs"
                 >
                   {rt.emailSupport}

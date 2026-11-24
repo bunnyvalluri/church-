@@ -95,6 +95,36 @@ const layoutTranslations = {
   }
 };
 
+function getHumanFriendlyName(rawName: string | null | undefined): string {
+  if (!rawName) return "Member";
+  const trimmed = rawName.trim();
+  if (!trimmed) return "Member";
+
+  // Filter out tokens that look like roll numbers or student/staff IDs (e.g. "05AL", "23x01a05al", "123")
+  const tokens = trimmed
+    .split(/\s+/)
+    .filter((tok) => !/^[0-9]+[a-zA-Z0-9]*$/i.test(tok) && !/^[a-zA-Z]+[0-9]+[a-zA-Z0-9]*$/i.test(tok));
+
+  if (tokens.length > 0) {
+    return tokens
+      .map((t) => t.charAt(0).toUpperCase() + t.slice(1).toLowerCase())
+      .join(" ");
+  }
+
+  const parts = trimmed.split(/\s+/);
+  // Find first token that is purely alphabetical
+  const humanPart = parts.find((p) => /^[a-zA-Z]{2,}$/.test(p));
+  if (humanPart) {
+    return humanPart.charAt(0).toUpperCase() + humanPart.slice(1).toLowerCase();
+  }
+
+  const first = parts[0].replace(/[^a-zA-Z0-9]/g, "");
+  if (/^[a-zA-Z]+$/.test(first)) {
+    return first.charAt(0).toUpperCase() + first.slice(1).toLowerCase();
+  }
+  return parts.length > 1 ? parts[1] : first || "Member";
+}
+
 export default function MemberLayout({ children }: { children: React.ReactNode }) {
   const { user, status, mounted, logout } = useAuth();
   const { language } = useLanguage();
@@ -163,11 +193,12 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
   // Close sidebar on route change
   useEffect(() => { setSidebarOpen(false); }, [pathname]);
 
-  // Close sidebar on Escape key
+  // Close sidebar or profile dropdown on Escape key
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setSidebarOpen(false);
+        setIsProfileOpen(false);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -218,8 +249,9 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
         {onClose && (
           <button
             onClick={onClose}
-            className="p-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400 hover:text-gray-700 dark:hover:text-white transition-colors shrink-0"
+            className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400 hover:text-gray-700 dark:hover:text-white flex items-center justify-center transition-all shrink-0 active:scale-95 cursor-pointer"
             title="Close Drawer"
+            aria-label="Close Drawer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -233,13 +265,13 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
           <div className="relative flex items-center gap-3">
             <div className="w-10 h-10 sm:w-11 sm:h-11 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/30 shrink-0 overflow-hidden shadow-xs">
               {user?.image && typeof user.image === 'string' && user.image.length > 0 ? (
-                <Image src={user.image} alt={user.name || "Member"} width={44} height={44} unoptimized className="w-full h-full object-cover" />
+                <Image src={user.image} alt={getHumanFriendlyName(user?.name)} width={44} height={44} unoptimized className="w-full h-full object-cover" />
               ) : (
                 <User className="w-5 h-5 text-white" />
               )}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="font-extrabold text-sm truncate leading-tight text-white">{user?.name || "Member"}</p>
+              <p className="font-extrabold text-sm truncate leading-tight text-white">{getHumanFriendlyName(user?.name)}</p>
               <p className="text-white text-xs truncate mt-0.5 leading-tight font-extrabold tracking-wide drop-shadow-xs">{user?.email}</p>
             </div>
           </div>
@@ -258,8 +290,8 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
         </div>
       </div>
 
-      {/* Nav & Preferences List (Single scroll container) */}
-      <div className="flex-1 overflow-y-auto px-3 py-2 space-y-4 custom-scrollbar">
+      {/* Nav List (Single scroll container) */}
+      <div className="flex-1 overflow-y-auto px-3 py-2 space-y-4 custom-scrollbar pb-6 overscroll-contain">
         {/* Navigation Section */}
         <div className="space-y-1">
           {/* Staff Privileged Gateway Link */}
@@ -314,7 +346,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
                 key={link.href}
                 href={link.href}
                 onClick={onClose}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group ${
+                className={`flex items-center gap-3 px-3 py-2 sm:py-2.5 rounded-xl transition-all group ${
                   isActive
                     ? `${link.bg} ${link.text} font-extrabold shadow-xs`
                     : "text-gray-600 dark:text-gray-400 hover:bg-gray-100/70 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-white font-semibold"
@@ -336,28 +368,32 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
             );
           })}
         </div>
+      </div>
 
-        {/* Preferences Toggles inside mobile drawer */}
-        <div className="p-3 bg-gray-50 dark:bg-gray-800/40 border border-gray-200/80 dark:border-white/5 rounded-2xl space-y-2 lg:hidden">
-          <p className="text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-widest px-1">
-            {lt.preferences}
-          </p>
-          <div className="flex items-center justify-around gap-2 bg-white dark:bg-gray-900 border border-gray-200/60 dark:border-white/10 p-2 rounded-xl shadow-xs">
+      {/* Footer / Preferences & Sign Out (Pinned at bottom, always fully accessible) */}
+      <div className="p-3.5 sm:p-4 border-t border-gray-100 dark:border-white/5 shrink-0 bg-gray-50/90 dark:bg-gray-900/90 backdrop-blur-md space-y-3">
+        {/* Quick Preferences Bar (Mobile Drawer) */}
+        <div className="lg:hidden p-2.5 bg-white dark:bg-gray-800/80 border border-gray-200/70 dark:border-white/10 rounded-2xl shadow-xs">
+          <div className="flex items-center justify-between gap-2 px-1 pb-2 border-b border-gray-100 dark:border-white/5">
+            <span className="text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
+              <Sliders className="w-3 h-3 text-purple-600 dark:text-purple-400" />
+              {lt.preferences}
+            </span>
+            <span className="text-[9px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Appearance</span>
+          </div>
+          <div className="flex items-center justify-around gap-2 pt-2">
             <LanguageToggle />
             <ThemeToggle />
             <PaletteToggle />
           </div>
         </div>
-      </div>
 
-      {/* Footer / Sign Out */}
-      <div className="p-3.5 sm:p-4 border-t border-gray-100 dark:border-white/5 shrink-0 bg-gray-50/50 dark:bg-gray-900/50">
         <button
           onClick={() => {
             if (onClose) onClose();
             logout();
           }}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-red-600 dark:text-red-400 bg-red-50 hover:bg-red-100 dark:bg-red-950/30 dark:hover:bg-red-950/50 border border-red-200/80 dark:border-red-900/40 transition-all active:scale-[0.98]"
+          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-red-600 dark:text-red-400 bg-red-50 hover:bg-red-100 dark:bg-red-950/30 dark:hover:bg-red-950/50 border border-red-200/80 dark:border-red-900/40 transition-all active:scale-[0.98] cursor-pointer shadow-xs"
         >
           <LogOut className="w-4 h-4" />
           <span>{lt.signOut}</span>
@@ -389,7 +425,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 280 }}
-              className="fixed top-0 left-0 bottom-0 w-[280px] sm:w-[320px] bg-white dark:bg-gray-900 z-[100] lg:hidden shadow-2xl overflow-hidden flex flex-col"
+              className="fixed top-0 left-0 bottom-0 w-[min(85vw,320px)] sm:w-[320px] bg-white dark:bg-gray-900 z-[100] lg:hidden shadow-2xl overflow-hidden flex flex-col"
             >
               <Sidebar onClose={() => setSidebarOpen(false)} />
             </motion.aside>
@@ -400,7 +436,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
       {/* Main Content */}
       <div className="flex-1 min-w-0 max-w-full overflow-x-clip lg:ml-64 xl:ml-72 flex flex-col min-h-screen">
         {/* Top Bar */}
-        <header className={`sticky top-0 z-30 w-full shrink-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-b border-gray-100 dark:border-white/5 transition-shadow ${scrolled ? "shadow-md" : ""}`}>
+        <header className={`sticky top-0 ${isProfileOpen ? "z-[100]" : "z-30"} w-full shrink-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-b border-gray-100 dark:border-white/5 transition-shadow ${scrolled ? "shadow-md" : ""}`}>
           <div className="flex items-center gap-2 sm:gap-4 px-3 sm:px-6 h-14">
             {/* Mobile Hamburger */}
             <button
@@ -478,8 +514,8 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
                     )}
                     <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-400 rounded-full border-2 border-white dark:border-gray-900 animate-pulse" />
                   </div>
-                  <span className="text-xs sm:text-sm font-semibold hidden xl:inline text-gray-700 dark:text-gray-300 max-w-[90px] truncate pr-1">
-                    Welcome <span className="text-[hsl(var(--primary))]">{user?.name?.split(" ")[0] || "Member"}</span>
+                  <span className="text-xs sm:text-sm font-semibold hidden xl:inline text-gray-700 dark:text-gray-300 max-w-[120px] truncate pr-1">
+                    Welcome <span className="text-[hsl(var(--primary))] font-bold">{getHumanFriendlyName(user?.name)}</span>
                   </span>
                   <ChevronDown className={`w-3.5 h-3.5 text-gray-400 transition-transform duration-300 mr-1 ${isProfileOpen ? "rotate-180" : ""}`} />
                 </div>
@@ -487,26 +523,26 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
                 <AnimatePresence>
                   {isProfileOpen && (
                     <>
-                      {/* Mobile Backdrop Overlay */}
+                      {/* Backdrop Overlay (closes dropdown on outside click/tap) */}
                       <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={() => setIsProfileOpen(false)}
-                        className="fixed inset-0 bg-black/50 backdrop-blur-xs z-40 sm:hidden"
+                        className="fixed inset-0 bg-black/40 sm:bg-black/15 backdrop-blur-xs z-[9998]"
                       />
                       <motion.div
                         initial={{ opacity: 0, y: 10, scale: 0.96 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 8, scale: 0.96 }}
                         transition={{ duration: 0.18, ease: "easeOut" }}
-                        className="fixed top-14 right-3 sm:absolute sm:top-full sm:right-0 sm:mt-2 w-[calc(100vw-1.5rem)] sm:w-80 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl shadow-2xl p-4 sm:p-5 space-y-4 z-50 origin-top-right overflow-hidden text-left"
+                        className="fixed top-14 right-3 sm:absolute sm:top-full sm:right-0 sm:mt-2.5 w-[calc(100vw-1.5rem)] sm:w-88 max-w-sm bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl shadow-2xl p-4 sm:p-5 space-y-4 z-[9999] origin-top-right max-h-[calc(100dvh-4.75rem)] sm:max-h-[85vh] overflow-y-auto overscroll-contain scrollbar-thin text-left"
                       >
                         {/* User Profile Header Card */}
                         <div className="relative bg-purple-50/80 dark:bg-purple-950/60 p-3.5 rounded-2xl border border-purple-100/80 dark:border-purple-800/60 flex items-center gap-3">
                           <div className="relative w-11 h-11 rounded-full overflow-hidden border-2 border-purple-500/70 shadow-sm flex-shrink-0">
                             {user?.image && typeof user.image === 'string' && user.image.length > 0 ? (
-                              <Image src={user.image} alt={user.name || "Member"} fill unoptimized className="object-cover" />
+                              <Image src={user.image} alt={getHumanFriendlyName(user.name)} fill unoptimized className="object-cover" />
                             ) : (
                               <div className="w-full h-full bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center">
                                 <User className="w-5 h-5 text-purple-600 dark:text-purple-200" />
@@ -514,7 +550,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
                             )}
                           </div>
                           <div className="min-w-0 flex-1">
-                            <h4 className="font-extrabold text-sm text-gray-900 dark:text-white truncate leading-tight">{user?.name || "Member"}</h4>
+                            <h4 className="font-extrabold text-sm sm:text-base text-gray-900 dark:text-white truncate leading-tight">{getHumanFriendlyName(user?.name)}</h4>
                             <p className="text-xs text-slate-700 dark:text-slate-100 font-bold truncate leading-tight mt-0.5">{user?.email}</p>
                             <span className="inline-flex items-center gap-1 text-[9px] font-extrabold uppercase tracking-wider text-purple-900 dark:text-white mt-1.5 px-2.5 py-0.5 bg-purple-100/90 dark:bg-purple-600/40 rounded-full border border-purple-300 dark:border-purple-400/60 shadow-xs">
                               <Shield className="w-2.5 h-2.5 text-purple-700 dark:text-purple-200" />
@@ -541,14 +577,14 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
                             </Link>
 
                             <Link
-                              href="/member/give"
+                              href="/member/events"
                               onClick={() => setIsProfileOpen(false)}
-                              className="flex items-center gap-2 p-2 rounded-xl bg-gray-50 dark:bg-gray-800/40 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-xs font-semibold text-gray-800 dark:text-gray-200 border border-gray-100 dark:border-gray-800 hover:border-emerald-200 dark:hover:border-emerald-900/40 transition-all"
+                              className="flex items-center gap-2 p-2 rounded-xl bg-gray-50 dark:bg-gray-800/40 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 text-xs font-semibold text-gray-800 dark:text-gray-200 border border-gray-100 dark:border-gray-800 hover:border-indigo-200 dark:hover:border-indigo-900/40 transition-all"
                             >
-                              <div className="w-6 h-6 rounded-lg bg-emerald-100 dark:bg-emerald-950/80 flex items-center justify-center text-emerald-600 dark:text-emerald-300 flex-shrink-0">
-                                <Gift className="w-3.5 h-3.5" />
+                              <div className="w-6 h-6 rounded-lg bg-indigo-100 dark:bg-indigo-950/80 flex items-center justify-center text-indigo-600 dark:text-indigo-300 flex-shrink-0">
+                                <Calendar className="w-3.5 h-3.5" />
                               </div>
-                              <span className="truncate">{lt.links.give.label}</span>
+                              <span className="truncate">{lt.links.events.label}</span>
                             </Link>
 
                             <Link
@@ -572,7 +608,43 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
                               </div>
                               <span className="truncate">{lt.links.sermons.label}</span>
                             </Link>
+
+                            <Link
+                              href="/member/volunteer"
+                              onClick={() => setIsProfileOpen(false)}
+                              className="flex items-center gap-2 p-2 rounded-xl bg-gray-50 dark:bg-gray-800/40 hover:bg-amber-50 dark:hover:bg-amber-950/40 text-xs font-semibold text-gray-800 dark:text-gray-200 border border-gray-100 dark:border-gray-800 hover:border-amber-200 dark:hover:border-amber-900/40 transition-all"
+                            >
+                              <div className="w-6 h-6 rounded-lg bg-amber-100 dark:bg-amber-950/80 flex items-center justify-center text-amber-600 dark:text-amber-400 flex-shrink-0">
+                                <Briefcase className="w-3.5 h-3.5" />
+                              </div>
+                              <span className="truncate">{lt.links.volunteer.label}</span>
+                            </Link>
+
+                            <Link
+                              href="/member/give"
+                              onClick={() => setIsProfileOpen(false)}
+                              className="flex items-center gap-2 p-2 rounded-xl bg-gray-50 dark:bg-gray-800/40 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-xs font-semibold text-gray-800 dark:text-gray-200 border border-gray-100 dark:border-gray-800 hover:border-emerald-200 dark:hover:border-emerald-900/40 transition-all"
+                            >
+                              <div className="w-6 h-6 rounded-lg bg-emerald-100 dark:bg-emerald-950/80 flex items-center justify-center text-emerald-600 dark:text-emerald-300 flex-shrink-0">
+                                <Gift className="w-3.5 h-3.5" />
+                              </div>
+                              <span className="truncate">{lt.links.give.label}</span>
+                            </Link>
                           </div>
+
+                          <Link
+                            href="/member/report"
+                            onClick={() => setIsProfileOpen(false)}
+                            className="flex items-center justify-between p-2 rounded-xl bg-gray-50 dark:bg-gray-800/40 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-xs font-semibold text-gray-700 dark:text-gray-300 border border-gray-100 dark:border-gray-800 hover:border-rose-200 dark:hover:border-rose-900/40 transition-all mt-1"
+                          >
+                            <div className="flex items-center gap-2 min-w-0">
+                              <div className="w-6 h-6 rounded-lg bg-rose-50 dark:bg-rose-950/80 flex items-center justify-center text-rose-500 dark:text-rose-400 shrink-0">
+                                <AlertTriangle className="w-3.5 h-3.5" />
+                              </div>
+                              <span className="truncate">{lt.links.report.label}</span>
+                            </div>
+                            <ChevronRight className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                          </Link>
                         </div>
 
                         <div className="h-px bg-gray-100 dark:bg-gray-800" />
@@ -615,7 +687,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
                             setIsProfileOpen(false);
                             logout();
                           }}
-                          className="w-full py-2.5 bg-red-50 hover:bg-red-100 dark:bg-red-950/30 dark:hover:bg-red-950/50 text-red-600 dark:text-red-400 border border-red-200/80 dark:border-red-900/40 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow-xs"
+                          className="w-full py-2.5 bg-red-50 hover:bg-red-100 dark:bg-red-950/30 dark:hover:bg-red-950/50 text-red-600 dark:text-red-400 border border-red-200/80 dark:border-red-900/40 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow-xs cursor-pointer"
                         >
                           <LogOut className="w-4 h-4" />
                           <span>{lt.signOut}</span>
@@ -625,16 +697,6 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
                   )}
                 </AnimatePresence>
               </div>
-
-              {/* Logout Button (Direct in Header) */}
-              <button
-                onClick={logout}
-                className="hidden sm:flex h-8 sm:h-9 items-center gap-1.5 px-2.5 sm:px-3.5 rounded-xl bg-red-500/10 dark:bg-red-500/5 hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/30 hover:scale-105 active:scale-95 shadow-sm transition-all flex-shrink-0 text-xs font-bold"
-                title={lt.signOut}
-              >
-                <LogOut className="w-3.5 h-3.5" />
-                <span>{lt.signOut}</span>
-              </button>
             </div>
           </div>
         </header>
@@ -680,7 +742,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
           </div>
         )}
 
-        <main className="flex-1 p-2 sm:p-5 md:p-6 lg:p-8 pb-6 sm:pb-8 lg:pb-8">
+        <main className="flex-1 p-3 sm:p-5 md:p-6 lg:p-8 pb-28 sm:pb-32 lg:pb-12">
           <motion.div
             key={pathname}
             initial={{ opacity: 0, y: 8 }}
@@ -694,14 +756,14 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
 
         {/* Mobile Ultra-Premium Floating Glassmorphic Bottom Dock */}
         {!sidebarOpen && (
-          <div className="lg:hidden fixed bottom-[calc(0.625rem+env(safe-area-inset-bottom,0px))] sm:bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] inset-x-2.5 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 sm:w-[440px] z-40 pointer-events-auto select-none">
+          <div className="lg:hidden fixed bottom-[max(0.75rem,env(safe-area-inset-bottom,0px))] inset-x-2.5 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 sm:w-[440px] z-40 pointer-events-auto select-none">
             <nav className="bg-white/95 dark:bg-[#0c0e1a]/95 backdrop-blur-2xl border border-slate-200/90 dark:border-white/[0.12] rounded-2xl p-1 shadow-[0_10px_30px_-5px_rgba(0,0,0,0.12),0_0_0_1px_rgba(0,0,0,0.04)] dark:shadow-[0_12px_36px_-6px_rgba(0,0,0,0.7),0_0_0_1px_rgba(255,255,255,0.06)] flex items-center justify-around gap-1 transition-all duration-200">
               {[
                 { name: "Dashboard", href: "/member", icon: Home, color: "text-indigo-600 dark:text-indigo-400" },
-                { name: "Sermons", href: "/member/sermons", icon: BookOpen, color: "text-blue-600 dark:text-blue-400" },
+                { name: "Events", href: "/member/events", icon: Calendar, color: "text-purple-600 dark:text-purple-400" },
                 { name: "Prayers", href: "/member/prayers", icon: Heart, color: "text-rose-600 dark:text-rose-400" },
+                { name: "Sermons", href: "/member/sermons", icon: BookOpen, color: "text-blue-600 dark:text-blue-400" },
                 { name: "Giving", href: "/member/give", icon: Gift, color: "text-emerald-600 dark:text-emerald-400" },
-                { name: "Report", href: "/member/report", icon: AlertTriangle, color: "text-purple-600 dark:text-purple-400" },
               ].map((item) => {
                 const isActive = pathname === item.href || (item.href !== "/member" && pathname.startsWith(item.href));
                 return (

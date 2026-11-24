@@ -71,10 +71,34 @@ const DEFAULT_PURPOSES: PurposeItem[] = [
 ];
 
 const DEFAULT_BRANCHES: BranchItem[] = [
+  { id: "b2", name: "Subhash Nagar (Main Branch)" },
   { id: "b1", name: "Shapur Nagar" },
-  { id: "b2", name: "Subhash Nagar" },
   { id: "b3", name: "Bahadurpally" }
 ];
+
+export function cleanDonorName(rawName: string | null | undefined): string {
+  if (!rawName) return "";
+  const trimmed = rawName.trim();
+  // Strip student roll-number prefixes like "05AL ", "23x01a05al ", "23-01a05al "
+  const cleaned = trimmed.replace(/^[0-9]+[xX\-_]?[0-9a-zA-Z]+[\s\-_]+/i, "");
+  if (cleaned.trim().length > 0) {
+    const words = cleaned.trim().split(/\s+/);
+    return words.map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(" ");
+  }
+  return trimmed;
+}
+
+export function cleanIndianPhone(rawPhone: string | null | undefined): string {
+  if (!rawPhone) return "";
+  let digits = rawPhone.replace(/\D/g, "");
+  if (digits.length === 12 && digits.startsWith("91")) {
+    digits = digits.slice(2);
+  }
+  if (digits.length === 11 && digits.startsWith("0")) {
+    digits = digits.slice(1);
+  }
+  return digits;
+}
 
 // Purpose icon map
 const purposeIconMap: Record<string, React.ReactNode> = {
@@ -324,11 +348,11 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
   useEffect(() => {
     if (!mounted || !user) return;
 
-    setDonorName((prev) => prev || user.name || "");
+    setDonorName((prev) => prev || cleanDonorName(user.name) || "");
     setDonorEmail((prev) => prev || user.email || "");
 
     const currentUserId = user.uid;
-    const currentUserName = user.name || "";
+    const currentUserName = cleanDonorName(user.name) || "";
     const currentUserEmail = user.email || "";
 
     async function fetchUserProfile() {
@@ -337,9 +361,24 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
         if (res.ok) {
           const data = await res.json();
           if (data.success && data.user) {
-            setDonorName(data.user.name || "");
-            setDonorEmail(data.user.email || "");
-            setDonorPhone(data.user.phone || "");
+            setDonorName(cleanDonorName(data.user.name) || currentUserName);
+            setDonorEmail(data.user.email || currentUserEmail);
+            setDonorPhone(cleanIndianPhone(data.user.phone));
+
+            // Auto-select preferred branch if saved in member address
+            if (data.user.address) {
+              const addr = data.user.address.toLowerCase();
+              if (addr.includes("subhash")) {
+                const sub = branches.find((b) => b.name.toLowerCase().includes("subhash"));
+                if (sub) setSelectedBranch(sub.id);
+              } else if (addr.includes("shapur")) {
+                const sh = branches.find((b) => b.name.toLowerCase().includes("shapur"));
+                if (sh) setSelectedBranch(sh.id);
+              } else if (addr.includes("bahadur")) {
+                const ba = branches.find((b) => b.name.toLowerCase().includes("bahadur"));
+                if (ba) setSelectedBranch(ba.id);
+              }
+            }
           }
         }
       } catch (err) {
@@ -349,7 +388,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
     }
 
     fetchUserProfile();
-  }, [mounted, user]);
+  }, [mounted, user, branches]);
 
   // 3. Load giving history
   const loadHistory = useCallback(async (silent = false) => {
@@ -955,7 +994,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                               <Gift className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                               {t.pages.give.purposeLabel}
                             </label>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5" role="radiogroup" aria-label={t.pages.give.purposeLabel}>
+                            <div className="grid grid-cols-2 gap-2 sm:gap-2.5" role="radiogroup" aria-label={t.pages.give.purposeLabel}>
                               {purposes.map((p) => {
                                 const codeKey = p.code || p.id;
                                 const isSelected = selectedPurpose === p.code || selectedPurpose === p.id || selectedPurpose === codeKey;
@@ -972,7 +1011,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                     aria-checked={isSelected}
                                     aria-label={purposeName}
                                     onClick={() => { setSelectedPurpose(codeKey); setErrorMessage(""); }}
-                                    className={`relative p-3 sm:p-3.5 rounded-2xl border-2 text-left transition-all duration-200 flex items-start gap-2.5 sm:gap-3 w-full cursor-pointer active:scale-[0.98] touch-manipulation select-none ${
+                                    className={`relative p-2.5 sm:p-3.5 rounded-2xl border-2 text-left transition-all duration-200 flex items-start gap-2 sm:gap-3 w-full cursor-pointer active:scale-[0.98] touch-manipulation select-none ${
                                       isSelected
                                         ? "bg-indigo-50/80 dark:bg-indigo-950/80 border-indigo-600 dark:border-indigo-400 text-slate-900 dark:text-white shadow-md ring-2 ring-indigo-500/20"
                                         : "border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800/80 text-slate-800 dark:text-white hover:border-indigo-300 dark:hover:border-slate-600 hover:bg-slate-50/80 dark:hover:bg-slate-800"
@@ -982,18 +1021,18 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                       {icon}
                                     </div>
                                     <div className="min-w-0 flex-1">
-                                      <span className="block font-extrabold text-xs sm:text-sm text-slate-900 dark:text-white leading-tight">
+                                      <span className="block font-extrabold text-xs sm:text-sm text-slate-900 dark:text-white leading-tight truncate sm:whitespace-normal">
                                         {purposeName}
                                       </span>
                                       {desc && (
-                                        <span className="block text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-200 font-medium leading-tight mt-1 line-clamp-2">
+                                        <span className="hidden sm:block text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-200 font-medium leading-tight mt-1 line-clamp-2">
                                           {desc}
                                         </span>
                                       )}
                                     </div>
                                     {isSelected && (
-                                      <div className="w-5 h-5 bg-indigo-600 dark:bg-indigo-500 rounded-full flex items-center justify-center text-white flex-shrink-0 shadow-sm">
-                                        <Check className="w-3 h-3 stroke-[3]" />
+                                      <div className="w-4 h-4 sm:w-5 sm:h-5 bg-indigo-600 dark:bg-indigo-500 rounded-full flex items-center justify-center text-white flex-shrink-0 shadow-sm">
+                                        <Check className="w-2.5 h-2.5 sm:w-3 sm:h-3 stroke-[3]" />
                                       </div>
                                     )}
                                   </button>
@@ -1071,15 +1110,24 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                 <label className="block text-[11px] font-extrabold uppercase tracking-wide text-slate-600 dark:text-slate-200 mb-1">
                                   {t.pages.give.phoneLabel}
                                 </label>
-                                <div className="relative">
+                                <div className="relative flex items-center">
+                                  <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-slate-500 dark:text-slate-400 font-bold text-xs pointer-events-none pr-1.5 border-r border-slate-300 dark:border-slate-600">
+                                    <span className="text-sm">🇮🇳</span>
+                                    <span>+91</span>
+                                  </div>
                                   <input
                                     type="tel"
-                                    placeholder={t.pages.give.phonePlaceholder}
+                                    placeholder="98765 43210"
                                     value={donorPhone}
-                                    onChange={(e) => setDonorPhone(e.target.value)}
-                                    className="w-full py-2.5 px-3.5 pl-10 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-bold placeholder-slate-400 dark:placeholder-slate-400 focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-500 focus:outline-none transition-all text-xs sm:text-sm"
+                                    onChange={(e) => {
+                                      let val = e.target.value.replace(/\D/g, "");
+                                      if (val.length === 11 && val.startsWith("0")) val = val.slice(1);
+                                      if (val.length > 10) val = val.slice(0, 10);
+                                      setDonorPhone(val);
+                                      setErrorMessage("");
+                                    }}
+                                    className="w-full py-2.5 px-3.5 pl-20 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-bold placeholder-slate-400 dark:placeholder-slate-400 focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-500 focus:outline-none transition-all text-xs sm:text-sm"
                                   />
-                                  <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-indigo-600 dark:text-indigo-400 w-4 h-4" />
                                 </div>
                               </div>
                             </div>

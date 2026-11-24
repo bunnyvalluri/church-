@@ -2,15 +2,19 @@
 
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useCallback, useRef } from "react";
+import Link from "next/link";
+import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import {
   Calendar, MapPin, Clock, CheckCircle2, UserCheck,
   Loader2, RefreshCw, Bell, Users, TrendingUp, Activity,
-  Filter, Search, ChevronRight, AlertCircle, Sparkles, X
+  Filter, Search, ChevronRight, AlertCircle, Sparkles, X,
+  Church, ExternalLink, Download, Video, Image as ImageIcon,
+  Check, Share2, Compass
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
+/* ────────────────────────── Types ────────────────────────── */
 interface ChurchEvent {
   id: string;
   title: string;
@@ -19,100 +23,210 @@ interface ChurchEvent {
   time: string;
   location: string;
   category: string;
+  speaker?: string;
+  mapsUrl?: string;
+  isRecurring?: boolean;
 }
 
-const CAT_STYLE: Record<string, { pill: string; bar: string }> = {
-  WORSHIP:     { pill: "bg-purple-600 dark:bg-purple-700 text-white border-purple-500 font-extrabold shadow-xs", bar: "bg-purple-500" },
-  PRAYER:      { pill: "bg-rose-600 dark:bg-rose-700 text-white border-rose-500 font-extrabold shadow-xs",           bar: "bg-rose-500"   },
-  YOUTH:       { pill: "bg-amber-600 dark:bg-amber-700 text-white border-amber-500 font-extrabold shadow-xs",     bar: "bg-amber-500"  },
-  FELLOWSHIP:  { pill: "bg-emerald-600 dark:bg-emerald-700 text-white border-emerald-500 font-extrabold shadow-xs", bar: "bg-emerald-500" },
-  OUTREACH:    { pill: "bg-indigo-600 dark:bg-indigo-700 text-white border-indigo-500 font-extrabold shadow-xs",     bar: "bg-indigo-500"  },
-};
-const DEFAULT_STYLE = { pill: "bg-purple-600 dark:bg-purple-700 text-white border-purple-500 font-extrabold shadow-xs", bar: "bg-purple-500" };
-
 type FilterTab = "ALL" | "UPCOMING" | "REGISTERED";
+type CampusFilter = "ALL" | "Subhash Nagar" | "Shapur Nagar" | "Bahadurpally";
 
+const CAT_STYLE: Record<string, { pill: string; bar: string; badgeBg: string }> = {
+  WORSHIP:     { pill: "bg-purple-600 dark:bg-purple-700 text-white border-purple-500 font-extrabold shadow-xs", bar: "bg-purple-500", badgeBg: "bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800" },
+  PRAYER:      { pill: "bg-rose-600 dark:bg-rose-700 text-white border-rose-500 font-extrabold shadow-xs",       bar: "bg-rose-500",   badgeBg: "bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800" },
+  YOUTH:       { pill: "bg-amber-600 dark:bg-amber-700 text-white border-amber-500 font-extrabold shadow-xs", bar: "bg-amber-500",  badgeBg: "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800" },
+  FELLOWSHIP:  { pill: "bg-emerald-600 dark:bg-emerald-700 text-white border-emerald-500 font-extrabold shadow-xs", bar: "bg-emerald-500", badgeBg: "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800" },
+  OUTREACH:    { pill: "bg-indigo-600 dark:bg-indigo-700 text-white border-indigo-500 font-extrabold shadow-xs", bar: "bg-indigo-500",  badgeBg: "bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800" },
+  SPECIAL:     { pill: "bg-violet-600 dark:bg-violet-700 text-white border-violet-500 font-extrabold shadow-xs", bar: "bg-violet-500",  badgeBg: "bg-violet-50 dark:bg-violet-950/40 text-violet-700 dark:text-violet-300 border-violet-200 dark:border-violet-800" },
+};
+const DEFAULT_STYLE = { pill: "bg-purple-600 dark:bg-purple-700 text-white border-purple-500 font-extrabold shadow-xs", bar: "bg-purple-500", badgeBg: "bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800" };
+
+/* ────────────────────────── Helpers ────────────────────────── */
+function getNextWeekday(dayOfWeek: number, targetHour = 10, targetMinute = 0): Date {
+  const now = new Date();
+  const result = new Date(now);
+  const currentDay = now.getDay();
+  let daysToAdd = (dayOfWeek - currentDay + 7) % 7;
+  if (daysToAdd === 0 && (now.getHours() > targetHour || (now.getHours() === targetHour && now.getMinutes() >= targetMinute))) {
+    daysToAdd = 7;
+  }
+  result.setDate(now.getDate() + daysToAdd);
+  result.setHours(targetHour, targetMinute, 0, 0);
+  return result;
+}
+
+function getGoogleCalendarUrl(event: { title: string; description: string; location: string; date: string; time: string }): string {
+  const d = new Date(event.date);
+  const startTime = d.toISOString().replace(/-|:|\.\d\d\d/g, "");
+  const endTime = new Date(d.getTime() + 3 * 3600 * 1000).toISOString().replace(/-|:|\.\d\d\d/g, "");
+  const params = new URLSearchParams({
+    action: "TEMPLATE",
+    text: event.title,
+    details: event.description,
+    location: event.location,
+    dates: `${startTime}/${endTime}`,
+  });
+  return `https://calendar.google.com/calendar/render?${params.toString()}`;
+}
+
+function downloadIcsFile(event: { title: string; description: string; location: string; date: string; time: string }): void {
+  const d = new Date(event.date);
+  const start = d.toISOString().replace(/-|:|\.\d\d\d/g, "");
+  const end = new Date(d.getTime() + 3 * 3600 * 1000).toISOString().replace(/-|:|\.\d\d\d/g, "");
+  const ics = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//Kingdom of Christ Ministries//Events//EN",
+    "BEGIN:VEVENT",
+    `UID:${event.title.replace(/\s+/g, "-")}-${d.getTime()}@kcmchurch.org`,
+    `DTSTAMP:${start}`,
+    `DTSTART:${start}`,
+    `DTEND:${end}`,
+    `SUMMARY:${event.title}`,
+    `DESCRIPTION:${event.description.replace(/\n/g, " ")}`,
+    `LOCATION:${event.location}`,
+    "END:VEVENT",
+    "END:VCALENDAR",
+  ].join("\r\n");
+
+  const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${event.title.slice(0, 30).replace(/[^a-zA-Z0-9]/g, "_")}.ics`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+/* ────────────────────────── Translations ────────────────────────── */
 const eventsTranslations = {
   en: {
     title: "Church Events",
     subtitle: "Browse upcoming programs and secure your seat",
+    eventsTag: "Events",
     updated: "Updated",
     refresh: "Refresh",
     totalEvents: "Total",
     upcoming: "Upcoming",
     myRsvps: "My RSVPs",
-    searchPlaceholder: "Search events or location...",
+    searchPlaceholder: "Search events, speaker, location...",
+    allCampuses: "All Campuses",
+    subhashCampus: "Subhash Nagar",
+    shapurCampus: "Shapur Nagar",
+    bahadurpallyCampus: "Bahadurpally",
     tabAll: "All",
     tabUpcoming: "Upcoming",
     tabRegistered: "My RSVPs",
     newEventAlert: "New event added to the schedule!",
     loadError: "Could not load events",
     successRsvp: "Successfully registered! See you there 🙏",
+    unrsvpSuccess: "RSVP cancelled successfully.",
     failRsvp: "Registration failed. Please try again.",
     netError: "Network error. Try again.",
     noEvents: "No events scheduled",
     noRegistered: "You haven't registered for any events yet",
     noMatches: 'No events matching "{query}"',
-    pastBadge: "Past",
+    pastBadge: "Completed",
     upcomingBadge: "Upcoming",
+    recurringBadge: "Weekly Service",
     statusRegistered: "Registered",
-    statusRsvp: "RSVP",
-    statusEnded: "Ended",
+    statusRsvp: "Reserve My Seat (RSVP)",
+    statusEnded: "Completed Gathering",
+    directions: "Directions",
+    calendar: "Calendar",
+    googleCal: "Google Calendar",
+    icsCal: "Apple / Outlook (.ics)",
+    watchMessage: "Watch Sermon",
+    viewPhotos: "View Photos",
+    speakerLabel: "Speaker / Host",
   },
   te: {
     title: "చర్చి కార్యక్రమాలు",
     subtitle: "రాబోయే కార్యక్రమాలను బ్రౌజ్ చేయండి మరియు మీ సీటును భద్రపరుచుకోండి",
+    eventsTag: "కార్యక్రమాలు",
     updated: "సమకాలీకరించబడింది",
     refresh: "రిఫ్రెష్",
     totalEvents: "మొత్తం",
     upcoming: "రాబోయేవి",
     myRsvps: "నా సీట్లు",
-    searchPlaceholder: "కార్యక్రమాలు లేదా స్థలాల కోసం వెతకండి...",
+    searchPlaceholder: "కార్యక్రమాలు, ప్రసంగీకులు లేదా స్థలాల కోసం వెతకండి...",
+    allCampuses: "అన్ని బ్రాంచులు",
+    subhashCampus: "సుభాష్ నగర్",
+    shapurCampus: "షాపూర్ నగర్",
+    bahadurpallyCampus: "బహదూర్‌పల్లి",
     tabAll: "అన్నీ",
     tabUpcoming: "రాబోయేవి",
     tabRegistered: "నా సీట్లు",
     newEventAlert: "షెడ్యూల్‌లో కొత్త కార్యక్రమం జోడించబడింది!",
     loadError: "కార్యక్రమాలను లోడ్ చేయడం వీలుపడలేదు",
     successRsvp: "విజయవంతంగా నమోదైంది! అక్కడ కలుద్దాం 🙏",
+    unrsvpSuccess: "సీటు రద్దు చేయబడింది.",
     failRsvp: "నమోదు విఫలమైంది. దయచేసి మళ్ళీ ప్రయత్నించండి.",
     netError: "నెట్‌వర్క్ లోపం. మళ్ళీ ప్రయత్నించండి.",
     noEvents: "ఎటువంటి కార్యక్రమాలు షెడ్యూల్ చేయబడలేదు",
     noRegistered: "మీరు ఇంకా ఏ కార్యక్రమానికి నమోదు చేసుకోలేదు",
     noMatches: '"{query}" కి సరిపోలే కార్యక్రమాలు ఏవీ లేవు',
-    pastBadge: "గతించినవి",
+    pastBadge: "ముగిసింది",
     upcomingBadge: "రాబోయేవి",
+    recurringBadge: "వారంవారీ ఆరాధన",
     statusRegistered: "నమోదైనవి",
-    statusRsvp: "బుక్ చేయి (RSVP)",
-    statusEnded: "ముగిసింది",
+    statusRsvp: "నా సీటు రిజర్వ్ చేయి (RSVP)",
+    statusEnded: "ముగిసిన కూడిక",
+    directions: "దిశలు (మ్యాప్స్)",
+    calendar: "క్యాలెండర్",
+    googleCal: "గూగుల్ క్యాలెండర్",
+    icsCal: "ఆపిల్ / ఔట్లుక్ (.ics)",
+    watchMessage: "ప్రసంగం వినండి",
+    viewPhotos: "ఫోటోలు చూడండి",
+    speakerLabel: "ప్రసంగీకులు / ఆహ్వానికులు",
   },
   hi: {
     title: "चर्च के कार्यक्रम",
     subtitle: "आगामी कार्यक्रमों को देखें और अपनी सीट सुरक्षित करें",
+    eventsTag: "कार्यक्रम",
     updated: "अपडेट किया गया",
     refresh: "रिफ्रेश",
     totalEvents: "कुल",
     upcoming: "आगामी",
     myRsvps: "मेरी सीटें",
-    searchPlaceholder: "कार्यक्रम या स्थान खोजें...",
+    searchPlaceholder: "कार्यक्रम, वक्ता या स्थान खोजें...",
+    allCampuses: "सभी परिसर",
+    subhashCampus: "सुभाष नगर",
+    shapurCampus: "शापुर नगर",
+    bahadurpallyCampus: "बहादुरपल्ली",
     tabAll: "सभी",
     tabUpcoming: "आगामी",
     tabRegistered: "मेरी सीटें",
     newEventAlert: "शेड्यूल में नया कार्यक्रम जोड़ा गया!",
     loadError: "कार्यक्रम लोड नहीं किए जा सके",
     successRsvp: "सफलतापूर्वक पंजीकृत! वहाँ मिलते हैं 🙏",
+    unrsvpSuccess: "सीट निरस्त की गई।",
     failRsvp: "पंजीकरण विफल रहा। कृपया पुन: प्रयास करें।",
     netError: "नेटवर्क त्रुटि। पुन: प्रयास करें।",
     noEvents: "कोई कार्यक्रम निर्धारित नहीं है",
     noRegistered: "आपने अभी तक किसी भी कार्यक्रम के लिए पंजीकरण नहीं कराया है",
     noMatches: '"{query}" से मेल खाने वाला कोई कार्यक्रम नहीं मिला',
-    pastBadge: "बीता हुआ",
+    pastBadge: "समाप्त",
     upcomingBadge: "आगामी",
+    recurringBadge: "साप्ताहिक आराधना",
     statusRegistered: "पंजीकृत",
-    statusRsvp: "आरएसवीपी (RSVP)",
-    statusEnded: "समाप्त",
+    statusRsvp: "मेरी सीट आरक्षित करें (RSVP)",
+    statusEnded: "समाप्त सभा",
+    directions: "दिशाएं (मानचित्र)",
+    calendar: "कैलेंडर",
+    googleCal: "गूगल कैलेंडर",
+    icsCal: "एप्पल / आउटलुक (.ics)",
+    watchMessage: "प्रवचन सुनें",
+    viewPhotos: "तस्वीरें देखें",
+    speakerLabel: "वक्ता / मेज़बान",
   }
 };
 
+/* ═══════════════════════════════════════════════════════════
+   MAIN COMPONENT
+═══════════════════════════════════════════════════════════ */
 export default function MemberEvents() {
   const { user, status, mounted } = useAuth();
   const { language } = useLanguage();
@@ -120,15 +234,18 @@ export default function MemberEvents() {
 
   const et = eventsTranslations[language as keyof typeof eventsTranslations] || eventsTranslations.en;
 
-  const [events, setEvents] = useState<ChurchEvent[]>([]);
+  const [dbEvents, setDbEvents] = useState<ChurchEvent[]>([]);
   const [registeredIds, setRegisteredIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [filter, setFilter] = useState<FilterTab>("ALL");
+  const [campusFilter, setCampusFilter] = useState<CampusFilter>("ALL");
   const [search, setSearch] = useState("");
   const [lastSynced, setLastSynced] = useState<Date | null>(null);
   const [toast, setToast] = useState<{ msg: string; type: "success" | "error" | "info" } | null>(null);
+  const [activeCalendarMenu, setActiveCalendarMenu] = useState<string | null>(null);
+
   const prevIds = useRef<string[]>([]);
   const interval = useRef<NodeJS.Timeout | null>(null);
 
@@ -141,6 +258,60 @@ export default function MemberEvents() {
     if (mounted && status === "unauthenticated") router.replace("/login");
   }, [mounted, status, router]);
 
+  // Click outside listener for calendar dropdown menu
+  useEffect(() => {
+    const handleClickOutside = () => setActiveCalendarMenu(null);
+    window.addEventListener("click", handleClickOutside);
+    return () => window.removeEventListener("click", handleClickOutside);
+  }, []);
+
+  /* ── Recurring Weekly Gatherings Definition ────────────────── */
+  const recurringServices = useMemo<ChurchEvent[]>(() => {
+    const nextSunday = getNextWeekday(0, 10, 0); // Sunday 10:00 AM
+    const nextFriday = getNextWeekday(5, 11, 0); // Friday 11:00 AM
+    const nextTuesday = getNextWeekday(2, 19, 0); // Tuesday 07:00 PM
+
+    return [
+      {
+        id: "rec-sunday-celebration",
+        title: "Sunday Celebration & Miracle Gathering",
+        description: "Join Bishop Kurra Kristhu Raju Garu and our worship choir for a powerful morning of praise, prophetic preaching, and miracle prayer. Bring your entire family!",
+        date: nextSunday.toISOString(),
+        time: "10:00 AM – 01:00 PM IST",
+        location: "Subhash Nagar Main Sanctuary, Kingdom of Christ Ministries",
+        category: "WORSHIP",
+        speaker: "Bishop Kurra Kristhu Raju Garu",
+        mapsUrl: "https://maps.google.com/?q=Kingdom+of+Christ+Ministries+Subhash+Nagar+Hyderabad",
+        isRecurring: true,
+      },
+      {
+        id: "rec-friday-fasting",
+        title: "Friday Healing & Fasting Prayer Service",
+        description: "A consecrated afternoon of intercessory prayer, fasting, and laying on of hands for family peace, divine health, deliverance, and spiritual breakthrough.",
+        date: nextFriday.toISOString(),
+        time: "11:00 AM – 02:00 PM IST",
+        location: "Subhash Nagar & Shapur Nagar Campuses",
+        category: "PRAYER",
+        speaker: "Pastoral Care & Intercessory Team",
+        mapsUrl: "https://maps.google.com/?q=Kingdom+of+Christ+Ministries+Subhash+Nagar+Hyderabad",
+        isRecurring: true,
+      },
+      {
+        id: "rec-tuesday-bible-study",
+        title: "Mid-Week Word & Bible Exposition Fellowship",
+        description: "A deep dive into the living Scriptures, verse-by-verse Bible exposition, and family fellowship prayer to strengthen your daily walk in Christ.",
+        date: nextTuesday.toISOString(),
+        time: "07:00 PM – 08:30 PM IST",
+        location: "Subhash Nagar Sanctuary & Livestream",
+        category: "FELLOWSHIP",
+        speaker: "Associate Pastors & Ministry Leaders",
+        mapsUrl: "https://maps.google.com/?q=Kingdom+of+Christ+Ministries+Subhash+Nagar+Hyderabad",
+        isRecurring: true,
+      },
+    ];
+  }, []);
+
+  /* ── Load Events From Server ─────────────────────────────── */
   const load = useCallback(async (silent = false) => {
     if (!user?.uid) return;
     if (!silent) setRefreshing(true);
@@ -148,13 +319,13 @@ export default function MemberEvents() {
       const res = await fetch(`/api/member/events?userId=${user.uid}&t=${Date.now()}`);
       const data = await res.json();
       if (res.ok && data.success) {
-        const newEvents: ChurchEvent[] = data.events || [];
-        const newIds = newEvents.map((e: ChurchEvent) => e.id);
+        const fetchedEvents: ChurchEvent[] = data.events || [];
+        const newIds = fetchedEvents.map((e: ChurchEvent) => e.id);
         if (prevIds.current.length && newIds.filter((id: string) => !prevIds.current.includes(id)).length) {
           showToast(et.newEventAlert, "info");
         }
         prevIds.current = newIds;
-        setEvents(newEvents);
+        setDbEvents(fetchedEvents);
         setRegisteredIds(data.registeredEventIds || []);
         setLastSynced(new Date());
       }
@@ -171,13 +342,52 @@ export default function MemberEvents() {
       load();
       interval.current = setInterval(() => load(true), 30000);
     }
-    return () => { if (interval.current) clearInterval(interval.current); };
+    return () => {
+      if (interval.current) clearInterval(interval.current);
+    };
   }, [status, user, load]);
 
+  /* ── Combined Events List ────────────────────────────────── */
+  const allEvents = useMemo(() => {
+    // Merge database events with recurring services
+    const combined = [...dbEvents];
+
+    // Check if recurring services already exist in dbEvents
+    for (const rec of recurringServices) {
+      const exists = combined.some(e => e.id === rec.id || e.title.toLowerCase().includes(rec.title.toLowerCase()));
+      if (!exists) {
+        combined.push(rec);
+      }
+    }
+
+    // Sort by date (upcoming first, then past)
+    return combined.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  }, [dbEvents, recurringServices]);
+
+  /* ── RSVP Handler ────────────────────────────────────────── */
   const handleRegister = async (eventId: string) => {
     setProcessingId(eventId);
+    const wasRegistered = registeredIds.includes(eventId);
+
+    if (wasRegistered) {
+      // Toggle off / cancel
+      setRegisteredIds(prev => prev.filter(id => id !== eventId));
+      showToast(et.unrsvpSuccess, "info");
+      setProcessingId(null);
+      return;
+    }
+
+    // Add optimistic registration
     setRegisteredIds(prev => [...prev, eventId]);
+
     try {
+      // If recurring virtual service, save locally / succeed immediately
+      if (eventId.startsWith("rec-")) {
+        showToast(et.successRsvp, "success");
+        setProcessingId(null);
+        return;
+      }
+
       const res = await fetch("/api/member/events", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -198,24 +408,51 @@ export default function MemberEvents() {
   };
 
   const now = new Date();
-  const filtered = events.filter(e => {
-    if (filter === "REGISTERED" && !registeredIds.includes(e.id)) return false;
-    if (filter === "UPCOMING" && new Date(e.date) < now) return false;
-    if (search && !e.title.toLowerCase().includes(search.toLowerCase()) && !e.location.toLowerCase().includes(search.toLowerCase())) return false;
-    return true;
-  });
 
-  const stats = {
-    total: events.length,
-    upcoming: events.filter(e => new Date(e.date) >= now).length,
-    registered: registeredIds.length,
-  };
+  /* ── Filtering Logic ─────────────────────────────────────── */
+  const filtered = useMemo(() => {
+    return allEvents.filter(e => {
+      const isPast = new Date(e.date) < now;
+
+      // Filter Tab
+      if (filter === "REGISTERED" && !registeredIds.includes(e.id)) return false;
+      if (filter === "UPCOMING" && isPast) return false;
+
+      // Campus Filter
+      if (campusFilter !== "ALL") {
+        const locLower = (e.location || "").toLowerCase();
+        if (campusFilter === "Subhash Nagar" && !locLower.includes("subhash")) return false;
+        if (campusFilter === "Shapur Nagar" && !locLower.includes("shapur")) return false;
+        if (campusFilter === "Bahadurpally" && !locLower.includes("bahadur")) return false;
+      }
+
+      // Search Query
+      if (search) {
+        const q = search.toLowerCase();
+        const matchesTitle = (e.title || "").toLowerCase().includes(q);
+        const matchesLoc = (e.location || "").toLowerCase().includes(q);
+        const matchesSpeaker = (e.speaker || "").toLowerCase().includes(q);
+        const matchesDesc = (e.description || "").toLowerCase().includes(q);
+        if (!matchesTitle && !matchesLoc && !matchesSpeaker && !matchesDesc) return false;
+      }
+
+      return true;
+    });
+  }, [allEvents, filter, campusFilter, search, registeredIds, now]);
+
+  const stats = useMemo(() => {
+    return {
+      total: allEvents.length,
+      upcoming: allEvents.filter(e => new Date(e.date) >= now).length,
+      registered: registeredIds.length,
+    };
+  }, [allEvents, registeredIds, now]);
 
   if (status === "unauthenticated" && mounted) return null;
 
   return (
-    <div className="w-full max-w-5xl xl:max-w-6xl mx-auto px-3 sm:px-4 py-2 sm:py-4 space-y-4 sm:space-y-6">
-      {/* Floating Bottom Pop-Up Toast */}
+    <div className="w-full max-w-5xl xl:max-w-6xl mx-auto px-2 sm:px-4 py-2 sm:py-4 space-y-4 sm:space-y-6">
+      {/* Toast Notification */}
       <AnimatePresence>
         {toast && (
           <motion.div
@@ -223,7 +460,7 @@ export default function MemberEvents() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.25, ease: "easeOut" }}
-            className={`fixed bottom-6 left-1/2 -translate-x-1/2 sm:bottom-8 sm:left-auto sm:right-6 sm:translate-x-0 z-[9999] flex items-center gap-3 px-4 py-3.5 rounded-2xl shadow-2xl text-xs sm:text-sm font-bold border max-w-[92vw] sm:max-w-md backdrop-blur-xl transition-all ${
+            className={`fixed bottom-20 left-1/2 -translate-x-1/2 sm:bottom-8 sm:left-auto sm:right-6 sm:translate-x-0 z-[9999] flex items-center gap-3 px-4 py-3 rounded-2xl shadow-2xl text-xs sm:text-sm font-bold border max-w-[92vw] sm:max-w-md backdrop-blur-xl transition-all ${
               toast.type === "success" ? "bg-emerald-600 text-white border-emerald-400/40 shadow-emerald-600/30" :
               toast.type === "error"   ? "bg-red-600 text-white border-red-400/40 shadow-red-600/30" :
                                          "bg-indigo-600 text-white border-indigo-400/40 shadow-indigo-600/30"
@@ -237,210 +474,401 @@ export default function MemberEvents() {
         )}
       </AnimatePresence>
 
-      {/* PAGE HEADER */}
-      <div className="flex items-center justify-between gap-3 mb-1 sm:mb-2">
+      {/* ── Page Header ────────────────────────────────────── */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-gray-900/60 p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-gray-100 dark:border-white/5 shadow-xs">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-lg sm:text-2xl font-black text-gray-900 dark:text-white leading-tight">{et.title}</h1>
-            <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full bg-indigo-600 dark:bg-indigo-700 text-white border border-indigo-500 dark:border-indigo-500 shadow-xs">
-              <Calendar className="w-3 h-3 text-white" /> Events
+            <h1 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white tracking-tight">{et.title}</h1>
+            <span className="inline-flex items-center gap-1 text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-indigo-600 text-white border border-indigo-500 shadow-xs">
+              <Calendar className="w-3 h-3 text-white" /> {et.eventsTag}
             </span>
           </div>
-          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">{et.subtitle}</p>
+          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1">{et.subtitle}</p>
         </div>
-        <div className="flex items-center gap-2 flex-shrink-0">
+
+        <div className="flex items-center gap-2.5 self-start sm:self-auto shrink-0">
           {mounted && lastSynced && (
-            <span className="text-[10px] sm:text-xs text-gray-400 dark:text-gray-500 hidden sm:inline">
+            <span className="text-[11px] font-medium text-gray-400 dark:text-gray-500 hidden sm:inline">
               {et.updated} {lastSynced.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
             </span>
           )}
           <button
-            onClick={() => load()}
+            onClick={() => load(false)}
             disabled={refreshing}
-            className="flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-xl bg-white dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-300 dark:hover:border-indigo-700 transition-all text-xs font-semibold shadow-sm active:scale-95"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gray-50 dark:bg-white/5 hover:bg-purple-50 dark:hover:bg-purple-950/40 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 text-xs font-bold transition-all shadow-xs active:scale-95 cursor-pointer"
             title="Refresh events schedule"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? "animate-spin text-indigo-600" : ""}`} />
-            <span className="hidden sm:inline">{et.refresh}</span>
+            <span>{et.refresh}</span>
           </button>
         </div>
       </div>
 
-      {/* STATS ROW — 3-Column Compact Grid on Mobile */}
-      <div className="grid grid-cols-3 gap-2 sm:gap-4">
+      {/* ── Interactive Stat Cards (Fitts' Law: Click to Filter) ── */}
+      <div className="grid grid-cols-3 gap-2.5 sm:gap-4">
         {[
-          { label: et.totalEvents, value: stats.total, icon: Activity, color: "text-indigo-600 dark:text-indigo-400", bg: "bg-indigo-50 dark:bg-indigo-950/40 border-indigo-200 dark:border-indigo-800/40" },
-          { label: et.upcoming,     value: stats.upcoming, icon: TrendingUp, color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800/40" },
-          { label: et.myRsvps,     value: stats.registered, icon: UserCheck, color: "text-purple-600 dark:text-purple-400", bg: "bg-purple-50 dark:bg-purple-950/40 border-purple-200 dark:border-purple-800/40" },
-        ].map(({ label, value, icon: Icon, color, bg }) => (
-          <div
+          {
+            tab: "ALL" as FilterTab,
+            label: et.totalEvents,
+            value: stats.total,
+            icon: Activity,
+            color: "text-indigo-600 dark:text-indigo-400",
+            bg: "bg-indigo-50 dark:bg-indigo-950/40",
+            border: filter === "ALL" ? "ring-2 ring-indigo-500 border-indigo-500 shadow-md" : "border-gray-100 dark:border-white/5",
+          },
+          {
+            tab: "UPCOMING" as FilterTab,
+            label: et.upcoming,
+            value: stats.upcoming,
+            icon: TrendingUp,
+            color: "text-emerald-600 dark:text-emerald-400",
+            bg: "bg-emerald-50 dark:bg-emerald-950/40",
+            border: filter === "UPCOMING" ? "ring-2 ring-emerald-500 border-emerald-500 shadow-md" : "border-gray-100 dark:border-white/5",
+          },
+          {
+            tab: "REGISTERED" as FilterTab,
+            label: et.myRsvps,
+            value: stats.registered,
+            icon: UserCheck,
+            color: "text-purple-600 dark:text-purple-400",
+            bg: "bg-purple-50 dark:bg-purple-950/40",
+            border: filter === "REGISTERED" ? "ring-2 ring-purple-500 border-purple-500 shadow-md" : "border-gray-100 dark:border-white/5",
+          },
+        ].map(({ tab, label, value, icon: Icon, color, bg, border }) => (
+          <button
             key={label}
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800/80 shadow-md p-2.5 sm:p-4 flex flex-col sm:flex-row items-center sm:items-center text-center sm:text-left gap-1.5 sm:gap-3.5 transition-transform active:scale-[0.98]"
+            type="button"
+            onClick={() => setFilter(tab)}
+            className={`bg-white dark:bg-gray-900 rounded-2xl sm:rounded-3xl border shadow-sm p-3 sm:p-4.5 flex flex-col sm:flex-row items-center text-center sm:text-left gap-2 sm:gap-3.5 transition-all active:scale-[0.98] cursor-pointer ${border}`}
           >
-            <div className={`w-7 h-7 sm:w-10 sm:h-10 ${bg} border rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm`}>
-              <Icon className={`w-3.5 h-3.5 sm:w-5 sm:h-5 ${color}`} />
+            <div className={`w-8 h-8 sm:w-11 sm:h-11 ${bg} rounded-xl sm:rounded-2xl flex items-center justify-center shrink-0 shadow-xs`}>
+              <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${color}`} />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-base sm:text-2xl font-black text-gray-900 dark:text-white leading-none">
+              <p className="text-lg sm:text-2xl font-black text-gray-900 dark:text-white leading-none">
                 {loading ? "—" : value}
               </p>
-              <p className="text-[9px] sm:text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-extrabold mt-1 whitespace-nowrap">
+              <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-extrabold mt-1 truncate">
                 {label}
               </p>
             </div>
-          </div>
+          </button>
         ))}
       </div>
 
-      {/* CONTROLS: Search Input & Filter Tabs */}
-      <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3">
-        <div className="relative flex-1">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 dark:text-gray-400 pointer-events-none" />
-          <input
-            type="text"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder={et.searchPlaceholder}
-            className="w-full pl-10 pr-10 py-2.5 rounded-2xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-transparent focus:outline-none transition-all text-xs sm:text-sm font-semibold shadow-sm"
-          />
-          {search && (
-            <button
-              type="button"
-              onClick={() => setSearch("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
-              title="Clear search"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          )}
+      {/* ── Search Bar, Tabs & Campus Filters ────────────────── */}
+      <div className="space-y-3 bg-white dark:bg-gray-900/60 p-3 sm:p-4 rounded-2xl sm:rounded-3xl border border-gray-100 dark:border-white/5 shadow-xs">
+        <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3">
+          {/* Search Box */}
+          <div className="relative flex-1">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            <input
+              type="text"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder={et.searchPlaceholder}
+              className="w-full pl-10 pr-10 py-2.5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 text-gray-900 dark:text-white placeholder:text-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent focus:outline-none transition-all text-xs sm:text-sm font-medium"
+            />
+            {search && (
+              <button
+                type="button"
+                onClick={() => setSearch("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+                title="Clear search"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+
+          {/* Filter Status Tabs */}
+          <div className="bg-gray-100/80 dark:bg-gray-800/80 p-1 rounded-2xl grid grid-cols-3 gap-1 w-full sm:w-auto min-w-[270px]">
+            {(["ALL", "UPCOMING", "REGISTERED"] as FilterTab[]).map(tab => (
+              <button
+                key={tab}
+                onClick={() => setFilter(tab)}
+                className={`py-2 px-2.5 rounded-xl text-xs font-bold transition-all text-center whitespace-nowrap flex items-center justify-center cursor-pointer ${
+                  filter === tab
+                    ? "bg-purple-600 text-white shadow-xs font-black"
+                    : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+                }`}
+              >
+                {tab === "ALL" ? et.tabAll : tab === "UPCOMING" ? et.tabUpcoming : et.tabRegistered}
+              </button>
+            ))}
+          </div>
         </div>
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl p-1 shadow-sm grid grid-cols-3 gap-1 w-full sm:w-auto min-w-[280px]">
-          {(["ALL", "UPCOMING", "REGISTERED"] as FilterTab[]).map(tab => (
+
+        {/* Campus Filter Pills */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 pt-1 no-scrollbar text-xs">
+          <span className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider shrink-0 mr-1 flex items-center gap-1">
+            <Compass className="w-3.5 h-3.5" /> Campus:
+          </span>
+          {[
+            { id: "ALL" as CampusFilter, label: et.allCampuses },
+            { id: "Subhash Nagar" as CampusFilter, label: et.subhashCampus },
+            { id: "Shapur Nagar" as CampusFilter, label: et.shapurCampus },
+            { id: "Bahadurpally" as CampusFilter, label: et.bahadurpallyCampus },
+          ].map(c => (
             <button
-              key={tab}
-              onClick={() => setFilter(tab)}
-              className={`w-full py-2 px-2 rounded-xl text-xs font-black transition-all text-center whitespace-nowrap flex items-center justify-center ${
-                filter === tab
-                  ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md"
-                  : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+              key={c.id}
+              onClick={() => setCampusFilter(c.id)}
+              className={`px-3 py-1.5 rounded-full font-bold text-xs shrink-0 transition-all cursor-pointer ${
+                campusFilter === c.id
+                  ? "bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 border border-purple-300 dark:border-purple-700 shadow-xs"
+                  : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-transparent hover:border-gray-300 dark:hover:border-gray-700"
               }`}
             >
-              {tab === "ALL" ? et.tabAll : tab === "UPCOMING" ? et.tabUpcoming : et.tabRegistered}
+              {c.label}
             </button>
           ))}
         </div>
       </div>
 
-      {/* EVENTS LIST */}
+      {/* ── Events List ─────────────────────────────────────── */}
       {loading ? (
         <div className="space-y-3">
           {[1, 2, 3].map(i => (
-            <div key={i} className="h-32 bg-white dark:bg-gray-900 rounded-3xl animate-pulse border border-gray-100 dark:border-gray-800" />
+            <div key={i} className="h-32 bg-white dark:bg-gray-900 rounded-3xl animate-pulse border border-gray-100 dark:border-white/5" />
           ))}
         </div>
       ) : filtered.length === 0 ? (
         <motion.div
-          initial={{ opacity: 0, scale: 0.96 }}
+          initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="text-center py-12 sm:py-16 px-4 bg-white dark:bg-gray-900 rounded-3xl border border-dashed border-gray-200 dark:border-gray-800 shadow-sm"
+          className="text-center py-12 sm:py-16 px-4 bg-white dark:bg-gray-900 rounded-3xl border border-dashed border-gray-200 dark:border-white/10 shadow-sm"
         >
-          <div className="w-14 h-14 bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/40 rounded-2xl flex items-center justify-center mx-auto mb-3 text-indigo-600 dark:text-indigo-400">
+          <div className="w-14 h-14 bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-900/40 rounded-2xl flex items-center justify-center mx-auto mb-3 text-purple-600 dark:text-purple-400 shadow-xs">
             <Calendar className="w-7 h-7" />
           </div>
           <h3 className="font-extrabold text-base text-gray-900 dark:text-white">
             {search ? et.noMatches.replace("{query}", search) : filter === "REGISTERED" ? et.noRegistered : et.noEvents}
           </h3>
-          <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 max-w-sm mx-auto">
-            Check back soon for new worship services, fellowship meetings, and ministry events.
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1.5 max-w-sm mx-auto leading-relaxed">
+            All fellowship and prayer services are updated dynamically. Reset your filters to see upcoming weekly celebration services.
           </p>
+          {(filter !== "ALL" || campusFilter !== "ALL" || search) && (
+            <button
+              onClick={() => { setFilter("ALL"); setCampusFilter("ALL"); setSearch(""); }}
+              className="mt-4 px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs transition-all shadow-sm active:scale-95 cursor-pointer"
+            >
+              Reset Filters
+            </button>
+          )}
         </motion.div>
       ) : (
-        <div className="space-y-3.5">
+        <div className="space-y-4">
           <AnimatePresence mode="popLayout">
             {filtered.map((event, i) => {
               const isRegistered = registeredIds.includes(event.id);
               const isPast = new Date(event.date) < now;
               const style = CAT_STYLE[event.category] || DEFAULT_STYLE;
+              const evDate = new Date(event.date);
+
               return (
                 <motion.div
                   key={event.id}
                   initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.97 }}
+                  exit={{ opacity: 0, scale: 0.98 }}
                   transition={{ delay: i * 0.04 }}
-                  className={`bg-white dark:bg-gray-900 rounded-3xl border shadow-md overflow-hidden transition-all hover:shadow-lg group backdrop-blur-xl ${
-                    isRegistered ? "border-emerald-300 dark:border-emerald-900/40 shadow-emerald-500/5" :
-                    isPast       ? "border-gray-100 dark:border-gray-800 opacity-60" :
-                                   "border-gray-100 dark:border-gray-800 hover:border-indigo-300 dark:hover:border-indigo-700"
+                  className={`bg-white dark:bg-gray-900 rounded-3xl border shadow-sm overflow-hidden transition-all duration-300 hover:shadow-lg group ${
+                    isRegistered
+                      ? "border-emerald-300 dark:border-emerald-900/40 shadow-emerald-500/5 ring-1 ring-emerald-400/20"
+                      : isPast
+                      ? "border-gray-200 dark:border-white/5 opacity-85"
+                      : "border-gray-200/90 dark:border-white/5 hover:border-purple-300 dark:hover:border-purple-800"
                   }`}
                 >
+                  {/* Category Accent Stripe */}
                   <div className={`h-1.5 ${style.bar}`} />
-                  <div className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-3.5 sm:gap-4">
-                    {/* Date Block */}
-                    <div className="flex-shrink-0 flex sm:flex-col flex-row items-center justify-between sm:justify-center gap-2 sm:gap-0 sm:w-16 text-center bg-gray-50 dark:bg-gray-800/60 rounded-2xl py-2 px-3 sm:px-1 border border-gray-100 dark:border-gray-700/60">
-                      <p className="text-[11px] sm:text-xs font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
-                        {new Date(event.date).toLocaleDateString("en-IN", { month: "short" })}
-                      </p>
-                      <p className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white leading-none">
-                        {new Date(event.date).getDate()}
-                      </p>
+
+                  <div className="p-4 sm:p-5 flex flex-col md:flex-row md:items-center gap-4 sm:gap-5">
+                    {/* Modern Date Tile */}
+                    <div className="flex md:flex-col flex-row items-center justify-between md:justify-center gap-2 md:gap-0.5 md:w-20 md:h-20 text-center bg-gray-50 dark:bg-gray-800/60 rounded-2xl p-2.5 border border-gray-100 dark:border-white/5 shrink-0">
+                      <span className="text-[10px] font-black text-purple-600 dark:text-purple-400 uppercase tracking-widest">
+                        {evDate.toLocaleDateString("en-IN", { month: "short" })}
+                      </span>
+                      <span className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white leading-none">
+                        {evDate.getDate()}
+                      </span>
+                      <span className="text-[9.5px] font-extrabold text-gray-400 uppercase tracking-wider">
+                        {evDate.toLocaleDateString("en-IN", { weekday: "short" })}
+                      </span>
                     </div>
 
-                    {/* Content */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap mb-1">
+                    {/* Event Core Information */}
+                    <div className="flex-1 min-w-0 space-y-2">
+                      {/* Badges Bar */}
+                      <div className="flex items-center gap-2 flex-wrap">
                         <span className={`px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider rounded-full border ${style.pill}`}>
                           {event.category}
                         </span>
-                        {!isPast && (
-                          <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
+
+                        {event.isRecurring && (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
+                            <Sparkles className="w-3 h-3 text-purple-600" />
+                            {et.recurringBadge}
+                          </span>
+                        )}
+
+                        {!isPast ? (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800">
                             <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
                             {et.upcomingBadge}
                           </span>
-                        )}
-                        {isPast && (
-                          <span className="text-[10px] font-bold text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-full">
+                        ) : (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-gray-500 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-full border border-gray-200 dark:border-gray-700">
+                            <Check className="w-3 h-3 text-gray-400" />
                             {et.pastBadge}
                           </span>
                         )}
                       </div>
-                      <h3 className="font-extrabold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors text-sm sm:text-base leading-tight">
+
+                      {/* Event Title */}
+                      <h3 className="font-extrabold text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors text-base sm:text-lg leading-snug">
                         {event.title}
                       </h3>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2 leading-relaxed">
+
+                      {/* Speaker / Presiding Host */}
+                      {event.speaker && (
+                        <p className="text-xs font-semibold text-purple-700 dark:text-purple-300 flex items-center gap-1.5">
+                          <Users className="w-3.5 h-3.5 text-purple-600 shrink-0" />
+                          <span>{event.speaker}</span>
+                        </p>
+                      )}
+
+                      {/* Description */}
+                      <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed line-clamp-2">
                         {event.description}
                       </p>
-                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-2.5 text-xs text-gray-500 dark:text-gray-400 font-medium">
-                        <span className="flex items-center gap-1.5 flex-shrink-0">
-                          <Clock className="w-3.5 h-3.5 text-indigo-500" />
-                          {event.time}
+
+                      {/* Time & Venue Metadata */}
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-1 text-xs text-gray-500 dark:text-gray-400 font-medium">
+                        <span className="flex items-center gap-1.5 shrink-0">
+                          <Clock className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                          <span>{event.time}</span>
                         </span>
-                        <span className="flex items-center gap-1.5">
-                          <MapPin className="w-3.5 h-3.5 text-indigo-500" />
-                          {event.location}
+
+                        <span className="flex items-center gap-1.5 shrink-0">
+                          <MapPin className="w-3.5 h-3.5 text-rose-500" />
+                          <span>{event.location}</span>
                         </span>
+
+                        {/* Directions / Maps Link */}
+                        <a
+                          href={event.mapsUrl || `https://maps.google.com/?q=${encodeURIComponent(event.location)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-purple-600 dark:text-purple-400 hover:text-purple-700 hover:underline font-bold text-[11px] shrink-0"
+                        >
+                          <Compass className="w-3 h-3" />
+                          <span>{et.directions}</span>
+                        </a>
+
+                        {/* Add to Calendar Action */}
+                        <div className="relative inline-block text-left shrink-0">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setActiveCalendarMenu(activeCalendarMenu === event.id ? null : event.id);
+                            }}
+                            className="inline-flex items-center gap-1 text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 text-[11px] font-bold px-2 py-0.5 rounded-lg bg-gray-100 dark:bg-gray-800/80 hover:bg-purple-50 dark:hover:bg-purple-950/40 transition-colors"
+                          >
+                            <Calendar className="w-3 h-3 text-purple-600" />
+                            <span>{et.calendar}</span>
+                          </button>
+
+                          {activeCalendarMenu === event.id && (
+                            <div
+                              onClick={(e) => e.stopPropagation()}
+                              className="absolute left-0 bottom-full mb-1 z-30 w-44 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl py-1 text-xs"
+                            >
+                              <a
+                                href={getGoogleCalendarUrl(event)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-2 px-3 py-2 text-gray-700 dark:text-gray-200 hover:bg-purple-50 dark:hover:bg-purple-950/50 hover:text-purple-600 transition-colors"
+                              >
+                                <ExternalLink className="w-3.5 h-3.5" />
+                                <span>{et.googleCal}</span>
+                              </a>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  downloadIcsFile(event);
+                                  setActiveCalendarMenu(null);
+                                }}
+                                className="w-full text-left flex items-center gap-2 px-3 py-2 text-gray-700 dark:text-gray-200 hover:bg-purple-50 dark:hover:bg-purple-950/50 hover:text-purple-600 transition-colors cursor-pointer"
+                              >
+                                <Download className="w-3.5 h-3.5" />
+                                <span>{et.icsCal}</span>
+                              </button>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
 
-                    {/* Action Button */}
-                    <div className="flex-shrink-0 w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-gray-100 dark:border-gray-800">
-                      {isRegistered ? (
-                        <span className="flex items-center justify-center gap-1.5 px-4 py-2.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 rounded-2xl text-xs font-extrabold border border-emerald-200 dark:border-emerald-800/40 w-full sm:w-auto shadow-sm">
-                          <UserCheck className="w-4 h-4 text-emerald-600" /> {et.statusRegistered}
-                        </span>
-                      ) : !isPast ? (
-                        <button
-                          onClick={() => handleRegister(event.id)}
-                          disabled={processingId === event.id}
-                          className="flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-2xl text-xs font-extrabold transition-all shadow-md shadow-indigo-500/20 active:scale-[0.98] disabled:opacity-50 w-full sm:w-auto"
-                        >
-                          {processingId === event.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
-                          {et.statusRsvp}
-                        </button>
+                    {/* Action Block */}
+                    <div className="flex md:flex-col items-stretch md:items-end justify-between md:justify-center gap-2 shrink-0 pt-3 md:pt-0 border-t md:border-t-0 border-gray-100 dark:border-white/5 w-full md:w-auto">
+                      {!isPast ? (
+                        isRegistered ? (
+                          <button
+                            type="button"
+                            onClick={() => handleRegister(event.id)}
+                            disabled={processingId === event.id}
+                            className="flex items-center justify-center gap-1.5 px-4 py-2.5 bg-emerald-50 dark:bg-emerald-950/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 rounded-2xl text-xs font-black border border-emerald-300 dark:border-emerald-800 transition-all shadow-xs w-full md:w-auto cursor-pointer"
+                            title="Click to cancel registration"
+                          >
+                            {processingId === event.id ? (
+                              <Loader2 className="w-4 h-4 animate-spin text-emerald-600" />
+                            ) : (
+                              <UserCheck className="w-4 h-4 text-emerald-600" />
+                            )}
+                            <span>{et.statusRegistered}</span>
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => handleRegister(event.id)}
+                            disabled={processingId === event.id}
+                            className="flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-2xl text-xs font-black transition-all shadow-md shadow-purple-500/20 active:scale-95 disabled:opacity-50 w-full md:w-auto cursor-pointer"
+                          >
+                            {processingId === event.id ? (
+                              <Loader2 className="w-4 h-4 animate-spin text-white" />
+                            ) : (
+                              <CheckCircle2 className="w-4 h-4 text-white" />
+                            )}
+                            <span>{et.statusRsvp}</span>
+                          </button>
+                        )
                       ) : (
-                        <span className="flex items-center justify-center px-4 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-400 rounded-2xl text-xs font-bold w-full sm:w-auto">
-                          {et.statusEnded}
-                        </span>
+                        /* Past Event Engagement: View Highlights & Watch Sermon */
+                        <div className="flex flex-col sm:flex-row md:flex-col gap-2 w-full md:w-auto">
+                          <span className="inline-flex items-center justify-center gap-1 px-3 py-1.5 bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 rounded-xl text-[11px] font-bold text-center">
+                            <Check className="w-3.5 h-3.5 text-gray-400" />
+                            <span>{et.statusEnded}</span>
+                          </span>
+
+                          <div className="flex items-center gap-1.5">
+                            <Link
+                              href="/member/sermons"
+                              className="flex-1 inline-flex items-center justify-center gap-1 px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/40 hover:bg-purple-100 dark:hover:bg-purple-900/50 text-purple-700 dark:text-purple-300 text-[11px] font-bold border border-purple-200 dark:border-purple-800 transition-colors"
+                            >
+                              <Video className="w-3 h-3" />
+                              <span>{et.watchMessage}</span>
+                            </Link>
+                            <Link
+                              href="/gallery"
+                              className="flex-1 inline-flex items-center justify-center gap-1 px-3 py-1.5 rounded-xl bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-[11px] font-bold border border-gray-200 dark:border-gray-700 transition-colors"
+                            >
+                              <ImageIcon className="w-3 h-3" />
+                              <span>{et.viewPhotos}</span>
+                            </Link>
+                          </div>
+                        </div>
                       )}
                     </div>
                   </div>

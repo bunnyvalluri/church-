@@ -49,6 +49,7 @@ import {
   Eye,
   Grid,
   Crown,
+  Clock,
 } from "lucide-react";
 import Footer from "@/components/layout/Footer";
 import BackToHome from "@/components/ui/BackToHome";
@@ -230,6 +231,19 @@ interface GalleryTranslations {
   closeEsc: string;
   photoInfo: string;
   hideInfo: string;
+  noBranchPhotosTitle: string;
+  noBranchPhotosSubtitle: string;
+  mediaArchiveNotice: string;
+  viewSubhashPhotos: string;
+  viewAllPhotos: string;
+  upcomingUploadsBadge: string;
+  placeholderSundayWorship: string;
+  placeholderRevivalService: string;
+  placeholderYouthFellowship: string;
+  placeholderSpecialEvents: string;
+  comingSoon: string;
+  noSearchResultsForBranch: string;
+  clearSearch: string;
 }
 
 const GALLERY_I18N: Record<"en" | "te" | "hi", GalleryTranslations> = {
@@ -285,6 +299,20 @@ const GALLERY_I18N: Record<"en" | "te" | "hi", GalleryTranslations> = {
     closeEsc: "Close (ESC)",
     photoInfo: "Photo Information",
     hideInfo: "Hide Details",
+    noBranchPhotosTitle: "No Photos Currently Available for {branch}",
+    noBranchPhotosSubtitle:
+      "Media archives for {branch} are currently being curated. High-resolution service photos, spiritual moments, and revival broadcasts from our church media archives (@kcm-gallery) will be uploaded here soon.",
+    mediaArchiveNotice: "Photo Archive in Preparation",
+    viewSubhashPhotos: "View Subhash Nagar Gallery ({count} Photos)",
+    viewAllPhotos: "Browse All Church Photos",
+    upcomingUploadsBadge: "Future Media Uploads in Progress",
+    placeholderSundayWorship: "Sunday Worship & Word",
+    placeholderRevivalService: "Prayer & Revival Service",
+    placeholderYouthFellowship: "Youth & Children Ministry",
+    placeholderSpecialEvents: "Special Church Celebrations",
+    comingSoon: "Coming Soon",
+    noSearchResultsForBranch: 'No photos matching "{query}" found in {branch}',
+    clearSearch: "Clear Search",
   },
   te: {
     titleMain: "చర్చి మీడియా",
@@ -337,6 +365,20 @@ const GALLERY_I18N: Record<"en" | "te" | "hi", GalleryTranslations> = {
     closeEsc: "మూసివేయి (ESC)",
     photoInfo: "ఫోటో వివరాలు",
     hideInfo: "వివరాలను దాచండి",
+    noBranchPhotosTitle: "{branch} బ్రాంచ్‌కు సంబంధించి ప్రస్తుతానికి ఫోటోలు అందుబాటులో లేవు",
+    noBranchPhotosSubtitle:
+      "{branch} బ్రాంచ్ మీడియా రికార్డులు పరిశీలించబడుతున్నాయి. మా చర్చి మీడియా ఆర్కైవ్స్ (@kcm-gallery) నుండి హై-రెస్ ఫోటోలు, ఆధ్యాత్మిక ఆరాధన మరియు ప్రత్యేక ప్రార్థనల క్షణాలు త్వరలోనే ఇక్కడ అప్‌లోడ్ చేయబడతాయి.",
+    mediaArchiveNotice: "ఫోటో ఆర్కైవ్ సిద్ధమవుతోంది",
+    viewSubhashPhotos: "సుభాష్ నగర్ గ్యాలరీని చూడండి ({count} ఫోటోలు)",
+    viewAllPhotos: "అన్ని చర్చి ఫోటోలను చూడండి",
+    upcomingUploadsBadge: "రాబోయే మీడియా అప్‌లోడ్‌లు సిద్ధమవుతున్నాయి",
+    placeholderSundayWorship: "ఆదివారపు ఆరాధన & వాక్యం",
+    placeholderRevivalService: "ప్రార్థన & పునరుజ్జీవ కూడిక",
+    placeholderYouthFellowship: "యువత & పిల్లల పరిచర్య",
+    placeholderSpecialEvents: "ప్రత్యేక చర్చి ఉత్సవాలు",
+    comingSoon: "త్వరలో రాబోతుంది",
+    noSearchResultsForBranch: '{branch}లో "{query}"కి సరిపోలే ఫోటోలు ఏవీ దొరకలేదు',
+    clearSearch: "శోధనను క్లియర్ చేయండి",
   },
   hi: {
     titleMain: "चर्च मीडिया",
@@ -389,6 +431,20 @@ const GALLERY_I18N: Record<"en" | "te" | "hi", GalleryTranslations> = {
     closeEsc: "बंद करें (ESC)",
     photoInfo: "फोटो जानकारी",
     hideInfo: "विवरण छिपाएं",
+    noBranchPhotosTitle: "{branch} शाखा के लिए वर्तमान में कोई फोटो उपलब्ध नहीं है",
+    noBranchPhotosSubtitle:
+      "{branch} शाखा के लिए मीडिया संग्रह तैयार किया जा रहा है। हमारे चर्च मीडिया संग्रह (@kcm-gallery) से उच्च-गुणवत्ता वाले फोटो, आत्मिक आराधना और विशेष प्रार्थना सभाओं के क्षण जल्द ही यहाँ अपलोड किए जाएंगे।",
+    mediaArchiveNotice: "फोटो संग्रह प्रक्रिया में है",
+    viewSubhashPhotos: "सुभाष नगर गैलरी देखें ({count} फोटो)",
+    viewAllPhotos: "सभी चर्च फोटो देखें",
+    upcomingUploadsBadge: "भावी मीडिया अपलोड प्रक्रिया में है",
+    placeholderSundayWorship: "रविवार आराधना एवं वचन",
+    placeholderRevivalService: "प्रार्थना एवं पुनरुद्धार सभा",
+    placeholderYouthFellowship: "युवा एवं बाल सेवकाई",
+    placeholderSpecialEvents: "विशेष चर्च उत्सव",
+    comingSoon: "शीघ्र आ रहा है",
+    noSearchResultsForBranch: '{branch} में "{query}" के लिए कोई फोटो नहीं मिला',
+    clearSearch: "खोज साफ़ करें",
   },
 };
 
@@ -598,8 +654,12 @@ export default function ChurchGalleryPage() {
   const handleSelectBranch = useCallback((branch: string) => {
     startTransition(() => {
       setSelectedBranch(branch);
+      setActiveCategory("All");
+      setSearchInput("");
+      setSearchQuery("");
     });
-  }, []);
+    setSelectedBranchId(branch);
+  }, [setSelectedBranchId]);
 
   const handleSelectSort = useCallback((order: "order-asc" | "order-desc" | "newest" | "title-asc") => {
     startTransition(() => {
@@ -696,8 +756,7 @@ export default function ChurchGalleryPage() {
         setIsLoading(true);
       }
       try {
-        const branchParam = selectedBranch === "all" ? "" : `&branch=${encodeURIComponent(selectedBranch)}`;
-        const res = await fetch(`/api/gallery?limit=300&sort=${sortOrder}${branchParam}`, {
+        const res = await fetch(`/api/gallery?limit=500&sort=${sortOrder}`, {
           cache: "no-store",
           headers: { Pragma: "no-cache", "Cache-Control": "no-cache" },
         });
@@ -717,7 +776,7 @@ export default function ChurchGalleryPage() {
     return () => {
       isMounted = false;
     };
-  }, [selectedBranch, sortOrder]);
+  }, [sortOrder]);
 
   // Sync with global branch provider if set
   useEffect(() => {
@@ -726,24 +785,97 @@ export default function ChurchGalleryPage() {
     }
   }, [selectedBranchId]);
 
-  // Derive photo categories dynamically with count (only include active categories with items)
+  // Branch photo stats
+  const subhashPhotosCount = useMemo(
+    () => items.filter((i) => isBranchMatch(i.branchId, i.branchName, "subhash")).length,
+    [items]
+  );
+  const shapurPhotosCount = useMemo(
+    () => items.filter((i) => isBranchMatch(i.branchId, i.branchName, "shapur")).length,
+    [items]
+  );
+  const bahadurPhotosCount = useMemo(
+    () => items.filter((i) => isBranchMatch(i.branchId, i.branchName, "bahadur")).length,
+    [items]
+  );
+
+  // Photos belonging to the currently selected branch
+  const branchItems = useMemo(() => {
+    if (!selectedBranch || selectedBranch === "all") return items;
+    return items.filter((i) => isBranchMatch(i.branchId, i.branchName, selectedBranch));
+  }, [items, selectedBranch]);
+
+  // Branch metadata helper
+  const getBranchInfo = useCallback(
+    (branchKey: string) => {
+      if (isBranchMatch(SHAPUR_NAGAR_BRANCH_ID, "Shapur Nagar", branchKey)) {
+        return {
+          id: SHAPUR_NAGAR_BRANCH_ID,
+          name: "Shapur Nagar",
+          label: gt.shapurBranch,
+          count: shapurPhotosCount,
+        };
+      }
+      if (isBranchMatch(BAHADURPALLI_BRANCH_ID, "Bahadurpalli", branchKey)) {
+        return {
+          id: BAHADURPALLI_BRANCH_ID,
+          name: "Bahadurpalli",
+          label: gt.bahadurBranch,
+          count: bahadurPhotosCount,
+        };
+      }
+      if (isBranchMatch(SUBHASH_NAGAR_BRANCH_ID, "Subhash Nagar", branchKey)) {
+        return {
+          id: SUBHASH_NAGAR_BRANCH_ID,
+          name: "Subhash Nagar",
+          label: gt.subhashBranch,
+          count: subhashPhotosCount,
+        };
+      }
+      return {
+        id: "all",
+        name: "All Branches",
+        label: gt.allBranches,
+        count: items.length,
+      };
+    },
+    [gt, shapurPhotosCount, bahadurPhotosCount, subhashPhotosCount, items.length]
+  );
+
+  const currentBranchInfo = useMemo(() => getBranchInfo(selectedBranch), [getBranchInfo, selectedBranch]);
+
+  const normalizedSelectValue = useMemo(() => {
+    if (isBranchMatch(SUBHASH_NAGAR_BRANCH_ID, "Subhash Nagar", selectedBranch)) {
+      return SUBHASH_NAGAR_BRANCH_ID;
+    }
+    if (isBranchMatch(SHAPUR_NAGAR_BRANCH_ID, "Shapur Nagar", selectedBranch)) {
+      return SHAPUR_NAGAR_BRANCH_ID;
+    }
+    if (isBranchMatch(BAHADURPALLI_BRANCH_ID, "Bahadurpalli", selectedBranch)) {
+      return BAHADURPALLI_BRANCH_ID;
+    }
+    return "all";
+  }, [selectedBranch]);
+
+  // Derive photo categories dynamically with count (based on active branch)
   const photoCategories = useMemo(() => {
+    const sourceItems = branchItems;
     const counts: Record<string, number> = {};
-    items.forEach((item) => {
+    sourceItems.forEach((item) => {
       counts[item.category] = (counts[item.category] || 0) + 1;
     });
     const unique = Object.keys(counts)
       .filter((cat) => (counts[cat] || 0) > 0)
       .sort((a, b) => counts[b] - counts[a]);
     return [
-      { name: "All", label: gt.categoryTranslations?.["All"] || gt.allCategory, count: items.length },
+      { name: "All", label: gt.categoryTranslations?.["All"] || gt.allCategory, count: sourceItems.length },
       ...unique.map((cat) => ({
         name: cat,
         label: gt.categoryTranslations?.[cat as keyof typeof gt.categoryTranslations] || cat,
         count: counts[cat],
       })),
     ];
-  }, [items, gt]);
+  }, [branchItems, gt]);
 
   // Filter & sort photo items
   const filteredItems = useMemo(() => {
@@ -922,7 +1054,7 @@ export default function ChurchGalleryPage() {
   // Auto-scroll active thumbnail into view in photo lightbox
   useEffect(() => {
     if (lightboxIndex !== null && thumbnailContainerRef.current) {
-      const activeThumb = thumbnailContainerRef.current.children[lightboxIndex] as HTMLElement;
+      const activeThumb = thumbnailContainerRef.current.querySelector('[class*="border-purple-500"], [class*="ring-purple-400"]') as HTMLElement;
       if (activeThumb) {
         activeThumb.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
       }
@@ -1004,11 +1136,6 @@ export default function ChurchGalleryPage() {
       window.open(item.url, "_blank");
     }
   };
-
-  // Branch photo stats
-  const subhashPhotosCount = items.filter((i) => isBranchMatch(i.branchId, i.branchName, "subhash")).length;
-  const shapurPhotosCount = items.filter((i) => isBranchMatch(i.branchId, i.branchName, "shapur")).length;
-  const bahadurPhotosCount = items.filter((i) => isBranchMatch(i.branchId, i.branchName, "bahadur")).length;
 
   const currentLightboxLocalized = currentLightboxItem
     ? getLocalizedItem(currentLightboxItem, language, gt)
@@ -1235,7 +1362,7 @@ export default function ChurchGalleryPage() {
                 <div className="relative flex items-center bg-slate-50 dark:bg-white/[0.04] border border-slate-200/90 dark:border-white/10 rounded-xl px-3 py-2.5 sm:py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 w-full sm:w-auto">
                   <MapPin className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400 shrink-0 mr-2" />
                   <select
-                    value={selectedBranch}
+                    value={normalizedSelectValue}
                     onChange={(e) => handleSelectBranch(e.target.value)}
                     aria-label="Filter photos by church branch"
                     className="bg-transparent text-slate-900 dark:text-white font-bold focus:outline-none cursor-pointer pr-8 text-xs sm:text-sm w-full appearance-none"
@@ -1266,10 +1393,10 @@ export default function ChurchGalleryPage() {
                     className="bg-transparent text-slate-900 dark:text-white font-bold focus:outline-none cursor-pointer pr-8 text-xs sm:text-sm w-full appearance-none"
                   >
                     <option value="order-asc" className="bg-white text-slate-900 dark:bg-slate-900 dark:text-white">
-                      {gt.sortOrderAsc.replace("{count}", items.length.toString())}
+                      {gt.sortOrderAsc.replace("{count}", (selectedBranch === "all" ? items.length : branchItems.length).toString())}
                     </option>
                     <option value="order-desc" className="bg-white text-slate-900 dark:bg-slate-900 dark:text-white">
-                      {gt.sortOrderDesc.replace("{count}", items.length.toString())}
+                      {gt.sortOrderDesc.replace("{count}", (selectedBranch === "all" ? items.length : branchItems.length).toString())}
                     </option>
                     <option value="title-asc" className="bg-white text-slate-900 dark:bg-slate-900 dark:text-white">
                       {gt.sortTitleAsc}
@@ -1332,55 +1459,57 @@ export default function ChurchGalleryPage() {
             </div>
 
             {/* Category Filter Pills for Photos — Smooth edge-to-edge touch horizontal scrolling on mobile */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-2.5 pt-1 scrollbar-none overscroll-x-contain touch-pan-x flex-nowrap -mx-4 px-4 sm:mx-0 sm:px-0 w-auto max-w-full">
-              {photoCategories.map((cat) => {
-                const isActive = activeCategory === cat.name && !favoritesOnly;
-                return (
-                  <button
-                    key={cat.name}
-                    onClick={() => handleSelectCategory(cat.name)}
-                    className={`shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold tracking-wide transition-all whitespace-nowrap flex items-center gap-2 border shadow-xs ${
-                      isActive
-                        ? "bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 text-white border-purple-500/50 shadow-md shadow-purple-900/25 scale-[1.02]"
-                        : "bg-white dark:bg-slate-900/70 border-slate-200/90 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/10"
-                    }`}
-                  >
-                    <span>{cat.label}</span>
-                    <span
-                      className={`text-[11px] px-1.5 py-0.5 rounded-full font-extrabold font-mono ${
+            {branchItems.length > 0 && (
+              <div className="flex items-center gap-2 overflow-x-auto pb-2.5 pt-1 scrollbar-none overscroll-x-contain touch-pan-x flex-nowrap -mx-4 px-4 sm:mx-0 sm:px-0 w-auto max-w-full">
+                {photoCategories.map((cat) => {
+                  const isActive = activeCategory === cat.name && !favoritesOnly;
+                  return (
+                    <button
+                      key={cat.name}
+                      onClick={() => handleSelectCategory(cat.name)}
+                      className={`shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold tracking-wide transition-all whitespace-nowrap flex items-center gap-2 border shadow-xs ${
                         isActive
-                          ? "bg-white/20 text-white"
-                          : "bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400"
+                          ? "bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 text-white border-purple-500/50 shadow-md shadow-purple-900/25 scale-[1.02]"
+                          : "bg-white dark:bg-slate-900/70 border-slate-200/90 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/10"
                       }`}
                     >
-                      {cat.count}
-                    </span>
-                  </button>
-                );
-              })}
+                      <span>{cat.label}</span>
+                      <span
+                        className={`text-[11px] px-1.5 py-0.5 rounded-full font-extrabold font-mono ${
+                          isActive
+                            ? "bg-white/20 text-white"
+                            : "bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400"
+                        }`}
+                      >
+                        {cat.count}
+                      </span>
+                    </button>
+                  );
+                })}
 
-              {/* Saved Favorites Toggle */}
-              <button
-                onClick={handleToggleFavorites}
-                className={`shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold tracking-wide transition-all whitespace-nowrap flex items-center gap-2 border shadow-xs ${
-                  favoritesOnly
-                    ? "bg-gradient-to-r from-rose-600 to-pink-600 text-white border-rose-500/50 shadow-md shadow-rose-900/25 scale-[1.02]"
-                    : "bg-white dark:bg-slate-900/70 border-slate-200/90 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/10"
-                }`}
-              >
-                <Heart className={`w-3.5 h-3.5 ${favoritesOnly ? "fill-white" : "text-rose-500 dark:text-rose-400"}`} />
-                <span>{gt.savedPhotos}</span>
-                <span
-                  className={`text-[11px] px-1.5 py-0.5 rounded-full font-extrabold font-mono ${
+                {/* Saved Favorites Toggle */}
+                <button
+                  onClick={handleToggleFavorites}
+                  className={`shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold tracking-wide transition-all whitespace-nowrap flex items-center gap-2 border shadow-xs ${
                     favoritesOnly
-                      ? "bg-white/20 text-white"
-                      : "bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400"
+                      ? "bg-gradient-to-r from-rose-600 to-pink-600 text-white border-rose-500/50 shadow-md shadow-rose-900/25 scale-[1.02]"
+                      : "bg-white dark:bg-slate-900/70 border-slate-200/90 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/10"
                   }`}
                 >
-                  {favorites.size}
-                </span>
-              </button>
-            </div>
+                  <Heart className={`w-3.5 h-3.5 ${favoritesOnly ? "fill-white" : "text-rose-500 dark:text-rose-400"}`} />
+                  <span>{gt.savedPhotos}</span>
+                  <span
+                    className={`text-[11px] px-1.5 py-0.5 rounded-full font-extrabold font-mono ${
+                      favoritesOnly
+                        ? "bg-white/20 text-white"
+                        : "bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400"
+                    }`}
+                  >
+                    {favorites.size}
+                  </span>
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Photos Grid */}
@@ -1392,28 +1521,152 @@ export default function ChurchGalleryPage() {
               </p>
             </div>
           ) : filteredItems.length === 0 ? (
-            <div className="text-center py-24 px-4 rounded-3xl bg-slate-100/70 dark:bg-slate-900/40 border border-dashed border-slate-300 dark:border-white/10 backdrop-blur-md max-w-xl mx-auto space-y-4">
-              <div className="w-16 h-16 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center mx-auto">
-                <Camera className="w-8 h-8 opacity-60" />
-              </div>
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white">{gt.noMomentsFound}</h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400">{gt.adjustSearchTip}</p>
-              <button
-                onClick={() => {
-                  startTransition(() => {
-                    setActiveCategory("All");
-                    setSearchInput("");
-                    setSearchQuery("");
-                    setFavoritesOnly(false);
-                    setSelectedBranch("all");
-                    setSortOrder("order-asc");
-                  });
-                }}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition-all shadow-md"
+            selectedBranch !== "all" && currentBranchInfo.count === 0 ? (
+              /* Branch with No Media — Clear UI State with Future Uploads Placeholder */
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+                className="relative max-w-3xl mx-auto my-6 sm:my-10 p-6 sm:p-12 rounded-3xl bg-gradient-to-b from-white via-purple-50/25 to-white dark:from-slate-900/90 dark:via-purple-950/20 dark:to-slate-900/90 border border-purple-200/60 dark:border-purple-500/20 shadow-2xl shadow-purple-950/5 dark:shadow-purple-950/40 backdrop-blur-xl text-center space-y-6"
               >
-                {gt.resetAllFilters}
-              </button>
-            </div>
+                {/* Status Badge */}
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold tracking-wide bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/30 shadow-xs">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
+                  <span>{gt.upcomingUploadsBadge}</span>
+                </div>
+
+                {/* Layered Visual Icon */}
+                <div className="relative w-20 h-20 rounded-3xl bg-gradient-to-tr from-purple-600/20 via-indigo-600/15 to-amber-500/20 border border-purple-500/30 flex items-center justify-center mx-auto shadow-inner">
+                  <Camera className="w-9 h-9 text-purple-600 dark:text-purple-400" />
+                  <div className="absolute -bottom-1 -right-1 p-1.5 rounded-xl bg-purple-600 text-white shadow-md">
+                    <Clock className="w-3.5 h-3.5" />
+                  </div>
+                </div>
+
+                {/* Main Headings */}
+                <div className="space-y-2.5 max-w-xl mx-auto">
+                  <h3 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                    {gt.noBranchPhotosTitle.replace("{branch}", currentBranchInfo.label)}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                    {gt.noBranchPhotosSubtitle.replace("{branch}", currentBranchInfo.label)}
+                  </p>
+                </div>
+
+                {/* Structured Placeholder Grid — Future Uploads Assured */}
+                <div className="pt-2 pb-1">
+                  <div className="text-[11px] font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 mb-3 flex items-center justify-center gap-1.5">
+                    <Layers className="w-3.5 h-3.5" />
+                    <span>{gt.mediaArchiveNotice}</span>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-left">
+                    {[
+                      { title: gt.placeholderSundayWorship, icon: Sparkles },
+                      { title: gt.placeholderRevivalService, icon: Flame },
+                      { title: gt.placeholderYouthFellowship, icon: Heart },
+                      { title: gt.placeholderSpecialEvents, icon: Calendar },
+                    ].map((cat, idx) => (
+                      <div
+                        key={idx}
+                        className="group p-3.5 rounded-2xl border border-dashed border-purple-200 dark:border-purple-500/30 bg-purple-50/40 dark:bg-purple-950/20 flex flex-col justify-between space-y-3 transition-colors hover:border-purple-400/60"
+                      >
+                        <div className="w-8 h-8 rounded-xl bg-white dark:bg-white/5 border border-purple-200/70 dark:border-white/10 flex items-center justify-center text-purple-600 dark:text-purple-400 shadow-xs">
+                          <cat.icon className="w-4 h-4" />
+                        </div>
+                        <div className="space-y-1">
+                          <p className="text-xs font-bold text-slate-900 dark:text-white line-clamp-1">
+                            {cat.title}
+                          </p>
+                          <span className="inline-block text-[10px] font-semibold text-purple-600/80 dark:text-purple-400/80">
+                            {gt.comingSoon}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Action Buttons to View Subhash Nagar or All Branches */}
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+                  {subhashPhotosCount > 0 && (
+                    <button
+                      onClick={() => handleSelectBranch(SUBHASH_NAGAR_BRANCH_ID)}
+                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs sm:text-sm font-bold shadow-md shadow-purple-900/20 transition-all cursor-pointer"
+                    >
+                      <Camera className="w-4 h-4" />
+                      <span>{gt.viewSubhashPhotos.replace("{count}", subhashPhotosCount.toString())}</span>
+                    </button>
+                  )}
+                  <button
+                    onClick={() => handleSelectBranch("all")}
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.06] dark:hover:bg-white/10 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-semibold border border-slate-200 dark:border-white/10 transition-all cursor-pointer"
+                  >
+                    <span>{gt.viewAllPhotos}</span>
+                  </button>
+                </div>
+              </motion.div>
+            ) : searchQuery.trim() ? (
+              /* Search yielded no results in this branch */
+              <div className="text-center py-20 px-4 rounded-3xl bg-slate-100/70 dark:bg-slate-900/40 border border-dashed border-slate-300 dark:border-white/10 backdrop-blur-md max-w-xl mx-auto space-y-4">
+                <div className="w-16 h-16 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center mx-auto">
+                  <Search className="w-7 h-7 opacity-70" />
+                </div>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                  {gt.noSearchResultsForBranch
+                    .replace("{query}", searchQuery)
+                    .replace("{branch}", currentBranchInfo.label)}
+                </h3>
+                <p className="text-sm text-slate-600 dark:text-slate-400">{gt.adjustSearchTip}</p>
+                <button
+                  onClick={handleClearSearch}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition-all shadow-md cursor-pointer"
+                >
+                  <X className="w-3.5 h-3.5" />
+                  <span>{gt.clearSearch}</span>
+                </button>
+              </div>
+            ) : favoritesOnly ? (
+              /* Favorites empty */
+              <div className="text-center py-20 px-4 rounded-3xl bg-slate-100/70 dark:bg-slate-900/40 border border-dashed border-slate-300 dark:border-white/10 backdrop-blur-md max-w-xl mx-auto space-y-4">
+                <div className="w-16 h-16 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-500 flex items-center justify-center mx-auto">
+                  <Heart className="w-7 h-7 opacity-70" />
+                </div>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">{gt.savedPhotos}</h3>
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  You haven&apos;t saved any favorites yet. Click the heart icon on any photo to save it!
+                </p>
+                <button
+                  onClick={() => setFavoritesOnly(false)}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition-all shadow-md cursor-pointer"
+                >
+                  <span>{gt.allCategory}</span>
+                </button>
+              </div>
+            ) : (
+              /* General filter empty */
+              <div className="text-center py-20 px-4 rounded-3xl bg-slate-100/70 dark:bg-slate-900/40 border border-dashed border-slate-300 dark:border-white/10 backdrop-blur-md max-w-xl mx-auto space-y-4">
+                <div className="w-16 h-16 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center mx-auto">
+                  <Camera className="w-8 h-8 opacity-60" />
+                </div>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">{gt.noMomentsFound}</h3>
+                <p className="text-sm text-slate-600 dark:text-slate-400">{gt.adjustSearchTip}</p>
+                <button
+                  onClick={() => {
+                    startTransition(() => {
+                      setActiveCategory("All");
+                      setSearchInput("");
+                      setSearchQuery("");
+                      setFavoritesOnly(false);
+                      setSelectedBranch("all");
+                      setSortOrder("order-asc");
+                    });
+                  }}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition-all shadow-md cursor-pointer"
+                >
+                  {gt.resetAllFilters}
+                </button>
+              </div>
+            )
           ) : (
             <div>
               <div
@@ -2364,21 +2617,39 @@ export default function ChurchGalleryPage() {
               touchStartY.current = null;
             }}
           >
+            {/* Prefetch adjacent images (immediate previous & next full-res photos) */}
+            {(() => {
+              const nextIdx = (lightboxIndex + 1) % filteredItems.length;
+              const prevIdx = (lightboxIndex - 1 + filteredItems.length) % filteredItems.length;
+              const nextItem = filteredItems[nextIdx];
+              const prevItem = filteredItems[prevIdx];
+              return (
+                <>
+                  {nextItem && nextIdx !== lightboxIndex && (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img src={encodeSrc(nextItem.url || nextItem.thumbnailUrl)} className="hidden" alt="" />
+                  )}
+                  {prevItem && prevIdx !== lightboxIndex && prevIdx !== nextIdx && (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img src={encodeSrc(prevItem.url || prevItem.thumbnailUrl)} className="hidden" alt="" />
+                  )}
+                </>
+              );
+            })()}
+
             {/* Top Toolbar — Clean, accessible & positioned cleanly fullscreen above all page layers */}
-            <div className="relative z-30 flex items-center justify-between px-3 sm:px-6 py-2 sm:py-3 pt-[max(0.75rem,env(safe-area-inset-top))] border-b border-white/10 bg-slate-950/90 backdrop-blur-2xl flex-shrink-0">
-              {/* Left Info Group: Photo Counter & Responsive Badges */}
-              <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-                <span className="px-2.5 sm:px-3 py-1 rounded-full bg-purple-600/35 border border-purple-400/50 text-purple-200 text-xs font-black font-mono tracking-wider shrink-0 shadow-sm">
+            <div className="relative z-30 flex items-center justify-between px-2.5 sm:px-6 py-2 sm:py-3 pt-[max(0.75rem,env(safe-area-inset-top))] border-b border-white/10 bg-slate-950/90 backdrop-blur-2xl flex-shrink-0 gap-1.5 sm:gap-3">
+              {/* Left Info Group: Photo Counter & Non-truncating Responsive Category Badge */}
+              <div className="flex items-center gap-1.5 sm:gap-3 min-w-0 shrink">
+                <span className="px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-purple-600/35 border border-purple-400/50 text-purple-200 text-[10px] sm:text-xs font-black font-mono tracking-wider shrink-0 shadow-sm whitespace-nowrap">
                   {lightboxIndex + 1} / {filteredItems.length}
                 </span>
-                <div className="hidden sm:flex items-center gap-2 min-w-0">
-                  <span className="px-2.5 py-0.5 rounded-lg bg-white/10 border border-white/15 text-slate-200 text-xs font-bold uppercase tracking-wide truncate max-w-[150px] shrink-0">
-                    {currentLightboxLocalized?.category}
-                  </span>
-                  <span className="hidden md:inline-block text-xs font-semibold text-slate-300 truncate max-w-xs lg:max-w-md">
-                    {currentLightboxLocalized?.title}
-                  </span>
-                </div>
+                <span className="px-2 py-0.5 rounded-full text-white text-[8.5px] sm:text-[10px] font-black uppercase tracking-wider bg-gradient-to-r from-purple-600 to-indigo-600 shadow-md whitespace-nowrap shrink-0">
+                  {currentLightboxLocalized?.category}
+                </span>
+                <span className="hidden md:inline-block text-xs font-semibold text-slate-300 truncate max-w-xs lg:max-w-md">
+                  {currentLightboxLocalized?.title}
+                </span>
               </div>
 
               {/* Right Action Group: Non-overlapping Controls with Balanced Spacing */}
@@ -2611,41 +2882,87 @@ export default function ChurchGalleryPage() {
               )}
             </div>
 
-            {/* Bottom Reel with Safe Area Inset for mobile home bars */}
-            <div className="relative z-30 px-3 sm:px-4 py-2.5 sm:py-3 bg-slate-950 border-t border-white/10 pb-[max(0.75rem,env(safe-area-inset-bottom))] flex-shrink-0">
+            {/* Bottom Reel with Safe Area Inset for mobile home bars — Windowed ±12 range */}
+            <div className="relative z-30 px-3 sm:px-4 py-2 sm:py-2.5 bg-slate-950 border-t border-white/10 pb-[max(0.75rem,env(safe-area-inset-bottom))] flex-shrink-0">
               <div
                 ref={thumbnailContainerRef}
-                className="flex items-center gap-2 overflow-x-auto py-1 scrollbar-thin scrollbar-thumb-purple-600/50 scrollbar-track-transparent scroll-smooth max-w-full"
+                className="flex items-center justify-start sm:justify-center gap-1.5 sm:gap-2 overflow-x-auto py-1 scrollbar-thin scrollbar-thumb-purple-600/50 scrollbar-track-transparent scroll-smooth max-w-full no-scrollbar select-none"
               >
-                {filteredItems.map((thumbItem, tIdx) => {
-                  const isSelected = tIdx === lightboxIndex;
-                  const thumbLocalized = getLocalizedItem(thumbItem, language, gt);
+                {(() => {
+                  const THUMBNAIL_WINDOW = 12; // Windowed ±12 thumbnails
+                  const startIdx = Math.max(0, lightboxIndex - THUMBNAIL_WINDOW);
+                  const endIdx = Math.min(filteredItems.length - 1, lightboxIndex + THUMBNAIL_WINDOW);
+
                   return (
-                    <button
-                      key={thumbItem.id}
-                      onClick={() => {
-                        setLightboxIndex(tIdx);
-                        setZoomLevel(1);
-                        setSlideshowProgress(0);
-                      }}
-                      className={`relative flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden border-2 transition-all ${
-                        isSelected
-                          ? "border-purple-500 scale-105 shadow-lg shadow-purple-600/40 ring-2 ring-purple-400/50"
-                          : "border-white/10 opacity-50 hover:opacity-100 hover:border-white/40"
-                      }`}
-                    >
-                      <Image
-                        src={encodeSrc(thumbItem.thumbnailUrl || thumbItem.url)}
-                        alt={thumbLocalized.title}
-                        fill
-                        unoptimized
-                        sizes="64px"
-                        loading="lazy"
-                        className="object-cover"
-                      />
-                    </button>
+                    <>
+                      {startIdx > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setLightboxIndex(0);
+                            setZoomLevel(1);
+                            setSlideshowProgress(0);
+                          }}
+                          className="flex-shrink-0 px-2 py-1 text-[10px] font-mono font-bold text-white/50 hover:text-white bg-white/5 hover:bg-white/10 rounded-lg border border-white/10 transition-all cursor-pointer active:scale-95"
+                          title="Jump to first photo"
+                          aria-label="Jump to first photo"
+                        >
+                          1..
+                        </button>
+                      )}
+
+                      {filteredItems.slice(startIdx, endIdx + 1).map((thumbItem, localIdx) => {
+                        const tIdx = startIdx + localIdx;
+                        const isSelected = tIdx === lightboxIndex;
+                        const thumbLocalized = getLocalizedItem(thumbItem, language, gt);
+                        return (
+                          <button
+                            key={thumbItem.id}
+                            type="button"
+                            onClick={() => {
+                              setLightboxIndex(tIdx);
+                              setZoomLevel(1);
+                              setSlideshowProgress(0);
+                            }}
+                            className={`relative flex-shrink-0 w-11 h-11 sm:w-14 sm:h-14 rounded-xl overflow-hidden transition-all duration-200 cursor-pointer active:scale-95 ${
+                              isSelected
+                                ? "border-2 border-purple-500 scale-105 opacity-100 shadow-lg shadow-purple-600/40 ring-2 ring-purple-400/50"
+                                : "border border-white/10 opacity-50 hover:opacity-100 hover:border-white/40"
+                            }`}
+                            title={thumbLocalized.title}
+                            aria-label={`Jump to photo ${tIdx + 1}`}
+                          >
+                            <Image
+                              src={encodeSrc(thumbItem.thumbnailUrl || thumbItem.url)}
+                              alt={thumbLocalized.title}
+                              fill
+                              unoptimized
+                              sizes="56px"
+                              loading="lazy"
+                              className="object-cover"
+                            />
+                          </button>
+                        );
+                      })}
+
+                      {endIdx < filteredItems.length - 1 && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setLightboxIndex(filteredItems.length - 1);
+                            setZoomLevel(1);
+                            setSlideshowProgress(0);
+                          }}
+                          className="flex-shrink-0 px-2 py-1 text-[10px] font-mono font-bold text-white/50 hover:text-white bg-white/5 hover:bg-white/10 rounded-lg border border-white/10 transition-all cursor-pointer active:scale-95"
+                          title={`Jump to photo ${filteredItems.length}`}
+                          aria-label="Jump to last photo"
+                        >
+                          ..{filteredItems.length}
+                        </button>
+                      )}
+                    </>
                   );
-                })}
+                })()}
               </div>
             </div>
           </motion.div>
