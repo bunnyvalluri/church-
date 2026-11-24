@@ -22,6 +22,9 @@ const config = {
       },
     },
     extend: {
+      screens: {
+        xs: "480px",
+      },
       fontFamily: {
         sans: ["var(--font-inter, 'Segoe UI')", "system-ui", "-apple-system", "BlinkMacSystemFont", "'Segoe UI'", "Roboto", "Helvetica Neue", "Arial", "var(--font-noto-telugu)", "var(--font-noto-devanagari)", "sans-serif"],
         heading: ["var(--font-outfit, 'Segoe UI')", "system-ui", "-apple-system", "BlinkMacSystemFont", "'Segoe UI'", "Roboto", "Helvetica Neue", "Arial", "var(--font-noto-telugu)", "var(--font-noto-devanagari)", "sans-serif"],
@@ -31,6 +34,21 @@ const config = {
         hindi: ["var(--font-noto-devanagari)", "'Noto Sans Devanagari'", "'Mangal'", "'Nirmala UI'", "'Segoe UI'", "sans-serif"],
       },
       colors: {
+        slate: {
+          50: "#f8fafc",
+          100: "#f1f5f9",
+          200: "#e2e8f0",
+          300: "#cbd5e1",
+          400: "#94a3b8",
+          500: "#64748b",
+          600: "#475569",
+          700: "#334155",
+          750: "#243044",
+          800: "#1e293b",
+          850: "#151e2e",
+          900: "#0f172a",
+          950: "#020617",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

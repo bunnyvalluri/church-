@@ -62,6 +62,13 @@ assert(source.includes('whitespace-nowrap font-bold') && source.includes('+91 95
 assert(source.includes('xl:flex-row xl:items-center'), 'Hero banner must use xl:flex-row to prevent crowding with desktop sidebar');
 console.log('✓ Non-truncating urgent support capsule verified.');
 
+// 8. High-Contrast Dark Mode Inputs & Action Buttons
+console.log('Checking #8: High-contrast dark mode styling for inputs and buttons...');
+assert(!source.includes('dark:bg-slate-850/60'), 'Inputs must not use missing dark:bg-slate-850/60');
+assert(source.includes('dark:bg-slate-800/90') && source.includes('dark:placeholder:text-slate-500'), 'Inputs must have dark slate background and high-contrast placeholder');
+assert(source.includes('dark:bg-slate-800') && source.includes('dark:text-white'), 'Email support button must be dark slate with white text in dark mode');
+console.log('✓ High-contrast dark mode verified.');
+
 console.log('\n======================================================');
 console.log('ALL MEMBER REPORT UI/UX VERIFICATION TESTS PASSED! 🚀');
 console.log('======================================================');
