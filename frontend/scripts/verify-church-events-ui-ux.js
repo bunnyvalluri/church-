@@ -83,8 +83,10 @@ assert(pageContent.includes("Bahadurpally"), "Supports Bahadurpally campus");
 assert(pageContent.includes("maps.google.com"), "Includes Google Maps navigation directions link");
 assert(pageContent.includes("getGoogleCalendarUrl"), "Includes Google Calendar export");
 assert(pageContent.includes("downloadIcsFile"), "Includes Apple/Outlook .ics file export");
-assert(pageContent.includes("rec-sunday-celebration"), "Includes Recurring Sunday Celebration Service");
-assert(pageContent.includes("rec-friday-fasting"), "Includes Recurring Friday Healing & Fasting Prayer");
+assert(!pageContent.includes("rec-sunday-celebration"), "Fake recurring Sunday event completely removed");
+assert(!pageContent.includes("rec-friday-fasting"), "Fake recurring Friday event completely removed");
+assert(!pageContent.includes("rec-tuesday-bible-study"), "Fake recurring Tuesday event completely removed");
+assert(pageContent.includes("const allEvents = useMemo(() => {"), "Events list dynamically uses database events");
 assert(pageContent.includes("/member/sermons"), "Past events link to sermon messages instead of dead button");
 assert(pageContent.includes("/gallery"), "Past events link to photo gallery instead of dead button");
 

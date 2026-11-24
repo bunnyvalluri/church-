@@ -42,19 +42,6 @@ const CAT_STYLE: Record<string, { pill: string; bar: string; badgeBg: string }> 
 const DEFAULT_STYLE = { pill: "bg-purple-600 dark:bg-purple-700 text-white border-purple-500 font-extrabold shadow-xs", bar: "bg-purple-500", badgeBg: "bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800" };
 
 /* ────────────────────────── Helpers ────────────────────────── */
-function getNextWeekday(dayOfWeek: number, targetHour = 10, targetMinute = 0): Date {
-  const now = new Date();
-  const result = new Date(now);
-  const currentDay = now.getDay();
-  let daysToAdd = (dayOfWeek - currentDay + 7) % 7;
-  if (daysToAdd === 0 && (now.getHours() > targetHour || (now.getHours() === targetHour && now.getMinutes() >= targetMinute))) {
-    daysToAdd = 7;
-  }
-  result.setDate(now.getDate() + daysToAdd);
-  result.setHours(targetHour, targetMinute, 0, 0);
-  return result;
-}
-
 function getGoogleCalendarUrl(event: { title: string; description: string; location: string; date: string; time: string }): string {
   const d = new Date(event.date);
   const startTime = d.toISOString().replace(/-|:|\.\d\d\d/g, "");
@@ -265,52 +252,6 @@ export default function MemberEvents() {
     return () => window.removeEventListener("click", handleClickOutside);
   }, []);
 
-  /* ── Recurring Weekly Gatherings Definition ────────────────── */
-  const recurringServices = useMemo<ChurchEvent[]>(() => {
-    const nextSunday = getNextWeekday(0, 10, 0); // Sunday 10:00 AM
-    const nextFriday = getNextWeekday(5, 11, 0); // Friday 11:00 AM
-    const nextTuesday = getNextWeekday(2, 19, 0); // Tuesday 07:00 PM
-
-    return [
-      {
-        id: "rec-sunday-celebration",
-        title: "Sunday Celebration & Miracle Gathering",
-        description: "Join Bishop Kurra Kristhu Raju Garu and our worship choir for a powerful morning of praise, prophetic preaching, and miracle prayer. Bring your entire family!",
-        date: nextSunday.toISOString(),
-        time: "10:00 AM – 01:00 PM IST",
-        location: "Subhash Nagar Main Sanctuary, Kingdom of Christ Ministries",
-        category: "WORSHIP",
-        speaker: "Bishop Kurra Kristhu Raju Garu",
-        mapsUrl: "https://maps.google.com/?q=Kingdom+of+Christ+Ministries+Subhash+Nagar+Hyderabad",
-        isRecurring: true,
-      },
-      {
-        id: "rec-friday-fasting",
-        title: "Friday Healing & Fasting Prayer Service",
-        description: "A consecrated afternoon of intercessory prayer, fasting, and laying on of hands for family peace, divine health, deliverance, and spiritual breakthrough.",
-        date: nextFriday.toISOString(),
-        time: "11:00 AM – 02:00 PM IST",
-        location: "Subhash Nagar & Shapur Nagar Campuses",
-        category: "PRAYER",
-        speaker: "Pastoral Care & Intercessory Team",
-        mapsUrl: "https://maps.google.com/?q=Kingdom+of+Christ+Ministries+Subhash+Nagar+Hyderabad",
-        isRecurring: true,
-      },
-      {
-        id: "rec-tuesday-bible-study",
-        title: "Mid-Week Word & Bible Exposition Fellowship",
-        description: "A deep dive into the living Scriptures, verse-by-verse Bible exposition, and family fellowship prayer to strengthen your daily walk in Christ.",
-        date: nextTuesday.toISOString(),
-        time: "07:00 PM – 08:30 PM IST",
-        location: "Subhash Nagar Sanctuary & Livestream",
-        category: "FELLOWSHIP",
-        speaker: "Associate Pastors & Ministry Leaders",
-        mapsUrl: "https://maps.google.com/?q=Kingdom+of+Christ+Ministries+Subhash+Nagar+Hyderabad",
-        isRecurring: true,
-      },
-    ];
-  }, []);
-
   /* ── Load Events From Server ─────────────────────────────── */
   const load = useCallback(async (silent = false) => {
     if (!user?.uid) return;
@@ -347,22 +288,10 @@ export default function MemberEvents() {
     };
   }, [status, user, load]);
 
-  /* ── Combined Events List ────────────────────────────────── */
+  /* ── Events List (Exclusively Real Events From Church Database) ── */
   const allEvents = useMemo(() => {
-    // Merge database events with recurring services
-    const combined = [...dbEvents];
-
-    // Check if recurring services already exist in dbEvents
-    for (const rec of recurringServices) {
-      const exists = combined.some(e => e.id === rec.id || e.title.toLowerCase().includes(rec.title.toLowerCase()));
-      if (!exists) {
-        combined.push(rec);
-      }
-    }
-
-    // Sort by date (upcoming first, then past)
-    return combined.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  }, [dbEvents, recurringServices]);
+    return [...dbEvents].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  }, [dbEvents]);
 
   /* ── RSVP Handler ────────────────────────────────────────── */
   const handleRegister = async (eventId: string) => {
@@ -381,13 +310,6 @@ export default function MemberEvents() {
     setRegisteredIds(prev => [...prev, eventId]);
 
     try {
-      // If recurring virtual service, save locally / succeed immediately
-      if (eventId.startsWith("rec-")) {
-        showToast(et.successRsvp, "success");
-        setProcessingId(null);
-        return;
-      }
-
       const res = await fetch("/api/member/events", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -704,13 +626,6 @@ export default function MemberEvents() {
                         <span className={`px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider rounded-full border ${style.pill}`}>
                           {event.category}
                         </span>
-
-                        {event.isRecurring && (
-                          <span className="inline-flex items-center gap-1 text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
-                            <Sparkles className="w-3 h-3 text-purple-600" />
-                            {et.recurringBadge}
-                          </span>
-                        )}
 
                         {!isPast ? (
                           <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800">
