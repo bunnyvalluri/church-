@@ -132,7 +132,11 @@ const nextConfig = {
       },
       {
         source: '/(logo.png|grid.svg|manifest.json|image-sitemap.xml)',
-        headers: [{ key: 'Cache-Control', value: 'public, max-age=86400, stale-while-revalidate=604800' }],
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800' }],
+      },
+      {
+        source: '/(sitemap.xml|robots.txt)',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400' }],
       },
       {
         source: '/.well-known/:path*',

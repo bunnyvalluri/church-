@@ -329,7 +329,7 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 md:pt-10 lg:pt-12 pb-10 sm:pb-12 md:pb-14 w-full">
         <motion.div
           variants={containerVariants}
-          initial="hidden"
+          initial={false}
           animate="visible"
           className="max-w-5xl mx-auto text-center"
         >

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback, useMemo, memo, startTransition } from "react";
+import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import {
   Home, Info, HeartHandshake, Church, Calendar, Mic, Image as ImageIcon, Phone, Menu, X, Sun, Moon,
@@ -13,8 +14,9 @@ import NavigationLogo from "./NavigationLogo";
 import DesktopMenu from "./DesktopMenu";
 import TabletMenu from "./TabletMenu";
 import NavigationActions from "./NavigationActions";
-import MobileDrawer from "./MobileDrawer";
 import { NavItem } from "./types";
+
+const MobileDrawer = dynamic(() => import("./MobileDrawer"), { ssr: false });
 
 /**
  * NavigationBar — Root navigation shell
@@ -325,15 +327,17 @@ const NavigationBar = memo(function NavigationBar() {
               </div>
             </div>
 
-            {/* ── Mobile Drawer — rendered inside nav container to act as a dropdown ── */}
-            <MobileDrawer
-              isOpen={isMobileOpen}
-              onClose={() => setMobileOpen(false)}
-              navItems={navItems}
-              activeSection={activeSection}
-              pathname={pathname}
-              resolveHref={resolveHref}
-            />
+            {/* ── Mobile Drawer — lazy-loaded on demand when menu is opened ── */}
+            {isMobileOpen && (
+              <MobileDrawer
+                isOpen={isMobileOpen}
+                onClose={() => setMobileOpen(false)}
+                navItems={navItems}
+                activeSection={activeSection}
+                pathname={pathname}
+                resolveHref={resolveHref}
+              />
+            )}
           </div>
         </nav>
       </header>

@@ -23,7 +23,7 @@ import {
 } from "@/lib/server/cms";
 import { getLatestSermons } from "@/app/actions/sermons";
 
-export const revalidate = 60; // 60-second Edge CDN ISR caching for instant sub-30ms load times
+export const revalidate = 300; // 5-minute Edge CDN ISR caching (paired with /api/cms/revalidate instant purge)
 
 const DEFAULT_THUMBNAIL = "https://images.unsplash.com/photo-1438232992991-995b7058bbb3?w=800&q=80";
 

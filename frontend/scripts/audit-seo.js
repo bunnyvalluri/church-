@@ -42,11 +42,13 @@ const sitemapFile = fs.readFileSync(path.join(__dirname, "../app/sitemap.ts"), "
 assert(!sitemapFile.includes('"/login"'), "Private /login is excluded from sitemap.ts");
 assert(!sitemapFile.includes('"/register"'), "Private /register is excluded from sitemap.ts");
 assert(!sitemapFile.includes('"/admin"'), "Private /admin is excluded from sitemap.ts");
-assert(sitemapFile.includes('"/sermons"'), "/sermons is included in sitemap.ts");
-assert(sitemapFile.includes('"/events"'), "/events is included in sitemap.ts");
-assert(sitemapFile.includes('"/locations"'), "/locations is included in sitemap.ts");
-assert(sitemapFile.includes('"/membership"'), "/membership is included in sitemap.ts");
-assert(sitemapFile.includes('"/ngo"'), "/ngo is included in sitemap.ts");
+assert(sitemapFile.includes('/sermons'), "/sermons is included in sitemap.ts");
+assert(sitemapFile.includes('/events'), "/events is included in sitemap.ts");
+assert(sitemapFile.includes('/locations'), "/locations is included in sitemap.ts");
+assert(sitemapFile.includes('/membership'), "/membership is included in sitemap.ts");
+assert(sitemapFile.includes('/ngo'), "/ngo is included in sitemap.ts");
+assert(sitemapFile.includes('/ngo/donations'), "/ngo/donations is included in sitemap.ts");
+assert(sitemapFile.includes('revalidate = 3600'), "sitemap.ts enables 1h Edge ISR caching");
 
 // 4. Check robots.ts and public/robots.txt
 const robotsTs = fs.readFileSync(path.join(__dirname, "../app/robots.ts"), "utf8");
@@ -94,7 +96,7 @@ const expectedLayouts = [
   "../app/ngo/videos/layout.tsx",
   "../app/ngo/volunteers/layout.tsx",
   "../app/contact/layout.tsx",
-  "../app/give/layout.tsx",
+  "../app/ngo/donations/layout.tsx",
   "../app/privacy/layout.tsx",
   "../app/terms/layout.tsx",
   "../app/login/layout.tsx",

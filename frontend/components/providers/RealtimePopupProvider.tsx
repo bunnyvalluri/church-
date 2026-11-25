@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import NotificationPopup, { NotificationData } from "@/components/NotificationPopup";
-import { requestFCMToken } from "@/lib/firebase";
-import { getSharedSocket } from "@/lib/socketClient";
+import dynamic from "next/dynamic";
+import type { NotificationData } from "@/components/NotificationPopup";
+
+const NotificationPopup = dynamic(() => import("@/components/NotificationPopup"), { ssr: false });
 
 export default function RealtimePopupProvider({ children }: { children: React.ReactNode }) {
   const [activeNotification, setActiveNotification] = useState<NotificationData | null>(null);
@@ -11,9 +12,9 @@ export default function RealtimePopupProvider({ children }: { children: React.Re
 
   useEffect(() => {
     // ── Defer all realtime connections until after first paint (3 s idle) ──────
-    // This prevents Socket.io + FCM from competing with critical rendering.
+    // Dynamically import heavy socket/FCM SDKs so initial page First Load JS stays lean.
     const timer = setTimeout(async () => {
-    // 1. Obtain shared managed socket (safely circuit-broken in production HTTPS if offline)
+    const { getSharedSocket } = await import("@/lib/socketClient");
     const socket = await getSharedSocket();
     if (!socket) {
       // Companion server is not configured or in production HTTPS without endpoint
@@ -93,6 +94,7 @@ export default function RealtimePopupProvider({ children }: { children: React.Re
     });
 
     // 3. Register Firebase Cloud Messaging Push Token in background
+    const { requestFCMToken } = await import("@/lib/firebase");
     if (typeof requestFCMToken === "function") {
       requestFCMToken().then((token) => {
         if (token) {
@@ -115,10 +117,12 @@ export default function RealtimePopupProvider({ children }: { children: React.Re
   return (
     <>
       {children}
-      <NotificationPopup
-        notification={activeNotification}
-        onDismiss={() => setActiveNotification(null)}
-      />
+      {activeNotification && (
+        <NotificationPopup
+          notification={activeNotification}
+          onDismiss={() => setActiveNotification(null)}
+        />
+      )}
     </>
   );
 }

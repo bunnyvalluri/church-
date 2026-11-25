@@ -34,9 +34,10 @@ const NgoImageCard = memo(function NgoImageCard({
       <Image
         src={src}
         alt={alt}
-        fill
+        width={272}
+        height={170}
         sizes="(max-width: 640px) 208px, 272px"
-        className="object-cover transition-transform duration-500 group-hover:scale-105"
+        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
         loading="lazy"
         decoding="async"
         quality={75}
@@ -45,10 +46,10 @@ const NgoImageCard = memo(function NgoImageCard({
       {/* Cinematic bottom gradient scrim — guarantees 100% text contrast without blocking photos */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
 
-      {/* Elegant Pill Badge — Clean, unobtrusive, no alarming red pulsing dots */}
+      {/* Elegant Pill Badge — Zero GPU backdrop-blur repaint overhead inside continuous marquee */}
       {badgeText && (
         <div className="absolute bottom-2.5 left-2.5 right-2.5 flex items-center justify-between pointer-events-none">
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 dark:bg-black/70 backdrop-blur-md text-white text-[10px] font-extrabold uppercase tracking-wider border border-white/20 shadow-xs">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/75 text-white text-[10px] font-extrabold uppercase tracking-wider border border-white/20 shadow-xs">
             <Heart className="w-2.5 h-2.5 text-rose-400 fill-rose-400 shrink-0" />
             <span className="truncate">{badgeText}</span>
           </div>
@@ -83,8 +84,8 @@ export default function NgoShowcase() {
   const row1 = useMemo(() => CURATED_SHOWCASE_IMAGES.slice(0, 4), []);
   const row2 = useMemo(() => CURATED_SHOWCASE_IMAGES.slice(4, 8), []);
 
-  const itemsRow1 = useMemo(() => [...row1, ...row1, ...row1], [row1]);
-  const itemsRow2 = useMemo(() => [...row2, ...row2, ...row2], [row2]);
+  const itemsRow1 = useMemo(() => [...row1, ...row1], [row1]);
+  const itemsRow2 = useMemo(() => [...row2, ...row2], [row2]);
 
   return (
     <section
@@ -100,22 +101,22 @@ export default function NgoShowcase() {
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes marquee {
           0% { transform: translate3d(0, 0, 0); }
-          100% { transform: translate3d(-33.333%, 0, 0); }
+          100% { transform: translate3d(-50%, 0, 0); }
         }
         @keyframes marquee-reverse {
-          0% { transform: translate3d(-33.333%, 0, 0); }
+          0% { transform: translate3d(-50%, 0, 0); }
           100% { transform: translate3d(0, 0, 0); }
         }
         .animate-marquee-slow {
           display: flex;
           width: max-content;
-          animation: marquee 80s linear infinite;
+          animation: marquee 55s linear infinite;
           will-change: transform;
         }
         .animate-marquee-reverse-slow {
           display: flex;
           width: max-content;
-          animation: marquee-reverse 80s linear infinite;
+          animation: marquee-reverse 55s linear infinite;
           will-change: transform;
         }
         .marquee-paused {
